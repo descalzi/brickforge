@@ -875,12 +875,24 @@ function sampleInterlockingFootprints(cells, profiles) {
 }
 
 function findFootprintTilings(tilings) {
+  const byPartCount = new Map();
+  for (const tiling of tilings) {
+    if (!byPartCount.has(tiling.length)) byPartCount.set(tiling.length, []);
+    byPartCount.get(tiling.length).push(tiling);
+  }
+
   let checks = 0;
-  for (const lower of tilings) {
-    for (const upper of tilings) {
-      checks += 1;
-      if (checks > MAX_FOOTPRINT_PAIR_CHECKS) return null;
-      if (footprintTilingsConnect(lower, upper)) return [lower, upper];
+  const maximumTotal = Math.max(0, ...byPartCount.keys()) * 2;
+  for (let totalParts = 2; totalParts <= maximumTotal; totalParts += 1) {
+    for (let lowerCount = 1; lowerCount < totalParts; lowerCount += 1) {
+      const upperCount = totalParts - lowerCount;
+      for (const lower of byPartCount.get(lowerCount) || []) {
+        for (const upper of byPartCount.get(upperCount) || []) {
+          checks += 1;
+          if (checks > MAX_FOOTPRINT_PAIR_CHECKS) return null;
+          if (footprintTilingsConnect(lower, upper)) return [lower, upper];
+        }
+      }
     }
   }
   return null;
