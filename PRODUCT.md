@@ -2,13 +2,13 @@
 
 ## Platform
 
-Web first, with a Python geometry and construction engine behind it.
+Browser first. The hosted site is static; the visitor's browser runs the construction engine using local processing.
 
 ## Stack
 
-Core engine: Python 3.11+, Trimesh and NumPy. Public project page: static HTML, CSS and vanilla JavaScript in `/docs`, published with GitHub Pages. The source repository is also public; never commit secrets, credentials, or private user project data.
+Public site: static HTML, CSS and JavaScript in `/docs`, published with GitHub Pages (and portable to Cloudflare Pages). Construction engine: browser-native JavaScript modules. Three.js provides the 3D preview. Published JSON profiles provide the initial part connection data. Python, Trimesh and NumPy remain available for reference implementations, offline tooling and regression checks. The source repository is public; never commit secrets, credentials, or private user project data.
 
-The end-user product is browser-first. Python package installation and command-line entry points are developer tools for local validation; they are not a requirement or expected step for website users. The eventual web app must expose construction and export through the browser UI, backed by a hosted service or browser-compatible implementation.
+The end-user product runs on the visitor's computer. It does not require a construction server, Python installation, account or model upload. The static host serves application files and versioned data only.
 
 ## Users and scene
 
@@ -25,13 +25,14 @@ BrickForge aims to convert natural-language descriptions, reference images and 3
 | Surface | Mode | Primary action |
 |---|---|---|
 | `/` (project page) | Persuade | Understand the project and follow its progress |
+| `/builder.html` | Operate | Generate, inspect and export a constrained rectangular block |
 | `/engineering` (planned) | Read | Understand the geometry, parts and validation approach |
-| `/app` (future) | Operate | Generate, inspect and refine a model |
+| `/app` (future) | Operate | Refine arbitrary models and connect mesh input to construction |
 
 ## Real assets and facts
 
 - Logo / brand assets: original wordmark and geometric mark authored for this project.
-- Real proof: the repository contains the project specification, public mesh inspector, STL/OBJ mesh inspection, LDraw metadata and geometry parsers, and a recursive LDraw sub-file resolver with transform and inherited-colour handling. The construction engine is not implemented yet.
+- Real proof: the repository contains the public mesh inspector, STL/OBJ mesh inspection, LDraw metadata and geometry parsers, and a recursive LDraw sub-file resolver. A browser-native rectangular block engine is now online, with local 3D preview, nominal connection and body-envelope checks, and LDraw/JSON downloads. Arbitrary mesh-to-model construction is not implemented yet.
 - Part geometry source under evaluation: the LDraw.org Parts Library. Parts are authored by contributors and have per-author licensing and attribution requirements; retain headers and audit licences before redistribution.
 - Connection metadata: not yet selected as a production source. BrickLink Studio uses separate connection files, but their reuse terms must be checked. Initial metadata may be authored in-house for a small, tested set of parts.
 - Must not claim: that automatic L-brick construction, physical stability guarantees, instruction generation or purchasing are already implemented.
@@ -54,7 +55,7 @@ Use generic project terminology throughout user-facing pages, documentation, scr
 - WCAG 2.2 AA contrast targets.
 - Keyboard-operable controls, visible focus and reduced-motion support.
 - Do not bundle large third-party part libraries into Git history.
-- - Preserve attribution and applicable licences for all third-party data and assets.
+- Preserve attribution and applicable licences for all third-party data and assets.
 
 ## Open decisions
 
