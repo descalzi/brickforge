@@ -566,14 +566,20 @@ function renderPartSearchResults(query) {
 }
 
 async function loadPartCatalogue() {
-  const response = await fetch('./data/ldraw/parts-index.json', {
+  if (typeof DecompressionStream !== 'function') {
+    throw new Error('This browser does not support compressed catalogue loading.');
+  }
+  const response = await fetch('./data/ldraw/parts-index.json.gz', {
     credentials: 'same-origin',
-    headers: { Accept: 'application/json' },
+    headers: { Accept: 'application/gzip' },
   });
   if (!response.ok) {
     throw new Error('Searchable part catalogue request failed (' + response.status + ').');
   }
-  const catalogue = await response.json();
+  const compressed = await response.arrayBuffer();
+  const decompressed = new Blob([compressed]).stream().pipeThrough(new DecompressionStream('gzip'));
+  const catalogueText = await new Response(decompressed).text();
+  const catalogue = JSON.parse(catalogueText);
   if (catalogue.schema_version !== 1 || !Array.isArray(catalogue.parts)) {
     throw new Error('Unsupported searchable part catalogue format.');
   }
