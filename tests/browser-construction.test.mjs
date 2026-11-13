@@ -210,3 +210,16 @@ test("browser engine builds enclosed O-shaped footprints", () => {
     assert.ok(result.total_mating_pairs > 0);
   }
 });
+
+
+test("browser engine uses the new long brick profiles for matching footprints", () => {
+  for (const [cells, expectedPart] of [
+    [Array.from({ length: 8 }, (_, x) => [x, 0]), "3008"],
+    [Array.from({ length: 8 }, (_, z) => [0, z]).flatMap(([x, z]) => [[x, z], [x + 1, z]]), "3007"],
+    [Array.from({ length: 10 }, (_, z) => [0, z]).flatMap(([x, z]) => [[x, z], [x + 1, z]]), "3006"],
+  ]) {
+    const result = buildFootprintBlock(cells, 2, catalogue);
+    assert.ok(result.parts.some((part) => part.part_id === expectedPart));
+    assert.ok(result.connections.length > 0);
+  }
+});
