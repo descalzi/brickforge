@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://descalzi.github.io/brickforge/schemas/bom-v1.schema.json",
+  "title": "BrickForge Bill of Materials v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "model_name", "total_parts", "items"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "model_name": { "type": "string", "minLength": 1 },
+    "total_parts": { "type": "integer", "minimum": 1 },
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["part_id", "colour_code", "quantity"],
+        "properties": {
+          "part_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]+$"
+          },
+          "colour_code": { "type": "integer", "minimum": 0 },
+          "quantity": { "type": "integer", "minimum": 1 }
+        }
+      }
+    }
+  }
+}
