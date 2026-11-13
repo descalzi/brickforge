@@ -68,6 +68,10 @@ it depends on a third-party public mirror which may lag the official release,
 and it does not yet validate physical connection points. The Python resolver
 still needs validation against a downloaded, version-pinned official archive.
 
+## Nominal connection metadata
+
+The first BrickForge-authored connection profiles are documented in [connection profiles](connection-profiles.md). They are separate from render geometry and describe stud and underside receiver datums for six standard bricks and plates. A transformed feature matcher identifies opposed stud/receiver pairs within a nominal positional tolerance. This is only a candidate grid-alignment test; it does not prove clutch engagement, stability or buildability.
+
 ## Deliberate boundaries
 
 This parser and resolver expand render geometry; they do not infer or prove
