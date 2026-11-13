@@ -474,6 +474,24 @@ def test_browser_and_python_footprint_engines_produce_identical_placements() -> 
             ],
             2,
         ),
+        (
+            [
+                [x, z]
+                for z, row in enumerate(("#####", "##.##", "##.##", "#####"))
+                for x, character in enumerate(row)
+                if character == "#"
+            ],
+            2,
+        ),
+        (
+            [
+                [x, z]
+                for z, row in enumerate(("#####", "##.##", "##.##", "#####", "#####"))
+                for x, character in enumerate(row)
+                if character == "#"
+            ],
+            2,
+        ),
     ]
     node_script = """
 import { readFileSync } from "node:fs";
