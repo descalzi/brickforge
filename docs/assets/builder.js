@@ -247,10 +247,13 @@ function fitCamera(bounds) {
 
   camera.near = Math.max(0.01, maximum / 10000);
   camera.far = maximum * 100;
+  // Start directly above the assembly so the preview matches the user's
+  // footprint grid as a plan view. Orbit controls remain available for 3D inspection.
+  camera.up.set(0, 0, -1);
   camera.position.set(
-    centre.x + distance * 1.15,
-    centre.y + distance * 0.92,
-    centre.z + distance * 1.35,
+    centre.x,
+    centre.y + distance,
+    centre.z,
   );
   camera.updateProjectionMatrix();
   controls.target.copy(centre);
