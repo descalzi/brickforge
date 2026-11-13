@@ -4,10 +4,10 @@ from __future__ import annotations
 
 import json
 import re
+from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 from itertools import product
 from math import isclose, isfinite
-from typing import Iterable, Mapping
 
 from brickforge.parts.connections import (
     IDENTITY_MATRIX,
@@ -337,7 +337,9 @@ def _validate_graph_connectivity(
     instance_ids: list[str],
     connections: list[AssemblyConnection],
 ) -> None:
-    adjacency = {instance_id: set() for instance_id in instance_ids}
+    adjacency: dict[str, set[str]] = {
+        instance_id: set() for instance_id in instance_ids
+    }
     for connection in connections:
         adjacency[connection.instance_a].add(connection.instance_b)
         adjacency[connection.instance_b].add(connection.instance_a)
