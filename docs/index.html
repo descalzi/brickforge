@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#F2F4F6">
+  <meta name="description" content="BrickForge is an engineering project exploring how to turn arbitrary geometry into buildable constructions made from real LEGO elements.">
+  <meta property="og:title" content="BrickForge — From geometry to buildable models">
+  <meta property="og:description" content="A geometry-first construction engine for buildable brick models, parts lists and instructions.">
+  <meta property="og:type" content="website">
+  <title>BrickForge — From geometry to buildable models</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./assets/site.css">
+  <link rel="icon" href="./assets/mark.svg" type="image/svg+xml">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="BrickForge home">
+      <img src="./assets/mark.svg" width="34" height="34" alt="">
+      <span>brickforge</span>
+    </a>
+    <nav class="main-nav" aria-label="Main navigation">
+      <a href="#method">The method</a>
+      <a href="#engineering">Engineering</a>
+      <a href="#foundations">Foundations</a>
+      <a class="nav-repo" href="https://github.com/descalzi/brickforge" target="_blank" rel="noreferrer">Repository <span aria-hidden="true">↗</span></a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="hero" id="top">
+      <div class="hero-copy">
+        <div class="status-line"><span class="status-dot" aria-hidden="true"></span> In active development</div>
+        <h1>From a shape to a <span>buildable</span> brick model.</h1>
+        <p class="hero-intro">BrickForge is an engineering project to turn descriptions, images and 3D geometry into constructions made from real LEGO elements — then prove that the parts connect and the model can be built.</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#method">Explore the method <span aria-hidden="true">↓</span></a>
+          <a class="text-link" href="https://github.com/descalzi/brickforge" target="_blank" rel="noreferrer">Project repository <span aria-hidden="true">↗</span></a>
+        </div>
+        <p class="hero-footnote">Any shape. Real elements. Buildability is non-negotiable.</p>
+      </div>
+
+      <figure class="hero-figure">
+        <div class="figure-bar">
+          <span>THE SHAPE-TO-STUD STUDY</span>
+          <span>ILLUSTRATIVE / NOT A GENERATED BUILD</span>
+        </div>
+        <svg class="shape-study" viewBox="0 0 900 570" role="img" aria-labelledby="study-title study-desc">
+          <title id="study-title">A technical illustration of a shape becoming a brick construction</title>
+          <desc id="study-desc">A wireframe cube passes through a stud-alignment grid and becomes a layered brick assembly. The drawing illustrates the intended geometry-to-construction workflow, not an output from the current prototype.</desc>
+          <defs>
+            <pattern id="fine-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+              <path d="M24 0H0V24" fill="none" stroke="#DCE2E7" stroke-width="1"/>
+            </pattern>
+            <pattern id="major-grid" width="120" height="120" patternUnits="userSpaceOnUse">
+              <path d="M120 0H0V120" fill="none" stroke="#CCD5DD" stroke-width="1"/>
+            </pattern>
+            <linearGradient id="brick-top" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#F26A35"/>
+              <stop offset="1" stop-color="#C73E0A"/>
+            </linearGradient>
+            <linearGradient id="brick-side" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#C64A1B"/>
+              <stop offset="1" stop-color="#92320F"/>
+            </linearGradient>
+            <linearGradient id="brick-blue" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#91A6B8"/>
+              <stop offset="1" stop-color="#60798E"/>
+            </linearGradient>
+            <filter id="soft-shadow" x="-30%" y="-30%" width="160%" height="180%">
+              <feDropShadow dx="0" dy="12" stdDeviation="12" flood-color="#17232D" flood-opacity=".13"/>
+            </filter>
+          </defs>
+          <rect width="900" height="570" fill="#F8FAFB"/>
+          <rect width="900" height="570" fill="url(#fine-grid)"/>
+          <rect width="900" height="570" fill="url(#major-grid)" opacity=".7"/>
+
+          <g class="drawing-labels" fill="#5B6B78" font-family="'IBM Plex Mono', monospace" font-size="11" letter-spacing="1">
+            <text x="62" y="62">01 / INPUT GEOMETRY</text>
+            <text x="365" y="62">02 / STUD ALIGNMENT</text>
+            <text x="642" y="62">03 / PART ASSEMBLY</text>
+          </g>
+          <g stroke="#C73E0A" stroke-width="1.5" fill="none">
+            <path d="M62 78H235"/>
+            <path d="M365 78H535"/>
+            <path d="M642 78H832"/>
+          </g>
+
+          <!-- A clean, wireframe solid: the source mesh. -->
+          <g transform="translate(56 128)" fill="none" stroke="#60798E" stroke-width="2.2" stroke-linejoin="round">
+            <path d="M35 120L155 57L275 120L155 184Z"/>
+            <path d="M35 120V290L155 354V184"/>
+            <path d="M275 120V290L155 354"/>
+            <path d="M155 57V184"/>
+            <path d="M35 290L155 226L275 290" stroke-dasharray="5 6" opacity=".55"/>
+            <path d="M95 89L95 322M215 89V322" stroke-dasharray="4 7" opacity=".5"/>
+            <path d="M35 205L155 269L275 205" stroke-dasharray="4 7" opacity=".5"/>
+          </g>
+          <g fill="#C73E0A">
+            <circle cx="91" cy="248" r="4"/>
+            <circle cx="211" cy="185" r="4"/>
+            <circle cx="331" cy="248" r="4"/>
+            <circle cx="211" cy="312" r="4"/>
+          </g>
+          <g fill="#5B6B78" font-family="'IBM Plex Mono', monospace" font-size="11">
+            <text x="74" y="515">SURFACE / VERTICES / NORMALS</text>
+          </g>
+
+          <!-- Transition: grid fit and candidate stud positions. -->
+          <g transform="translate(365 165)">
+            <rect x="0" y="0" width="170" height="210" fill="#FFFFFF" fill-opacity=".72" stroke="#B9C6D0"/>
+            <g stroke="#CBD5DD" stroke-width="1">
+              <path d="M0 30H170M0 60H170M0 90H170M0 120H170M0 150H170M0 180H170"/>
+              <path d="M30 0V210M60 0V210M90 0V210M120 0V210M150 0V210"/>
+            </g>
+            <g fill="#C73E0A">
+              <circle cx="30" cy="30" r="5"/><circle cx="90" cy="30" r="5"/><circle cx="150" cy="30" r="5"/>
+              <circle cx="30" cy="90" r="5"/><circle cx="90" cy="90" r="5"/><circle cx="150" cy="90" r="5"/>
+              <circle cx="30" cy="150" r="5"/><circle cx="90" cy="150" r="5"/><circle cx="150" cy="150" r="5"/>
+            </g>
+            <g fill="none" stroke="#60798E" stroke-width="2">
+              <path d="M18 43L78 13L138 43L78 73Z"/>
+              <path d="M18 43V103L78 133V73"/>
+              <path d="M138 43V103L78 133"/>
+            </g>
+            <path d="M-18 236H188" stroke="#C73E0A" stroke-width="1.5"/>
+            <g fill="#5B6B78" font-family="'IBM Plex Mono', monospace" font-size="10">
+              <text x="0" y="258">CANDIDATE PLACEMENTS</text>
+            </g>
+          </g>
+
+          <!-- Dotted transition arrows. -->
+          <g fill="none" stroke="#C73E0A" stroke-width="1.8" stroke-dasharray="4 6">
+            <path d="M300 260H346"/>
+            <path d="M538 260H602"/>
+          </g>
+          <g fill="#C73E0A">
+            <path d="M346 254L356 260L346 266Z"/>
+            <path d="M602 254L612 260L602 266Z"/>
+          </g>
+
+          <!-- A simplified stacked assembly, drawn as an engineering illustration. -->
+          <g filter="url(#soft-shadow)" stroke-linejoin="round">
+            <!-- lowest layer -->
+            <g>
+              <path d="M632 365L738 310L844 365L738 421Z" fill="#8DA3B5"/>
+              <path d="M632 365V399L738 456V421Z" fill="#60798E"/>
+              <path d="M738 421V456L844 399V365Z" fill="#506A7E"/>
+              <path d="M632 365L738 421L844 365" fill="none" stroke="#D9E3EA" stroke-width="1.5"/>
+              <g fill="#B7C7D2" stroke="#506A7E" stroke-width="1">
+                <ellipse cx="685" cy="365" rx="12" ry="6"/><ellipse cx="738" cy="337" rx="12" ry="6"/>
+                <ellipse cx="791" cy="365" rx="12" ry="6"/><ellipse cx="738" cy="393" rx="12" ry="6"/>
+              </g>
+            </g>
+            <!-- middle layer -->
+            <g>
+              <path d="M655 302L738 259L821 302L738 346Z" fill="url(#brick-blue)"/>
+              <path d="M655 302V334L738 378V346Z" fill="#60798E"/>
+              <path d="M738 346V378L821 334V302Z" fill="#506A7E"/>
+              <g fill="#B7C7D2" stroke="#506A7E" stroke-width="1">
+                <ellipse cx="697" cy="302" rx="11" ry="5.5"/><ellipse cx="738" cy="280" rx="11" ry="5.5"/>
+                <ellipse cx="779" cy="302" rx="11" ry="5.5"/>
+              </g>
+            </g>
+            <!-- cap layer in signal orange -->
+            <g>
+              <path d="M683 245L738 216L793 245L738 275Z" fill="url(#brick-top)"/>
+              <path d="M683 245V272L738 302V275Z" fill="#A93B13"/>
+              <path d="M738 275V302L793 272V245Z" fill="#842C0C"/>
+              <g fill="#F58B60" stroke="#9D360E" stroke-width="1">
+                <ellipse cx="710" cy="245" rx="10" ry="5"/><ellipse cx="738" cy="230" rx="10" ry="5"/><ellipse cx="765" cy="245" rx="10" ry="5"/>
+              </g>
+            </g>
+          </g>
+          <g fill="#5B6B78" font-family="'IBM Plex Mono', monospace" font-size="11">
+            <text x="648" y="515">PARTS / CONNECTIONS / BUILD ORDER</text>
+          </g>
+          <g stroke="#C73E0A" stroke-width="1.2" fill="none">
+            <path d="M782 231L830 181H862"/>
+            <path d="M808 355L852 406H871"/>
+          </g>
+          <g fill="#C73E0A">
+            <circle cx="782" cy="231" r="3.5"/>
+            <circle cx="808" cy="355" r="3.5"/>
+          </g>
+          <g fill="#5B6B78" font-family="'IBM Plex Mono', monospace" font-size="10">
+            <text x="784" y="168">STUD GRID</text>
+            <text x="793" y="429">CONNECTED</text>
+          </g>
+          <path d="M34 548H866" stroke="#CCD5DD" stroke-width="1"/>
+          <g fill="#748391" font-family="'IBM Plex Mono', monospace" font-size="9">
+            <text x="35" y="562">GEOMETRY → CANDIDATE SEARCH → VALIDATED ASSEMBLY</text>
+            <text x="865" y="562" text-anchor="end">BF / 001</text>
+          </g>
+        </svg>
+        <figcaption><span>One continuous problem: fit the geometry, find legal connections, then sequence a real build.</span><span>Concept drawing</span></figcaption>
+      </figure>
+    </section>
+
+    <section class="intro-strip" aria-label="Project principles">
+      <p>Any shape</p><span aria-hidden="true"></span>
+      <p>Real elements</p><span aria-hidden="true"></span>
+      <p>Buildability first</p>
+    </section>
+
+    <section class="section method-section" id="method">
+      <div class="section-heading">
+        <p class="section-index">THE METHOD</p>
+        <h2>The hard part isn't the prompt.<br><em>It's making the pieces connect.</em></h2>
+      </div>
+      <div class="method-list">
+        <article class="method-row">
+          <div class="method-number">01</div>
+          <div class="method-title"><h3>Understand the shape</h3><p>Interpret the request, inspect the geometry, and identify the surfaces, dimensions and details that matter.</p></div>
+          <div class="method-output"><span>INPUT</span><strong>Mesh + design brief</strong></div>
+        </article>
+        <article class="method-row">
+          <div class="method-number">02</div>
+          <div class="method-title"><h3>Find the right elements</h3><p>Search real part geometry and candidate placements. Combine volumetric and surface-aware strategies rather than forcing every object into a voxel grid.</p></div>
+          <div class="method-output"><span>SEARCH</span><strong>Parts + transforms</strong></div>
+        </article>
+        <article class="method-row">
+          <div class="method-number">03</div>
+          <div class="method-title"><h3>Prove the construction</h3><p>Check connection compatibility, collisions, connectivity, support and whether the build can be assembled in a sensible order.</p></div>
+          <div class="method-output"><span>VALIDATION</span><strong>Assembly graph</strong></div>
+        </article>
+        <article class="method-row">
+          <div class="method-number">04</div>
+          <div class="method-title"><h3>Make it buildable by a person</h3><p>Generate a consistent 3D model, parts inventory and illustrated steps from the same validated construction.</p></div>
+          <div class="method-output"><span>OUTPUT</span><strong>Model + BOM + steps</strong></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section engineering-section" id="engineering">
+      <div class="engineering-copy">
+        <p class="section-index">ENGINEERING PRINCIPLE</p>
+        <h2>One construction.<br><span>Every deliverable.</span></h2>
+        <p>The model, inventory and instructions must never drift apart. BrickForge is being designed around one canonical assembly graph so every output describes the same set of parts, positions and connections.</p>
+      </div>
+      <div class="output-diagram" aria-label="One assembly graph provides the 3D model, parts list and building instructions">
+        <div class="graph-core">
+          <svg viewBox="0 0 160 130" role="img" aria-label="Connected nodes representing an assembly graph">
+            <g stroke="#A7B7C3" stroke-width="2">
+              <path d="M42 32L81 62L122 28M81 62L42 103M81 62L124 102"/>
+            </g>
+            <g fill="#F2F4F6" stroke="#C73E0A" stroke-width="2.5">
+              <rect x="29" y="19" width="26" height="26" rx="3"/>
+              <rect x="68" y="49" width="26" height="26" rx="3" fill="#C73E0A"/>
+              <rect x="109" y="15" width="26" height="26" rx="3"/>
+              <rect x="29" y="90" width="26" height="26" rx="3"/>
+              <rect x="111" y="89" width="26" height="26" rx="3"/>
+            </g>
+            <g fill="#FFFFFF">
+              <circle cx="81" cy="62" r="3.5"/>
+            </g>
+          </svg>
+          <strong>Assembly graph</strong>
+          <span>Parts · transforms · connections</span>
+        </div>
+        <div class="output-branches">
+          <div class="output-item"><span class="output-icon" aria-hidden="true">3D</span><div><strong>Model</strong><small>LDraw / interactive preview</small></div></div>
+          <div class="output-item"><span class="output-icon" aria-hidden="true">≡</span><div><strong>Parts list</strong><small>Quantities / colours / identifiers</small></div></div>
+          <div class="output-item"><span class="output-icon" aria-hidden="true">→</span><div><strong>Instructions</strong><small>Build order / steps / PDF</small></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section foundations-section" id="foundations">
+      <div class="foundations-head">
+        <div>
+          <p class="section-index">CURRENT STATE</p>
+          <h2>Built in layers.<br>Measured at every step.</h2>
+        </div>
+        <p class="foundations-intro">The first milestone is deliberately narrow: make geometry and part data reliable before asking AI to generate complete models.</p>
+      </div>
+      <div class="progress-table">
+        <div class="progress-row progress-live"><span class="progress-state"><i aria-hidden="true"></i> IN PLACE</span><strong>Project architecture and Python package foundation</strong><small>Repository scaffold, design principles and roadmap.</small></div>
+        <div class="progress-row progress-live"><span class="progress-state"><i aria-hidden="true"></i> IN PLACE</span><strong>Mesh inspection foundation</strong><small>STL / OBJ scene loading, explicit units and dimension reporting.</small></div>
+        <div class="progress-row progress-next"><span class="progress-state"><i aria-hidden="true"></i> NEXT</span><strong>LDraw part library integration</strong><small>Part geometry, file parsing, colour definitions and provenance.</small></div>
+        <div class="progress-row progress-planned"><span class="progress-state"><i aria-hidden="true"></i> PLANNED</span><strong>Connection-aware construction engine</strong><small>Typed connectors, candidate placement and validation.</small></div>
+        <div class="progress-row progress-planned"><span class="progress-state"><i aria-hidden="true"></i> PLANNED</span><strong>Model generation and instructions</strong><small>Optimisation, assembly sequence, BOM and illustrated export.</small></div>
+      </div>
+      <p class="progress-note">Status reflects the committed repository foundation, not a claim that the full generator is already working.</p>
+    </section>
+
+    <section class="closing-section">
+      <div class="closing-mark" aria-hidden="true"><img src="./assets/mark.svg" width="54" height="54" alt=""></div>
+      <div>
+        <p class="section-index">AN OPEN ENGINEERING JOURNEY</p>
+        <h2>Make the shape.<br><span>Make it build.</span></h2>
+        <p>BrickForge is independent, in active development, and designed around genuine part geometry and verifiable construction rules.</p>
+      </div>
+      <a class="button button-dark" href="https://github.com/descalzi/brickforge" target="_blank" rel="noreferrer">Follow the project <span aria-hidden="true">↗</span></a>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <a class="brand footer-brand" href="#top"><img src="./assets/mark.svg" width="28" height="28" alt=""><span>brickforge</span></a>
+    <p>Independent project. Not affiliated with or endorsed by the LEGO Group. LEGO is a trademark of the LEGO Group. <a href="https://library.ldraw.org/" target="_blank" rel="noreferrer">LDraw.org</a> is a community-run CAD project and its parts library is subject to contributor licences.</p>
+    <span class="footer-id">BF / 2026</span>
+  </footer>
+
+  <script src="./assets/site.js" defer></script>
+</body>
+</html>
