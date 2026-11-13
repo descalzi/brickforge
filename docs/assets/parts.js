@@ -49,7 +49,6 @@ let activeAxes;
 let currentBounds;
 let palette = new Map(fallbackColours);
 let viewerReady = false;
-let busy = false;
 let loadSequence = 0;
 
 const rawFileCache = new Map();
@@ -251,7 +250,7 @@ function parseLDrawText(content, source) {
       if (!payload) return;
       if (/^NAME:/i.test(payload)) metadata.name = payload.split(':').slice(1).join(':').trim();
       else if (/^AUTHOR:/i.test(payload)) metadata.author = payload.split(':').slice(1).join(':').trim();
-      else if (/^!LDRAW_ORG/i.test(payload)) metadata.libraryType = payload.slice(9).trim();
+      else if (/^!LDRAW_ORG/i.test(payload)) metadata.libraryType = payload.slice(10).trim();
       else if (/^!LICENSE/i.test(payload)) metadata.licence = payload.slice(8).trim();
       else if (!metadata.description && !payload.startsWith('!')) metadata.description = payload;
       return;
@@ -487,9 +486,8 @@ function clearMeasurements() {
 }
 
 async function loadSelectedPart() {
-  if (!viewerReady || busy) return;
+  if (!viewerReady) return;
   const sequence = ++loadSequence;
-  busy = true;
   const partId = partSelect.value;
   const colourCode = Number(colourSelect.value);
 
@@ -570,8 +568,6 @@ async function loadSelectedPart() {
     currentBounds = null;
     setState('PART LOAD FAILED', 'error');
     setMessage(error instanceof Error ? error.message : 'The LDraw part could not be loaded.', 'error');
-  } finally {
-    if (sequence === loadSequence) busy = false;
   }
 }
 
