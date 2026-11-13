@@ -67,6 +67,7 @@ const documentCache = new Map();
 let connectionProfilesPromise;
 let partCatalogue = [];
 let connectionProfileMap = new Map();
+let loadedPartId = null;
 
 function setMessage(text, kind) {
   message.textContent = text;
@@ -74,8 +75,12 @@ function setMessage(text, kind) {
 }
 
 function setState(text, state) {
+  const nextState = state || 'ready';
   stateLabel.textContent = text;
-  stateLabel.dataset.state = state || 'ready';
+  stateLabel.dataset.state = nextState;
+  message.dataset.status = text;
+  message.dataset.state = nextState;
+  message.setAttribute('aria-busy', nextState === 'loading' ? 'true' : 'false');
 }
 
 function formatMm(value) {
@@ -528,19 +533,27 @@ function renderPartSearchResults(query) {
   if (!terms.length) {
     partSelect.disabled = false;
     partSelect.replaceChildren();
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = 'Select a part to load…';
+    partSelect.append(placeholder);
     for (const item of defaultPartOptions) {
       const option = document.createElement('option');
       option.value = item.value;
       option.textContent = item.text;
       partSelect.append(option);
     }
+    partSelect.value = loadedPartId || '';
     return;
   }
 
   const matches = searchPartCatalogue(partCatalogue, query);
 
-  const previousValue = partSelect.value;
   partSelect.replaceChildren();
+  const placeholder = document.createElement('option');
+  placeholder.value = '';
+  placeholder.textContent = 'Select a part to load…';
+  partSelect.append(placeholder);
   if (!matches.length) {
     const option = document.createElement('option');
     option.value = '';
@@ -561,9 +574,9 @@ function renderPartSearchResults(query) {
       + profileLabel;
     partSelect.append(option);
   }
-  if (matches.some((part) => part.part_id === previousValue)) {
-    partSelect.value = previousValue;
-  }
+  // Search results are deliberately unselected until the visitor chooses one.
+  // This ensures re-selecting the currently loaded part still fires "change".
+  partSelect.value = '';
 }
 
 async function loadPartCatalogue() {
@@ -611,6 +624,8 @@ async function loadSelectedPart() {
   if (!viewerReady) return;
   const sequence = ++loadSequence;
   const partId = partSelect.value;
+  if (!partId) return;
+  loadedPartId = null;
   const colourCode = Number(colourSelect.value);
   const selectedEntry = partCatalogue.find((part) => part.part_id === partId);
   const partPath = selectedEntry ? selectedEntry.filename : 'parts/' + partId + '.dat';
@@ -634,6 +649,8 @@ async function loadSelectedPart() {
       licences: new Set(),
     };
 
+    setState('EXPANDING ' + partId + ' REFERENCES', 'loading');
+    setMessage('Resolving nested subparts and preparing the geometry…');
     await expandPart(
       root,
       [1, 0, 0, 0, 1, 0, 0, 0, 1],
@@ -645,6 +662,8 @@ async function loadSelectedPart() {
     );
 
     if (sequence !== loadSequence) return;
+    setState('RENDERING ' + partId, 'loading');
+    setMessage('Building the 3D preview and calculating dimensions…');
     const faceModel = createMesh(expansion.faces, false);
     const lineModel = createMesh(expansion.lines, true);
     const model = new THREE.Group();
@@ -687,6 +706,7 @@ async function loadSelectedPart() {
 
     emptyState.hidden = true;
     resetButton.disabled = false;
+    loadedPartId = partId;
     setState('PART LOADED', 'loaded');
     setMessage(
       'Resolved ' + expansion.files.size + ' LDraw files from the public library mirror. Geometry is converted from LDU to millimetres. This preview does not validate physical connections.',
@@ -695,6 +715,7 @@ async function loadSelectedPart() {
   } catch (error) {
     if (sequence !== loadSequence) return;
     console.error('BrickForge could not load the selected LDraw part:', error);
+    loadedPartId = null;
     removeModel();
     removeHelpers();
     emptyState.hidden = false;
@@ -728,6 +749,7 @@ async function startPartExplorer() {
     ]);
     viewerReady = initialiseViewer();
     if (viewerReady) {
+      partSelect.value = defaultPartOptions[0]?.value || '';
       await loadSelectedPart();
     }
   } catch (error) {
