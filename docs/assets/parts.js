@@ -580,7 +580,7 @@ async function loadPartCatalogue() {
   if (
     typeof geometryBaseUrl !== 'string'
     || !geometryBaseUrl.startsWith('https://raw.githubusercontent.com/kulits/ldraw-parts/')
-    || !/\\/[0-9a-f]{40}\\/ldraw\\/$/.test(geometryBaseUrl)
+    || !/\/[0-9a-f]{40}\/ldraw\/$/.test(geometryBaseUrl)
   ) {
     throw new Error('The searchable catalogue has no valid pinned geometry source.');
   }
