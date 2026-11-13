@@ -903,16 +903,19 @@ function footprintTilingSequenceConnects(sequence) {
   return true;
 }
 
-function findThreeCourseTilingSequence(tilings) {
+function findThreeCourseTilingSequence(tilings, height) {
   let checks = 0;
   for (const first of tilings) {
     for (const second of tilings) {
       for (const third of tilings) {
         checks += 1;
         if (checks > 250000) return null;
-        if (footprintTilingSequenceConnects([first, second, third])) {
-          return [first, second, third];
-        }
+        const cycle = [first, second, third];
+        const sequence = Array.from(
+          { length: height },
+          (_, layer) => cycle[layer % cycle.length],
+        );
+        if (footprintTilingSequenceConnects(sequence)) return cycle;
       }
     }
   }
@@ -992,8 +995,8 @@ export function buildFootprintBlock(footprintCells, heightBricks, catalogue, con
     const search = enumerateFootprintTilings(cells, profiles);
     searchLimited = search.limitReached;
     pair = findFootprintTilings(search.tilings);
-    if (!pair && height === 3) {
-      tilingSequence = findThreeCourseTilingSequence(search.tilings);
+    if (!pair) {
+      tilingSequence = findThreeCourseTilingSequence(search.tilings, height);
     }
   }
   if (!pair && !tilingSequence) {
