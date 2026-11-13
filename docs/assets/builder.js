@@ -342,7 +342,7 @@ function parseFootprintGrid(value) {
   return cells;
 }
 
-async function buildFootprintInWorker(cells, height, options) {
+function buildFootprintInWorker(cells, height, options) {
   return new Promise((resolve, reject) => {
     const worker = new Worker("./assets/footprint-worker.js", { type: "module" });
     worker.addEventListener("message", (event) => {
@@ -361,7 +361,7 @@ async function buildFootprintInWorker(cells, height, options) {
   });
 }
 
-function generateFootprint() {
+async function generateFootprint() {
   if (!inputs.height.reportValidity()) return;
   buildButton.disabled = true;
   footprintButton.disabled = true;
