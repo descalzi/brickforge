@@ -429,6 +429,20 @@ def test_footprint_builder_alternates_tilings_for_three_courses() -> None:
     assert assembly.total_mating_pairs > 0
 
 
+def test_footprint_builder_repeats_three_layout_cycle_for_taller_stack() -> None:
+    cells = [
+        (0, 0), (1, 0), (2, 0), (3, 0), (4, 0),
+        (2, 1), (2, 2),
+    ]
+    assembly = build_footprint_block(cells, 4, PROFILES)
+
+    assert {part.translation_ldu[1] for part in assembly.parts} == {
+        0.0, -24.0, -48.0, -72.0
+    }
+    assert assembly.connections
+    assert assembly.total_mating_pairs > 0
+
+
 def test_footprint_builder_rejects_disconnected_footprints() -> None:
     with pytest.raises(ValueError, match="orthogonally connected"):
         build_footprint_block([(0, 0), (2, 0)], 2, PROFILES)
@@ -466,6 +480,7 @@ def test_browser_and_python_footprint_engines_produce_identical_placements() -> 
         ),
         ([[0, 0], [1, 0], [2, 0]], 3),
         ([[0, 0], [1, 0], [2, 0], [3, 0], [4, 0], [2, 1], [2, 2]], 3),
+        ([[0, 0], [1, 0], [2, 0], [3, 0], [4, 0], [2, 1], [2, 2]], 4),
         (
             [
                 [x, z]
