@@ -1,8 +1,12 @@
 # Nominal connection profiles — version 1
 
-BrickForge's first connection data is authored in
-`data/connection-profiles/basic-bricks.json`. It is intentionally separate
-from the LDraw render-geometry files. Geometry records describe surfaces and
+BrickForge's canonical connection data is authored in
+`data/connection-profiles/basic-bricks.json`. An identical published copy lives
+at `docs/data/connection-profiles/basic-bricks.json` because GitHub Pages
+publishes the `docs/` directory only. CI checks that these two files remain
+byte-for-byte identical. The browser loads the published copy at
+`./data/connection-profiles/basic-bricks.json`. The data is intentionally
+separate from the LDraw render-geometry files. Geometry records describe surfaces and
 sub-file composition; these profiles describe candidate physical interfaces.
 
 ## Coordinate frame
