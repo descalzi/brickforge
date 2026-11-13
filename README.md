@@ -32,7 +32,7 @@ The AI must not directly author arbitrary per-brick placements as the source of 
 - FastAPI for the backend API (introduced when the service layer is needed)
 - Trimesh for mesh ingestion and geometry operations
 - LDraw as the canonical interchange format for LEGO models
-- Three.js for a future browser-based 3D viewer
+- Three.js for the browser-based mesh inspector and a future assembly viewer
 - LPub3D as a candidate downstream instruction-rendering tool
 - pytest for automated tests
 
@@ -40,9 +40,11 @@ Technology choices are provisional and should be validated with small technical 
 
 ## Development status
 
-The repository currently contains the initial project specification and scaffold. The first engineering milestone is a reliable geometry-to-brick pipeline, beginning with mesh inspection, LEGO coordinate conventions, a parts metadata model, and a small demonstrator.
+The project now has a working public mesh-inspection page for STL and OBJ files, plus a tested Python ingestion foundation. The Python package can inspect target meshes, parse LDraw part metadata and geometric records, and recursively resolve LDraw sub-file references into transformed primitives while retaining colour-inheritance context.
 
-See [Architecture](docs/architecture/overview.md), [Roadmap](docs/roadmap.md), [Decision log](docs/decisions/0001-product-and-engineering-principles.md), and [parts data-source notes](docs/parts-data-sources.md).
+This is still an ingestion foundation, not an automatic LEGO generator. Physical connection metadata, the construction engine, buildability validation, BOM generation, and instructions remain to be implemented.
+
+See [Architecture](docs/architecture/overview.md), [Roadmap](docs/roadmap.md), [Decision log](docs/decisions/0001-product-and-engineering-principles.md), [LDraw geometry ingestion](docs/architecture/ldraw-geometry.md), and [parts data-source notes](docs/parts-data-sources.md).
 
 ## Local LDraw parts library
 
@@ -56,7 +58,7 @@ The archive is extracted to `data/vendor/ldraw/`, which is intentionally ignored
 
 ## Project website
 
-The first static project page is in `docs/`. To publish it with GitHub Pages, open **Settings → Pages**, select **Deploy from a branch**, then choose **main** and **/docs**. The page is public on the internet even if the source repository is private. Private-repository Pages hosting requires a GitHub plan that supports it; see [GitHub's publishing-source documentation](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site).
+The public project page is published from `docs/` using GitHub Pages, and the source repository is public. Visit the [project site](https://descalzi.github.io/brickforge/) or open the [mesh inspector](https://descalzi.github.io/brickforge/inspector.html).
 
 ## Scope and compatibility
 
