@@ -566,9 +566,6 @@ function renderPartSearchResults(query) {
 }
 
 async function loadPartCatalogue() {
-  if (typeof DecompressionStream !== 'function') {
-    throw new Error('This browser does not support compressed catalogue loading.');
-  }
   const response = await fetch('./data/ldraw/parts-index.json.gz', {
     credentials: 'same-origin',
     headers: { Accept: 'application/gzip' },
@@ -576,9 +573,19 @@ async function loadPartCatalogue() {
   if (!response.ok) {
     throw new Error('Searchable part catalogue request failed (' + response.status + ').');
   }
-  const compressed = await response.arrayBuffer();
-  const decompressed = new Blob([compressed]).stream().pipeThrough(new DecompressionStream('gzip'));
-  const catalogueText = await new Response(decompressed).text();
+  const payload = await response.arrayBuffer();
+  const bytes = new Uint8Array(payload);
+  let catalogueText;
+  if (bytes[0] === 0x1F && bytes[1] === 0x8B) {
+    if (typeof DecompressionStream !== 'function') {
+      throw new Error('This browser does not support compressed catalogue loading.');
+    }
+    const decompressed = new Blob([payload]).stream().pipeThrough(new DecompressionStream('gzip'));
+    catalogueText = await new Response(decompressed).text();
+  } else {
+    // Some static hosts may transparently decode .gz responses.
+    catalogueText = new TextDecoder().decode(payload);
+  }
   const catalogue = JSON.parse(catalogueText);
   if (catalogue.schema_version !== 1 || !Array.isArray(catalogue.parts)) {
     throw new Error('Unsupported searchable part catalogue format.');
