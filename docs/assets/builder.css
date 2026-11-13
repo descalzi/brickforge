@@ -344,3 +344,12 @@
   .dimension-fields { gap: 7px; }
   .builder-stats { grid-template-columns: 1fr; }
 }
+
+.footprint-grid {
+  min-height: 112px;
+  resize: vertical;
+  font-family: var(--font-mono);
+  font-size: .88rem;
+  line-height: 1.45;
+  letter-spacing: .08em;
+}
