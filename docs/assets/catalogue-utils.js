@@ -12,7 +12,7 @@ export async function decodeCataloguePayload(payload) {
 }
 
 export function searchPartCatalogue(parts, query, limit = 100) {
-  const terms = query.trim().toLocaleLowerCase().split(/\\s+/).filter(Boolean);
+  const terms = query.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
   if (!terms.length) return [];
 
   return parts
