@@ -95,7 +95,7 @@ test('ranks part-name prefixes and preserves source order for equal scores', () 
   const parts = [
     { part_id: 'a', description: 'Wheel hub' },
     { part_id: 'b', description: 'Wheel arch' },
-    { part_id: 'c', description: 'Wheel assembly' },
+    { part_id: 'c', description: 'Assembly with a wheel' },
   ];
 
   assert.deepEqual(
