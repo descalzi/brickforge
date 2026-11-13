@@ -351,6 +351,8 @@ def _sample_interlocking_tilings(
 
     sampled: list[tuple[_Tile, ...]] = []
     signatures: set[tuple[tuple[str, int, int, bool], ...]] = set()
+    best_pair: tuple[tuple[_Tile, ...], tuple[_Tile, ...]] | None = None
+    best_part_count: int | None = None
     for _ in range(512):
         remaining = set(cells)
         chosen: list[_Tile] = []
@@ -394,9 +396,12 @@ def _sample_interlocking_tilings(
         signatures.add(signature)
         for previous in sampled:
             if _tilings_connect(previous, tiling):
-                return previous, tiling
+                part_count = len(previous) + len(tiling)
+                if best_part_count is None or part_count < best_part_count:
+                    best_pair = (previous, tiling)
+                    best_part_count = part_count
         sampled.append(tiling)
-    return None
+    return best_pair
 
 
 def build_footprint_block(
