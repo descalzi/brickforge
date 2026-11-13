@@ -19,7 +19,22 @@ The library is made by community contributors. The Parts Library Policies state 
 - Keep downloaded parts outside Git history; only application code and small, specifically licensed test fixtures should live in this repository.
 - Do not use third-party CAD/3D sources to create or submit replacement LDraw parts. LDraw.org's source policy explicitly restricts the sources from which community parts may be authored.
 
-## 2. Browser preview and public mirror
+## 2. Verbatim LDraw regression fixture
+
+A small, unchanged test fixture is kept at
+`tests/fixtures/ldraw/brick-3001/`. It contains the 3001 (2 × 4 brick) root
+part, its nested sub-part and the referenced primitive files required to resolve
+that part. The original file headers, contributor names, per-file CC BY 4.0
+notices, `CAreadme.txt` and `CAlicense4.txt` are preserved. The source file
+headers identify James Jessiman as the author of most files and Niels Karsdorp
+for `box3u2p.dat`.
+
+This is a focused resolver regression fixture, not a complete LDraw release
+snapshot. It is included so CI can exercise recursive library expansion without
+downloading the full archive on every push. The complete-library validation is
+still a separate milestone.
+
+## 3. Browser preview and public mirror
 
 The public [Part explorer](https://descalzi.github.io/brickforge/parts.html) currently previews a small curated set of standard elements (3001, 3003, 3004, 3005, 3020 and 3021). At runtime it fetches the individual text files and the colour configuration from the public GitHub mirror at:
 
@@ -32,7 +47,7 @@ The mirror's README describes its contents as a copy of the LDraw Parts Library 
 
 The viewer collects `AUTHOR` and `!LICENSE` notices from the files it expands and exposes the original root file. The source file's own notice governs; the viewer must not assume that one licence applies to every dependency. Before using a different part or redistributing part data, inspect all participating headers and the applicable agreement.
 
-## 3. Connection metadata — open question
+## 4. Connection metadata — open question
 
 LDraw part files provide geometry and model references, but geometry alone is not a complete physical connection model.
 
@@ -56,7 +71,7 @@ Begin with a deliberately small, useful set:
 
 Expand to Technic, clips, bars, hinges, flex parts and other specialised connection families only after the basic connection model is reliable.
 
-## 4. Legal and product wording
+## 5. Legal and product wording
 
 BrickForge is independent and is not affiliated with, endorsed by, or sponsored by the LEGO Group. LEGO is a trademark of the LEGO Group. LDraw is a community CAD standard and a trademark of the Estate of James Jessiman.
 
