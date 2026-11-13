@@ -249,8 +249,7 @@ function parseLDrawText(content, source) {
     licence: '',
   };
 
-  content.split(/\r?
-/).forEach((rawLine, index) => {
+  content.split(/\r?\n/).forEach((rawLine, index) => {
     const lineNumber = index + 1;
     const line = rawLine.trim();
     if (!line) return;
