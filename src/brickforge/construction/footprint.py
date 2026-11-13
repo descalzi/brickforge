@@ -353,7 +353,8 @@ def _sample_interlocking_tilings(
     signatures: set[tuple[tuple[str, int, int, bool], ...]] = set()
     best_pair: tuple[tuple[_Tile, ...], tuple[_Tile, ...]] | None = None
     best_part_count: int | None = None
-    for _ in range(512):
+    first_pair_attempt: int | None = None
+    for attempt in range(512):
         remaining = set(cells)
         chosen: list[_Tile] = []
         while remaining:
@@ -397,10 +398,18 @@ def _sample_interlocking_tilings(
         for previous in sampled:
             if _tilings_connect(previous, tiling):
                 part_count = len(previous) + len(tiling)
+                if best_part_count is None:
+                    first_pair_attempt = attempt
                 if best_part_count is None or part_count < best_part_count:
                     best_pair = (previous, tiling)
                     best_part_count = part_count
         sampled.append(tiling)
+        # Spend at most 32 additional samples improving the first valid pair.
+        if (
+            first_pair_attempt is not None
+            and attempt - first_pair_attempt >= 31
+        ):
+            break
     return best_pair
 
 
