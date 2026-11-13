@@ -6,7 +6,7 @@ const viewport = document.querySelector('#parts-viewport');
 const emptyState = document.querySelector('#parts-empty');
 const stateLabel = document.querySelector('#parts-state');
 const message = document.querySelector('#parts-message');
-const partSelect = document.querySelector('#part-select');
+const partSelect = document.querySelector('#part-select');\nconst partSearch = document.querySelector('#part-search');
 const colourSelect = document.querySelector('#part-colour');
 const resetButton = document.querySelector('#parts-reset');
 
@@ -55,7 +55,7 @@ let loadSequence = 0;
 
 const rawFileCache = new Map();
 const documentCache = new Map();
-let connectionProfilesPromise;
+let connectionProfilesPromise;\nlet partCatalogue = [];
 
 function setMessage(text, kind) {
   message.textContent = text;
@@ -510,11 +510,73 @@ function clearMeasurements() {
   output.licences.textContent = '—';
 }
 
+function renderPartSearchResults(query) {
+  const terms = query.trim().toLocaleLowerCase().split(/\\s+/).filter(Boolean);
+  if (!terms.length) return;
+
+  const matches = partCatalogue.filter((part) => {
+    const searchable = [
+      part.part_id,
+      part.name,
+      part.description,
+      part.category,
+      ...(part.keywords || []),
+    ].filter(Boolean).join(' ').toLocaleLowerCase();
+    return terms.every((term) => searchable.includes(term));
+  }).slice(0, 100);
+
+  const previousValue = partSelect.value;
+  partSelect.replaceChildren();
+  if (!matches.length) {
+    const option = document.createElement('option');
+    option.value = '';
+    option.textContent = 'No matching parts found';
+    partSelect.append(option);
+    partSelect.disabled = true;
+    return;
+  }
+
+  partSelect.disabled = false;
+  for (const part of matches) {
+    const option = document.createElement('option');
+    option.value = part.part_id;
+    option.textContent = part.part_id + ' — ' + (part.name || part.description || part.part_id);
+    partSelect.append(option);
+  }
+  if (matches.some((part) => part.part_id === previousValue)) {
+    partSelect.value = previousValue;
+  }
+}
+
+async function loadPartCatalogue() {
+  const response = await fetch('./data/ldraw/parts-index.json', {
+    credentials: 'same-origin',
+    headers: { Accept: 'application/json' },
+  });
+  if (!response.ok) {
+    throw new Error('Searchable part catalogue request failed (' + response.status + ').');
+  }
+  const catalogue = await response.json();
+  if (catalogue.schema_version !== 1 || !Array.isArray(catalogue.parts)) {
+    throw new Error('Unsupported searchable part catalogue format.');
+  }
+  partCatalogue = catalogue.parts.filter((part) =>
+    part && typeof part.part_id === 'string'
+    && typeof part.filename === 'string'
+    && part.filename.startsWith('parts/')
+    && !part.filename.includes('..')
+  );
+  if (!partCatalogue.length) throw new Error('The searchable part catalogue is empty.');
+  partSearch.disabled = false;
+  partSearch.placeholder = 'Search ' + partCatalogue.length.toLocaleString()
+    + ' parts by number, name or keyword';
+}
+
 async function loadSelectedPart() {
   if (!viewerReady) return;
   const sequence = ++loadSequence;
   const partId = partSelect.value;
-  const colourCode = Number(colourSelect.value);
+  const colourCode = Number(colourSelect.value);\n  const selectedEntry = partCatalogue.find((part) => part.part_id === partId);\n  const partPath = selectedEntry ? selectedEntry.filename : 'parts/' + partId + '.dat';
 
   setState('FETCHING ' + partId, 'loading');
   setMessage('Fetching source files and expanding nested LDraw references…');
@@ -523,7 +585,7 @@ async function loadSelectedPart() {
   try {
     await loadPalette();
     const [root, connectionProfiles] = await Promise.all([
-      getDocument('parts/' + partId + '.dat'),
+      getDocument(partPath),
       getConnectionProfiles(),
     ]);
     const connectionProfile = connectionProfiles.get(partId);
@@ -602,7 +664,7 @@ async function loadSelectedPart() {
   }
 }
 
-partSelect.addEventListener('change', () => {
+partSearch.addEventListener('input', () => {\n  renderPartSearchResults(partSearch.value);\n});\npartSelect.addEventListener('change', () => {
   loadSelectedPart();
 });
 colourSelect.addEventListener('change', () => {
