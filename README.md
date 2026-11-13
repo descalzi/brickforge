@@ -40,11 +40,11 @@ Technology choices are provisional and should be validated with small technical 
 
 ## Development status
 
-The project now has a public mesh inspector for STL and OBJ files and a browser-based LDraw part explorer for a curated set of real bricks and plates. The part explorer follows nested sub-file references, composes transforms, applies inherited colours and the LDraw colour table, and shows source-header attribution. The Python package also inspects target meshes, parses LDraw part metadata and geometry records, and recursively resolves sub-file references into transformed primitives.
+The project now has a public mesh inspector for STL and OBJ files and a browser-based LDraw part explorer for a curated set of real bricks and plates. The part explorer follows nested sub-file references, composes transforms, applies inherited colours and the LDraw colour table, and shows source-header attribution. BrickForge also has its first authored nominal connection profiles for those six bricks and plates, plus a deterministic stud-to-receiver datum matcher. These are candidate geometric alignments, not physical clutch or stability validation. The Python package also inspects target meshes, parses LDraw part metadata and geometry records, and recursively resolves sub-file references into transformed primitives.
 
 This is still an ingestion foundation, not an automatic LEGO generator. Physical connection metadata, the construction engine, buildability validation, BOM generation, and instructions remain to be implemented.
 
-See [Architecture](docs/architecture/overview.md), [Roadmap](docs/roadmap.md), [Decision log](docs/decisions/0001-product-and-engineering-principles.md), [LDraw geometry ingestion](docs/architecture/ldraw-geometry.md), and [parts data-source notes](docs/parts-data-sources.md).
+See [Architecture](docs/architecture/overview.md), [Roadmap](docs/roadmap.md), [Decision log](docs/decisions/0001-product-and-engineering-principles.md), [LDraw geometry ingestion](docs/architecture/ldraw-geometry.md), [nominal connection profiles](docs/architecture/connection-profiles.md), and [parts data-source notes](docs/parts-data-sources.md).
 
 ## Local LDraw parts library
 
