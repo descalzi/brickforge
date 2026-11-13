@@ -27,6 +27,21 @@ test("browser engine builds the 4x4 two-course interlocked block", () => {
   ]);
 });
 
+test("browser engine interlocks a wide 12x4 two-course block", () => {
+  const result = buildRectangularBlock(12, 4, 2, catalogue);
+
+  assert.equal(result.parts.length, 15);
+  assert.equal(result.parts.filter((part) => part.part_id === "3001").length, 11);
+  assert.equal(result.parts.filter((part) => part.part_id === "3004").length, 4);
+  assert.ok(result.connections.length > 6);
+  assert.ok(result.total_mating_pairs >= 48);
+  assert.deepEqual(result.bom.items, [
+    { part_id: "3001", colour_code: 1, quantity: 5 },
+    { part_id: "3001", colour_code: 4, quantity: 6 },
+    { part_id: "3004", colour_code: 1, quantity: 4 },
+  ]);
+});
+
 test("browser engine uses the same part placements as the Python demonstrator", () => {
   const result = buildRectangularBlock(4, 4, 2, catalogue);
 
