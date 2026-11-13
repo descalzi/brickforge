@@ -762,6 +762,91 @@ function footprintTilingsConnect(lower, upper) {
   return true;
 }
 
+
+function sampleInterlockingFootprints(cells, profiles) {
+  const sortedCells = [...cells].map((key) => key.split(",").map(Number))
+    .sort((a, b) => a[1] - b[1] || a[0] - b[0]);
+  const byCell = new Map(sortedCells.map(([x, z]) => [cellKey(x, z), []]));
+
+  for (const [x, z] of sortedCells) {
+    for (const partId of FOOTPRINT_TILE_PART_IDS) {
+      const profile = profiles.get(partId);
+      if (!profile) continue;
+      const orientations = [[profile.footprint_studs_x, profile.footprint_studs_z, false]];
+      if (profile.footprint_studs_x !== profile.footprint_studs_z) {
+        orientations.push([profile.footprint_studs_z, profile.footprint_studs_x, true]);
+      }
+      for (const [width, depth, rotated] of orientations) {
+        const tileCells = new Set();
+        for (let dx = 0; dx < width; dx += 1) {
+          for (let dz = 0; dz < depth; dz += 1) {
+            tileCells.add(cellKey(x + dx, z + dz));
+          }
+        }
+        if ([...tileCells].every((key) => cells.has(key))) {
+          const tile = { part_id: partId, x, z, width, depth, rotated, cells: tileCells };
+          for (const key of tileCells) byCell.get(key).push(tile);
+        }
+      }
+    }
+  }
+  for (const options of byCell.values()) options.sort(compareTiles);
+
+  let seed = 2166136261;
+  for (const [x, z] of sortedCells) {
+    seed = Math.imul(seed ^ x, 16777619) >>> 0;
+    seed = Math.imul(seed ^ z, 16777619) >>> 0;
+  }
+  if (seed === 0) seed = 0x9E3779B9;
+  function nextRandom() {
+    seed ^= seed << 13;
+    seed ^= seed >>> 17;
+    seed ^= seed << 5;
+    seed >>>= 0;
+    return seed;
+  }
+
+  const sampled = [];
+  const signatures = new Set();
+  for (let attempt = 0; attempt < 512; attempt += 1) {
+    const remaining = new Set(cells);
+    const chosen = [];
+    while (remaining.size) {
+      const keys = [...remaining].sort((a, b) => {
+        const [ax, az] = a.split(",").map(Number);
+        const [bx, bz] = b.split(",").map(Number);
+        return az - bz || ax - bx;
+      });
+      let nextOptions = null;
+      for (const key of keys) {
+        const viable = byCell.get(key).filter((tile) =>
+          [...tile.cells].every((cell) => remaining.has(cell)));
+        if (nextOptions === null || viable.length < nextOptions.length) {
+          nextOptions = viable;
+        }
+        if (nextOptions.length === 0) break;
+      }
+      if (!nextOptions || nextOptions.length === 0) break;
+      const tile = nextOptions[nextRandom() % nextOptions.length];
+      chosen.push(tile);
+      for (const key of tile.cells) remaining.delete(key);
+    }
+    if (remaining.size) continue;
+
+    const tiling = [...chosen];
+    const signature = tiling.map((tile) =>
+      tile.part_id + ":" + tile.x + ":" + tile.z + ":" + Number(tile.rotated))
+      .sort().join("|");
+    if (signatures.has(signature)) continue;
+    signatures.add(signature);
+    for (const previous of sampled) {
+      if (footprintTilingsConnect(previous, tiling)) return [previous, tiling];
+    }
+    sampled.push(tiling);
+  }
+  return null;
+}
+
 function findFootprintTilings(tilings) {
   let checks = 0;
   for (const lower of tilings) {
@@ -840,8 +925,11 @@ export function buildFootprintBlock(footprintCells, heightBricks, catalogue, con
   const width = Math.max(...coordinates.map(([x]) => x - minX)) + 1;
   const depth = Math.max(...coordinates.map(([, z]) => z - minZ)) + 1;
 
-  const { tilings, limitReached } = enumerateFootprintTilings(cells, profiles);
-  const pair = findFootprintTilings(tilings);
+  let pair = sampleInterlockingFootprints(cells, profiles);
+  if (!pair) {
+    const { tilings } = enumerateFootprintTilings(cells, profiles);
+    pair = findFootprintTilings(tilings);
+  }
   if (!pair) {
     const detail = limitReached
       ? "within the bounded placement search"
