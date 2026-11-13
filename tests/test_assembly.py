@@ -456,6 +456,18 @@ def test_footprint_builder_rejects_duplicate_cells() -> None:
 
 
 
+def test_footprint_builder_uses_long_brick_profiles() -> None:
+    cases = (
+        ([(x, 0) for x in range(8)], "3008"),
+        ([(x, z) for z in range(8) for x in range(2)], "3007"),
+        ([(x, z) for z in range(10) for x in range(2)], "3006"),
+    )
+    for cells, expected_part in cases:
+        assembly = build_footprint_block(cells, 2, PROFILES)
+        assert any(part.part_id == expected_part for part in assembly.parts)
+        assert assembly.connections
+
+
 def test_footprint_builder_supports_a_stepped_u_shape() -> None:
     cells = [
         (x, z)
@@ -484,6 +496,9 @@ def test_browser_and_python_footprint_engines_produce_identical_placements() -> 
         ([[0, 0], [1, 0], [2, 0], [3, 0], [4, 0], [2, 1], [2, 2]], 2),
         ([[0, 0], [1, 0], [2, 0], [3, 0], [4, 0], [2, 1], [2, 2]], 3),
         ([[0, 0], [1, 0], [2, 0], [3, 0], [4, 0], [2, 1], [2, 2]], 4),
+        ([[x, 0] for x in range(8)], 2),
+        ([[x, z] for z in range(8) for x in range(2)], 2),
+        ([[x, z] for z in range(10) for x in range(2)], 2),
         (
             [
                 [x, z]
