@@ -72,3 +72,34 @@ test('rejects unsafe LDraw reference paths', () => {
   assert.throws(() => ldrawReferenceCandidates('../stud.dat', 'parts/s/example.dat'), /Unsafe LDraw reference path/);
   assert.throws(() => ldrawReferenceCandidates('/stud.dat', 'parts/s/example.dat'), /Unsafe LDraw reference path/);
 });
+
+
+test('ranks exact part IDs and part-name matches ahead of broad descriptions', () => {
+  const parts = [
+    { part_id: '3001A', name: 'Special assembly', description: 'Uses part 3001' },
+    { part_id: '3001', name: 'Brick 2 x 4', description: 'Standard brick' },
+    { part_id: '3020', name: 'Plate 2 x 4', description: 'A building element' },
+  ];
+
+  assert.deepEqual(
+    searchPartCatalogue(parts, '3001').map((part) => part.part_id),
+    ['3001', '3001A'],
+  );
+  assert.deepEqual(
+    searchPartCatalogue(parts, 'brick').map((part) => part.part_id),
+    ['3001'],
+  );
+});
+
+test('ranks part-name prefixes and preserves source order for equal scores', () => {
+  const parts = [
+    { part_id: 'a', name: 'Wheel hub' },
+    { part_id: 'b', name: 'Wheel arch' },
+    { part_id: 'c', description: 'Wheel assembly' },
+  ];
+
+  assert.deepEqual(
+    searchPartCatalogue(parts, 'wheel').map((part) => part.part_id),
+    ['a', 'b', 'c'],
+  );
+});
