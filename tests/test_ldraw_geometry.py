@@ -50,11 +50,11 @@ def test_parse_direct_colour_and_ignore_meta_and_unknown_types() -> None:
         "0 Brick sample\n"
         "0 BFC CERTIFY CCW\n"
         "6 this future record is not geometry\n"
-        "3 0x2A1B2C 0 0 0 1 0 0 0 1 0\n"
+        "3 0x2A1B2C3 0 0 0 1 0 0 0 1 0\n"
     )
 
     assert len(document.records) == 1
-    assert document.primitives[0].colour_code == "0X2A1B2C"
+    assert document.primitives[0].colour_code == "0X2A1B2C3"
 
 
 def test_malformed_supported_record_reports_source_and_line() -> None:
