@@ -54,6 +54,7 @@ let currentGrid;
 let currentAxes;
 let frameHandle = 0;
 let viewerAvailable = false;
+let hasFittedCamera = false;
 
 function setMessage(text, kind = "info") {
   message.textContent = text;
@@ -239,7 +240,7 @@ function createPartObject(part, profile, hiddenStuds) {
   return group;
 }
 
-function fitCamera(bounds) {
+function fitCamera(bounds, preserveView = false) {
   const size = bounds.getSize(new THREE.Vector3());
   const centre = bounds.getCenter(new THREE.Vector3());
   const maximum = Math.max(size.x, size.y, size.z, 1);
@@ -247,21 +248,24 @@ function fitCamera(bounds) {
 
   camera.near = Math.max(0.01, maximum / 10000);
   camera.far = maximum * 100;
-  // Keep the original angled perspective for a useful 3D overview.
-  camera.up.set(0, 1, 0);
-  camera.position.set(
-    centre.x + distance * 1.15,
-    centre.y + distance * 0.92,
-    centre.z + distance * 1.35,
-  );
+  if (!preserveView) {
+    // Keep the original angled perspective for a useful 3D overview.
+    camera.up.set(0, 1, 0);
+    camera.position.set(
+      centre.x + distance * 1.15,
+      centre.y + distance * 0.92,
+      centre.z + distance * 1.35,
+    );
+    controls.target.copy(centre);
+  }
   camera.updateProjectionMatrix();
-  controls.target.copy(centre);
   controls.minDistance = Math.max(maximum * 0.08, 0.1);
   controls.maxDistance = maximum * 30;
   controls.update();
 }
 
 function renderAssembly(result) {
+  const preserveView = hasFittedCamera;
   clearModel();
   const profileByPart = new Map(catalogue.profiles.map((profile) => [
     String(profile.part_id),
@@ -299,7 +303,8 @@ function renderAssembly(result) {
   currentAxes = new THREE.AxesHelper(Math.max(Math.max(size.x, size.y, size.z) * 0.24, 5));
   currentAxes.position.copy(centre);
   scene.add(currentAxes);
-  fitCamera(bounds);
+  fitCamera(bounds, preserveView);
+  hasFittedCamera = true;
 }
 
 function updateResults(result) {
