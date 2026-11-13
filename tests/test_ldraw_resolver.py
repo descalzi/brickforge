@@ -117,7 +117,11 @@ def test_resolve_verbatim_ldraw_3001_library_fixture() -> None:
     assert len(source_files) == 8
     assert "parts/3001.dat" in source_files
     assert "parts/s/3001s01.dat" in source_files
-    assert "p/stud.dat" in source_files
+    assert "p/4-4cyli.dat" in source_files
+    assert (fixture_root / "p" / "stud.dat").is_file()
+    assert (fixture_root / "p" / "stud4.dat").is_file()
+    assert (fixture_root / "CAreadme.txt").is_file()
+    assert (fixture_root / "CAlicense4.txt").is_file()
     assert any(item.colour_code == 24 and item.edge_base_colour == 4 for item in geometry)
     assert all(item.colour_code in {4, 24} for item in geometry)
 
