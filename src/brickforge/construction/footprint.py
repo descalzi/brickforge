@@ -212,6 +212,8 @@ def _sample_interlocking_tilings(
     cells: frozenset[tuple[int, int]],
     profiles: Mapping[str, ConnectionProfile],
 ) -> tuple[tuple[_Tile, ...], tuple[_Tile, ...]] | None:
+    if len(cells) < 14:
+        return None
     by_cell: dict[tuple[int, int], list[_Tile]] = {cell: [] for cell in cells}
     for x, z in sorted(cells, key=lambda cell: (cell[1], cell[0])):
         for part_id in _TILE_PART_IDS:
