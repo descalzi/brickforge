@@ -362,10 +362,12 @@ def _sample_interlocking_tilings(
                 ]
                 for cell in remaining
             }
-            next_cell = min(
-                remaining,
-                key=lambda cell: (len(viable_by_cell[cell]), cell[1], cell[0]),
+            minimum_options = min(len(options) for options in viable_by_cell.values())
+            tied_cells = sorted(
+                cell for cell, options in viable_by_cell.items()
+                if len(options) == minimum_options
             )
+            next_cell = tied_cells[next_random() % len(tied_cells)]
             options = viable_by_cell[next_cell]
             if not options:
                 break
