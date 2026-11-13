@@ -196,6 +196,7 @@
   .viewport { min-height: 460px; }
 }
 @media (max-width: 760px) {
+  .main-nav a[aria-current="page"] { display: inline-flex !important; }
   .inspector-main { padding-top: 22px; }
   .inspector-intro { padding-block: 28px 30px; }
   .inspector-workspace { grid-template-columns: 1fr; }
