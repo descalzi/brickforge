@@ -1,6 +1,6 @@
 const DEFAULT_RAW_BASE = 'https://raw.githubusercontent.com/kulits/ldraw-parts/c70360d1c588be894997b2168c61909bc8058c4d/ldraw/';
 let rawBaseUrl = DEFAULT_RAW_BASE;
-import { decodeCataloguePayload, searchPartCatalogue } from './catalogue-utils.js';
+import { decodeCataloguePayload, ldrawReferenceCandidates, searchPartCatalogue } from './catalogue-utils.js';
 
 const LDU_TO_MM = 0.4;
 const MAX_REFERENCE_DEPTH = 64;
@@ -208,18 +208,7 @@ async function fetchRawFile(path) {
   return request;
 }
 
-function referenceCandidates(filename, parentPath) {
-  const name = filename.trim().replace(/\\/g, '/').toLowerCase();
-  if (!name || name.startsWith('/') || name.split('/').some((part) => part === '..')) {
-    throw new Error('Unsafe LDraw reference path: ' + filename);
-  }
-  if (name.startsWith('parts/') || name.startsWith('p/')) return [name];
-  if (name.startsWith('s/')) return ['parts/' + name];
-  if (name.startsWith('48/') || name.startsWith('8/')) return ['p/' + name];
-  if (name.includes('/')) return ['parts/' + name, 'p/' + name];
-  if (parentPath.startsWith('p/')) return ['p/' + name];
-  return ['parts/' + name, 'p/' + name];
-}
+const referenceCandidates = ldrawReferenceCandidates;
 
 async function fetchReferencedFile(filename, parentPath) {
   const candidates = referenceCandidates(filename, parentPath);
