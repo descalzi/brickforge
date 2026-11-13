@@ -46,6 +46,8 @@ def build_rectangular_block(
         for value in dimensions
     ):
         raise ValueError("block dimensions must be positive integers")
+    if height_bricks < 2:
+        raise ValueError("height_bricks must be at least two courses for an interlocked block")
     if not colour_codes:
         raise ValueError("colour_codes must contain at least one LDraw colour code")
 
