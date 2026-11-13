@@ -30,10 +30,12 @@ This roadmap is intentionally milestone-based. Each milestone should produce a d
 - [x] Parse LDraw part geometry records and recursively resolve sub-file references.
 - [x] Represent part metadata and colour references, including inherited colour context.
 - [x] Add a browser part explorer for a curated set of real LDraw bricks and plates.
-- [ ] Model connection primitives separately from render geometry.
+- [x] Model a first set of nominal stud and underside receiver datums separately from render geometry for six basic bricks and plates.
+- [x] Add a deterministic transformed stud/receiver alignment matcher with one-to-one feature assignment.
+- [ ] Extend connection profiles to specialised part families and add measured clutch/tolerance data.
 - [x] Define catalogue provenance and licensing requirements.
 
-**Exit criteria:** known parts can be loaded, positioned, and exported without coordinate drift. The parser/resolver groundwork is implemented; validating against a downloaded official library and adding an LDraw export path remain before this milestone is complete.
+**Exit criteria:** known parts can be loaded, positioned, and exported without coordinate drift. The parser/resolver groundwork, browser part explorer and first nominal connection matcher are implemented; validating the Python resolver against a downloaded official library and adding an LDraw export path remain before this milestone is complete.
 
 ## M3 — First construction demonstrator
 
