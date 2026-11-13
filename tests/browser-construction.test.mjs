@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 import {
+  buildFootprintBlock,
   buildRectangularBlock,
   findMatingPairs,
 } from "../docs/assets/construction-engine.js";
@@ -106,5 +107,41 @@ test("browser engine requires at least two courses for an interlocked block", ()
   assert.throws(
     () => buildRectangularBlock(4, 4, 1, catalogue),
     /at least 2 courses/,
+  );
+});
+
+
+test("browser engine builds a connected irregular L-shaped footprint", () => {
+  const result = buildFootprintBlock([
+    [10, -4], [11, -4], [12, -4],
+    [10, -3], [11, -3], [12, -3],
+    [10, -2], [11, -2],
+  ], 2, catalogue);
+
+  assert.equal(result.parts.length, 6);
+  assert.equal(result.model_name, "footprint-3x3-8cells-x2");
+  assert.ok(result.connections.length >= 5);
+  assert.ok(result.total_mating_pairs > 0);
+});
+
+test("browser engine alternates footprint tilings across three courses", () => {
+  const result = buildFootprintBlock([[0, 0], [1, 0], [2, 0]], 3, catalogue);
+
+  assert.equal(result.parts.length, 5);
+  assert.deepEqual(
+    [...new Set(result.parts.map((part) => part.translation_ldu[1]))],
+    [0, -24, -48],
+  );
+  assert.ok(result.connections.length > 0);
+});
+
+test("browser engine rejects disconnected and duplicate footprint cells", () => {
+  assert.throws(
+    () => buildFootprintBlock([[0, 0], [2, 0]], 2, catalogue),
+    /orthogonally connected/,
+  );
+  assert.throws(
+    () => buildFootprintBlock([[0, 0], [0, 0]], 2, catalogue),
+    /duplicate/,
   );
 });
