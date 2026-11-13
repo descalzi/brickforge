@@ -24,7 +24,7 @@ This roadmap is intentionally milestone-based. Each milestone should produce a d
 
 **Exit criteria:** a mesh can be inspected and normalised with a machine-readable report.
 
-## M2 — LEGO coordinate system and parts catalogue
+## M2 — L-brick coordinate system and parts catalogue
 
 - [x] Document LDraw coordinate conventions and conversion tests.
 - [x] Parse LDraw part geometry records and recursively resolve sub-file references.
