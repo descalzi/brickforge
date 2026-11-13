@@ -330,6 +330,15 @@ export function buildRectangularBlock(widthStuds, depthStuds, heightBricks, cata
 
   const placements = [];
   const pitch = profile.stud_pitch_ldu;
+  function addPlacement(placement) {
+    placements.push(placement);
+    if (placements.length > maxParts) {
+      throw new RangeError(
+        "This browser prototype is limited to " + maxParts + " parts per model.",
+      );
+    }
+  }
+
   for (let layer = 0; layer < height; layer += 1) {
     const rotated = layer % 2 === 1;
     const matrix = [...(rotated ? ROTATE_Y_90 : IDENTITY_MATRIX)];
@@ -342,10 +351,71 @@ export function buildRectangularBlock(widthStuds, depthStuds, heightBricks, cata
       );
     }
 
-    const countX = width / tileWidth;
-    const countZ = depth / tileDepth;
+    const layerColour = colourCodes[layer % colourCodes.length];
+    const layerY = layer === 0 ? 0 : -layer * profile.body_height_ldu;
     const halfWidthLdu = width * pitch / 2;
     const halfDepthLdu = depth * pitch / 2;
+
+    // A regular rotated grid does not cross the joints between adjacent
+    // 4-stud-wide lower columns. For wider blocks, shift this course by one
+    // stud and complete its two 1-stud edge strips with rotated 1x2 bricks.
+    const staggeredCourse = rotated && width > 4 && width % 4 === 0 && depth % 4 === 0;
+    if (staggeredCourse) {
+      const edgeProfile = profiles.get("3004");
+      if (!edgeProfile) {
+        throw new Error("Staggered wide blocks require the 1×2 part profile 3004.");
+      }
+      if (edgeProfile.footprint_studs_x !== 2 || edgeProfile.footprint_studs_z !== 1) {
+        throw new Error("Part profile 3004 must have a 2×1-stud footprint.");
+      }
+
+      const innerColumns = (width - 2) / 2;
+      const depthTiles = depth / 4;
+      for (let indexX = 0; indexX < innerColumns; indexX += 1) {
+        const centreX = (-width / 2 + 2 + 2 * indexX) * pitch;
+        for (let indexZ = 0; indexZ < depthTiles; indexZ += 1) {
+          const centreZ = (-depth / 2 + 2 + 4 * indexZ) * pitch;
+          addPlacement({
+            instance_id: "layer-" + String(layer).padStart(2, "0")
+              + "-inner-x-" + String(indexX).padStart(3, "0")
+              + "-z-" + String(indexZ).padStart(3, "0"),
+            part_id: partId,
+            colour_code: layerColour,
+            translation_ldu: [
+              Object.is(centreX, -0) ? 0 : centreX,
+              layerY,
+              Object.is(centreZ, -0) ? 0 : centreZ,
+            ],
+            matrix,
+          });
+        }
+      }
+
+      for (const [edgeName, centreXStuds] of [
+        ["left", -width / 2 + 0.5],
+        ["right", width / 2 - 0.5],
+      ]) {
+        for (let indexZ = 0; indexZ < depth / 2; indexZ += 1) {
+          const centreZ = (-depth / 2 + 1 + 2 * indexZ) * pitch;
+          addPlacement({
+            instance_id: "layer-" + String(layer).padStart(2, "0")
+              + "-edge-" + edgeName + "-z-" + String(indexZ).padStart(3, "0"),
+            part_id: "3004",
+            colour_code: layerColour,
+            translation_ldu: [
+              centreXStuds * pitch,
+              layerY,
+              Object.is(centreZ, -0) ? 0 : centreZ,
+            ],
+            matrix,
+          });
+        }
+      }
+      continue;
+    }
+
+    const countX = width / tileWidth;
+    const countZ = depth / tileDepth;
     const tileWidthLdu = tileWidth * pitch;
     const tileDepthLdu = tileDepth * pitch;
 
@@ -353,24 +423,19 @@ export function buildRectangularBlock(widthStuds, depthStuds, heightBricks, cata
       const centreX = -halfWidthLdu + tileWidthLdu / 2 + indexX * tileWidthLdu;
       for (let indexZ = 0; indexZ < countZ; indexZ += 1) {
         const centreZ = -halfDepthLdu + tileDepthLdu / 2 + indexZ * tileDepthLdu;
-        placements.push({
+        addPlacement({
           instance_id: "layer-" + String(layer).padStart(2, "0")
             + "-x-" + String(indexX).padStart(3, "0")
             + "-z-" + String(indexZ).padStart(3, "0"),
           part_id: partId,
-          colour_code: colourCodes[layer % colourCodes.length],
+          colour_code: layerColour,
           translation_ldu: [
             Object.is(centreX, -0) ? 0 : centreX,
-            layer === 0 ? 0 : -layer * profile.body_height_ldu,
+            layerY,
             Object.is(centreZ, -0) ? 0 : centreZ,
           ],
           matrix,
         });
-        if (placements.length > maxParts) {
-          throw new RangeError(
-            "This browser prototype is limited to " + maxParts + " parts per model.",
-          );
-        }
       }
     }
   }
