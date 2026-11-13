@@ -42,7 +42,7 @@ def inspect_mesh(path: str | Path, *, units: str) -> MeshReport:
         raise ValueError("units must be one of: 'mm', 'cm', or 'm'")
 
     source = Path(path)
-    loaded = trimesh.load(source, force="scene", process=False)
+    # Weld repeated STL triangle vertices so shared edges are recognised by topology checks.\n    loaded = trimesh.load(source, force="scene", process=True)
     if isinstance(loaded, trimesh.Scene):
         if not loaded.geometry:
             raise ValueError(f"Mesh contains no geometry: {source}")
