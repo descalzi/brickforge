@@ -19,7 +19,8 @@ def test_catalogue_contains_supported_brick_and_plate_profiles() -> None:
     profiles = load_connection_profiles(CATALOGUE)
 
     assert set(profiles) == {
-        "3001", "3002", "3003", "3004", "3005", "3009", "3010", "3020", "3021", "3622"
+        "3001", "3002", "3003", "3004", "3005",
+        "3009", "3010", "3020", "3021", "3622"
     }
     assert len(profiles["3001"].studs) == 8
     assert len(profiles["3001"].receivers) == 8
