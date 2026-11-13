@@ -8,7 +8,7 @@ This roadmap is intentionally milestone-based. Each milestone should produce a d
 - [x] Confirm initial product scope and optimisation defaults.
 - [x] Review LDraw file format, part library structure, and licensing.
 - [x] Define coordinate conventions and unit conversions.
-- [ ] Select a small, redistributable or locally sourced fixture set for tests.
+- [x] Select a small, redistributable or locally sourced fixture set for tests.
 - [x] Record decisions and known limitations.
 
 **Exit criteria:** documented technical choices and a reproducible development environment.
@@ -29,13 +29,13 @@ This roadmap is intentionally milestone-based. Each milestone should produce a d
 - [x] Document LDraw coordinate conventions and conversion tests.
 - [x] Parse LDraw part geometry records and recursively resolve sub-file references.
 - [x] Represent part metadata and colour references, including inherited colour context.
-- [x] Add a browser part explorer for a curated set of real LDraw bricks and plates.
+- [x] Add a browser part explorer with a searchable index of the full LDraw parts catalogue.
 - [x] Model nominal stud and underside receiver datums separately from render geometry for eleven standard bricks and two plates.
 - [x] Add a deterministic transformed stud/receiver alignment matcher with one-to-one feature assignment.
 - [ ] Extend connection profiles to specialised part families and add measured clutch/tolerance data.
 - [x] Define catalogue provenance and licensing requirements.
 
-**Exit criteria:** known parts can be loaded, positioned, and exported without coordinate drift. The parser/resolver groundwork, browser part explorer, first nominal connection matcher and graph-derived LDraw export are implemented; validating the Python resolver against a downloaded, version-pinned official library remains.
+**Exit criteria:** known parts can be loaded, positioned, and exported without coordinate drift. The parser/resolver, browser part explorer, first nominal connection matcher and graph-derived LDraw export are implemented. A full version-pinned official-library audit resolved 24,983 of 24,985 top-level parts (99.992%); the two unresolved decorated variants and their missing upstream references are retained as explicit diagnostics.
 
 ## M3 — First construction demonstrator
 
@@ -63,12 +63,17 @@ This roadmap is intentionally milestone-based. Each milestone should produce a d
 
 **Exit criteria:** layered validation reports reliably distinguish geometric checks, candidate connection alignments, and physical/stability heuristics. The current implementation is only the first geometric/connectivity layer.
 
-## M5 — Shape coverage and optimisation
+## M5 — 3D target representation, shape coverage and optimisation
 
-- [ ] Add surface-aware candidate placement.
+- [ ] Define a scale-aware, orientation-aware target-shape representation shared by Python and browser implementations.
+- [ ] Convert imported triangle meshes into a bounded 3D occupancy field at configurable stud/course resolution.
+- [ ] Add robust mesh validation and explicit handling for open, non-watertight, degenerate and self-intersecting surfaces.
+- [ ] Extract per-course 2D cross-sections while retaining surface-distance information for visual fitting.
+- [ ] Reuse the tested footprint tiler as a per-course candidate generator, then solve for connected cross-course arrangements.
+- [ ] Add surface-aware candidate placement for slopes, curves and specialised elements.
 - [ ] Combine coarse volumetric and surface-fitting strategies.
 - [ ] Add objective metrics and configurable optimisation profiles.
-- [ ] Compare alternative constructions for fidelity, cost, and complexity.
+- [ ] Compare alternative constructions for fidelity, part count, cost, and complexity.
 
 **Exit criteria:** the engine can produce and explain multiple valid alternatives for selected test shapes.
 
