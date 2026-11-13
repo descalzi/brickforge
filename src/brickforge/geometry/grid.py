@@ -111,8 +111,8 @@ class TargetGrid:
     """Immutable classified target volume and its source/grid provenance."""
 
     spec: GridSpec
-    classification: npt.ArrayLike
-    surface_coverage: npt.ArrayLike
+    classification: GridArray
+    surface_coverage: CoverageArray
     source_units: str
     source_bounds_mm: tuple[Vector3, Vector3]
     warnings: tuple[str, ...] = ()
