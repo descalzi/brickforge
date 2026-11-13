@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#F2F4F6">
+  <meta name="description" content="Build and validate a rectangular L-brick block directly in your browser. No account, installation or construction server required.">
+  <title>Block builder — BrickForge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./assets/site.css">
+  <link rel="stylesheet" href="./assets/builder.css">
+  <link rel="icon" href="./assets/mark.svg" type="image/svg+xml">
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.187.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.187.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <a class="brand" href="./index.html" aria-label="BrickForge home">
+      <img src="./assets/mark.svg" width="34" height="34" alt="">
+      <span>brickforge</span>
+    </a>
+    <nav class="main-nav" aria-label="Main navigation">
+      <a href="./index.html#method">The method</a>
+      <a href="./inspector.html">Mesh inspector</a>
+      <a href="./builder.html" aria-current="page">Block builder</a>
+      <a href="./parts.html">Part explorer</a>
+      <a class="nav-repo" href="https://github.com/descalzi/brickforge" target="_blank" rel="noreferrer">Repository</a>
+    </nav>
+  </header>
+
+  <main id="main" class="builder-main">
+    <a class="back-link" href="./index.html">Back to project</a>
+    <section class="builder-intro">
+      <p class="section-index">BF / BUILD-01</p>
+      <h1>Build a block.<br><span>Check every connection.</span></h1>
+      <p>Set the footprint and height. BrickForge places real catalogue elements in alternating courses, checks their nominal interfaces and creates the model and parts list on this device.</p>
+      <div class="local-processing-note">
+        <span class="local-indicator" aria-hidden="true"></span>
+        <span><strong>Runs in your browser.</strong> Your model is generated locally and is not uploaded to a construction server.</span>
+      </div>
+    </section>
+
+    <section class="builder-workspace" aria-label="Rectangular block builder">
+      <div class="builder-preview-panel">
+        <div class="builder-viewport-topline">
+          <span>ASSEMBLY PREVIEW / 3D</span>
+          <span id="builder-state" class="builder-state" role="status" aria-live="polite">LOADING PROFILES</span>
+        </div>
+        <div id="builder-viewport" class="builder-viewport">
+          <div id="builder-empty" class="builder-empty">
+            <div class="builder-mark" aria-hidden="true">BF</div>
+            <strong>Preparing the construction engine</strong>
+            <span>Connection profiles are loaded from this site's published data.</span>
+          </div>
+        </div>
+        <div class="builder-toolbar">
+          <span>Drag to orbit · Scroll to zoom · Right-drag to pan</span>
+          <button id="builder-reset" class="tool-button" type="button" disabled>Reset view</button>
+        </div>
+      </div>
+
+      <aside class="builder-controls" aria-label="Block dimensions, colours and outputs">
+        <section class="builder-section">
+          <h2>Block dimensions</h2>
+          <div class="dimension-fields">
+            <div>
+              <label class="field-label" for="block-width">Width <span>(studs)</span></label>
+              <input id="block-width" class="field-control" type="number" min="4" max="20" step="4" value="4" required>
+            </div>
+            <div>
+              <label class="field-label" for="block-depth">Depth <span>(studs)</span></label>
+              <input id="block-depth" class="field-control" type="number" min="4" max="20" step="4" value="4" required>
+            </div>
+            <div>
+              <label class="field-label" for="block-height">Height <span>(brick courses)</span></label>
+              <input id="block-height" class="field-control" type="number" min="1" max="10" step="1" value="2" required>
+            </div>
+          </div>
+          <p class="builder-help">This first strategy uses 2 × 4 bricks. Footprint dimensions must be tileable in both orientations.</p>
+        </section>
+
+        <section class="builder-section">
+          <h2>Course colours</h2>
+          <label class="field-label" for="lower-colour">First course</label>
+          <select id="lower-colour" class="field-control">
+            <option value="4" selected>Red</option>
+            <option value="1">Blue</option>
+            <option value="14">Yellow</option>
+            <option value="2">Green</option>
+            <option value="15">White</option>
+            <option value="0">Black</option>
+            <option value="7">Light grey</option>
+          </select>
+          <label class="field-label" for="upper-colour">Alternate course</label>
+          <select id="upper-colour" class="field-control">
+            <option value="1" selected>Blue</option>
+            <option value="4">Red</option>
+            <option value="14">Yellow</option>
+            <option value="2">Green</option>
+            <option value="15">White</option>
+            <option value="0">Black</option>
+            <option value="7">Light grey</option>
+          </select>
+          <p class="builder-help">Colours alternate by course. The model uses LDraw colour identifiers.</p>
+        </section>
+
+        <button id="build-block" class="button button-primary build-button" type="button" disabled>Generate and validate block</button>
+        <div id="builder-message" class="builder-message" role="status" aria-live="polite">Loading the connection catalogue…</div>
+
+        <section class="builder-section results-section" aria-labelledby="results-heading">
+          <h2 id="results-heading">Construction results</h2>
+          <dl class="builder-stats">
+            <div><dt>Part count</dt><dd id="result-parts">—</dd></div>
+            <div><dt>Connected interfaces</dt><dd id="result-edges">—</dd></div>
+            <div><dt>Matched feature pairs</dt><dd id="result-pairs">—</dd></div>
+            <div><dt>Overall size</dt><dd id="result-size">—</dd></div>
+          </dl>
+          <p class="validation-label"><span aria-hidden="true"></span> Nominal geometry checks passed</p>
+          <p class="builder-help">A matched feature pair is a candidate alignment, not a measurement of clutch force or structural strength.</p>
+        </section>
+
+        <section class="builder-section downloads-section" aria-labelledby="downloads-heading">
+          <h2 id="downloads-heading">Download this model</h2>
+          <button id="download-ldraw" class="download-button" type="button" disabled>
+            <span><strong>LDraw model</strong><small>Editable .ldr file</small></span>
+            <span aria-hidden="true">↓</span>
+          </button>
+          <button id="download-graph" class="download-button" type="button" disabled>
+            <span><strong>Assembly graph</strong><small>Connections and placements · .json</small></span>
+            <span aria-hidden="true">↓</span>
+          </button>
+          <button id="download-bom" class="download-button" type="button" disabled>
+            <span><strong>Parts inventory</strong><small>Quantities by part and colour · .json</small></span>
+            <span aria-hidden="true">↓</span>
+          </button>
+        </section>
+      </aside>
+    </section>
+
+    <section class="builder-method-note">
+      <div>
+        <p class="section-index">WHAT IS CHECKED</p>
+        <h2>One model.<br><span>One source of truth.</span></h2>
+      </div>
+      <div class="builder-method-copy">
+        <p>The browser engine uses the same published connection profiles as the part explorer. It places the bricks, checks stud-to-receiver alignment, rejects overlapping nominal body envelopes and confirms that every part belongs to one connected assembly graph.</p>
+        <p>The preview uses nominal brick bodies and stud geometry. The downloaded LDraw model references the corresponding source part file, so a compatible local LDraw library is needed to open it in a desktop viewer.</p>
+      </div>
+    </section>
+
+    <p class="builder-disclaimer">This prototype constructs rectangular blocks from the 2 × 4 part profile only. Collision checks use conservative body bounds; they are not detailed mesh collision checks and do not prove physical stability, clutch force or buildability under every real-world condition.</p>
+  </main>
+
+  <footer class="site-footer">
+    <a class="brand footer-brand" href="./index.html"><img src="./assets/mark.svg" width="28" height="28" alt=""><span>brickforge</span></a>
+    <p>Browser-based construction prototype. Processing runs on your device; no model upload is required.</p>
+    <span class="footer-id">BF / BUILD-01</span>
+  </footer>
+
+  <script type="module" src="./assets/builder.js"></script>
+</body>
+</html>
