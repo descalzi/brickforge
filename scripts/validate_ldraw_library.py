@@ -56,6 +56,9 @@ def audit_library(library: Path, *, max_parts: int | None = None) -> dict[str, A
                     "filename": relative_path,
                     "error_type": type(error).__name__,
                     "message": str(error),
+                    "dependency_chain": list(
+                        getattr(error, "dependency_chain", ())
+                    ),
                 }
             )
             continue
