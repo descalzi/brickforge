@@ -20,6 +20,15 @@ const shapes = {
   "stepped-ring": ["######", "######", "##..##", "######", "######"].flatMap((row, z) =>
     [...row].flatMap((character, x) => character === "#" ? [[x, z]] : []),
   ),
+  comb: ["######", "#.#.#.", "######", ".#.#.#", "######"].flatMap((row, z) =>
+    [...row].flatMap((character, x) => character === "#" ? [[x, z]] : []),
+  ),
+  cross: ["..##..", "..##..", "######", "######", "..##..", "..##.."].flatMap((row, z) =>
+    [...row].flatMap((character, x) => character === "#" ? [[x, z]] : []),
+  ),
+  staircase: ["##....", "###...", ".###..", "..###.", "...###", "....##"].flatMap((row, z) =>
+    [...row].flatMap((character, x) => character === "#" ? [[x, z]] : []),
+  ),
 };
 
 function transform(cells, rotate, mirror) {
