@@ -1,5 +1,7 @@
 const DEFAULT_RAW_BASE = 'https://raw.githubusercontent.com/kulits/ldraw-parts/c70360d1c588be894997b2168c61909bc8058c4d/ldraw/';
 let rawBaseUrl = DEFAULT_RAW_BASE;
+import { decodeCataloguePayload, searchPartCatalogue } from './catalogue-utils.js';
+
 const LDU_TO_MM = 0.4;
 const MAX_REFERENCE_DEPTH = 64;
 
@@ -531,16 +533,7 @@ function renderPartSearchResults(query) {
     return;
   }
 
-  const matches = partCatalogue.filter((part) => {
-    const searchable = [
-      part.part_id,
-      part.name,
-      part.description,
-      part.category,
-      ...(part.keywords || []),
-    ].filter(Boolean).join(' ').toLocaleLowerCase();
-    return terms.every((term) => searchable.includes(term));
-  }).slice(0, 100);
+  const matches = searchPartCatalogue(partCatalogue, query);
 
   const previousValue = partSelect.value;
   partSelect.replaceChildren();
@@ -573,19 +566,7 @@ async function loadPartCatalogue() {
   if (!response.ok) {
     throw new Error('Searchable part catalogue request failed (' + response.status + ').');
   }
-  const payload = await response.arrayBuffer();
-  const bytes = new Uint8Array(payload);
-  let catalogueText;
-  if (bytes[0] === 0x1F && bytes[1] === 0x8B) {
-    if (typeof DecompressionStream !== 'function') {
-      throw new Error('This browser does not support compressed catalogue loading.');
-    }
-    const decompressed = new Blob([payload]).stream().pipeThrough(new DecompressionStream('gzip'));
-    catalogueText = await new Response(decompressed).text();
-  } else {
-    // Some static hosts may transparently decode .gz responses.
-    catalogueText = new TextDecoder().decode(payload);
-  }
+  const catalogueText = await decodeCataloguePayload(await response.arrayBuffer());
   const catalogue = JSON.parse(catalogueText);
   if (catalogue.schema_version !== 1 || !Array.isArray(catalogue.parts)) {
     throw new Error('Unsupported searchable part catalogue format.');
