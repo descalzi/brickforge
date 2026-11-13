@@ -9,6 +9,7 @@ import pytest
 from brickforge.assembly.demo import build_stacked_brick_demo
 from brickforge.assembly.model import AssemblyError, PlacedPart, build_assembly
 from brickforge.construction.demo import build_interlocked_block_demo
+from brickforge.construction.footprint import build_footprint_block
 from brickforge.construction.rectangular import ROTATE_Y_90, build_rectangular_block
 from brickforge.parts.connections import load_connection_profiles
 from brickforge.parts.ldraw_geometry import parse_ldraw_text
@@ -398,3 +399,41 @@ def test_non_orthonormal_placement_matrix_is_rejected() -> None:
 def test_empty_assembly_is_rejected() -> None:
     with pytest.raises(AssemblyError, match="at least one"):
         build_assembly((), PROFILES)
+
+
+
+def test_footprint_builder_constructs_an_interlocked_l_shape() -> None:
+    cells = [
+        (10, -4), (11, -4), (12, -4),
+        (10, -3), (11, -3), (12, -3),
+        (10, -2), (11, -2),
+    ]
+    assembly = build_footprint_block(cells, 2, PROFILES)
+
+    assert len(assembly.parts) == 6
+    assert {part.part_id for part in assembly.parts} <= {"3001", "3003", "3004", "3005"}
+    assert len(assembly.connections) >= 5
+    assert assembly.total_mating_pairs > 0
+    assert assembly.model_name == "footprint-3x3-8cells-x2"
+
+
+def test_footprint_builder_alternates_tilings_for_three_courses() -> None:
+    cells = [(0, 0), (1, 0), (2, 0)]
+    assembly = build_footprint_block(cells, 3, PROFILES)
+
+    assert len(assembly.parts) == 5
+    assert {part.translation_ldu[1] for part in assembly.parts} == {
+        0.0, -24.0, -48.0
+    }
+    assert assembly.connections
+    assert assembly.total_mating_pairs > 0
+
+
+def test_footprint_builder_rejects_disconnected_footprints() -> None:
+    with pytest.raises(ValueError, match="orthogonally connected"):
+        build_footprint_block([(0, 0), (2, 0)], 2, PROFILES)
+
+
+def test_footprint_builder_rejects_duplicate_cells() -> None:
+    with pytest.raises(ValueError, match="duplicate"):
+        build_footprint_block([(0, 0), (0, 0)], 2, PROFILES)
