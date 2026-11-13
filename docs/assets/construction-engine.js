@@ -586,7 +586,7 @@ export function buildRectangularBlock(widthStuds, depthStuds, heightBricks, cata
 }
 
 
-const FOOTPRINT_TILE_PART_IDS = ["3001", "3003", "3004", "3005"];
+const FOOTPRINT_TILE_PART_IDS = ["3001", "3002", "3003", "3004", "3005", "3009", "3010", "3622"];
 const MAX_FOOTPRINT_CELLS = 64;
 const MAX_FOOTPRINT_SEARCH_NODES = 1000000;
 const MAX_FOOTPRINT_TILINGS = 100000;
