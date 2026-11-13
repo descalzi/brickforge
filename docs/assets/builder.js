@@ -257,6 +257,11 @@ function fitCamera(bounds, preserveView = false) {
       centre.z + distance * 1.35,
     );
     controls.target.copy(centre);
+  } else {
+    // Re-centre the new model while retaining the user's viewing direction and zoom.
+    const viewOffset = camera.position.clone().sub(controls.target);
+    controls.target.copy(centre);
+    camera.position.copy(centre).add(viewOffset);
   }
   camera.updateProjectionMatrix();
   controls.minDistance = Math.max(maximum * 0.08, 0.1);
