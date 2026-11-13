@@ -546,6 +546,20 @@ process.stdout.write(JSON.stringify(results));
 
 
 
+def test_footprint_builder_supports_a_t_shape_with_three_courses() -> None:
+    cells = [
+        (0, 0), (1, 0), (2, 0), (3, 0), (4, 0),
+        (2, 1), (2, 2),
+    ]
+    assembly = build_footprint_block(cells, 3, PROFILES)
+
+    assert assembly.parts
+    assert len({part.translation_ldu[1] for part in assembly.parts}) == 3
+    assert assembly.connections
+    assert assembly.total_mating_pairs > 0
+
+
+
 @pytest.mark.parametrize(
     "grid",
     (
@@ -592,19 +606,6 @@ process.stdout.write(JSON.stringify(results));
         ),
     ),
 )
-def test_footprint_builder_supports_a_t_shape_with_three_courses() -> None:
-    cells = [
-        (0, 0), (1, 0), (2, 0), (3, 0), (4, 0),
-        (2, 1), (2, 2),
-    ]
-    assembly = build_footprint_block(cells, 3, PROFILES)
-
-    assert assembly.parts
-    assert len({part.translation_ldu[1] for part in assembly.parts}) == 3
-    assert assembly.connections
-    assert assembly.total_mating_pairs > 0
-
-
 def test_footprint_builder_supports_enclosed_ring_footprints(grid: tuple[str, ...]) -> None:
     cells = [
         (x, z)
