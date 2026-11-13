@@ -12,7 +12,7 @@ export async function decodeCataloguePayload(payload) {
 }
 
 export function searchPartCatalogue(parts, query, limit = 100) {
-  const terms = query.trim().toLocaleLowerCase().split(/\\s+/).filter(Boolean);
+  const terms = query.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
   if (!terms.length) return [];
 
   return parts
@@ -57,7 +57,7 @@ export function searchPartCatalogue(parts, query, limit = 100) {
 
 
 export function ldrawReferenceCandidates(filename, parentPath) {
-  const name = filename.trim().replace(/\\\\/g, '/').toLowerCase();
+  const name = filename.trim().replace(/\\/g, '/').toLowerCase();
   if (!name || name.startsWith('/') || name.split('/').some((part) => part === '..')) {
     throw new Error('Unsafe LDraw reference path: ' + filename);
   }
