@@ -39,6 +39,6 @@ export function ldrawReferenceCandidates(filename, parentPath) {
   if (parentPath.startsWith('p/')) return ['p/' + name];
   // Bare references inside subparts conventionally name primitives.
   // Resolve them in p/ first to avoid a predictable 404 in parts/.
-  if (parentPath.startsWith('parts/s/')) return ['p/' + name, 'parts/' + name];
+  if (parentPath.startsWith('parts/s/')) return ['p/' + name];
   return ['parts/' + name, 'p/' + name];
 }
