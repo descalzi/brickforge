@@ -263,10 +263,7 @@ def _sample_interlocking_tilings(
 
     def next_random() -> int:
         nonlocal seed
-        seed ^= (seed << 13) & 0xFFFFFFFF
-        seed ^= seed >> 17
-        seed ^= (seed << 5) & 0xFFFFFFFF
-        seed &= 0xFFFFFFFF
+        seed = (seed * 1_664_525 + 1_013_904_223) & 0xFFFFFFFF
         return seed
 
     sampled: list[tuple[_Tile, ...]] = []
