@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
 import { buildFootprintBlock, buildRectangularBlock } from "./construction-engine.js";
+import { recenterCameraPosition } from "./camera-utils.js";
 
 const viewport = document.querySelector("#builder-viewport");
 const emptyState = document.querySelector("#builder-empty");
@@ -259,9 +260,12 @@ function fitCamera(bounds, preserveView = false) {
     controls.target.copy(centre);
   } else {
     // Re-centre the new model while retaining the user's viewing direction and zoom.
-    const viewOffset = camera.position.clone().sub(controls.target);
+    camera.position.fromArray(recenterCameraPosition(
+      camera.position.toArray(),
+      controls.target.toArray(),
+      centre.toArray(),
+    ));
     controls.target.copy(centre);
-    camera.position.copy(centre).add(viewOffset);
   }
   camera.updateProjectionMatrix();
   const viewDistance = camera.position.distanceTo(controls.target);
