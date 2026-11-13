@@ -2,7 +2,7 @@
 
 This experimental strategy tiles each course with catalogue brick rectangles.
 It prefers two alternating tilings with a connected cross-course graph, and
-can use three distinct tilings for a connected three-course stack. Search is
+can use a repeating cycle of three distinct tilings for taller stacks. Search is
 bounded; this does not solve every polyomino or arbitrary 3D shape.
 """
 
@@ -251,7 +251,9 @@ def _tiling_sequence_connects(sequence: Sequence[tuple[_Tile, ...]]) -> bool:
 
 def _find_three_course_sequence(
     tilings: Sequence[tuple[_Tile, ...]],
+    height_bricks: int,
 ) -> tuple[tuple[_Tile, ...], tuple[_Tile, ...], tuple[_Tile, ...]] | None:
+    """Find a three-layout cycle that connects the requested stack height."""
     checks = 0
     for first in tilings:
         for second in tilings:
@@ -259,8 +261,10 @@ def _find_three_course_sequence(
                 checks += 1
                 if checks > 250_000:
                     return None
-                if _tiling_sequence_connects((first, second, third)):
-                    return first, second, third
+                cycle = (first, second, third)
+                sequence = tuple(cycle[layer % 3] for layer in range(height_bricks))
+                if _tiling_sequence_connects(sequence):
+                    return cycle
     return None
 
 
@@ -379,8 +383,8 @@ def build_footprint_block(
 
     Cells are integer (x, z) stud positions. The builder prefers two
     alternating exact-cover tilings with a connected cross-course graph. If
-    that is not possible for a three-course stack, it also searches for a
-    connected sequence of three distinct tilings. Supported tiles are the
+    that is not possible, it searches for a connected repeating cycle of three
+    distinct tilings across the requested stack height. Supported tiles are the
     2x4, 2x2, 1x2 and 1x1 brick profiles (IDs 3001, 3003, 3004 and 3005).
 
     The bounded exact-cover search is intended for small irregular footprints.
@@ -449,8 +453,8 @@ def build_footprint_block(
     if pair is None:
         tilings, search_limited = _enumerate_tilings(cells, profiles)
         pair = _find_interlocking_tilings(tilings)
-        if pair is None and height_bricks == 3:
-            tiling_sequence = _find_three_course_sequence(tilings)
+        if pair is None:
+            tiling_sequence = _find_three_course_sequence(tilings, height_bricks)
     if pair is None and tiling_sequence is None:
         if search_limited:
             detail = "within the bounded placement search"
