@@ -49,7 +49,7 @@
       </div>
     </section>
 
-    <section class="builder-workspace" aria-label="Rectangular block builder">
+    <section class="builder-workspace" aria-label="Block and footprint builder">
       <div class="builder-preview-panel">
         <div class="builder-viewport-topline">
           <span>ASSEMBLY PREVIEW / 3D</span>
@@ -114,6 +114,17 @@
         </section>
 
         <button id="build-block" class="button button-primary build-button" type="button" disabled>Generate and validate block</button>
+
+        <section class="builder-section" aria-labelledby="footprint-heading">
+          <h2 id="footprint-heading">Experimental custom footprint</h2>
+          <label class="field-label" for="footprint-grid">Stud occupancy grid</label>
+          <textarea id="footprint-grid" class="field-control footprint-grid" rows="5" spellcheck="false">###
+###
+##.</textarea>
+          <p class="builder-help">Each character is one stud: # is occupied and . is empty. Rows run front to back. The example is an L-shape. Custom footprints use a bounded placement search; not every shape can be interlocked with the current part set.</p>
+          <button id="build-footprint" class="button button-primary build-button" type="button" disabled>Generate custom footprint</button>
+        </section>
+
         <div id="builder-message" class="builder-message" role="status" aria-live="polite">Loading the connection catalogue…</div>
 
         <section class="builder-section results-section" aria-labelledby="results-heading">
@@ -157,7 +168,7 @@
       </div>
     </section>
 
-    <p class="builder-disclaimer">This prototype constructs rectangular blocks using 2 × 4 and 1 × 2 part profiles. Collision checks use conservative body bounds; they are not detailed mesh collision checks and do not prove physical stability, clutch force or buildability under every real-world condition.</p>
+    <p class="builder-disclaimer">The rectangular builder uses 2 × 4 and 1 × 2 elements. The experimental footprint builder supports small connected orthogonal shapes using 2 × 4, 2 × 2, 1 × 2 and 1 × 1 elements, subject to a bounded tiling search. Neither strategy proves physical stability or clutch force. Collision checks use conservative body bounds rather than detailed mesh collision.</p>
   </main>
 
   <footer class="site-footer">
