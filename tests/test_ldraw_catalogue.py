@@ -57,6 +57,9 @@ def test_catalogue_indexes_only_top_level_parts_and_is_sorted(tmp_path: Path) ->
     assert catalogue["part_count"] == 2
     assert [part["part_id"] for part in catalogue["parts"]] == ["3001", "3004"]
     assert catalogue["source"]["archive_sha256"] == "abc123"
+    assert catalogue["source"]["geometry_base_url"].endswith(
+        "/c70360d1c588be894997b2168c61909bc8058c4d/ldraw/"
+    )
 
 
 def test_catalogue_requires_parts_directory(tmp_path: Path) -> None:
@@ -73,3 +76,9 @@ def test_catalogue_accepts_complete_zip_ldraw_subdirectory_layout(tmp_path: Path
     assert catalogue["part_count"] == 1
     assert catalogue["parts"][0]["filename"] == "parts/3001.dat"
     assert catalogue["source"]["archive_sha256"] == "nested"
+
+def test_catalogue_rejects_unpinned_mirror_reference(tmp_path: Path) -> None:
+    _write(tmp_path / "parts" / "3001.dat", "0 Brick 2 x 4\\n")
+
+    with pytest.raises(ValueError, match="full 40-character lowercase Git SHA"):
+        build_catalogue(tmp_path, mirror_commit="master")
