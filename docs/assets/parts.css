@@ -1,3 +1,5 @@
+.main-nav a[aria-current="page"] { color: var(--accent); }
+
 .parts-main {
   padding-top: 30px;
   padding-bottom: 86px;
@@ -179,6 +181,7 @@
   .parts-viewport { min-height: 460px; }
 }
 @media (max-width: 760px) {
+  .main-nav a[aria-current="page"] { display: inline-flex !important; }
   .parts-main { padding-top: 22px; }
   .parts-intro { padding-block: 28px 30px; }
   .parts-workspace { grid-template-columns: 1fr; }
