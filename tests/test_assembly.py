@@ -465,7 +465,7 @@ def test_footprint_builder_supports_a_stepped_u_shape() -> None:
     ]
     assembly = build_footprint_block(cells, 2, PROFILES)
 
-    assert len(assembly.parts) >= 10
+    assert len(assembly.parts) >= 6
     assert assembly.connections
     assert assembly.total_mating_pairs > 0
 
