@@ -113,7 +113,10 @@ def test_resolve_verbatim_ldraw_3001_library_fixture() -> None:
     geometry = library.resolve_part_geometry("3001.dat", colour_code=4)
 
     assert len(geometry) > 100
-    source_files = {Path(item.source_file).relative_to(fixture_root).as_posix() for item in geometry}
+    source_files = {
+        Path(item.source_file).relative_to(fixture_root).as_posix()
+        for item in geometry
+    }
     assert len(source_files) == 8
     assert "parts/3001.dat" in source_files
     assert "parts/s/3001s01.dat" in source_files
