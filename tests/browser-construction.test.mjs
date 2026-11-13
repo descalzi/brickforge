@@ -48,8 +48,8 @@ test("browser engine interlocks a wide 12x8 block in both dimensions", () => {
   assert.equal(result.parts.length, 42);
   assert.equal(result.parts.filter((part) => part.part_id === "3001").length, 18);
   assert.equal(result.parts.filter((part) => part.part_id === "3004").length, 24);
-  assert.ok(result.connections.length >= 30);
-  assert.ok(result.total_mating_pairs >= 96);
+  assert.equal(result.connections.length, 48);
+  assert.equal(result.total_mating_pairs, 96);
   assert.deepEqual(result.bom.items, [
     { part_id: "3001", colour_code: 1, quantity: 6 },
     { part_id: "3001", colour_code: 4, quantity: 12 },
