@@ -7,6 +7,7 @@ from pathlib import Path, PurePosixPath
 
 from brickforge.parts.ldraw_geometry import (
     ColourCode,
+    LDrawDocument,
     LDrawPrimitive,
     LDrawSubfileReference,
     read_ldraw_document,
@@ -48,6 +49,7 @@ class LDrawLibrary:
 
         self._root_index: dict[str, Path] = {}
         self._alias_index: dict[str, Path] = {}
+        self._document_cache: dict[Path, LDrawDocument] = {}
         self._build_index()
 
     def resolve(
@@ -129,7 +131,10 @@ class LDrawLibrary:
                 chain = " -> ".join(path.name for path in (*ancestors, canonical_file))
                 raise LDrawResolutionError(f"cyclic LDraw references: {chain}")
 
-            document = read_ldraw_document(canonical_file)
+            document = self._document_cache.get(canonical_file)
+            if document is None:
+                document = read_ldraw_document(canonical_file)
+                self._document_cache[canonical_file] = document
             next_ancestors = (*ancestors, canonical_file)
 
             for record in document.records:
