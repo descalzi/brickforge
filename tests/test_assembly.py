@@ -456,6 +456,15 @@ def test_footprint_builder_rejects_duplicate_cells() -> None:
 
 
 
+def test_footprint_builder_handles_maximum_64_cell_rectangle() -> None:
+    cells = [(x, z) for z in range(8) for x in range(8)]
+    assembly = build_footprint_block(cells, 2, PROFILES)
+
+    assert len(assembly.parts) <= 16
+    assert assembly.connections
+    assert assembly.total_mating_pairs > 0
+
+
 def test_footprint_builder_uses_long_brick_profiles() -> None:
     cases = (
         ([(x, 0) for x in range(8)], "3008"),
@@ -499,6 +508,7 @@ def test_browser_and_python_footprint_engines_produce_identical_placements() -> 
         ([[x, 0] for x in range(8)], 2),
         ([[x, z] for z in range(8) for x in range(2)], 2),
         ([[x, z] for z in range(10) for x in range(2)], 2),
+        ([[x, z] for z in range(8) for x in range(8)], 2),
         (
             [
                 [x, z]
