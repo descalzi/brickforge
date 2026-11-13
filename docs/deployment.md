@@ -1,6 +1,6 @@
 # Publishing the project page
 
-The static project site lives in `/docs`; it requires no framework or build step.
+The project site and browser application live in `/docs`; they require no application server or build step. JavaScript modules and static JSON data are served directly by the Pages host.
 
 ## Enable GitHub Pages
 
@@ -24,4 +24,17 @@ This is intentional for the project page: it can be public while the code reposi
 
 ## Updating the site
 
-Every commit to `main` that changes files in `/docs` is automatically published after Pages is enabled. Keep the page static until an actual interactive builder exists; do not present conceptual illustrations as generated output.
+Every commit to `main` that changes files in `/docs` is automatically published after Pages is enabled. The Block builder runs the constrained placement and validation engine in the visitor's browser; the host serves static assets only. It does not require an API, database, account or model upload. Keep large inputs and generated model data on the client unless a future measured requirement justifies remote processing. Do not present conceptual illustrations as generated output.
+
+
+## Browser processing boundary
+
+The browser builder fetches the published connection-profile catalogue from
+`/data/connection-profiles/basic-bricks.json`. Geometry placement, nominal
+connection matching, conservative body-envelope checks, graph connectivity,
+3D preview creation and download serialisation happen in the visitor's
+browser. There is no construction endpoint to configure or deploy.
+
+Three.js and OrbitControls are currently imported from the jsDelivr CDN. The
+application therefore needs internet access for the initial page load and
+module downloads; the project does not yet bundle these dependencies locally.
