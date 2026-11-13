@@ -21,6 +21,15 @@ ORIGIN = (0.0, 0.0, 0.0)
 class LDrawResolutionError(ValueError):
     """Raised when a referenced file cannot be safely resolved or expanded."""
 
+    def __init__(
+        self,
+        message: str,
+        *,
+        dependency_chain: tuple[str, ...] = (),
+    ) -> None:
+        super().__init__(message)
+        self.dependency_chain = dependency_chain
+
 
 @dataclass(frozen=True, slots=True)
 class ResolvedPrimitive:
@@ -159,10 +168,21 @@ class LDrawLibrary:
                             f"{canonical_file}:{record.line_number}: "
                             "type-1 references must not use colour 24"
                         )
-                    child_file = self.resolve(
-                        record.filename,
-                        referring_file=canonical_file,
-                    )
+                    try:
+                        child_file = self.resolve(
+                            record.filename,
+                            referring_file=canonical_file,
+                        )
+                    except LDrawResolutionError as error:
+                        dependency_chain = tuple(
+                            path.relative_to(self.root).as_posix()
+                            for path in next_ancestors
+                        ) + (record.filename,)
+                        chain_text = " -> ".join(dependency_chain)
+                        raise LDrawResolutionError(
+                            f"{error} (dependency chain: {chain_text})",
+                            dependency_chain=dependency_chain,
+                        ) from error
                     child_colour = (
                         current_colour if record.colour_code == 16 else record.colour_code
                     )
