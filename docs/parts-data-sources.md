@@ -34,18 +34,34 @@ snapshot. It is included so CI can exercise recursive library expansion without
 downloading the full archive on every push. The complete-library validation is
 still a separate milestone.
 
-## 3. Browser preview and public mirror
+## 3. Browser preview and version-pinned library mirror
 
-The public [Part explorer](https://descalzi.github.io/brickforge/parts.html) currently previews eleven standard bricks (3001, 3002, 3003, 3004, 3005, 3006, 3007, 3008, 3009, 3010 and 3622) and two plates (3020 and 3021). At runtime it fetches the individual text files and the colour configuration from the public GitHub mirror at:
+The browser part explorer fetches only the selected part and the nested files needed
+to render it. It does **not** download the complete 140 MB archive. The source is
+a public mirror of the official LDraw library, synchronised daily from
+`library.ldraw.org/library/updates/complete.zip`:
 
-- Mirror repository: https://github.com/erik-larsen/ldraw
-- Individual part files: https://raw.githubusercontent.com/erik-larsen/ldraw/main/parts/3001.dat
-- Colour table: https://raw.githubusercontent.com/erik-larsen/ldraw/main/LDConfig.ldr
-- Mirror licence notes: https://raw.githubusercontent.com/erik-larsen/ldraw/main/CAreadme.txt
+- Upstream library: https://library.ldraw.org/
+- Mirror repository: https://github.com/kulits/ldraw-parts
+- Mirror sync workflow: https://github.com/kulits/ldraw-parts/blob/master/.github/workflows/sync.yml
+- CDN root used by this release:
+  `https://cdn.jsdelivr.net/gh/kulits/ldraw-parts@c70360d1c588be894997b2168c61909bc8058c4d/ldraw/`
+- Example part: `https://cdn.jsdelivr.net/gh/kulits/ldraw-parts@c70360d1c588be894997b2168c61909bc8058c4d/ldraw/parts/3001.dat`
+- Colour table: `https://cdn.jsdelivr.net/gh/kulits/ldraw-parts@c70360d1c588be894997b2168c61909bc8058c4d/ldraw/LDConfig.ldr`
 
-The mirror's README describes its contents as a copy of the LDraw Parts Library archive, including `parts/`, `p/` and `LDConfig.ldr`. It is a convenience source for this browser proof of concept, not the authoritative or version-pinned library source. Its contents may lag the official LDraw release page. The reproducible local-library workflow remains `scripts/fetch_ldraw_library.py` against the official LDraw `complete.zip` URL above.
+BrickForge pins the mirror to commit `c70360d1c588be894997b2168c61909bc8058c4d` (published 9 November 2026)
+rather than following a moving branch. This makes a given site release reproducible;
+updating the library is an explicit source-version change. The mirror retains the
+upstream `parts/`, `p/`, `models/`, colour configuration and licence/readme
+files. The browser requests geometry on demand and caches each fetched file for the
+current page session.
 
-The viewer collects `AUTHOR` and `!LICENSE` notices from the files it expands and exposes the original root file. The source file's own notice governs; the viewer must not assume that one licence applies to every dependency. Before using a different part or redistributing part data, inspect all participating headers and the applicable agreement.
+This is a delivery mirror, not a replacement for LDraw.org as the authoritative
+source. The browser viewer reads `AUTHOR` and `!LICENSE` notices from every file
+it expands and links to the original library. The licence for each part and
+dependency must be checked individually; do not assume one licence applies to the
+entire library or to every derivative asset.
+
 
 ## 4. Connection metadata — open question
 
