@@ -59,6 +59,7 @@ def _enumerate_tilings(
     profiles: Mapping[str, ConnectionProfile],
 ) -> tuple[list[tuple[_Tile, ...]], bool]:
     candidates: list[_Tile] = []
+    whole_footprint_tiles: list[_Tile] = []
     by_cell: dict[tuple[int, int], list[_Tile]] = {cell: [] for cell in cells}
 
     for x, z in sorted(cells, key=lambda cell: (cell[1], cell[0])):
@@ -80,6 +81,8 @@ def _enumerate_tilings(
                         part_id, x, z, width, depth, rotated, tile_cells
                     )
                     candidates.append(tile)
+                    if len(tile_cells) == len(cells):
+                        whole_footprint_tiles.append(tile)
                     for cell in tile_cells:
                         by_cell[cell].append(tile)
 
@@ -105,7 +108,11 @@ def _enumerate_tilings(
             )
         )
 
-    tilings: list[tuple[_Tile, ...]] = []
+    # Keep single-element exact covers available even when MRV would choose
+    # a boundary cell first and otherwise eliminate the full-footprint tile.
+    tilings: list[tuple[_Tile, ...]] = [
+        (tile,) for tile in whole_footprint_tiles
+    ]
     nodes = 0
     limit_reached = False
 
@@ -115,6 +122,8 @@ def _enumerate_tilings(
     ) -> None:
         nonlocal nodes, limit_reached
         if not remaining:
+            if len(chosen) == 1 and len(chosen[0].cells) == len(cells):
+                return
             tilings.append(tuple(chosen))
             if len(tilings) > _MAX_TILINGS:
                 tilings.pop()
