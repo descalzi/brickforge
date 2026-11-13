@@ -69,7 +69,7 @@ Responsibilities:
 - Compute bounds, surfaces, normals, connected components, and useful geometric features.
 - Expose a representation that downstream construction algorithms can query.
 
-Initial implementation should focus on mesh inspection and normalisation, not automatic L-brick conversion.
+Initial implementation should focus on mesh inspection and normalisation, not automatic L-brick conversion. The planned scale-aware occupancy and per-course representation is specified in [target geometry](target-geometry.md); it keeps target shape analysis separate from part placement and the canonical assembly graph.
 
 ### 4.3 Parts catalogue
 
