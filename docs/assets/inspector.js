@@ -1,7 +1,7 @@
-import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { STLLoader } from 'three/addons/loaders/STLLoader.js';
-import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
+let THREE;
+let OrbitControls;
+let STLLoader;
+let OBJLoader;
 
 const MAX_FILE_BYTES = 100 * 1024 * 1024;
 const MILLIMETRES_PER_UNIT = { mm: 1, cm: 10, m: 1000, in: 25.4 };
@@ -36,7 +36,10 @@ let activeModel;
 let activeMeshes = [];
 let currentFile;
 let currentBounds;
-let wireframeEnabled = false;\nlet viewerReady = false;
+let wireframeEnabled = false;
+let viewerReady = false;
+let viewerLoading = true;
+let pendingFile;
 
 function setMessage(text, kind = 'info') {
   message.textContent = text;
@@ -89,9 +92,12 @@ function initialiseViewer() {
     requestAnimationFrame(animate);
     return true;
   } catch (error) {
-    console.error(error);
+    console.error('BrickForge viewer initialisation failed:', error);
     setState('3D VIEWER UNAVAILABLE', 'error');
-    setMessage('The 3D viewer could not start. Check that your browser supports WebGL, then reload this page.', 'error');
+    setMessage(
+      'The 3D viewer could not start. Check browser WebGL support and try reloading this page.',
+      'error',
+    );
     return false;
   }
 }
@@ -187,14 +193,14 @@ function formatMillimetres(value) {
   return `${value.toLocaleString(undefined, { maximumFractionDigits: 2 })} mm`;
 }
 
-function displayMeasurements(size, stats, fileName) {
+function displayMeasurements(size, stats, fileName, sourceUnit) {
   output.x.textContent = formatMillimetres(size.x);
   output.y.textContent = formatMillimetres(size.y);
   output.z.textContent = formatMillimetres(size.z);
   output.vertices.textContent = stats.vertices.toLocaleString();
   output.triangles.textContent = stats.triangles.toLocaleString();
   output.meshes.textContent = stats.meshes.length.toLocaleString();
-  output.hint.textContent = fileName;
+  output.hint.textContent = `${fileName} · interpreted as ${sourceUnit}`;
 }
 
 function buildModelFromGeometry(geometry) {
@@ -206,11 +212,12 @@ function buildModelFromGeometry(geometry) {
       roughness: 0.56,
       metalness: 0.04,
       wireframe: wireframeEnabled,
+      side: THREE.DoubleSide,
     }),
   );
 }
 
-function prepareModel(object, unitFactor) {
+function prepareModel(object, unitFactor, sourceUnit) {
   const stats = countMeshData(object);
   if (stats.meshes.length === 0) {
     throw new Error('No triangle mesh geometry was found in this file.');
@@ -226,6 +233,10 @@ function prepareModel(object, unitFactor) {
   if (![size.x, size.y, size.z].every(Number.isFinite)) {
     throw new Error('The mesh contains invalid or non-finite coordinates.');
   }
+  if (Math.max(size.x, size.y, size.z) <= 0) {
+    throw new Error('The mesh has zero size and cannot be previewed.');
+  }
+
   const center = bounds.getCenter(new THREE.Vector3());
   object.position.sub(center);
   object.updateMatrixWorld(true);
@@ -247,24 +258,26 @@ function prepareModel(object, unitFactor) {
   replaceReferenceHelpers(Math.max(size.x, size.y, size.z), size.y);
   fitCamera(size);
   currentBounds = size;
-  displayMeasurements(size, stats, currentFile.name);
+  displayMeasurements(size, stats, currentFile.name, sourceUnit);
   emptyState.hidden = true;
   wireframeButton.disabled = false;
   resetButton.disabled = false;
   setState('MESH LOADED', 'loaded');
-  setMessage('Mesh loaded locally. Dimensions are reported in millimetres; no buildability check has been run.', 'success');
+  setMessage(
+    `Mesh loaded locally. Source units interpreted as ${sourceUnit}; measurements are shown in millimetres. No LEGO buildability check has been run.`,
+    'success',
+  );
 }
 
 async function parseFile(file) {
-  const unit = unitsSelect.value;
-  if (!unit) {
-    setState('WAITING FOR UNITS');
-    setMessage('Choose the source units for this file before measuring it.');
-    return;
-  }
+  const unit = unitsSelect.value || 'mm';
+  unitsSelect.value = unit;
 
   if (file.size > MAX_FILE_BYTES) {
     throw new Error('This file is larger than the 100 MB prototype limit.');
+  }
+  if (file.size === 0) {
+    throw new Error('This file is empty.');
   }
 
   const extension = file.name.split('.').pop()?.toLowerCase();
@@ -281,15 +294,22 @@ async function parseFile(file) {
     throw new Error('Unsupported file type. Please choose an STL or OBJ file.');
   }
 
-  prepareModel(object, MILLIMETRES_PER_UNIT[unit]);
+  prepareModel(object, MILLIMETRES_PER_UNIT[unit], unit);
 }
 
 async function handleFile(file) {
   if (!file) return;
   if (!viewerReady) {
-    setMessage('The 3D viewer is unavailable in this browser session. Reload the page or try another browser.', 'error');
+    if (viewerLoading) {
+      pendingFile = file;
+      setState('STARTING 3D VIEWER');
+      setMessage('Preparing the 3D viewer. Your selected file will load automatically.');
+    } else {
+      setMessage('The 3D viewer is unavailable. Check browser WebGL support and reload this page.', 'error');
+    }
     return;
   }
+
   currentFile = file;
   clearMeasurements();
   setState('READING FILE');
@@ -298,11 +318,12 @@ async function handleFile(file) {
   try {
     await parseFile(file);
   } catch (error) {
-    console.error(error);
+    console.error('BrickForge could not load the selected mesh:', error);
     removeActiveModel();
     emptyState.hidden = false;
     wireframeButton.disabled = true;
     resetButton.disabled = true;
+    currentBounds = null;
     setState('LOAD FAILED', 'error');
     setMessage(error instanceof Error ? error.message : 'The file could not be read.', 'error');
     clearMeasurements();
@@ -311,6 +332,7 @@ async function handleFile(file) {
 
 fileInput.addEventListener('change', (event) => {
   const [file] = event.target.files || [];
+  fileInput.value = '';
   handleFile(file);
 });
 
@@ -327,15 +349,7 @@ dropZone.addEventListener('drop', (event) => {
   event.preventDefault();
   dropZone.classList.remove('is-dragging');
   const [file] = event.dataTransfer?.files || [];
-  if (file) {
-    const extension = file.name.split('.').pop()?.toLowerCase();
-    if (extension !== 'stl' && extension !== 'obj') {
-      setMessage('Unsupported file type. Please choose an STL or OBJ file.', 'error');
-      setState('UNSUPPORTED FILE', 'error');
-      return;
-    }
-    handleFile(file);
-  }
+  if (file) handleFile(file);
 });
 
 wireframeButton.addEventListener('click', () => {
@@ -352,4 +366,31 @@ resetButton.addEventListener('click', () => {
   if (currentBounds) fitCamera(currentBounds);
 });
 
-viewerReady = initialiseViewer();
+async function startInspector() {
+  try {
+    [THREE, { OrbitControls }, { STLLoader }, { OBJLoader }] = await Promise.all([
+      import('three'),
+      import('three/addons/controls/OrbitControls.js'),
+      import('three/addons/loaders/STLLoader.js'),
+      import('three/addons/loaders/OBJLoader.js'),
+    ]);
+
+    viewerReady = initialiseViewer();
+    viewerLoading = false;
+    if (viewerReady && pendingFile) {
+      const file = pendingFile;
+      pendingFile = null;
+      handleFile(file);
+    }
+  } catch (error) {
+    viewerLoading = false;
+    console.error('BrickForge could not load its 3D modules:', error);
+    setState('3D LIBRARY FAILED', 'error');
+    setMessage(
+      'The 3D viewer could not download its rendering library. Check your connection or content blocker, then reload this page.',
+      'error',
+    );
+  }
+}
+
+startInspector();
