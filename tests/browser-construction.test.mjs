@@ -135,6 +135,18 @@ test("browser engine alternates footprint tilings across three courses", () => {
   assert.ok(result.connections.length > 0);
 });
 
+test("browser engine connects a T-shaped footprint in two courses", () => {
+  const cells = [
+    [0, 0], [1, 0], [2, 0], [3, 0], [4, 0],
+    [2, 1], [2, 2],
+  ];
+  const result = buildFootprintBlock(cells, 2, catalogue);
+
+  assert.equal(new Set(result.parts.map((part) => part.translation_ldu[1])).size, 2);
+  assert.ok(result.connections.length > 0);
+  assert.ok(result.total_mating_pairs > 0);
+});
+
 test("browser engine connects a T-shaped footprint with three distinct courses", () => {
   const cells = [
     [0, 0], [1, 0], [2, 0], [3, 0], [4, 0],
