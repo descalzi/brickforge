@@ -1,13 +1,15 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
-import { buildRectangularBlock } from "./construction-engine.js";
+import { buildFootprintBlock, buildRectangularBlock } from "./construction-engine.js";
 
 const viewport = document.querySelector("#builder-viewport");
 const emptyState = document.querySelector("#builder-empty");
 const stateLabel = document.querySelector("#builder-state");
 const message = document.querySelector("#builder-message");
 const buildButton = document.querySelector("#build-block");
+const footprintInput = document.querySelector("#footprint-grid");
+const footprintButton = document.querySelector("#build-footprint");
 const resetButton = document.querySelector("#builder-reset");
 
 const inputs = {
@@ -315,6 +317,71 @@ function setDownloadsEnabled(enabled) {
   });
 }
 
+function parseFootprintGrid(value) {
+  const rows = value.trim().split(/\\r?\\n/).map((row) => row.trim());
+  if (!rows.length || !rows[0].length) {
+    throw new Error("Enter a footprint grid using # for occupied studs and . for empty cells.");
+  }
+  const rowWidth = rows[0].length;
+  if (rows.some((row) => row.length !== rowWidth)) {
+    throw new Error("Every footprint grid row must have the same number of characters.");
+  }
+  const cells = [];
+  for (let z = 0; z < rows.length; z += 1) {
+    for (let x = 0; x < rowWidth; x += 1) {
+      const character = rows[z][x];
+      if (character !== "#" && character !== ".") {
+        throw new Error("Footprint grids may contain only # and . characters.");
+      }
+      if (character === "#") cells.push([x, z]);
+    }
+  }
+  if (!cells.length) {
+    throw new Error("The footprint grid must contain at least one occupied stud (#).");
+  }
+  return cells;
+}
+
+function generateFootprint() {
+  if (!inputs.height.reportValidity()) return;
+  buildButton.disabled = true;
+  footprintButton.disabled = true;
+  setState("GENERATING FOOTPRINT", "loading");
+  setMessage("Searching for connected course tilings and checking the assembly on this device…");
+  try {
+    const cells = parseFootprintGrid(footprintInput.value);
+    const result = buildFootprintBlock(cells, Number(inputs.height.value), catalogue, {
+      colourCodes: [
+        Number(inputs.lowerColour.value),
+        Number(inputs.upperColour.value),
+      ],
+    });
+    renderAssembly(result);
+    currentResult = result;
+    updateResults(result);
+    setDownloadsEnabled(true);
+    setState("VALIDATED / " + result.parts.length + " PARTS", "ready");
+    setMessage(
+      "Generated locally. " + result.connections.length + " connected interfaces and "
+      + result.total_mating_pairs + " nominal feature pairs passed the geometric checks.",
+      "success",
+    );
+  } catch (error) {
+    currentResult = null;
+    clearModel();
+    setDownloadsEnabled(false);
+    outputs.parts.textContent = "—";
+    outputs.edges.textContent = "—";
+    outputs.pairs.textContent = "—";
+    outputs.size.textContent = "—";
+    setState("FOOTPRINT NOT VALID", "error");
+    setMessage(error instanceof Error ? error.message : "The footprint could not be generated.", "error");
+  } finally {
+    buildButton.disabled = !catalogue;
+    footprintButton.disabled = !catalogue;
+  }
+}
+
 function generateBlock() {
   const width = Number(inputs.width.value);
   const depth = Number(inputs.depth.value);
@@ -325,6 +392,7 @@ function generateBlock() {
   }
 
   buildButton.disabled = true;
+  footprintButton.disabled = true;
   setState("GENERATING", "loading");
   setMessage("Placing parts and checking their nominal interfaces on this device…");
   try {
@@ -357,6 +425,7 @@ function generateBlock() {
     setMessage(error instanceof Error ? error.message : "The block could not be generated.", "error");
   } finally {
     buildButton.disabled = !catalogue;
+    footprintButton.disabled = !catalogue;
   }
 }
 
@@ -416,6 +485,7 @@ async function loadCatalogue() {
 }
 
 buildButton.addEventListener("click", generateBlock);
+footprintButton.addEventListener("click", generateFootprint);
 resetButton.addEventListener("click", () => {
   if (currentResult && renderer) {
     fitCamera(new THREE.Box3().setFromObject(currentModel));
@@ -429,6 +499,7 @@ try {
   initialiseViewer();
   catalogue = await loadCatalogue();
   buildButton.disabled = false;
+  footprintButton.disabled = false;
   setMessage("Connection profiles loaded. Generate a block to begin.", "success");
   generateBlock();
 } catch (error) {
@@ -441,5 +512,6 @@ try {
     "error",
   );
   buildButton.disabled = true;
+  footprintButton.disabled = true;
   setDownloadsEnabled(false);
 }
