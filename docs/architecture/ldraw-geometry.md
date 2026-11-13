@@ -85,7 +85,7 @@ The first BrickForge-authored connection profiles are documented in [connection 
 ## Deliberate boundaries
 
 This parser and resolver expand render geometry; they do not infer or prove
-physical LEGO connections. Type-1 references describe file composition, not
+physical L-brick connections. Type-1 references describe file composition, not
 physical connection declarations. Colour-24 RGB values also require an LDraw
 colour definition table, which is not yet implemented. Connection primitives,
 compatibility, collision checks, and assembly ordering remain separate
