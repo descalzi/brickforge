@@ -264,8 +264,13 @@ function fitCamera(bounds, preserveView = false) {
     camera.position.copy(centre).add(viewOffset);
   }
   camera.updateProjectionMatrix();
-  controls.minDistance = Math.max(maximum * 0.08, 0.1);
-  controls.maxDistance = maximum * 30;
+  const viewDistance = camera.position.distanceTo(controls.target);
+  controls.minDistance = preserveView
+    ? Math.min(Math.max(maximum * 0.08, 0.1), viewDistance * 0.5)
+    : Math.max(maximum * 0.08, 0.1);
+  controls.maxDistance = preserveView
+    ? Math.max(maximum * 30, viewDistance * 1.5)
+    : maximum * 30;
   controls.update();
 }
 
