@@ -99,3 +99,33 @@ def test_absolute_references_outside_library_are_rejected(tmp_path: Path) -> Non
 
     with pytest.raises(LDrawResolutionError, match="outside the LDraw library"):
         library.resolve(str(tmp_path.parent / "outside.dat"))
+
+
+
+def test_resolve_verbatim_ldraw_3001_library_fixture() -> None:
+    fixture_root = (
+        Path(__file__).resolve().parent
+        / "fixtures"
+        / "ldraw"
+        / "brick-3001"
+    )
+    library = LDrawLibrary(fixture_root)
+    geometry = library.resolve_part_geometry("3001.dat", colour_code=4)
+
+    assert len(geometry) > 100
+    source_files = {Path(item.source_file).relative_to(fixture_root).as_posix() for item in geometry}
+    assert len(source_files) == 10
+    assert "parts/3001.dat" not in source_files  # the root references are sub-files, not primitives
+    assert "parts/s/3001s01.dat" in source_files
+    assert "p/stud.dat" in source_files
+    assert any(item.colour_code == 24 and item.edge_base_colour == 4 for item in geometry)
+    assert all(item.colour_code in {4, 24} for item in geometry)
+
+    points = [point for item in geometry for point in item.points]
+    bounds = [
+        (min(point[axis] for point in points), max(point[axis] for point in points))
+        for axis in range(3)
+    ]
+    assert bounds[0][1] - bounds[0][0] == pytest.approx(80.0)
+    assert bounds[1][1] - bounds[1][0] == pytest.approx(28.0)
+    assert bounds[2][1] - bounds[2][0] == pytest.approx(40.0)
