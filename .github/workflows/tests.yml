@@ -31,7 +31,7 @@ jobs:
       - name: Check LDraw part explorer JavaScript syntax
         run: node --check docs/assets/parts.js
       - name: Check browser construction engine syntax
-        run: node --check docs/assets/construction-engine.js && node --check docs/assets/builder.js
+        run: node --check docs/assets/construction-engine.js && node --check docs/assets/builder.js && node --check docs/assets/footprint-worker.js
       - name: Test browser construction engine against committed examples
         run: node --test tests/browser-construction.test.mjs
       - name: Lint connection and assembly implementation and tests
