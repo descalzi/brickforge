@@ -46,6 +46,8 @@ jobs:
         run: >-
           python -c "import gzip, json, pathlib;
           json.loads(gzip.decompress(pathlib.Path('docs/data/ldraw/parts-index.json.gz').read_bytes()))"
+      - name: Remove superseded uncompressed catalogue
+        run: rm -f docs/data/ldraw/parts-index.json
       - name: Commit catalogue update
         run: |
           git add -A docs/data/ldraw/
