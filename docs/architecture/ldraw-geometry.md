@@ -53,20 +53,21 @@ them without changing the source coordinate convention.
 
 ## Browser part explorer
 
-`docs/parts.html` and `docs/assets/parts.js` provide a visual proof of concept
-for six common brick and plate parts. The browser fetches each LDraw text file
-from a public mirror, recursively resolves type-1 references across `parts/`
-and `p/`, composes the 3×3 transforms and translations, and expands types 2–5
-into Three.js meshes and line segments. The viewer reads `LDConfig.ldr` for
-face and edge colours, resolves colour 16 against the selected preview colour,
-and converts LDU to millimetres for its displayed dimensions. It also collects
-the source `AUTHOR` and `!LICENSE` notices from all files in the expanded
-part tree.
+`docs/parts.html` and `docs/assets/parts.js` provide a searchable browser
+catalogue generated from the complete official archive. The published index
+contains top-level part IDs, descriptions, categories and keywords; it does not
+contain the 3D geometry itself. The browser decompresses the index, then fetches
+only the selected part and the recursively referenced files required to render
+it. It composes transforms, expands types 2–5 into Three.js meshes and line
+segments, reads `LDConfig.ldr` for face and edge colours, resolves colour 16
+against the selected preview colour, and converts LDU to millimetres.
 
-This page is an integration demonstrator, not the canonical catalogue import:
-it depends on a third-party public mirror which may lag the official release,
-and it does not yet validate physical connection points. The Python resolver
-still needs validation against a downloaded, version-pinned official archive.
+The geometry source is a public mirror synchronised from the official archive.
+The generated index records the exact mirror commit SHA and URL, so search
+metadata and part geometry always refer to the same library snapshot. Original
+`AUTHOR` and `!LICENSE` notices are collected from every file in the expanded
+part tree. This is still a geometry explorer, not a physical connection or
+buildability validator.
 
 ## Real-library regression fixture
 
