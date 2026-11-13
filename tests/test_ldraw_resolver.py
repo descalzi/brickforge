@@ -133,3 +133,40 @@ def test_resolve_verbatim_ldraw_3001_library_fixture() -> None:
     assert bounds[0][1] - bounds[0][0] == pytest.approx(80.0)
     assert bounds[1][1] - bounds[1][0] == pytest.approx(28.0)
     assert bounds[2][1] - bounds[2][0] == pytest.approx(40.0)
+
+
+def test_full_library_audit_reports_resolved_fixture_parts() -> None:
+    from scripts.validate_ldraw_library import audit_library
+
+    fixture_root = (
+        Path(__file__).resolve().parent
+        / "fixtures"
+        / "ldraw"
+        / "brick-3001"
+    )
+
+    report = audit_library(fixture_root)
+
+    assert report["parts_scanned"] == 1
+    assert report["parts_resolved"] == 1
+    assert report["parts_failed"] == 0
+    assert report["resolution_rate"] == 1.0
+    assert report["expanded_primitive_records"] > 100
+    assert report["unique_source_files_expanded"] == 8
+
+
+def test_full_library_audit_can_limit_parts_and_rejects_zero_limit() -> None:
+    from scripts.validate_ldraw_library import audit_library
+
+    fixture_root = (
+        Path(__file__).resolve().parent
+        / "fixtures"
+        / "ldraw"
+        / "brick-3001"
+    )
+
+    report = audit_library(fixture_root, max_parts=1)
+
+    assert report["parts_scanned"] == 1
+    with pytest.raises(ValueError, match="max_parts must be at least 1"):
+        audit_library(fixture_root, max_parts=0)
