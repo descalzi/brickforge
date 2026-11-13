@@ -79,22 +79,20 @@ def build_rectangular_block(
         layer_colour = colour_codes[layer % len(colour_codes)]
         layer_y = -layer * profile.body_height_ldu
 
-        # A simple rotated grid leaves each 4-stud-wide lower column bonded
-        # only to itself when the block is wider than one 4-stud brick. For
-        # these wider rectangles, stagger the rotated course by one stud.
-        # The two 1-stud edge strips are filled with rotated 1x2 bricks.
-        staggered_course = (
-            rotated
-            and width_studs > 4
-            and width_studs % 4 == 0
-            and depth_studs % 4 == 0
-        )
-        if staggered_course:
+        # A one-direction stagger is sufficient for a 4-stud-deep or
+        # 4-stud-wide footprint. When both dimensions are larger, a rotated
+        # grid creates separate components at the middle seam in the second
+        # direction. Use a two-axis stagger with a 1x2 perimeter instead.
+        staggered_width = rotated and width_studs > 4 and depth_studs == 4
+        staggered_depth = rotated and width_studs == 4 and depth_studs > 4
+        staggered_both = rotated and width_studs > 4 and depth_studs > 4
+
+        if staggered_width or staggered_depth or staggered_both:
             try:
                 edge_profile = profiles["3004"]
             except KeyError:
                 raise ValueError(
-                    "staggered wide blocks require the 1x2 brick profile 3004"
+                    "staggered blocks require the 1x2 brick profile 3004"
                 ) from None
             if (
                 edge_profile.footprint_studs_x != 2
@@ -102,54 +100,172 @@ def build_rectangular_block(
             ):
                 raise ValueError("part profile 3004 must be a 2x1-stud brick")
 
-            inner_columns = (width_studs - 2) // 2
-            depth_tiles = depth_studs // 4
-            for index_x in range(inner_columns):
-                centre_x = (
-                    -width_studs / 2.0 + 2.0 + 2.0 * index_x
-                ) * pitch
-                for index_z in range(depth_tiles):
-                    centre_z = (
-                        -depth_studs / 2.0 + 2.0 + 4.0 * index_z
+            if staggered_width:
+                # Bridge the lower columns with rotated 2x4 bricks; use
+                # rotated 1x2 bricks for the two one-stud-wide side strips.
+                inner_columns = (width_studs - 2) // 2
+                for index_x in range(inner_columns):
+                    centre_x = (
+                        -width_studs / 2.0 + 2.0 + 2.0 * index_x
                     ) * pitch
                     placements.append(
                         PlacedPart(
                             instance_id=(
-                                f"layer-{layer:02d}-inner-"
-                                f"x-{index_x:03d}-z-{index_z:03d}"
+                                f"layer-{layer:02d}-inner-x-{index_x:03d}-z-000"
                             ),
                             part_id=part_id,
                             colour_code=layer_colour,
-                            translation_ldu=(centre_x, layer_y, centre_z),
+                            translation_ldu=(centre_x, layer_y, 0.0),
                             matrix=ROTATE_Y_90,
                         )
                     )
+                edge_columns = (
+                    ("left", -width_studs / 2.0 + 0.5),
+                    ("right", width_studs / 2.0 - 0.5),
+                )
+                for edge_name, centre_x_studs in edge_columns:
+                    for index_z in range(depth_studs // 2):
+                        centre_z = (
+                            -depth_studs / 2.0 + 1.0 + 2.0 * index_z
+                        ) * pitch
+                        placements.append(
+                            PlacedPart(
+                                instance_id=(
+                                    f"layer-{layer:02d}-edge-{edge_name}-"
+                                    f"z-{index_z:03d}"
+                                ),
+                                part_id="3004",
+                                colour_code=layer_colour,
+                                translation_ldu=(
+                                    centre_x_studs * pitch,
+                                    layer_y,
+                                    centre_z,
+                                ),
+                                matrix=ROTATE_Y_90,
+                            )
+                        )
 
-            edge_columns = (
-                ("left", -width_studs / 2.0 + 0.5),
-                ("right", width_studs / 2.0 - 0.5),
-            )
-            for edge_name, centre_x_studs in edge_columns:
-                for index_z in range(depth_studs // 2):
+            elif staggered_depth:
+                # With one 4-stud-wide lower column, stagger the 2x4
+                # elements along depth and close the two 1-stud end strips.
+                for index_z in range(depth_studs // 2 - 1):
                     centre_z = (
-                        -depth_studs / 2.0 + 1.0 + 2.0 * index_z
+                        -depth_studs / 2.0 + 2.0 + 2.0 * index_z
                     ) * pitch
                     placements.append(
                         PlacedPart(
                             instance_id=(
-                                f"layer-{layer:02d}-edge-{edge_name}-"
-                                f"z-{index_z:03d}"
+                                f"layer-{layer:02d}-inner-x-000-z-{index_z:03d}"
                             ),
-                            part_id="3004",
+                            part_id=part_id,
                             colour_code=layer_colour,
-                            translation_ldu=(
-                                centre_x_studs * pitch,
-                                layer_y,
-                                centre_z,
-                            ),
-                            matrix=ROTATE_Y_90,
+                            translation_ldu=(0.0, layer_y, centre_z),
+                            matrix=IDENTITY_MATRIX,
                         )
                     )
+                for edge_name, centre_z_studs in (
+                    ("front", -depth_studs / 2.0 + 0.5),
+                    ("back", depth_studs / 2.0 - 0.5),
+                ):
+                    for index_x in range(width_studs // 2):
+                        centre_x = (
+                            -width_studs / 2.0 + 1.0 + 2.0 * index_x
+                        ) * pitch
+                        placements.append(
+                            PlacedPart(
+                                instance_id=(
+                                    f"layer-{layer:02d}-edge-{edge_name}-"
+                                    f"x-{index_x:03d}"
+                                ),
+                                part_id="3004",
+                                colour_code=layer_colour,
+                                translation_ldu=(
+                                    centre_x,
+                                    layer_y,
+                                    centre_z_studs * pitch,
+                                ),
+                                matrix=IDENTITY_MATRIX,
+                            )
+                        )
+
+            else:
+                # Shift the upper 2x4 grid by half a brick in X and half a
+                # row in Z. The core bridges lower seams in both directions;
+                # 1x2 elements close the one-stud perimeter strips.
+                core_columns = width_studs // 4 - 1
+                core_rows = depth_studs // 2 - 1
+                for index_x in range(core_columns):
+                    centre_x = (
+                        -width_studs / 2.0 + 4.0 + 4.0 * index_x
+                    ) * pitch
+                    for index_z in range(core_rows):
+                        centre_z = (
+                            -depth_studs / 2.0 + 2.0 + 2.0 * index_z
+                        ) * pitch
+                        placements.append(
+                            PlacedPart(
+                                instance_id=(
+                                    f"layer-{layer:02d}-core-x-{index_x:03d}-"
+                                    f"z-{index_z:03d}"
+                                ),
+                                part_id=part_id,
+                                colour_code=layer_colour,
+                                translation_ldu=(centre_x, layer_y, centre_z),
+                                matrix=IDENTITY_MATRIX,
+                            )
+                        )
+
+                side_columns = (
+                    ("left", -width_studs / 2.0 + 1.0),
+                    ("right", width_studs / 2.0 - 1.0),
+                )
+                for edge_name, centre_x_studs in side_columns:
+                    for index_z in range(depth_studs - 2):
+                        centre_z = (
+                            -depth_studs / 2.0 + 1.5 + index_z
+                        ) * pitch
+                        placements.append(
+                            PlacedPart(
+                                instance_id=(
+                                    f"layer-{layer:02d}-edge-{edge_name}-"
+                                    f"z-{index_z:03d}"
+                                ),
+                                part_id="3004",
+                                colour_code=layer_colour,
+                                translation_ldu=(
+                                    centre_x_studs * pitch,
+                                    layer_y,
+                                    centre_z,
+                                ),
+                                matrix=IDENTITY_MATRIX,
+                            )
+                        )
+
+                end_rows = (
+                    ("front", -depth_studs / 2.0 + 0.5),
+                    ("back", depth_studs / 2.0 - 0.5),
+                )
+                for edge_name, centre_z_studs in end_rows:
+                    for index_x in range(width_studs // 2):
+                        centre_x = (
+                            -width_studs / 2.0 + 1.0 + 2.0 * index_x
+                        ) * pitch
+                        placements.append(
+                            PlacedPart(
+                                instance_id=(
+                                    f"layer-{layer:02d}-edge-{edge_name}-"
+                                    f"x-{index_x:03d}"
+                                ),
+                                part_id="3004",
+                                colour_code=layer_colour,
+                                translation_ldu=(
+                                    centre_x,
+                                    layer_y,
+                                    centre_z_studs * pitch,
+                                ),
+                                matrix=IDENTITY_MATRIX,
+                            )
+                        )
             continue
 
         count_x = width_studs // tile_width
