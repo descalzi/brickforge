@@ -181,10 +181,10 @@ def _parse_colour(token: str, source: str, line_number: int) -> ColourCode:
     try:
         return int(token, 10)
     except ValueError:
-        # Direct colours use 0x2RRGGBB (solid) or 0x3RRGGBB (transparent).
+        # Direct RGB colours use the LDraw form 0x2RRGGBB.
         if (
             len(token) == 9
-            and token[:3].lower() in {"0x2", "0x3"}
+            and token[:3].lower() == "0x2"
             and all(character in "0123456789abcdefABCDEF" for character in token[3:])
         ):
             return token.upper()
