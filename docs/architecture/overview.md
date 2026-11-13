@@ -96,7 +96,9 @@ The internal representation should be an **assembly graph**:
 
 Candidate algorithms may include voxel/occupancy methods for coarse structure, surface fitting for appearance, and constraint-based placement for specialised geometry. These are complementary strategies, not mutually exclusive product modes.
 
-The first typed graph implementation is in `src/brickforge/assembly/`. It stores unique part instances and rigid LDraw transforms, derives graph edges from the nominal stud/receiver matcher, and exports LDraw plus a colour-aware BOM from the same graph. The current two-brick example is manually placed; an automatic target-shape placement strategy has not yet been implemented. See [assembly graph v1](assembly-graph.md).
+The typed reference graph is in `src/brickforge/assembly/`. It stores unique part instances and rigid LDraw transforms, derives graph edges from the nominal stud/receiver matcher, and exports LDraw plus a colour-aware BOM from the same graph. A constrained rectangular placement strategy lives in `src/brickforge/construction/`.
+
+The public [Block builder](https://descalzi.github.io/brickforge/builder.html) runs the corresponding browser-native engine in `docs/assets/construction-engine.js`. It reads the published profile catalogue, places parts, checks candidate connections and nominal body bounds, renders a local 3D preview and creates downloadable outputs on the visitor's device. Node tests compare its assembly graph, BOM and LDraw output with the committed Python-generated fixture. No construction server is needed. Automatic placement against arbitrary input meshes remains future work. See [assembly graph v1](assembly-graph.md).
 
 ### 4.5 Validation
 
@@ -144,7 +146,7 @@ The engine should define one documented world coordinate convention and explicit
 
 ## 6. Initial service boundaries
 
-Keep core geometry and construction libraries independent of FastAPI, databases, and LLM providers. The first prototype should be callable as a Python library and command-line tool. Add network services only when there is a concrete user workflow to support.
+Keep geometry and construction libraries independent of web frameworks, databases and LLM providers. The default product runtime is the visitor's browser, served as static assets by GitHub Pages or Cloudflare Pages. Python library and command-line entry points are engineering/reference tools, not user prerequisites. Add remote processing only if measured client-side limits later justify it.
 
 ## 7. Open technical questions
 
