@@ -814,6 +814,8 @@ function sampleInterlockingFootprints(cells, profiles) {
 
   const sampled = [];
   const signatures = new Set();
+  let bestPair = null;
+  let bestPartCount = Infinity;
   for (let attempt = 0; attempt < 512; attempt += 1) {
     const remaining = new Set(cells);
     const chosen = [];
@@ -855,11 +857,17 @@ function sampleInterlockingFootprints(cells, profiles) {
     if (signatures.has(signature)) continue;
     signatures.add(signature);
     for (const previous of sampled) {
-      if (footprintTilingsConnect(previous, tiling)) return [previous, tiling];
+      if (footprintTilingsConnect(previous, tiling)) {
+        const partCount = previous.length + tiling.length;
+        if (partCount < bestPartCount) {
+          bestPair = [previous, tiling];
+          bestPartCount = partCount;
+        }
+      }
     }
     sampled.push(tiling);
   }
-  return null;
+  return bestPair;
 }
 
 function findFootprintTilings(tilings) {
