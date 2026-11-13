@@ -78,6 +78,7 @@ def audit_library(library: Path, *, max_parts: int | None = None) -> dict[str, A
         ),
         "expanded_primitive_records": primitive_count,
         "unique_source_files_expanded": len(source_files),
+        "unique_documents_parsed": resolver.cached_document_count,
         "error_types": dict(sorted(error_types.items())),
         "failures": failures,
     }
