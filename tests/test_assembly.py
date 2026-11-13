@@ -9,6 +9,7 @@ import pytest
 from brickforge.assembly.demo import build_stacked_brick_demo
 from brickforge.assembly.model import AssemblyError, PlacedPart, build_assembly
 from brickforge.parts.connections import load_connection_profiles
+from brickforge.parts.ldraw_geometry import parse_ldraw_text
 
 ROOT = Path(__file__).resolve().parents[1]
 CATALOGUE = ROOT / "data" / "connection-profiles" / "basic-bricks.json"
@@ -36,6 +37,26 @@ def test_ldraw_export_uses_same_two_placements_and_colours() -> None:
     assert "1 4 0 0 0 1 0 0 0 1 0 0 0 1 3001.dat" in ldraw
     assert "1 1 0 -24 0 1 0 0 0 1 0 0 0 1 3001.dat" in ldraw
     assert ldraw.endswith("\n")
+
+
+def test_ldraw_export_reparses_to_the_same_part_placements() -> None:
+    assembly = build_stacked_brick_demo()
+    document = parse_ldraw_text(assembly.to_ldraw())
+
+    assert len(document.references) == 2
+    assert [reference.filename for reference in document.references] == [
+        "3001.dat",
+        "3001.dat",
+    ]
+    assert [reference.colour_code for reference in document.references] == [4, 1]
+    assert [reference.position for reference in document.references] == [
+        (0.0, 0.0, 0.0),
+        (0.0, -24.0, 0.0),
+    ]
+    assert all(
+        reference.matrix == assembly.parts[index].matrix
+        for index, reference in enumerate(document.references)
+    )
 
 
 def test_bom_aggregates_part_and_colour_from_graph() -> None:
