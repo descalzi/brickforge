@@ -197,3 +197,12 @@
   .parts-controls { padding: 20px 16px; }
   .parts-viewport-topline { font-size: .6rem; }
 }
+
+
+.connection-note[data-supported="true"] {
+  border-left-color: var(--accent, #477B9B);
+}
+
+.connection-note[data-supported="false"] {
+  border-left-color: #A77A45;
+}
