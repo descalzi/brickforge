@@ -210,6 +210,68 @@ def test_rectangular_block_repeated_courses_remain_connected(
     assert len({part.instance_id for part in assembly.parts}) == len(assembly.parts)
 
 
+
+def test_browser_and_python_engines_produce_identical_placements() -> None:
+    cases = [
+        (width, depth, 2)
+        for width in range(4, 24, 4)
+        for depth in range(4, 24, 4)
+    ] + [
+        (width, depth, height)
+        for width in (4, 8, 12)
+        for depth in (4, 8, 12)
+        for height in (3, 4)
+    ]
+    node_script = """
+import { readFileSync } from "node:fs";
+import { buildRectangularBlock } from "./docs/assets/construction-engine.js";
+
+const catalogue = JSON.parse(
+  readFileSync("data/connection-profiles/basic-bricks.json", "utf8"),
+);
+const cases = JSON.parse(readFileSync(0, "utf8"));
+const results = cases.map(([width, depth, height]) => {
+  const assembly = buildRectangularBlock(width, depth, height, catalogue);
+  return assembly.parts.map((part) => ({
+    instance_id: part.instance_id,
+    part_id: part.part_id,
+    colour_code: part.colour_code,
+    translation_ldu: part.translation_ldu,
+    matrix: part.matrix,
+  }));
+});
+process.stdout.write(JSON.stringify(results));
+"""
+    browser_result = subprocess.run(
+        ["node", "--input-type=module", "-e", node_script],
+        input=json.dumps(cases),
+        check=True,
+        capture_output=True,
+        text=True,
+        cwd=ROOT,
+    )
+    browser_placements = json.loads(browser_result.stdout)
+
+    assert len(browser_placements) == len(cases)
+    for (width, depth, height), browser_parts in zip(
+        cases, browser_placements, strict=True
+    ):
+        python_assembly = build_rectangular_block(width, depth, height, PROFILES)
+        python_parts = [
+            {
+                "instance_id": part.instance_id,
+                "part_id": part.part_id,
+                "colour_code": part.colour_code,
+                "translation_ldu": list(part.translation_ldu),
+                "matrix": list(part.matrix),
+            }
+            for part in python_assembly.parts
+        ]
+        assert browser_parts == python_parts, (
+            f"browser and Python placements differ for {width}x{depth}x{height}"
+        )
+
+
 def test_rectangular_block_alternates_course_transforms() -> None:
     assembly = build_interlocked_block_demo()
 
