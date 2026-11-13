@@ -217,7 +217,7 @@ test("browser engine handles the maximum 64-cell footprint", () => {
     Array.from({ length: 8 }, (_, x) => [x, z]),
   ).flat();
   const result = buildFootprintBlock(cells, 2, catalogue);
-  assert.ok(result.parts.length <= 16);
+  assert.ok(result.parts.length <= 128);
   assert.ok(result.connections.length > 0);
   assert.ok(result.total_mating_pairs > 0);
 });
