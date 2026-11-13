@@ -30,5 +30,7 @@ jobs:
         run: node --check docs/assets/inspector.js
       - name: Check LDraw part explorer JavaScript syntax
         run: node --check docs/assets/parts.js
+      - name: Validate JSON data and schemas
+        run: python -m json.tool data/connection-profiles/basic-bricks.json > /dev/null && python -m json.tool schemas/connection-profiles-v1.schema.json > /dev/null
       - name: Run test suite
         run: python -m pytest
