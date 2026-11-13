@@ -25,3 +25,20 @@ export function searchPartCatalogue(parts, query, limit = 100) {
     return terms.every((term) => searchable.includes(term));
   }).slice(0, limit);
 }
+
+
+export function ldrawReferenceCandidates(filename, parentPath) {
+  const name = filename.trim().replace(/\\/g, '/').toLowerCase();
+  if (!name || name.startsWith('/') || name.split('/').some((part) => part === '..')) {
+    throw new Error('Unsafe LDraw reference path: ' + filename);
+  }
+  if (name.startsWith('parts/') || name.startsWith('p/')) return [name];
+  if (name.startsWith('s/')) return ['parts/' + name];
+  if (name.startsWith('48/') || name.startsWith('8/')) return ['p/' + name];
+  if (name.includes('/')) return ['parts/' + name, 'p/' + name];
+  if (parentPath.startsWith('p/')) return ['p/' + name];
+  // Bare references inside subparts conventionally name primitives.
+  // Resolve them in p/ first to avoid a predictable 404 in parts/.
+  if (parentPath.startsWith('parts/s/')) return ['p/' + name, 'parts/' + name];
+  return ['parts/' + name, 'p/' + name];
+}
