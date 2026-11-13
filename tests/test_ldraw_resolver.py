@@ -205,11 +205,11 @@ def test_missing_nested_reference_reports_complete_dependency_chain(tmp_path: Pa
 
     _write(
         tmp_path / "parts" / "root.dat",
-        "0 Root\n1 16 0 0 0 1 0 0 0 1 0 0 0 1 s/child.dat\\n",
+        "0 Root\n1 16 0 0 0 1 0 0 0 1 0 0 0 1 s/child.dat\n",
     )
     _write(
         tmp_path / "parts" / "s" / "child.dat",
-        "0 Child\n1 16 0 0 0 1 0 0 0 1 0 0 0 1 missing-primitive.dat\\n",
+        "0 Child\n1 16 0 0 0 1 0 0 0 1 0 0 0 1 missing-primitive.dat\n",
     )
 
     report = audit_library(tmp_path)
