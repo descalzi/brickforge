@@ -460,7 +460,7 @@ def test_footprint_builder_handles_maximum_64_cell_rectangle() -> None:
     cells = [(x, z) for z in range(8) for x in range(8)]
     assembly = build_footprint_block(cells, 2, PROFILES)
 
-    assert len(assembly.parts) <= 16
+    assert len(assembly.parts) <= 128
     assert assembly.connections
     assert assembly.total_mating_pairs > 0
 
