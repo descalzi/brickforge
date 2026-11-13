@@ -31,15 +31,15 @@ def build_rectangular_block(
 ) -> Assembly:
     """Tile a rectangular block with alternating 2x4 brick orientations.
 
-    Even courses place each brick's four-stud axis along world X. Odd courses
-    rotate the bricks 90 degrees about Y so they bridge the seams below.
-    Width and depth must be tileable in every requested course. The resulting
-    placements still pass through the canonical assembly validator, which
-    rejects disconnected layouts and nominal body-envelope overlaps.
+    Even courses place each 2x4 brick's four-stud axis along world X. Odd
+    courses rotate the bricks 90 degrees about Y. For wider rectangles, the
+    rotated course is shifted by one stud and its two narrow edge strips are
+    completed with 1x2 bricks, so it bridges seams between lower columns.
+    Placements pass through the canonical assembly validator.
 
-    This first strategy requires a rectangular 4x2-stud brick profile such as
-    LDraw part 3001. It does not yet optimise part choice or handle irregular
-    boundaries.
+    The strategy uses the 2x4 profile (3001), and the 1x2 profile (3004) for
+    staggered wide courses. It does not yet optimise part choice or handle
+    irregular boundaries.
     """
     dimensions = (width_studs, depth_studs, height_bricks)
     if any(
@@ -74,10 +74,86 @@ def build_rectangular_block(
                 f"{orientation} 4x2 course"
             )
 
-        count_x = width_studs // tile_width
-        count_z = depth_studs // tile_depth
         half_width_ldu = width_studs * pitch / 2.0
         half_depth_ldu = depth_studs * pitch / 2.0
+        layer_colour = colour_codes[layer % len(colour_codes)]
+        layer_y = -layer * profile.body_height_ldu
+
+        # A simple rotated grid leaves each 4-stud-wide lower column bonded
+        # only to itself when the block is wider than one 4-stud brick. For
+        # these wider rectangles, stagger the rotated course by one stud.
+        # The two 1-stud edge strips are filled with rotated 1x2 bricks.
+        staggered_course = (
+            rotated
+            and width_studs > 4
+            and width_studs % 4 == 0
+            and depth_studs % 4 == 0
+        )
+        if staggered_course:
+            try:
+                edge_profile = profiles["3004"]
+            except KeyError:
+                raise ValueError(
+                    "staggered wide blocks require the 1x2 brick profile 3004"
+                ) from None
+            if (
+                edge_profile.footprint_studs_x != 2
+                or edge_profile.footprint_studs_z != 1
+            ):
+                raise ValueError("part profile 3004 must be a 2x1-stud brick")
+
+            inner_columns = (width_studs - 2) // 2
+            depth_tiles = depth_studs // 4
+            for index_x in range(inner_columns):
+                centre_x = (
+                    -width_studs / 2.0 + 2.0 + 2.0 * index_x
+                ) * pitch
+                for index_z in range(depth_tiles):
+                    centre_z = (
+                        -depth_studs / 2.0 + 2.0 + 4.0 * index_z
+                    ) * pitch
+                    placements.append(
+                        PlacedPart(
+                            instance_id=(
+                                f"layer-{layer:02d}-inner-"
+                                f"x-{index_x:03d}-z-{index_z:03d}"
+                            ),
+                            part_id=part_id,
+                            colour_code=layer_colour,
+                            translation_ldu=(centre_x, layer_y, centre_z),
+                            matrix=ROTATE_Y_90,
+                        )
+                    )
+
+            edge_columns = (
+                ("left", -width_studs / 2.0 + 0.5),
+                ("right", width_studs / 2.0 - 0.5),
+            )
+            for edge_name, centre_x_studs in edge_columns:
+                for index_z in range(depth_studs // 2):
+                    centre_z = (
+                        -depth_studs / 2.0 + 1.0 + 2.0 * index_z
+                    ) * pitch
+                    placements.append(
+                        PlacedPart(
+                            instance_id=(
+                                f"layer-{layer:02d}-edge-{edge_name}-"
+                                f"z-{index_z:03d}"
+                            ),
+                            part_id="3004",
+                            colour_code=layer_colour,
+                            translation_ldu=(
+                                centre_x_studs * pitch,
+                                layer_y,
+                                centre_z,
+                            ),
+                            matrix=ROTATE_Y_90,
+                        )
+                    )
+            continue
+
+        count_x = width_studs // tile_width
+        count_z = depth_studs // tile_depth
         tile_width_ldu = tile_width * pitch
         tile_depth_ldu = tile_depth * pitch
 
@@ -95,7 +171,7 @@ def build_rectangular_block(
                 )
                 translation: Vector3 = (
                     centre_x,
-                    -layer * profile.body_height_ldu,
+                    layer_y,
                     centre_z,
                 )
                 placements.append(
@@ -104,7 +180,7 @@ def build_rectangular_block(
                             f"layer-{layer:02d}-x-{index_x:03d}-z-{index_z:03d}"
                         ),
                         part_id=part_id,
-                        colour_code=colour_codes[layer % len(colour_codes)],
+                        colour_code=layer_colour,
                         translation_ldu=translation,
                         matrix=matrix,
                     )
