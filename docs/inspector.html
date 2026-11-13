@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#F2F4F6">
+  <meta name="description" content="Inspect an STL or OBJ mesh in your browser and measure its dimensions before the BrickForge construction stage.">
+  <title>Mesh inspector — BrickForge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./assets/site.css">
+  <link rel="stylesheet" href="./assets/inspector.css">
+  <link rel="icon" href="./assets/mark.svg" type="image/svg+xml">
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.187.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.187.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <a class="brand" href="./index.html" aria-label="BrickForge home">
+      <img src="./assets/mark.svg" width="34" height="34" alt="">
+      <span>brickforge</span>
+    </a>
+    <nav class="main-nav" aria-label="Main navigation">
+      <a href="./index.html#method">The method</a>
+      <a href="./index.html#engineering">Engineering</a>
+      <a class="nav-repo" aria-current="page" href="./inspector.html">Mesh inspector</a>
+    </nav>
+  </header>
+
+  <main id="main" class="inspector-main">
+    <a class="back-link" href="./index.html">Back to project</a>
+    <section class="inspector-intro">
+      <h1>Inspect the shape.<br><span>Know the dimensions.</span></h1>
+      <p>Load an STL or OBJ file to preview its geometry and measure its bounding dimensions. This is the first practical step in the BrickForge pipeline — before any parts are selected or placed.</p>
+    </section>
+
+    <section class="inspector-workspace" aria-label="3D mesh inspection workspace">
+      <div class="viewport-panel">
+        <div class="viewport-topline">
+          <span>3D PREVIEW</span>
+          <span id="viewport-state" class="viewport-state" role="status" aria-live="polite">READY / WAITING FOR FILE</span>
+        </div>
+        <div id="viewport" class="viewport">
+          <div id="viewport-empty" class="viewport-empty">
+            <div class="empty-cube" aria-hidden="true">
+              <svg viewBox="0 0 120 110">
+                <path d="M15 34 60 10l45 24-45 25Z" fill="#DCE5EB" stroke="#60798E" stroke-width="1.5"/>
+                <path d="M15 34v49l45 23V59Z" fill="#91A6B8" stroke="#60798E" stroke-width="1.5"/>
+                <path d="M60 59v47l45-23V34Z" fill="#60798E" stroke="#506A7E" stroke-width="1.5"/>
+                <path d="m38 22 45 24M60 10v49" fill="none" stroke="#FFFFFF" stroke-width="1" opacity=".9"/>
+                <circle cx="38" cy="22" r="3" fill="#C73E0A"/>
+                <circle cx="60" cy="10" r="3" fill="#C73E0A"/>
+                <circle cx="83" cy="22" r="3" fill="#C73E0A"/>
+              </svg>
+            </div>
+            <strong>Your model will appear here</strong>
+            <span>Choose an STL or OBJ file to begin.</span>
+          </div>
+        </div>
+        <div class="viewport-toolbar">
+          <span>Drag to orbit · Scroll to zoom · Right-drag to pan</span>
+          <div class="viewport-actions">
+            <button id="wireframe-toggle" class="tool-button" type="button" aria-pressed="false" disabled>Show wireframe</button>
+            <button id="reset-view" class="tool-button" type="button" disabled>Reset view</button>
+          </div>
+        </div>
+      </div>
+
+      <aside class="inspector-controls" aria-label="Mesh input and measurements">
+        <div class="control-section">
+          <h2>Mesh input</h2>
+          <input id="file-input" class="visually-hidden" type="file" accept=".stl,.obj,model/stl,model/obj">
+          <label class="drop-zone" id="drop-zone" for="file-input">
+            <span class="drop-title">Drop a file or browse</span>
+            <span class="drop-subtitle">STL or OBJ · up to 100 MB</span>
+          </label>
+          <p class="control-note">The file is read locally in this browser. It is not uploaded to a server.</p>
+          <label class="field-label" for="source-units">Source units</label>
+          <select id="source-units" class="field-control" required>
+            <option value="" selected disabled>Choose the file's units</option>
+            <option value="mm">Millimetres (mm)</option>
+            <option value="cm">Centimetres (cm)</option>
+            <option value="m">Metres (m)</option>
+            <option value="in">Inches (in)</option>
+          </select>
+          <p class="control-note">STL and OBJ files do not reliably declare their units. Select the units used when the model was exported.</p>
+        </div>
+
+        <div class="control-section measurements-section">
+          <h2>Measured bounds</h2>
+          <p id="measurement-hint" class="measurement-hint">Dimensions will appear after a mesh is loaded.</p>
+          <dl class="dimension-list">
+            <div><dt>Width · X</dt><dd id="dimension-x">—</dd></div>
+            <div><dt>Depth · Y</dt><dd id="dimension-y">—</dd></div>
+            <div><dt>Height · Z</dt><dd id="dimension-z">—</dd></div>
+          </dl>
+          <div class="mesh-stats">
+            <div><span>Vertices</span><strong id="vertex-count">—</strong></div>
+            <div><span>Triangles</span><strong id="triangle-count">—</strong></div>
+            <div><span>Meshes</span><strong id="mesh-count">—</strong></div>
+          </div>
+        </div>
+
+        <div id="inspector-message" class="inspector-message" role="status" aria-live="polite">Waiting for a mesh file.</div>
+      </aside>
+    </section>
+
+    <p class="inspector-disclaimer">This page measures and previews mesh geometry only. It does not yet convert the shape into LEGO elements or verify that a construction is physically buildable.</p>
+  </main>
+
+  <footer class="site-footer">
+    <a class="brand footer-brand" href="./index.html"><img src="./assets/mark.svg" width="28" height="28" alt=""><span>brickforge</span></a>
+    <p>Independent project. Not affiliated with or endorsed by the LEGO Group.</p>
+    <span class="footer-id">BF / MESH-01</span>
+  </footer>
+
+  <script type="module" src="./assets/inspector.js"></script>
+</body>
+</html>
