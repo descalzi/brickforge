@@ -7,9 +7,9 @@ Each graph edge records a pair of instances and the nominal connector feature
 pairs that support their connection.
 
 The version-1 JSON contract is defined in
-[\`schemas/assembly-graph-v1.schema.json\`](../../schemas/assembly-graph-v1.schema.json).
+[`schemas/assembly-graph-v1.schema.json`](../../schemas/assembly-graph-v1.schema.json).
 The BOM has its own derived-data contract at
-[\`schemas/bom-v1.schema.json\`](../../schemas/bom-v1.schema.json).
+[`schemas/bom-v1.schema.json`](../../schemas/bom-v1.schema.json).
 
 ## Coordinate and placement convention
 
@@ -19,12 +19,12 @@ values, followed by its three-component translation. The same values are
 written to the type-1 LDraw part reference.
 
 Part identifiers are stored without a directory or extension. The initial
-export writes each reference as \`<part_id>.dat\`, resolved by the user's LDraw
+export writes each reference as `<part_id>.dat`, resolved by the user's LDraw
 library. Colour codes are numeric LDraw colour identifiers.
 
 ## Graph construction and checks
 
-\`build_assembly()\` accepts placed parts and the connection-profile catalogue.
+`build_assembly()` accepts placed parts and the connection-profile catalogue.
 It performs these deterministic checks:
 
 1. Every instance identifier is unique and every part has a known profile.
@@ -51,7 +51,7 @@ connection data and additional validation.
 
 ## Derived outputs
 
-The \`Assembly\` object is the single source for all current outputs:
+The `Assembly` object is the single source for all current outputs:
 
 - **LDraw model:** one type-1 record per placed part, with the stored colour,
   translation and matrix.
@@ -62,28 +62,44 @@ The \`Assembly\` object is the single source for all current outputs:
 This keeps the model and inventory consistent by construction. Build
 instructions and sequencing are not generated yet.
 
-## Reproduce the first demonstrator
+## Reproduce the examples
 
 Install the development package from the repository root:
 
-\`\`\`bash
+```bash
 python -m pip install -e ".[dev]"
-\`\`\`
+```
 
-Run:
+Run either demonstrator:
 
-\`\`\`bash
+```bash
 brickforge-demo-assembly
-\`\`\`
+brickforge-demo-block
+```
 
-The command validates two 3001 (Brick 2 x 4) instances: a red lower brick at
-the origin and a blue upper brick translated by -24 LDU on Y. It writes:
+The first command validates two 3001 (Brick 2 x 4) instances: a red lower
+brick at the origin and a blue upper brick translated by -24 LDU on Y. It
+writes:
 
-- \`examples/stacked-3001.ldr\`
-- \`examples/stacked-3001.assembly.json\`
-- \`examples/stacked-3001.bom.json\`
+- `examples/stacked-3001.ldr`
+- `examples/stacked-3001.assembly.json`
+- `examples/stacked-3001.bom.json`
 
-The expected graph contains one edge supported by eight nominal feature
-matches, and the BOM contains two 3001 bricks in two colours. The example is a
-small integration test of the graph, connection matcher, LDraw exporter and
-inventory—not an automatic shape-generation engine.
+The second command exercises the constrained construction strategy. It tiles
+a 4 x 4-stud footprint in two brick courses using four 3001 parts. The lower
+course places the bricks with their four-stud axis along X. The upper course
+rotates both bricks 90 degrees about Y so each upper brick bridges the seam
+between the two lower bricks. Every upper brick has four nominal feature
+matches to each lower brick, producing four graph edges and 16 feature pairs
+in total. It writes:
+
+- `examples/block-4x4x2.ldr`
+- `examples/block-4x4x2.assembly.json`
+- `examples/block-4x4x2.bom.json`
+
+The reusable `build_rectangular_block()` strategy accepts width and depth in
+studs and height in brick courses. It alternates 4 x 2 brick orientation and
+relies on the assembly validator to reject overlapping or disconnected
+results. This first version supports only a 4 x 2-stud part profile and
+rectangular dimensions tileable in every course; it does not optimise part
+choice or cover irregular shapes.
