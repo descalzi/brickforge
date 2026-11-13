@@ -30,6 +30,10 @@ jobs:
         run: node --check docs/assets/inspector.js
       - name: Check LDraw part explorer JavaScript syntax
         run: node --check docs/assets/parts.js
+      - name: Check browser construction engine syntax
+        run: node --check docs/assets/construction-engine.js && node --check docs/assets/builder.js
+      - name: Test browser construction engine against committed examples
+        run: node --test tests/browser-construction.test.mjs
       - name: Lint connection and assembly implementation and tests
         run: ruff check src/brickforge/parts/connections.py src/brickforge/assembly src/brickforge/construction tests/test_connections.py tests/test_assembly.py
       - name: Type-check connection and assembly implementation
