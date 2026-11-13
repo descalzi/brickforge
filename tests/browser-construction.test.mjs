@@ -67,6 +67,24 @@ test("browser engine interlocks a 4x8 block along the depth axis", () => {
   assert.ok(result.total_mating_pairs >= 16);
 });
 
+test("browser engine keeps three- and four-course stacks connected", () => {
+  for (const height of [3, 4]) {
+    for (const width of [4, 8, 12]) {
+      for (const depth of [4, 8, 12]) {
+        const result = buildRectangularBlock(width, depth, height, catalogue);
+        assert.ok(result.parts.length > 0, `${width}x${depth}x${height} should contain parts`);
+        assert.equal(
+          new Set(result.parts.map((part) => part.instance_id)).size,
+          result.parts.length,
+          `${width}x${depth}x${height} should have unique part IDs`,
+        );
+        assert.ok(result.connections.length > 0, `${width}x${depth}x${height} should be connected`);
+        assert.ok(result.total_mating_pairs > 0);
+      }
+    }
+  }
+});
+
 test("browser engine validates a matrix of rectangular footprints", () => {
   for (let width = 4; width <= 20; width += 4) {
     for (let depth = 4; depth <= 20; depth += 4) {
