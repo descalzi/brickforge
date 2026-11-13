@@ -101,7 +101,13 @@ def main() -> None:
     parser.add_argument(
         "--output",
         type=Path,
-        default=Path(__file__).resolve().parents[1] / "docs" / "data" / "ldraw" / "parts-index.json",
+        default=(
+            Path(__file__).resolve().parents[1]
+            / "docs"
+            / "data"
+            / "ldraw"
+            / "parts-index.json"
+        ),
         help="Output path for the compact browser search index",
     )
     args = parser.parse_args()
