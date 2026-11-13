@@ -1,0 +1,414 @@
+const IDENTITY_MATRIX = Object.freeze([
+  1, 0, 0,
+  0, 1, 0,
+  0, 0, 1,
+]);
+
+const ROTATE_Y_90 = Object.freeze([
+  0, 0, 1,
+  0, 1, 0,
+  -1, 0, 0,
+]);
+
+const LDU_TO_MM = 0.4;
+const DEFAULT_POSITION_TOLERANCE_LDU = 0.25;
+const DEFAULT_COLLISION_TOLERANCE_LDU = 1e-6;
+const MAX_GENERATED_PARTS = 200;
+
+function finiteNumber(value, label) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) {
+    throw new TypeError(label + " must be a finite number.");
+  }
+  return number;
+}
+
+function transformVector(matrix, vector) {
+  const [x, y, z] = vector;
+  return [
+    matrix[0] * x + matrix[1] * y + matrix[2] * z,
+    matrix[3] * x + matrix[4] * y + matrix[5] * z,
+    matrix[6] * x + matrix[7] * y + matrix[8] * z,
+  ];
+}
+
+function transformPoint(matrix, translation, point) {
+  const transformed = transformVector(matrix, point);
+  return [
+    transformed[0] + translation[0],
+    transformed[1] + translation[1],
+    transformed[2] + translation[2],
+  ];
+}
+
+function distance3(a, b) {
+  return Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
+}
+
+function compareText(a, b) {
+  return a < b ? -1 : a > b ? 1 : 0;
+}
+
+export function findMatingPairs(
+  profileA,
+  placementA,
+  profileB,
+  placementB,
+  positionToleranceLdu = DEFAULT_POSITION_TOLERANCE_LDU,
+) {
+  const tolerance = finiteNumber(positionToleranceLdu, "positionToleranceLdu");
+  if (tolerance < 0) {
+    throw new RangeError("positionToleranceLdu must be non-negative.");
+  }
+
+  const candidates = [];
+  for (const featureA of profileA.features) {
+    for (const featureB of profileB.features) {
+      if (featureA.kind === featureB.kind) continue;
+
+      const positionA = transformPoint(
+        placementA.matrix,
+        placementA.translation_ldu,
+        featureA.position_ldu,
+      );
+      const positionB = transformPoint(
+        placementB.matrix,
+        placementB.translation_ldu,
+        featureB.position_ldu,
+      );
+      const positionError = distance3(positionA, positionB);
+      if (positionError > tolerance) continue;
+
+      const axisA = transformVector(placementA.matrix, featureA.axis);
+      const axisB = transformVector(placementB.matrix, featureB.axis);
+      const axisDot = axisA.reduce((sum, value, index) => sum + value * axisB[index], 0);
+      if (axisDot > -1 + 1e-6) continue;
+
+      candidates.push({
+        position_error_ldu: positionError,
+        axis_dot: axisDot,
+        feature_a: featureA.feature_id,
+        feature_b: featureB.feature_id,
+      });
+    }
+  }
+
+  candidates.sort((a, b) =>
+    a.position_error_ldu - b.position_error_ldu
+    || compareText(a.feature_a, b.feature_a)
+    || compareText(a.feature_b, b.feature_b));
+
+  const usedA = new Set();
+  const usedB = new Set();
+  const matches = [];
+  for (const candidate of candidates) {
+    if (usedA.has(candidate.feature_a) || usedB.has(candidate.feature_b)) continue;
+    usedA.add(candidate.feature_a);
+    usedB.add(candidate.feature_b);
+    matches.push(candidate);
+  }
+  return matches;
+}
+
+function bodyBounds(placement, profile) {
+  const halfX = profile.footprint_studs_x * profile.stud_pitch_ldu / 2;
+  const halfZ = profile.footprint_studs_z * profile.stud_pitch_ldu / 2;
+  const corners = [];
+
+  for (const x of [-halfX, halfX]) {
+    for (const y of [0, profile.body_height_ldu]) {
+      for (const z of [-halfZ, halfZ]) {
+        corners.push(transformPoint(
+          placement.matrix,
+          placement.translation_ldu,
+          [x, y, z],
+        ));
+      }
+    }
+  }
+
+  const minimum = [0, 1, 2].map((axis) =>
+    Math.min(...corners.map((point) => point[axis])));
+  const maximum = [0, 1, 2].map((axis) =>
+    Math.max(...corners.map((point) => point[axis])));
+  return { minimum, maximum };
+}
+
+function boundsOverlapInVolume(a, b, tolerance) {
+  const overlaps = [0, 1, 2].map((axis) =>
+    Math.min(a.maximum[axis], b.maximum[axis])
+    - Math.max(a.minimum[axis], b.minimum[axis]));
+  return overlaps.every((overlap) => overlap > tolerance);
+}
+
+function validateConnectedGraph(parts, connections) {
+  if (parts.length <= 1) return;
+
+  const adjacency = new Map(parts.map((part) => [part.instance_id, new Set()]));
+  for (const edge of connections) {
+    adjacency.get(edge.instance_a).add(edge.instance_b);
+    adjacency.get(edge.instance_b).add(edge.instance_a);
+  }
+
+  const visited = new Set([parts[0].instance_id]);
+  const pending = [parts[0].instance_id];
+  while (pending.length) {
+    const current = pending.pop();
+    for (const neighbour of adjacency.get(current)) {
+      if (!visited.has(neighbour)) {
+        visited.add(neighbour);
+        pending.push(neighbour);
+      }
+    }
+  }
+
+  if (visited.size !== parts.length) {
+    const disconnected = parts
+      .map((part) => part.instance_id)
+      .filter((id) => !visited.has(id))
+      .sort(compareText);
+    throw new Error(
+      "The proposed block contains disconnected parts: " + disconnected.join(", ") + ".",
+    );
+  }
+}
+
+function validatePlacements(parts, profiles, options) {
+  const ids = new Set();
+  const bounds = new Map();
+
+  for (const part of parts) {
+    if (ids.has(part.instance_id)) {
+      throw new Error("Part instance identifiers must be unique.");
+    }
+    ids.add(part.instance_id);
+    const profile = profiles.get(String(part.part_id));
+    if (!profile) {
+      throw new Error("No connection profile is available for part " + part.part_id + ".");
+    }
+    bounds.set(part.instance_id, bodyBounds(part, profile));
+  }
+
+  for (let indexA = 0; indexA < parts.length; indexA += 1) {
+    for (let indexB = indexA + 1; indexB < parts.length; indexB += 1) {
+      const a = parts[indexA];
+      const b = parts[indexB];
+      if (boundsOverlapInVolume(
+        bounds.get(a.instance_id),
+        bounds.get(b.instance_id),
+        options.collisionToleranceLdu,
+      )) {
+        throw new Error(
+          "Nominal body bounds overlap for " + a.instance_id + " and " + b.instance_id + ".",
+        );
+      }
+    }
+  }
+
+  const connections = [];
+  for (let indexA = 0; indexA < parts.length; indexA += 1) {
+    const partA = parts[indexA];
+    const profileA = profiles.get(String(partA.part_id));
+    for (let indexB = indexA + 1; indexB < parts.length; indexB += 1) {
+      const partB = parts[indexB];
+      const profileB = profiles.get(String(partB.part_id));
+      const matingPairs = findMatingPairs(
+        profileA,
+        partA,
+        profileB,
+        partB,
+        options.positionToleranceLdu,
+      );
+      if (matingPairs.length) {
+        connections.push({
+          instance_a: partA.instance_id,
+          instance_b: partB.instance_id,
+          mating_pairs: matingPairs,
+        });
+      }
+    }
+  }
+
+  validateConnectedGraph(parts, connections);
+  return connections;
+}
+
+function createBom(parts) {
+  const quantities = new Map();
+  for (const part of parts) {
+    const key = part.part_id + "\u0000" + part.colour_code;
+    quantities.set(key, (quantities.get(key) || 0) + 1);
+  }
+
+  const items = [...quantities.entries()].map(([key, quantity]) => {
+    const [partId, colourCode] = key.split("\u0000");
+    return {
+      part_id: partId,
+      colour_code: Number(colourCode),
+      quantity,
+    };
+  });
+  items.sort((a, b) =>
+    compareText(a.part_id, b.part_id) || a.colour_code - b.colour_code);
+  return {
+    schema_version: 1,
+    model_name: "",
+    total_parts: parts.length,
+    items,
+  };
+}
+
+function formatNumber(value) {
+  const number = finiteNumber(value, "LDraw coordinate");
+  if (Math.abs(number) < 1e-12) return "0";
+  return Number(number.toPrecision(12)).toString();
+}
+
+export function exportLDraw(assembly) {
+  const lines = [
+    "0 " + assembly.model_name,
+    "0 Name: " + assembly.model_name + ".ldr",
+    "0 Author: BrickForge",
+    "0 // Part placements use the canonical assembly graph transforms.",
+  ];
+
+  for (const part of assembly.parts) {
+    const values = [...part.translation_ldu, ...part.matrix].map(formatNumber);
+    lines.push(
+      "1 " + part.colour_code + " " + values.join(" ") + " " + part.part_id + ".dat",
+    );
+  }
+  return lines.join("\n") + "\n";
+}
+
+export function buildRectangularBlock(widthStuds, depthStuds, heightBricks, catalogue, config = {}) {
+  const width = Number(widthStuds);
+  const depth = Number(depthStuds);
+  const height = Number(heightBricks);
+  for (const [name, value] of [
+    ["widthStuds", width],
+    ["depthStuds", depth],
+    ["heightBricks", height],
+  ]) {
+    if (!Number.isInteger(value) || value <= 0) {
+      throw new RangeError(name + " must be a positive integer.");
+    }
+  }
+
+  if (!catalogue || catalogue.schema_version !== 1 || !Array.isArray(catalogue.profiles)) {
+    throw new TypeError("The connection profile catalogue is missing or unsupported.");
+  }
+  const profiles = new Map(catalogue.profiles.map((profile) => [String(profile.part_id), profile]));
+  const partId = String(config.partId || "3001");
+  const profile = profiles.get(partId);
+  if (!profile) {
+    throw new Error("No connection profile is available for part " + partId + ".");
+  }
+  if (profile.footprint_studs_x !== 4 || profile.footprint_studs_z !== 2) {
+    throw new Error("The rectangular block strategy currently requires a 4×2-stud part.");
+  }
+
+  const colourCodes = config.colourCodes || [4, 1];
+  if (!Array.isArray(colourCodes) || colourCodes.length === 0) {
+    throw new TypeError("At least one LDraw colour code is required.");
+  }
+  for (const code of colourCodes) {
+    if (!Number.isInteger(code) || code < 0) {
+      throw new RangeError("Colour codes must be non-negative integers.");
+    }
+  }
+
+  const positionToleranceLdu = config.positionToleranceLdu ?? DEFAULT_POSITION_TOLERANCE_LDU;
+  const collisionToleranceLdu = config.collisionToleranceLdu ?? DEFAULT_COLLISION_TOLERANCE_LDU;
+  const maxParts = config.maxParts ?? MAX_GENERATED_PARTS;
+  if (!Number.isFinite(positionToleranceLdu) || positionToleranceLdu < 0) {
+    throw new RangeError("positionToleranceLdu must be finite and non-negative.");
+  }
+  if (!Number.isFinite(collisionToleranceLdu) || collisionToleranceLdu < 0) {
+    throw new RangeError("collisionToleranceLdu must be finite and non-negative.");
+  }
+
+  const placements = [];
+  const pitch = profile.stud_pitch_ldu;
+  for (let layer = 0; layer < height; layer += 1) {
+    const rotated = layer % 2 === 1;
+    const matrix = [...(rotated ? ROTATE_Y_90 : IDENTITY_MATRIX)];
+    const tileWidth = rotated ? 2 : 4;
+    const tileDepth = rotated ? 4 : 2;
+    if (width % tileWidth !== 0 || depth % tileDepth !== 0) {
+      const orientation = rotated ? "rotated" : "unrotated";
+      throw new RangeError(
+        width + "×" + depth + " studs cannot be tiled by the " + orientation + " 4×2 course.",
+      );
+    }
+
+    const countX = width / tileWidth;
+    const countZ = depth / tileDepth;
+    const halfWidthLdu = width * pitch / 2;
+    const halfDepthLdu = depth * pitch / 2;
+    const tileWidthLdu = tileWidth * pitch;
+    const tileDepthLdu = tileDepth * pitch;
+
+    for (let indexX = 0; indexX < countX; indexX += 1) {
+      const centreX = -halfWidthLdu + tileWidthLdu / 2 + indexX * tileWidthLdu;
+      for (let indexZ = 0; indexZ < countZ; indexZ += 1) {
+        const centreZ = -halfDepthLdu + tileDepthLdu / 2 + indexZ * tileDepthLdu;
+        placements.push({
+          instance_id: "layer-" + String(layer).padStart(2, "0")
+            + "-x-" + String(indexX).padStart(3, "0")
+            + "-z-" + String(indexZ).padStart(3, "0"),
+          part_id: partId,
+          colour_code: colourCodes[layer % colourCodes.length],
+          translation_ldu: [centreX, -layer * profile.body_height_ldu, centreZ],
+          matrix,
+        });
+        if (placements.length > maxParts) {
+          throw new RangeError(
+            "This browser prototype is limited to " + maxParts + " parts per model.",
+          );
+        }
+      }
+    }
+  }
+
+  const connections = validatePlacements(placements, profiles, {
+    positionToleranceLdu,
+    collisionToleranceLdu,
+  });
+
+  const modelName = "block-" + width + "x" + depth + "x" + height;
+  const assemblyGraph = {
+    schema_version: 1,
+    coordinate_system: "LDraw",
+    length_unit: "LDU",
+    model_name: modelName,
+    parts: placements,
+    connections,
+  };
+  const bom = createBom(placements);
+  bom.model_name = modelName;
+
+  return {
+    model_name: modelName,
+    parts: placements,
+    connections,
+    total_mating_pairs: connections.reduce(
+      (sum, connection) => sum + connection.mating_pairs.length,
+      0,
+    ),
+    assembly_graph: assemblyGraph,
+    bom,
+    ldraw: exportLDraw({ model_name: modelName, parts: placements }),
+    dimensions_mm: {
+      width: width * pitch * LDU_TO_MM,
+      depth: depth * pitch * LDU_TO_MM,
+      height: height * profile.body_height_ldu * LDU_TO_MM,
+    },
+  };
+}
+
+export const constructionConstants = Object.freeze({
+  lduToMm: LDU_TO_MM,
+  maxGeneratedParts: MAX_GENERATED_PARTS,
+  rotateY90: ROTATE_Y_90,
+});
