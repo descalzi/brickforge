@@ -1,4 +1,4 @@
-const RAW_BASE = 'https://cdn.jsdelivr.net/gh/kulits/ldraw-parts@c70360d1c588be894997b2168c61909bc8058c4d/ldraw/';
+const RAW_BASE = 'https://raw.githubusercontent.com/kulits/ldraw-parts/c70360d1c588be894997b2168c61909bc8058c4d/ldraw/';
 const LDU_TO_MM = 0.4;
 const MAX_REFERENCE_DEPTH = 64;
 
