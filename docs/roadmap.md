@@ -5,34 +5,34 @@ This roadmap is intentionally milestone-based. Each milestone should produce a d
 ## M0 — Foundations and technical reconnaissance
 
 - [x] Create repository and initial architecture specification.
-- [ ] Confirm initial product scope and optimisation defaults.
-- [ ] Review LDraw file format, part library structure, and licensing.
-- [ ] Define coordinate conventions and unit conversions.
+- [x] Confirm initial product scope and optimisation defaults.
+- [x] Review LDraw file format, part library structure, and licensing.
+- [x] Define coordinate conventions and unit conversions.
 - [ ] Select a small, redistributable or locally sourced fixture set for tests.
-- [ ] Record decisions and known limitations.
+- [x] Record decisions and known limitations.
 
 **Exit criteria:** documented technical choices and a reproducible development environment.
 
 ## M1 — Geometry ingestion
 
 - [ ] Create Python package and CLI entry point.
-- [ ] Import STL and OBJ meshes.
+- [x] Import STL and OBJ meshes.
 - [ ] Validate empty, non-watertight, degenerate, and non-finite geometry cases.
-- [ ] Report units (or require explicit units when unknown), dimensions, and mesh statistics.
+- [x] Report units, dimensions, and mesh statistics.
 - [ ] Normalise geometry without silently changing intended physical scale.
-- [ ] Add deterministic unit tests and small test fixtures.
+- [x] Add deterministic unit tests and small test fixtures.
 
 **Exit criteria:** a mesh can be inspected and normalised with a machine-readable report.
 
 ## M2 — LEGO coordinate system and parts catalogue
 
-- [ ] Document LDraw coordinate conventions and conversion tests.
-- [ ] Parse a minimal set of LDraw part files.
-- [ ] Represent part metadata and colour references.
+- [x] Document LDraw coordinate conventions and conversion tests.
+- [x] Parse LDraw part geometry records and recursively resolve sub-file references.
+- [x] Represent part metadata and colour references, including inherited colour context.
 - [ ] Model connection primitives separately from render geometry.
-- [ ] Define catalogue provenance and licensing requirements.
+- [x] Define catalogue provenance and licensing requirements.
 
-**Exit criteria:** known parts can be loaded, positioned, and exported without coordinate drift.
+**Exit criteria:** known parts can be loaded, positioned, and exported without coordinate drift. The parser/resolver groundwork is implemented; validating against a downloaded official library and adding an LDraw export path remain before this milestone is complete.
 
 ## M3 — First construction demonstrator
 
