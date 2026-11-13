@@ -96,6 +96,8 @@ The internal representation should be an **assembly graph**:
 
 Candidate algorithms may include voxel/occupancy methods for coarse structure, surface fitting for appearance, and constraint-based placement for specialised geometry. These are complementary strategies, not mutually exclusive product modes.
 
+The first typed graph implementation is in `src/brickforge/assembly/`. It stores unique part instances and rigid LDraw transforms, derives graph edges from the nominal stud/receiver matcher, and exports LDraw plus a colour-aware BOM from the same graph. The current two-brick example is manually placed; an automatic target-shape placement strategy has not yet been implemented. See [assembly graph v1](assembly-graph.md).
+
 ### 4.5 Validation
 
 Validation should be layered:
