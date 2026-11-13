@@ -134,9 +134,10 @@ test("browser engine alternates colours by course", () => {
 });
 
 test("published builder page contains every control required by its module", async () => {
-  const [html, script] = await Promise.all([
+  const [html, script, css] = await Promise.all([
     readFile(new URL("../docs/builder.html", import.meta.url), "utf8"),
     readFile(new URL("../docs/assets/builder.js", import.meta.url), "utf8"),
+    readFile(new URL("../docs/assets/builder.css", import.meta.url), "utf8"),
   ]);
   const requiredIds = [...script.matchAll(/querySelector\("#([^"]+)"\)/g)]
     .map((match) => match[1]);
@@ -150,5 +151,7 @@ test("published builder page contains every control required by its module", asy
   assert.match(html, /id="download-graph"/);
   assert.match(html, /id="download-bom"/);
   assert.match(html, /runs in your browser/i);
+  assert.match(css, /\.builder-empty\[hidden\]\s*\{\s*display:\s*none\s*!important;/);
+  assert.match(css, /\.dimension-fields\s*>\s*div:last-child\s*\{\s*grid-column:\s*1\s*\/\s*-1;/);
 });
 
