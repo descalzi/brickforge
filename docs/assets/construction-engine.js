@@ -816,6 +816,7 @@ function sampleInterlockingFootprints(cells, profiles) {
   const signatures = new Set();
   let bestPair = null;
   let bestPartCount = Infinity;
+  let firstPairAttempt = null;
   for (let attempt = 0; attempt < 512; attempt += 1) {
     const remaining = new Set(cells);
     const chosen = [];
@@ -859,6 +860,7 @@ function sampleInterlockingFootprints(cells, profiles) {
     for (const previous of sampled) {
       if (footprintTilingsConnect(previous, tiling)) {
         const partCount = previous.length + tiling.length;
+        if (firstPairAttempt === null) firstPairAttempt = attempt;
         if (partCount < bestPartCount) {
           bestPair = [previous, tiling];
           bestPartCount = partCount;
@@ -866,6 +868,8 @@ function sampleInterlockingFootprints(cells, profiles) {
       }
     }
     sampled.push(tiling);
+    // Spend at most 32 additional samples improving the first valid pair.
+    if (firstPairAttempt !== null && attempt - firstPairAttempt >= 31) break;
   }
   return bestPair;
 }
