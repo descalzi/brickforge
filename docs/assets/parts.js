@@ -1,4 +1,5 @@
-const DEFAULT_RAW_BASE = 'https://raw.githubusercontent.com/kulits/ldraw-parts/c70360d1c588be894997b2168c61909bc8058c4d/ldraw/';\nlet rawBaseUrl = DEFAULT_RAW_BASE;
+const DEFAULT_RAW_BASE = 'https://raw.githubusercontent.com/kulits/ldraw-parts/c70360d1c588be894997b2168c61909bc8058c4d/ldraw/';
+let rawBaseUrl = DEFAULT_RAW_BASE;
 const LDU_TO_MM = 0.4;
 const MAX_REFERENCE_DEPTH = 64;
 
