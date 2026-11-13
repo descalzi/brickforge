@@ -206,3 +206,57 @@
 .connection-note[data-supported="false"] {
   border-left-color: #A77A45;
 }
+
+
+/* High-visibility activity panel shared with the construction builder. */
+.parts-message {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 76px;
+  margin-top: 18px;
+  padding: 13px 44px 13px 14px;
+  border: 1px solid var(--border-strong);
+  border-left: 4px solid var(--accent);
+  background: #FFFFFF;
+  color: var(--fg);
+  font-size: .8rem;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+}
+.parts-message::before {
+  content: attr(data-status);
+  color: var(--fg);
+  font-family: var(--font-mono);
+  font-size: .78rem;
+  font-weight: 700;
+  letter-spacing: .055em;
+}
+.parts-message[data-state="loading"] {
+  border-color: #D8B66C;
+  border-left-color: #B7791F;
+  background: #FFFBF1;
+}
+.parts-message[data-state="loading"]::before { color: #89550D; }
+.parts-message[data-state="loading"]::after {
+  content: "";
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 17px;
+  height: 17px;
+  border: 2px solid #E8D8B7;
+  border-top-color: #A96C16;
+  border-radius: 50%;
+  animation: parts-status-spin .8s linear infinite;
+}
+.parts-message[data-state="loaded"] {
+  border-left-color: var(--ok);
+  background: #F2FAF6;
+}
+.parts-message[data-state="error"] {
+  border-left-color: var(--crit);
+  background: #FFF5F5;
+}
+@keyframes parts-status-spin { to { transform: rotate(360deg); } }
