@@ -37,12 +37,12 @@ jobs:
         run: python -m json.tool docs/data/ldraw/parts-index.json > /dev/null
       - name: Commit catalogue update
         run: |
-          if git diff --quiet -- docs/data/ldraw/parts-index.json; then
+          git add docs/data/ldraw/parts-index.json
+          if git diff --cached --quiet; then
             echo "The searchable LDraw catalogue is already up to date."
             exit 0
           fi
           git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/data/ldraw/parts-index.json
+          git config user.email "41898282+users.noreply.github.com"
           git commit -m "Refresh generated LDraw part search catalogue"
           git push
