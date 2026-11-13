@@ -197,3 +197,28 @@ def test_bare_subpart_reference_prefers_primitive_folder_on_name_collision(tmp_p
 
     assert len(geometry) == 1
     assert geometry[0].source_file.endswith("p/stud.dat")
+
+
+
+def test_missing_nested_reference_reports_complete_dependency_chain(tmp_path: Path) -> None:
+    from scripts.validate_ldraw_library import audit_library
+
+    _write(
+        tmp_path / "parts" / "root.dat",
+        "0 Root\\n1 16 0 0 0 1 0 0 0 1 0 0 0 1 s/child.dat\\n",
+    )
+    _write(
+        tmp_path / "parts" / "s" / "child.dat",
+        "0 Child\\n1 16 0 0 0 1 0 0 0 1 0 0 0 1 missing-primitive.dat\\n",
+    )
+
+    report = audit_library(tmp_path)
+
+    assert report["parts_failed"] == 1
+    failure = report["failures"][0]
+    assert failure["dependency_chain"] == [
+        "parts/root.dat",
+        "parts/s/child.dat",
+        "missing-primitive.dat",
+    ]
+    assert "dependency chain: parts/root.dat -> parts/s/child.dat -> missing-primitive.dat" in failure["message"]
