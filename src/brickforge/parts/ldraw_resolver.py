@@ -202,7 +202,7 @@ class LDrawLibrary:
     def _accept_existing(self, candidate: Path, requested: str) -> Path:
         if not candidate.is_relative_to(self.root):
             raise LDrawResolutionError(
-                f"LDraw reference {requested!r} resolves outside the library root"
+                f"LDraw reference {requested!r} resolves outside the LDraw library root"
             )
         if not candidate.is_file():
             raise LDrawResolutionError(
