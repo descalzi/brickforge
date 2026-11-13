@@ -44,10 +44,10 @@ a public mirror of the official LDraw library, synchronised daily from
 - Upstream library: https://library.ldraw.org/
 - Mirror repository: https://github.com/kulits/ldraw-parts
 - Mirror sync workflow: https://github.com/kulits/ldraw-parts/blob/master/.github/workflows/sync.yml
-- Version-pinned raw-file root used by this release:
-  `https://raw.githubusercontent.com/kulits/ldraw-parts/c70360d1c588be894997b2168c61909bc8058c4d/ldraw/`
-- Example part: `https://raw.githubusercontent.com/kulits/ldraw-parts/c70360d1c588be894997b2168c61909bc8058c4d/ldraw/parts/3001.dat`
-- Colour table: `https://raw.githubusercontent.com/kulits/ldraw-parts/c70360d1c588be894997b2168c61909bc8058c4d/ldraw/LDConfig.ldr`
+- Version-pinned raw-file root: recorded in the generated catalogue at
+  `docs/data/ldraw/parts-index.json.gz`
+- Example part path: `parts/3001.dat`
+- Colour table path: `LDConfig.ldr`
 
 Each generated search catalogue records the exact mirror commit SHA and its
 corresponding raw-file base URL. This keeps the catalogue and fetched geometry on
