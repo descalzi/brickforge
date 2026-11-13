@@ -8,6 +8,8 @@ Web first, with a Python geometry and construction engine behind it.
 
 Core engine: Python 3.11+, Trimesh and NumPy. Public project page: static HTML, CSS and vanilla JavaScript in `/docs`, published with GitHub Pages. The source repository is also public; never commit secrets, credentials, or private user project data.
 
+The end-user product is browser-first. Python package installation and command-line entry points are developer tools for local validation; they are not a requirement or expected step for website users. The eventual web app must expose construction and export through the browser UI, backed by a hosted service or browser-compatible implementation.
+
 ## Users and scene
 
 Primary user: a builder or designer who has an object in mind and wants a physically buildable construction made from genuine L-brick elements.
@@ -33,6 +35,10 @@ BrickForge aims to convert natural-language descriptions, reference images and 3
 - Part geometry source under evaluation: the LDraw.org Parts Library. Parts are authored by contributors and have per-author licensing and attribution requirements; retain headers and audit licences before redistribution.
 - Connection metadata: not yet selected as a production source. BrickLink Studio uses separate connection files, but their reuse terms must be checked. Initial metadata may be authored in-house for a small, tested set of parts.
 - Must not claim: that automatic L-brick construction, physical stability guarantees, instruction generation or purchasing are already implemented.
+
+## Terminology
+
+Use generic project terminology throughout user-facing pages, documentation, scripts and UI copy: **L-brick**, **brick**, **plate**, **element**, **block**, and **construction**. Do not use the name of the well-known third-party brick brand in project-authored copy. Keep original third-party source headers and licence notices unchanged.
 
 ## Brand commitments
 
