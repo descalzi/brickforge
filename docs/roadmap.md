@@ -29,6 +29,7 @@ This roadmap is intentionally milestone-based. Each milestone should produce a d
 - [x] Document LDraw coordinate conventions and conversion tests.
 - [x] Parse LDraw part geometry records and recursively resolve sub-file references.
 - [x] Represent part metadata and colour references, including inherited colour context.
+- [x] Add a browser part explorer for a curated set of real LDraw bricks and plates.
 - [ ] Model connection primitives separately from render geometry.
 - [x] Define catalogue provenance and licensing requirements.
 
