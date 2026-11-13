@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "model_name": "stacked-3001",
+  "total_parts": 2,
+  "items": [
+    {
+      "part_id": "3001",
+      "colour_code": 1,
+      "quantity": 1
+    },
+    {
+      "part_id": "3001",
+      "colour_code": 4,
+      "quantity": 1
+    }
+  ]
+}
