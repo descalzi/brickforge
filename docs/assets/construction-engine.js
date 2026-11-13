@@ -356,59 +356,164 @@ export function buildRectangularBlock(widthStuds, depthStuds, heightBricks, cata
     const halfWidthLdu = width * pitch / 2;
     const halfDepthLdu = depth * pitch / 2;
 
-    // A regular rotated grid does not cross the joints between adjacent
-    // 4-stud-wide lower columns. For wider blocks, shift this course by one
-    // stud and complete its two 1-stud edge strips with rotated 1x2 bricks.
-    const staggeredCourse = rotated && width > 4 && width % 4 === 0 && depth % 4 === 0;
-    if (staggeredCourse) {
+    // One-axis layouts use a simple stagger. When both dimensions are
+    // wider than one brick, use a two-axis stagger so upper elements bridge
+    // the central seams in both directions.
+    const staggeredWidth = rotated && width > 4 && depth === 4;
+    const staggeredDepth = rotated && width === 4 && depth > 4;
+    const staggeredBoth = rotated && width > 4 && depth > 4;
+    if (staggeredWidth || staggeredDepth || staggeredBoth) {
       const edgeProfile = profiles.get("3004");
       if (!edgeProfile) {
-        throw new Error("Staggered wide blocks require the 1×2 part profile 3004.");
+        throw new Error("Staggered blocks require the 1×2 part profile 3004.");
       }
       if (edgeProfile.footprint_studs_x !== 2 || edgeProfile.footprint_studs_z !== 1) {
         throw new Error("Part profile 3004 must have a 2×1-stud footprint.");
       }
 
-      const innerColumns = (width - 2) / 2;
-      const depthTiles = depth / 4;
-      for (let indexX = 0; indexX < innerColumns; indexX += 1) {
-        const centreX = (-width / 2 + 2 + 2 * indexX) * pitch;
-        for (let indexZ = 0; indexZ < depthTiles; indexZ += 1) {
-          const centreZ = (-depth / 2 + 2 + 4 * indexZ) * pitch;
+      if (staggeredWidth) {
+        // Bridge lower columns with rotated 2×4 bricks and fill the two
+        // one-stud-wide side strips with rotated 1×2 bricks.
+        const innerColumns = (width - 2) / 2;
+        for (let indexX = 0; indexX < innerColumns; indexX += 1) {
+          const centreX = (-width / 2 + 2 + 2 * indexX) * pitch;
           addPlacement({
             instance_id: "layer-" + String(layer).padStart(2, "0")
-              + "-inner-x-" + String(indexX).padStart(3, "0")
-              + "-z-" + String(indexZ).padStart(3, "0"),
+              + "-inner-x-" + String(indexX).padStart(3, "0") + "-z-000",
             part_id: partId,
             colour_code: layerColour,
             translation_ldu: [
               Object.is(centreX, -0) ? 0 : centreX,
               layerY,
-              Object.is(centreZ, -0) ? 0 : centreZ,
+              0,
             ],
-            matrix,
+            matrix: [...ROTATE_Y_90],
           });
         }
-      }
-
-      for (const [edgeName, centreXStuds] of [
-        ["left", -width / 2 + 0.5],
-        ["right", width / 2 - 0.5],
-      ]) {
-        for (let indexZ = 0; indexZ < depth / 2; indexZ += 1) {
-          const centreZ = (-depth / 2 + 1 + 2 * indexZ) * pitch;
+        for (const [edgeName, centreXStuds] of [
+          ["left", -width / 2 + 0.5],
+          ["right", width / 2 - 0.5],
+        ]) {
+          for (let indexZ = 0; indexZ < depth / 2; indexZ += 1) {
+            const centreZ = (-depth / 2 + 1 + 2 * indexZ) * pitch;
+            addPlacement({
+              instance_id: "layer-" + String(layer).padStart(2, "0")
+                + "-edge-" + edgeName + "-z-" + String(indexZ).padStart(3, "0"),
+              part_id: "3004",
+              colour_code: layerColour,
+              translation_ldu: [
+                centreXStuds * pitch,
+                layerY,
+                Object.is(centreZ, -0) ? 0 : centreZ,
+              ],
+              matrix: [...ROTATE_Y_90],
+            });
+          }
+        }
+      } else if (staggeredDepth) {
+        // With one lower column, shift 2×4 bricks by one stud along depth
+        // and close the one-stud-wide front and back strips.
+        for (let indexZ = 0; indexZ < depth / 2 - 1; indexZ += 1) {
+          const centreZ = (-depth / 2 + 2 + 2 * indexZ) * pitch;
           addPlacement({
             instance_id: "layer-" + String(layer).padStart(2, "0")
-              + "-edge-" + edgeName + "-z-" + String(indexZ).padStart(3, "0"),
-            part_id: "3004",
+              + "-inner-x-000-z-" + String(indexZ).padStart(3, "0"),
+            part_id: partId,
             colour_code: layerColour,
             translation_ldu: [
-              centreXStuds * pitch,
+              0,
               layerY,
               Object.is(centreZ, -0) ? 0 : centreZ,
             ],
-            matrix,
+            matrix: [...IDENTITY_MATRIX],
           });
+        }
+        for (const [edgeName, centreZStuds] of [
+          ["front", -depth / 2 + 0.5],
+          ["back", depth / 2 - 0.5],
+        ]) {
+          for (let indexX = 0; indexX < width / 2; indexX += 1) {
+            const centreX = (-width / 2 + 1 + 2 * indexX) * pitch;
+            addPlacement({
+              instance_id: "layer-" + String(layer).padStart(2, "0")
+                + "-edge-" + edgeName + "-x-" + String(indexX).padStart(3, "0"),
+              part_id: "3004",
+              colour_code: layerColour,
+              translation_ldu: [
+                Object.is(centreX, -0) ? 0 : centreX,
+                layerY,
+                centreZStuds * pitch,
+              ],
+              matrix: [...IDENTITY_MATRIX],
+            });
+          }
+        }
+      } else {
+        // Shift the upper 2×4 grid half a brick in X and half a row in Z.
+        // Its core bridges lower joints in both directions. The 1×2 parts
+        // close the one-stud perimeter strips without overlapping one another.
+        const coreColumns = width / 4 - 1;
+        const coreRows = depth / 2 - 1;
+        for (let indexX = 0; indexX < coreColumns; indexX += 1) {
+          const centreX = (-width / 2 + 4 + 4 * indexX) * pitch;
+          for (let indexZ = 0; indexZ < coreRows; indexZ += 1) {
+            const centreZ = (-depth / 2 + 2 + 2 * indexZ) * pitch;
+            addPlacement({
+              instance_id: "layer-" + String(layer).padStart(2, "0")
+                + "-core-x-" + String(indexX).padStart(3, "0")
+                + "-z-" + String(indexZ).padStart(3, "0"),
+              part_id: partId,
+              colour_code: layerColour,
+              translation_ldu: [
+                Object.is(centreX, -0) ? 0 : centreX,
+                layerY,
+                Object.is(centreZ, -0) ? 0 : centreZ,
+              ],
+              matrix: [...IDENTITY_MATRIX],
+            });
+          }
+        }
+
+        for (const [edgeName, centreXStuds] of [
+          ["left", -width / 2 + 1],
+          ["right", width / 2 - 1],
+        ]) {
+          for (let indexZ = 0; indexZ < depth - 2; indexZ += 1) {
+            const centreZ = (-depth / 2 + 1.5 + indexZ) * pitch;
+            addPlacement({
+              instance_id: "layer-" + String(layer).padStart(2, "0")
+                + "-edge-" + edgeName + "-z-" + String(indexZ).padStart(3, "0"),
+              part_id: "3004",
+              colour_code: layerColour,
+              translation_ldu: [
+                centreXStuds * pitch,
+                layerY,
+                Object.is(centreZ, -0) ? 0 : centreZ,
+              ],
+              matrix: [...IDENTITY_MATRIX],
+            });
+          }
+        }
+
+        for (const [edgeName, centreZStuds] of [
+          ["front", -depth / 2 + 0.5],
+          ["back", depth / 2 - 0.5],
+        ]) {
+          for (let indexX = 0; indexX < width / 2; indexX += 1) {
+            const centreX = (-width / 2 + 1 + 2 * indexX) * pitch;
+            addPlacement({
+              instance_id: "layer-" + String(layer).padStart(2, "0")
+                + "-edge-" + edgeName + "-x-" + String(indexX).padStart(3, "0"),
+              part_id: "3004",
+              colour_code: layerColour,
+              translation_ldu: [
+                Object.is(centreX, -0) ? 0 : centreX,
+                layerY,
+                centreZStuds * pitch,
+              ],
+              matrix: [...IDENTITY_MATRIX],
+            });
+          }
         }
       }
       continue;
