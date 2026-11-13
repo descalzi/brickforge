@@ -295,6 +295,10 @@ export function buildRectangularBlock(widthStuds, depthStuds, heightBricks, cata
     }
   }
 
+  if (height < 2) {
+    throw new RangeError("heightBricks must be at least 2 courses for an interlocked block.");
+  }
+
   if (!catalogue || catalogue.schema_version !== 1 || !Array.isArray(catalogue.profiles)) {
     throw new TypeError("The connection profile catalogue is missing or unsupported.");
   }
