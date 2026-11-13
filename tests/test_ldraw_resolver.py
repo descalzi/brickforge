@@ -221,4 +221,7 @@ def test_missing_nested_reference_reports_complete_dependency_chain(tmp_path: Pa
         "parts/s/child.dat",
         "missing-primitive.dat",
     ]
-    assert "dependency chain: parts/root.dat -> parts/s/child.dat -> missing-primitive.dat" in failure["message"]
+    assert (
+        "dependency chain: parts/root.dat -> parts/s/child.dat -> missing-primitive.dat"
+        in failure["message"]
+    )
