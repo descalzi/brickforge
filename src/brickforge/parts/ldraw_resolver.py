@@ -212,6 +212,11 @@ class LDrawLibrary:
         walk(root_file, IDENTITY_MATRIX, ORIGIN, colour_code, (), 0)
         return tuple(resolved)
 
+    @property
+    def cached_document_count(self) -> int:
+        """Return the number of distinct LDraw documents parsed by this resolver."""
+        return len(self._document_cache)
+
     def _build_index(self) -> None:
         for folder_name in ("parts", "p", "models"):
             base = self.root / folder_name
