@@ -439,8 +439,7 @@ async function expandPart(document, matrix, translation, inheritedColour, ancest
 function parsePalette(content) {
   const parsed = new Map(fallbackColours);
   const pattern = /^\s*0\s+!COLOUR\s+\S+\s+CODE\s+(-?\d+)\s+VALUE\s+#([0-9A-F]{6})\s+EDGE\s+(#[0-9A-F]{6}|-?\d+)/i;
-  content.split(/\r?
-/).forEach((line) => {
+  content.split(/\r?\n/).forEach((line) => {
     const match = line.match(pattern);
     if (!match) return;
     parsed.set(Number(match[1]), {
