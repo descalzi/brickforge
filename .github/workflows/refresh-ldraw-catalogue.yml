@@ -1,0 +1,42 @@
+name: Refresh LDraw search catalogue
+
+on:
+  schedule:
+    - cron: "17 3 1 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ldraw-catalogue-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+      - name: Download the official LDraw library
+        run: python scripts/fetch_ldraw_library.py
+      - name: Build compact searchable part catalogue
+        run: python scripts/build_ldraw_catalogue.py
+      - name: Validate generated catalogue
+        run: python -m json.tool docs/data/ldraw/parts-index.json > /dev/null
+      - name: Commit catalogue update
+        run: |
+          if git diff --quiet -- docs/data/ldraw/parts-index.json; then
+            echo "The searchable LDraw catalogue is already up to date."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/data/ldraw/parts-index.json
+          git commit -m "Refresh generated LDraw part search catalogue"
+          git push
