@@ -330,8 +330,8 @@ def test_block_ldraw_export_reparses_to_same_placements() -> None:
     ]
 
 
-def test_single_course_with_multiple_unconnected_bricks_is_rejected() -> None:
-    with pytest.raises(AssemblyError, match="disconnected"):
+def test_single_course_is_rejected_with_a_clear_minimum_height_error() -> None:
+    with pytest.raises(ValueError, match="at least two courses"):
         build_rectangular_block(4, 4, 1, PROFILES)
 
 
