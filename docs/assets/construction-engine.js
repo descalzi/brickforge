@@ -855,6 +855,70 @@ function findFootprintTilings(tilings) {
   return null;
 }
 
+function footprintTilingSequenceConnects(sequence) {
+  const offsets = [];
+  let count = 0;
+  for (const tiling of sequence) {
+    offsets.push(count);
+    count += tiling.length;
+  }
+  const parent = Array.from({ length: count }, (_, index) => index);
+
+  function find(index) {
+    let root = index;
+    while (parent[root] !== root) root = parent[root];
+    while (parent[index] !== index) {
+      const next = parent[index];
+      parent[index] = root;
+      index = next;
+    }
+    return root;
+  }
+
+  function join(a, b) {
+    const rootA = find(a);
+    const rootB = find(b);
+    if (rootA !== rootB) parent[rootB] = rootA;
+  }
+
+  for (let layer = 0; layer < sequence.length - 1; layer += 1) {
+    const upperOwner = new Map();
+    sequence[layer + 1].forEach((tile, index) => {
+      for (const key of tile.cells) upperOwner.set(key, index);
+    });
+    sequence[layer].forEach((tile, index) => {
+      for (const key of tile.cells) {
+        const upperIndex = upperOwner.get(key);
+        if (upperIndex !== undefined) {
+          join(offsets[layer] + index, offsets[layer + 1] + upperIndex);
+        }
+      }
+    });
+  }
+
+  const root = find(0);
+  for (let index = 1; index < count; index += 1) {
+    if (find(index) !== root) return false;
+  }
+  return true;
+}
+
+function findThreeCourseTilingSequence(tilings) {
+  let checks = 0;
+  for (const first of tilings) {
+    for (const second of tilings) {
+      for (const third of tilings) {
+        checks += 1;
+        if (checks > 250000) return null;
+        if (footprintTilingSequenceConnects([first, second, third])) {
+          return [first, second, third];
+        }
+      }
+    }
+  }
+  return null;
+}
+
 export function buildFootprintBlock(footprintCells, heightBricks, catalogue, config = {}) {
   const height = Number(heightBricks);
   if (!Number.isInteger(height) || height < 2) {
@@ -923,27 +987,31 @@ export function buildFootprintBlock(footprintCells, heightBricks, catalogue, con
 
   let pair = sampleInterlockingFootprints(cells, profiles);
   let searchLimited = false;
+  let tilingSequence = null;
   if (!pair) {
     const search = enumerateFootprintTilings(cells, profiles);
     searchLimited = search.limitReached;
     pair = findFootprintTilings(search.tilings);
+    if (!pair && height === 3) {
+      tilingSequence = findThreeCourseTilingSequence(search.tilings);
+    }
   }
-  if (!pair) {
+  if (!pair && !tilingSequence) {
     const detail = searchLimited
       ? "within the bounded placement search"
       : "using the available rectangular brick profiles";
     throw new Error(
-      "No connected pair of interlocking course tilings was found " + detail
+      "No connected interlocking course arrangement was found " + detail
         + "; try a different footprint or part catalogue.",
     );
   }
 
-  const [lowerTiling, upperTiling] = pair;
+  if (pair) tilingSequence = [pair[0], pair[1]];
   const placements = [];
   const pitch = baseProfile.stud_pitch_ldu;
   const bodyHeight = baseProfile.body_height_ldu;
   for (let layer = 0; layer < height; layer += 1) {
-    const tiling = layer % 2 === 0 ? lowerTiling : upperTiling;
+    const tiling = tilingSequence[layer % tilingSequence.length];
     const colour = colourCodes[layer % colourCodes.length];
     const layerY = -layer * bodyHeight;
     for (let index = 0; index < tiling.length; index += 1) {
