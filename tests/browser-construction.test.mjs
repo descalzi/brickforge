@@ -145,3 +145,22 @@ test("browser engine rejects disconnected and duplicate footprint cells", () => 
     /duplicate/,
   );
 });
+
+
+test("browser engine builds enclosed O-shaped footprints", () => {
+  for (const rows of [
+    ["#####", "##.##", "##.##", "#####"],
+    ["#####", "##.##", "##.##", "#####", "#####"],
+  ]) {
+    const cells = [];
+    rows.forEach((row, z) => {
+      [...row].forEach((character, x) => {
+        if (character === "#") cells.push([x, z]);
+      });
+    });
+    const result = buildFootprintBlock(cells, 2, catalogue);
+    assert.ok(result.parts.length > 0);
+    assert.ok(result.connections.length > 0);
+    assert.ok(result.total_mating_pairs > 0);
+  }
+});
