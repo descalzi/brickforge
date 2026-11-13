@@ -113,7 +113,7 @@ test("browser engine alternates colours by course", () => {
     colourCodes: [14, 2],
   });
   assert.deepEqual(
-    [...new Set(result.parts.map((part) => part.colour_code))].sort(),
+    [...new Set(result.parts.map((part) => part.colour_code))].sort((a, b) => a - b),
     [2, 14],
   );
 });
