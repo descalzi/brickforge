@@ -21,7 +21,7 @@ frame. LDraw uses -Y as up.
   for a standard brick and Y = 8 LDU for a plate.
 - A receiver's approach axis points along +Y, into the underside.
 
-The catalogue currently includes parts 3001, 3003, 3004, 3005, 3020 and 3021.
+The catalogue currently includes brick parts 3001, 3002, 3003, 3004, 3005, 3009, 3010 and 3622, plus plate parts 3020 and 3021.
 Every position is represented as an explicit feature so later part families
 can add different connector types without changing the profile envelope.
 
