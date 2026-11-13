@@ -1,9 +1,9 @@
 """Deterministic interlocking construction for connected 2D stud footprints.
 
-This experimental strategy tiles each course with catalogue brick rectangles,
-then alternates two tilings whose cross-course interface graph is connected.
-It deliberately has bounded search limits; it does not claim to solve every
-polyomino or arbitrary 3D shape.
+This experimental strategy tiles each course with catalogue brick rectangles.
+It prefers two alternating tilings with a connected cross-course graph, and
+can use three distinct tilings for a connected three-course stack. Search is
+bounded; this does not solve every polyomino or arbitrary 3D shape.
 """
 
 from __future__ import annotations
@@ -377,10 +377,11 @@ def build_footprint_block(
 ) -> Assembly:
     """Build an interlocked stack over a connected orthogonal stud footprint.
 
-    Cells are integer (x, z) stud positions. Courses alternate between two
-    exact-cover tilings so every part participates in one connected
-    cross-course interface graph. Supported tiles are the 2x4, 2x2, 1x2 and
-    1x1 brick profiles (IDs 3001, 3003, 3004 and 3005).
+    Cells are integer (x, z) stud positions. The builder prefers two
+    alternating exact-cover tilings with a connected cross-course graph. If
+    that is not possible for a three-course stack, it also searches for a
+    connected sequence of three distinct tilings. Supported tiles are the
+    2x4, 2x2, 1x2 and 1x1 brick profiles (IDs 3001, 3003, 3004 and 3005).
 
     The bounded exact-cover search is intended for small irregular footprints.
     It may reject a valid footprint when no supported tiling is found within
