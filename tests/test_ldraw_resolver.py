@@ -173,3 +173,27 @@ def test_full_library_audit_can_limit_parts_and_rejects_zero_limit() -> None:
     assert report["parts_scanned"] == 1
     with pytest.raises(ValueError, match="max_parts must be at least 1"):
         audit_library(fixture_root, max_parts=0)
+
+
+def test_bare_subpart_reference_prefers_primitive_folder_on_name_collision(tmp_path: Path) -> None:
+    _write(
+        tmp_path / "parts" / "root.dat",
+        "0 Root\n1 16 0 0 0 1 0 0 0 1 0 0 0 1 s/child.dat\n",
+    )
+    _write(
+        tmp_path / "parts" / "s" / "child.dat",
+        "0 Child subpart\n1 16 0 0 0 1 0 0 0 1 0 0 0 1 stud.dat\n",
+    )
+    _write(
+        tmp_path / "parts" / "stud.dat",
+        "0 Conflicting top-level part\n3 16 0 0 0 1 0 0 0 1 0\n",
+    )
+    _write(
+        tmp_path / "p" / "stud.dat",
+        "0 Primitive stud\n3 16 0 0 0 1 0 0 0 1 0\n",
+    )
+
+    geometry = LDrawLibrary(tmp_path).resolve_part_geometry("root.dat")
+
+    assert len(geometry) == 1
+    assert geometry[0].source_file.endswith("p/stud.dat")
