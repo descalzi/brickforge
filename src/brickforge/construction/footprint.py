@@ -206,6 +206,110 @@ def _find_interlocking_tilings(
     return None
 
 
+
+
+def _sample_interlocking_tilings(
+    cells: frozenset[tuple[int, int]],
+    profiles: Mapping[str, ConnectionProfile],
+) -> tuple[tuple[_Tile, ...], tuple[_Tile, ...]] | None:
+    by_cell: dict[tuple[int, int], list[_Tile]] = {cell: [] for cell in cells}
+    for x, z in sorted(cells, key=lambda cell: (cell[1], cell[0])):
+        for part_id in _TILE_PART_IDS:
+            profile = profiles.get(part_id)
+            if profile is None:
+                continue
+            orientations = [(profile.footprint_studs_x, profile.footprint_studs_z, False)]
+            if profile.footprint_studs_x != profile.footprint_studs_z:
+                orientations.append((profile.footprint_studs_z, profile.footprint_studs_x, True))
+            for width, depth, rotated in orientations:
+                tile_cells = frozenset(
+                    (x + dx, z + dz)
+                    for dx in range(width)
+                    for dz in range(depth)
+                )
+                if tile_cells <= cells:
+                    tile = _Tile(part_id, x, z, width, depth, rotated, tile_cells)
+                    for cell in tile_cells:
+                        by_cell[cell].append(tile)
+
+    def tile_priority(tile: _Tile) -> int:
+        part_number = int(tile.part_id)
+        return (
+            (tile.x * 73_856_093)
+            ^ (tile.z * 19_349_663)
+            ^ (tile.width * 83_492_791)
+            ^ (tile.depth * 2_654_435_761)
+            ^ (part_number * 97_531)
+        ) & 0xFFFFFFFF
+
+    for options in by_cell.values():
+        options.sort(
+            key=lambda tile: (
+                -(tile.width * tile.depth),
+                tile_priority(tile),
+                tile.part_id,
+                tile.x,
+                tile.z,
+                tile.rotated,
+            )
+        )
+
+    seed = 2_166_136_261
+    for x, z in sorted(cells, key=lambda cell: (cell[1], cell[0])):
+        seed = ((seed ^ x) * 16_777_619) & 0xFFFFFFFF
+        seed = ((seed ^ z) * 16_777_619) & 0xFFFFFFFF
+    if seed == 0:
+        seed = 0x9E3779B9
+
+    def next_random() -> int:
+        nonlocal seed
+        seed ^= (seed << 13) & 0xFFFFFFFF
+        seed ^= seed >> 17
+        seed ^= (seed << 5) & 0xFFFFFFFF
+        seed &= 0xFFFFFFFF
+        return seed
+
+    sampled: list[tuple[_Tile, ...]] = []
+    signatures: set[tuple[tuple[str, int, int, bool], ...]] = set()
+    for _ in range(512):
+        remaining = set(cells)
+        chosen: list[_Tile] = []
+        while remaining:
+            viable_by_cell = {
+                cell: [
+                    tile for tile in by_cell[cell]
+                    if tile.cells <= remaining
+                ]
+                for cell in remaining
+            }
+            next_cell = min(
+                remaining,
+                key=lambda cell: (len(viable_by_cell[cell]), cell[1], cell[0]),
+            )
+            options = viable_by_cell[next_cell]
+            if not options:
+                break
+            tile = options[next_random() % len(options)]
+            chosen.append(tile)
+            remaining.difference_update(tile.cells)
+        if remaining:
+            continue
+
+        tiling = tuple(chosen)
+        signature = tuple(sorted(
+            (tile.part_id, tile.x, tile.z, tile.rotated)
+            for tile in tiling
+        ))
+        if signature in signatures:
+            continue
+        signatures.add(signature)
+        for previous in sampled:
+            if _tilings_connect(previous, tiling):
+                return previous, tiling
+        sampled.append(tiling)
+    return None
+
+
 def build_footprint_block(
     footprint_cells: Sequence[tuple[int, int]],
     height_bricks: int,
