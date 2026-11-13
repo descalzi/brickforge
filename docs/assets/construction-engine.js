@@ -653,6 +653,7 @@ function enumerateFootprintTilings(cells, profiles) {
   const sortedCells = [...cells].map((key) => key.split(",").map(Number))
     .sort((a, b) => a[1] - b[1] || a[0] - b[0]);
   const byCell = new Map(sortedCells.map(([x, z]) => [cellKey(x, z), []]));
+  const wholeFootprintTiles = [];
 
   for (const [x, z] of sortedCells) {
     for (const partId of FOOTPRINT_TILE_PART_IDS) {
@@ -671,6 +672,7 @@ function enumerateFootprintTilings(cells, profiles) {
         }
         if ([...tileCells].every((key) => cells.has(key))) {
           const tile = { part_id: partId, x, z, width, depth, rotated, cells: tileCells };
+          if (tileCells.size === cells.size) wholeFootprintTiles.push(tile);
           for (const key of tileCells) byCell.get(key).push(tile);
         }
       }
@@ -678,12 +680,15 @@ function enumerateFootprintTilings(cells, profiles) {
   }
 
   for (const options of byCell.values()) options.sort(compareTiles);
-  const tilings = [];
+  // Preserve a one-element exact cover even when MRV would otherwise pick a
+  // boundary cell first and eliminate the full-footprint candidate.
+  const tilings = wholeFootprintTiles.map((tile) => [tile]);
   let nodes = 0;
   let limitReached = false;
 
   function search(remaining, chosen) {
     if (remaining.size === 0) {
+      if (chosen.length === 1 && chosen[0].cells.size === cells.size) return;
       tilings.push([...chosen]);
       if (tilings.length > MAX_FOOTPRINT_TILINGS) {
         tilings.pop();
