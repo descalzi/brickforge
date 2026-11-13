@@ -62,6 +62,19 @@ Start with small analytic and synthetic meshes whose expected results are known:
 
 Tests must cover both geometry classification and the derived per-course 2D maps. Browser/Python parity is a release requirement before the mesh-to-builder workflow is exposed.
 
+## Current implementation status
+
+The Python reference package now defines `GridSpec` and immutable `TargetGrid`
+data types in `src/brickforge/geometry/grid.py`. The model validates physical
+grid spacing, dimensions, source bounds, cell classifications and surface
+coverage; it provides deterministic cell/world mapping, flattened indexing,
+summary metadata and per-course footprint extraction. The representation is
+versioned and exported from `brickforge.geometry`.
+
+Mesh-to-grid voxelisation, surface classification, browser parity and automatic
+mesh-driven construction are not implemented yet. The data model is the stable
+contract those steps will build on.
+
 ## Deliberate boundary
 
 A target occupancy grid does not prove that an assembly can be built. It does not encode clutch force, support, build sequence, or part-specific connection geometry. Those remain separate construction and validation responsibilities.
