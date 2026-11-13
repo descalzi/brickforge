@@ -363,6 +363,8 @@ def _sample_interlocking_tilings(
                 for cell in remaining
             }
             minimum_options = min(len(options) for options in viable_by_cell.values())
+            if minimum_options == 0:
+                break
             tied_cells = sorted(
                 cell for cell, options in viable_by_cell.items()
                 if len(options) == minimum_options
