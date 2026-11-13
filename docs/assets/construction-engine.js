@@ -713,30 +713,41 @@ function enumerateFootprintTilings(cells, profiles) {
 
 function footprintTilingsConnect(lower, upper) {
   const count = lower.length + upper.length;
-  const adjacency = Array.from({ length: count }, () => new Set());
-  for (let lowerIndex = 0; lowerIndex < lower.length; lowerIndex += 1) {
-    for (let upperIndex = 0; upperIndex < upper.length; upperIndex += 1) {
-      const lowerCells = lower[lowerIndex].cells;
-      const upperCells = upper[upperIndex].cells;
-      if (![...lowerCells].some((key) => upperCells.has(key))) continue;
-      const upperNode = lower.length + upperIndex;
-      adjacency[lowerIndex].add(upperNode);
-      adjacency[upperNode].add(lowerIndex);
+  const parent = Array.from({ length: count }, (_, index) => index);
+
+  function find(index) {
+    let root = index;
+    while (parent[root] !== root) root = parent[root];
+    while (parent[index] !== index) {
+      const next = parent[index];
+      parent[index] = root;
+      index = next;
     }
+    return root;
   }
 
-  const visited = new Set([0]);
-  const pending = [0];
-  while (pending.length) {
-    const current = pending.pop();
-    for (const neighbour of adjacency[current]) {
-      if (!visited.has(neighbour)) {
-        visited.add(neighbour);
-        pending.push(neighbour);
-      }
-    }
+  function join(a, b) {
+    const rootA = find(a);
+    const rootB = find(b);
+    if (rootA !== rootB) parent[rootB] = rootA;
   }
-  return visited.size === count;
+
+  const upperOwner = new Map();
+  upper.forEach((tile, index) => {
+    for (const key of tile.cells) upperOwner.set(key, index);
+  });
+  lower.forEach((tile, lowerIndex) => {
+    for (const key of tile.cells) {
+      const upperIndex = upperOwner.get(key);
+      if (upperIndex !== undefined) join(lowerIndex, lower.length + upperIndex);
+    }
+  });
+
+  const root = find(0);
+  for (let index = 1; index < count; index += 1) {
+    if (find(index) !== root) return false;
+  }
+  return true;
 }
 
 function findFootprintTilings(tilings) {
