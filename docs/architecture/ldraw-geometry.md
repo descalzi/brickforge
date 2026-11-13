@@ -69,7 +69,23 @@ metadata and part geometry always refer to the same library snapshot. Original
 part tree. This is still a geometry explorer, not a physical connection or
 buildability validator.
 
-## Real-library regression fixture
+## Full-library geometry audit
+
+The scheduled catalogue refresh also runs `scripts/validate_ldraw_library.py`
+against the extracted official archive before publishing the search index. The
+audit attempts every top-level `parts/*.dat` file, continues after individual
+failures, and stores a JSON report as a workflow artifact. The report includes
+resolved and failed counts, resolution rate, expanded primitive count, unique
+source files and parsed documents, error types, and the complete dependency
+chain for unresolved nested references.
+
+The first complete audit resolved 24,983 of 24,985 parts (99.992%). The two
+exceptions are decorated variants `93606dyf` and `93606dyg`, whose source
+definitions reference missing files `6177973fc01.dat` and
+`6177973hc01.dat` respectively. Both missing files were absent from the
+version-pinned geometry mirror and the official archive used for the audit.
+They remain explicit report entries rather than being silently ignored.
+
 
 CI resolves the verbatim LDraw 3001 (2 × 4 brick) fixture at
 `tests/fixtures/ldraw/brick-3001/`. The fixture includes its root part, nested
