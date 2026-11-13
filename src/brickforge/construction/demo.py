@@ -5,11 +5,12 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
+from brickforge.assembly.model import Assembly
 from brickforge.construction.rectangular import build_rectangular_block
 from brickforge.parts.connections import load_connection_profiles
 
 
-def build_interlocked_block_demo():
+def build_interlocked_block_demo() -> Assembly:
     """Build a two-course 4x4-stud block from four 2x4 bricks."""
     repository_root = Path(__file__).resolve().parents[3]
     catalogue = (
