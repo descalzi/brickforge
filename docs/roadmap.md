@@ -45,10 +45,13 @@ This roadmap is intentionally milestone-based. Each milestone should produce a d
 - [x] Export an LDraw model from the canonical graph.
 - [ ] Re-import resolved part geometry and compare full model dimensions (type-1 placement transforms are already reparsed and compared).
 - [x] Produce a basic BOM from the same graph.
+- [x] Port the constrained rectangular strategy to a browser-native engine.
+- [x] Add a static-hosted Builder page with local 3D preview and LDraw/JSON downloads.
+- [x] Compare browser graph, BOM and LDraw exports with the Python reference examples in CI.
 
-**Current proof of concept:** two deterministic examples are available: a manually specified two-brick 2 x 4 stack, and a generated 4 x 4-stud block made from four 3001 bricks. The block alternates brick orientation between courses; its graph has four edges and 16 nominal feature matches. Both examples include LDraw, assembly JSON and colour-aware BOM exports. See [assembly graph](architecture/assembly-graph.md) and [example files](../examples/).
+**Current proof of concept:** two deterministic examples are available: a manually specified two-brick 2 x 4 stack, and a generated 4 x 4-stud block made from four 3001 bricks. The block alternates brick orientation between courses; its graph has four edges and 16 nominal feature matches. Both examples include LDraw, assembly JSON and colour-aware BOM exports. The block generator is also available online in the [browser Builder](https://descalzi.github.io/brickforge/builder.html); its local JavaScript engine passes parity tests against the Python reference outputs. See [assembly graph](architecture/assembly-graph.md) and [example files](../examples/).
 
-**Exit criteria:** a generated model uses real catalogue elements, passes the declared connection and geometric checks, and round-trips through LDraw with geometry/dimension comparison. Full geometry round-tripping remains outstanding.
+**Exit criteria:** a generated model uses real catalogue elements, passes the declared connection and geometric checks, and round-trips through LDraw with geometry/dimension comparison. The constrained rectangular generator is now available in the browser; full resolved-geometry round-tripping remains outstanding.
 
 ## M4 — Validation
 
