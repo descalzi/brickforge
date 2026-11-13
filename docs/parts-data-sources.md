@@ -49,12 +49,12 @@ a public mirror of the official LDraw library, synchronised daily from
 - Example part: `https://raw.githubusercontent.com/kulits/ldraw-parts/c70360d1c588be894997b2168c61909bc8058c4d/ldraw/parts/3001.dat`
 - Colour table: `https://raw.githubusercontent.com/kulits/ldraw-parts/c70360d1c588be894997b2168c61909bc8058c4d/ldraw/LDConfig.ldr`
 
-BrickForge pins the mirror to commit `c70360d1c588be894997b2168c61909bc8058c4d` (published 9 November 2026)
-rather than following a moving branch. This makes a given site release reproducible;
-updating the library is an explicit source-version change. The mirror retains the
-upstream `parts/`, `p/`, `models/`, colour configuration and licence/readme
-files. The browser requests geometry on demand and caches each fetched file for the
-current page session.
+Each generated search catalogue records the exact mirror commit SHA and its
+corresponding raw-file base URL. This keeps the catalogue and fetched geometry on
+the same snapshot while allowing the monthly refresh workflow to advance the
+version deliberately. The mirror retains the upstream `parts/`, `p/`, `models/`,
+colour configuration and licence/readme files. The browser requests geometry on
+demand and caches each fetched file for the current page session.
 
 This is a delivery mirror, not a replacement for LDraw.org as the authoritative
 source. The browser viewer reads `AUTHOR` and `!LICENSE` notices from every file
