@@ -107,21 +107,19 @@ writes:
 - `examples/stacked-3001.assembly.json`
 - `examples/stacked-3001.bom.json`
 
-The second command is also a local developer/reference tool. It exercises the constrained construction strategy. It tiles
-a 4 x 4-stud footprint in two brick courses using four 3001 parts. The lower
-course places the bricks with their four-stud axis along X. The upper course
-rotates both bricks 90 degrees about Y so each upper brick bridges the seam
-between the two lower bricks. Every upper brick has four nominal feature
-matches to each lower brick, producing four graph edges and 16 feature pairs
-in total. It writes:
+The second command is also a local developer/reference tool. It exercises the constrained construction strategy. Its 4 x 4-stud example uses four 3001 parts in two courses. The upper course rotates the two bricks 90 degrees about Y so each bridges the seam between the two lower bricks. Each upper brick has four nominal feature matches to each lower brick, producing four graph edges and 16 feature pairs. It writes:
 
 - `examples/block-4x4x2.ldr`
 - `examples/block-4x4x2.assembly.json`
 - `examples/block-4x4x2.bom.json`
 
 The reusable `build_rectangular_block()` strategy accepts width and depth in
-studs and height in brick courses. It alternates 4 x 2 brick orientation and
-relies on the assembly validator to reject overlapping or disconnected
-results. This first version supports only a 4 x 2-stud part profile and
-rectangular dimensions tileable in every course; it does not optimise part
-choice or cover irregular shapes.
+studs and height in brick courses. Normal courses use 3001 (2 x 4) bricks.
+For wide footprints, the rotated course is shifted by one stud so its 2-stud
+wide bricks bridge the joints between lower columns; the two 1-stud edge
+strips are filled using rotated 3004 (1 x 2) bricks. For example, a 12 x 4,
+two-course block contains six lower 3001 bricks, five upper 3001 bricks and
+four upper 3004 edge fillers. This creates a connected graph without
+interpenetrating nominal body envelopes. Other orientations and dimensions
+remain constrained by the available tiling patterns; the strategy does not
+yet search arbitrary part combinations or cover irregular shapes.
