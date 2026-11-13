@@ -926,12 +926,14 @@ export function buildFootprintBlock(footprintCells, heightBricks, catalogue, con
   const depth = Math.max(...coordinates.map(([, z]) => z - minZ)) + 1;
 
   let pair = sampleInterlockingFootprints(cells, profiles);
+  let searchLimited = false;
   if (!pair) {
-    const { tilings } = enumerateFootprintTilings(cells, profiles);
-    pair = findFootprintTilings(tilings);
+    const search = enumerateFootprintTilings(cells, profiles);
+    searchLimited = search.limitReached;
+    pair = findFootprintTilings(search.tilings);
   }
   if (!pair) {
-    const detail = limitReached
+    const detail = searchLimited
       ? "within the bounded placement search"
       : "using the available rectangular brick profiles";
     throw new Error(
