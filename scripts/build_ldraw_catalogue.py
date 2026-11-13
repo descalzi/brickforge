@@ -58,10 +58,13 @@ def read_part_header(path: Path, library_root: Path) -> dict[str, Any]:
 
 def build_catalogue(library_root: Path) -> dict[str, Any]:
     """Index only top-level parts; subparts and primitives remain lazy dependencies."""
-    root = library_root.resolve()
+    archive_root = library_root.resolve()
+    root = archive_root
+    if not (root / "parts").is_dir() and (root / "ldraw" / "parts").is_dir():
+        root = root / "ldraw"
     parts_dir = root / "parts"
     if not parts_dir.is_dir():
-        raise FileNotFoundError(f"LDraw parts directory not found: {parts_dir}")
+        raise FileNotFoundError(f"LDraw parts directory not found under: {archive_root}")
 
     parts = [
         read_part_header(path, root)
@@ -74,7 +77,7 @@ def build_catalogue(library_root: Path) -> dict[str, Any]:
         "name": "LDraw.org Parts Library",
         "archive_sha256": None,
     }
-    source_metadata_path = root / "brickforge-source.json"
+    source_metadata_path = archive_root / "brickforge-source.json"
     if source_metadata_path.is_file():
         source_metadata = json.loads(source_metadata_path.read_text(encoding="utf-8"))
         source["archive_sha256"] = source_metadata.get("archive_sha256")
