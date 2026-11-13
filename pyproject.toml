@@ -28,6 +28,7 @@ api = [
 
 [project.scripts]
 brickforge-demo-assembly = "brickforge.assembly.demo:main"
+brickforge-demo-block = "brickforge.construction.demo:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/brickforge"]
