@@ -73,7 +73,7 @@ Expand to Technic, clips, bars, hinges, flex parts and other specialised connect
 
 ## 5. Legal and product wording
 
-BrickForge is independent and is not affiliated with, endorsed by, or sponsored by the LEGO Group. LEGO is a trademark of the LEGO Group. LDraw is a community CAD standard and a trademark of the Estate of James Jessiman.
+BrickForge is an independent project. LDraw is a community CAD standard and a trademark of the Estate of James Jessiman.
 
 This document is engineering research, not legal advice. Review the applicable licence for each data source and part before distributing derivative assets or enabling user downloads.
 
