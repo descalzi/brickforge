@@ -139,15 +139,19 @@ function colourFor(code) {
   return colourPalette.get(Number(code)) ?? 0x8399A8;
 }
 
-function featuresHiddenByConnections(result, profile) {
+function featuresHiddenByConnections(result, profileByPart) {
   const hidden = new Map();
-  const featureById = new Map(profile.features.map((feature) => [
-    feature.feature_id,
-    feature,
+  const partByInstance = new Map(result.parts.map((part) => [
+    part.instance_id,
+    part,
   ]));
 
   function hideStud(instanceId, featureId) {
-    const feature = featureById.get(featureId);
+    const part = partByInstance.get(instanceId);
+    if (!part) return;
+    const profile = profileByPart.get(String(part.part_id));
+    if (!profile) return;
+    const feature = profile.features.find((item) => item.feature_id === featureId);
     if (!feature || feature.kind !== "stud") return;
     if (!hidden.has(instanceId)) hidden.set(instanceId, new Set());
     hidden.get(instanceId).add(featureId);
@@ -255,14 +259,17 @@ function fitCamera(bounds) {
 
 function renderAssembly(result) {
   clearModel();
-  const profile = catalogue.profiles.find(
-    (item) => String(item.part_id) === "3001",
-  );
-  if (!profile) throw new Error("The 2×4 part profile is missing from the catalogue.");
-
-  const hiddenStuds = featuresHiddenByConnections(result, profile);
+  const profileByPart = new Map(catalogue.profiles.map((profile) => [
+    String(profile.part_id),
+    profile,
+  ]));
+  const hiddenStuds = featuresHiddenByConnections(result, profileByPart);
   const model = new THREE.Group();
   for (const part of result.parts) {
+    const profile = profileByPart.get(String(part.part_id));
+    if (!profile) {
+      throw new Error("No preview profile is available for part " + part.part_id + ".");
+    }
     model.add(createPartObject(
       part,
       profile,
