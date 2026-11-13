@@ -1,5 +1,12 @@
-"""Mesh ingestion, analysis, and normalisation."""
+"""Mesh ingestion, target-grid representation, and geometry analysis."""
 
+from brickforge.geometry.grid import CellClass, GridSpec, TargetGrid
 from brickforge.geometry.mesh import MeshReport, inspect_mesh
 
-__all__ = ["MeshReport", "inspect_mesh"]
+__all__ = [
+    "CellClass",
+    "GridSpec",
+    "MeshReport",
+    "TargetGrid",
+    "inspect_mesh",
+]
