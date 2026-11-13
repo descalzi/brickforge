@@ -139,6 +139,7 @@
   overflow-wrap: anywhere;
 }
 .part-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 18px; }
+.connection-note { margin-top: 12px; color: var(--fg-muted); font-size: .68rem; line-height: 1.45; }
 .part-stats div { display: grid; gap: 4px; }
 .part-stats span { color: var(--fg-muted); font-size: .68rem; }
 .part-stats strong { font-family: var(--font-mono); font-size: .88rem; font-weight: 500; }
