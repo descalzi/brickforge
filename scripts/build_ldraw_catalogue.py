@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import gzip
 import json
 import re
 from pathlib import Path
@@ -33,13 +34,6 @@ def read_part_header(path: Path, library_root: Path) -> dict[str, Any]:
         upper = payload.upper()
 
         if upper.startswith("NAME:"):
-            metadata["name"] = payload.split(":", 1)[1].strip()
-        elif upper.startswith("AUTHOR:"):
-            metadata["author"] = payload.split(":", 1)[1].strip()
-        elif upper.startswith("!LDRAW_ORG"):
-            metadata["library_type"] = payload[len("!LDRAW_ORG"):].strip()
-        elif upper.startswith("!LICENSE"):
-            metadata["licence"] = payload[len("!LICENSE"):].strip()
         elif upper.startswith("!CATEGORY"):
             metadata["category"] = payload[len("!CATEGORY"):].strip()
         elif upper.startswith("!KEYWORDS"):
@@ -128,7 +122,7 @@ def main() -> None:
             / "docs"
             / "data"
             / "ldraw"
-            / "parts-index.json"
+            / "parts-index.json.gz"
         ),
         help="Output path for the compact browser search index",
     )
@@ -137,8 +131,11 @@ def main() -> None:
     catalogue = build_catalogue(args.library, mirror_commit=args.mirror_commit)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(
-        json.dumps(catalogue, ensure_ascii=False, separators=(",", ":")) + "\n",
-        encoding="utf-8",
+        gzip.compress(
+            json.dumps(catalogue, ensure_ascii=False, separators=(",", ":")).encode("utf-8"),
+            compresslevel=9,
+            mtime=0,
+        ),
     )
     print(f"Wrote {catalogue['part_count']:,} parts to {args.output}")
 
