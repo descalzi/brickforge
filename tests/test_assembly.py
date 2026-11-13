@@ -131,6 +131,27 @@ def test_rectangular_block_builder_interlocks_alternating_courses() -> None:
     ]
 
 
+def test_wide_rectangular_block_staggers_courses_to_bridge_column_seams() -> None:
+    assembly = build_rectangular_block(12, 4, 2, PROFILES)
+
+    assert len(assembly.parts) == 15
+    assert sum(part.part_id == "3001" for part in assembly.parts) == 11
+    assert sum(part.part_id == "3004" for part in assembly.parts) == 4
+    assert len(assembly.connections) > 6
+    assert assembly.total_mating_pairs >= 48
+    assert assembly.bom_dict()["total_parts"] == 15
+    assert assembly.bom_dict()["items"] == [
+        {"part_id": "3001", "colour_code": 1, "quantity": 5},
+        {"part_id": "3001", "colour_code": 4, "quantity": 6},
+        {"part_id": "3004", "colour_code": 1, "quantity": 4},
+    ]
+    assert all(
+        part.translation_ldu[1] == -24.0
+        for part in assembly.parts
+        if part.instance_id.startswith("layer-01-")
+    )
+
+
 def test_rectangular_block_alternates_course_transforms() -> None:
     assembly = build_interlocked_block_demo()
 
