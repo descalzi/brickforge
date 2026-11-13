@@ -832,7 +832,9 @@ function sampleInterlockingFootprints(cells, profiles) {
         }
         }
       if (!nextOptions || nextOptions.length === 0) break;
-      const tile = nextOptions[nextRandom() % nextOptions.length];
+      const randomFraction = nextRandom() / 0x100000000;
+      const choiceIndex = Math.floor(randomFraction * randomFraction * nextOptions.length);
+      const tile = nextOptions[choiceIndex];
       chosen.push(tile);
       for (const key of tile.cells) remaining.delete(key);
     }
