@@ -369,7 +369,9 @@ def _sample_interlocking_tilings(
             options = viable_by_cell[next_cell]
             if not options:
                 break
-            tile = options[next_random() % len(options)]
+            random_fraction = next_random() / 4_294_967_296
+            choice_index = int(random_fraction * random_fraction * len(options))
+            tile = options[choice_index]
             chosen.append(tile)
             remaining.difference_update(tile.cells)
         if remaining:
