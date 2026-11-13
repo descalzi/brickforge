@@ -763,7 +763,7 @@ function footprintTilingsConnect(lower, upper) {
 
 
 function sampleInterlockingFootprints(cells, profiles) {
-  if (cells.size < 14) return null;
+  if (cells.size <= 18) return null;
   const sortedCells = [...cells].map((key) => key.split(",").map(Number))
     .sort((a, b) => a[1] - b[1] || a[0] - b[0]);
   const byCell = new Map(sortedCells.map(([x, z]) => [cellKey(x, z), []]));
