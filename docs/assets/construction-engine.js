@@ -796,6 +796,10 @@ function sampleInterlockingFootprints(cells, profiles) {
     }
   }
   for (const options of byCell.values()) options.sort(compareTiles);
+  for (const options of byCell.values()) {
+    const wholeTile = options.find((tile) => tile.cells.size === cells.size);
+    if (wholeTile) return [[wholeTile], [wholeTile]];
+  }
 
   let seed = 2166136261;
   for (const [x, z] of sortedCells) {
