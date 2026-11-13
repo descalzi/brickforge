@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://descalzi.github.io/brickforge/schemas/assembly-graph-v1.schema.json",
+  "title": "BrickForge Assembly Graph v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "coordinate_system",
+    "length_unit",
+    "model_name",
+    "parts",
+    "connections"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "coordinate_system": { "const": "LDraw" },
+    "length_unit": { "const": "LDU" },
+    "model_name": { "type": "string", "minLength": 1 },
+    "parts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "instance_id",
+          "part_id",
+          "colour_code",
+          "translation_ldu",
+          "matrix"
+        ],
+        "properties": {
+          "instance_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$"
+          },
+          "part_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]+$"
+          },
+          "colour_code": { "type": "integer", "minimum": 0 },
+          "translation_ldu": {
+            "type": "array",
+            "minItems": 3,
+            "maxItems": 3,
+            "items": { "type": "number" }
+          },
+          "matrix": {
+            "type": "array",
+            "minItems": 9,
+            "maxItems": 9,
+            "items": { "type": "number" }
+          }
+        }
+      }
+    },
+    "connections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["instance_a", "instance_b", "mating_pairs"],
+        "properties": {
+          "instance_a": { "type": "string", "minLength": 1 },
+          "instance_b": { "type": "string", "minLength": 1 },
+          "mating_pairs": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "feature_a",
+                "feature_b",
+                "position_error_ldu",
+                "axis_dot"
+              ],
+              "properties": {
+                "feature_a": { "type": "string", "minLength": 1 },
+                "feature_b": { "type": "string", "minLength": 1 },
+                "position_error_ldu": { "type": "number", "minimum": 0 },
+                "axis_dot": {
+                  "type": "number",
+                  "minimum": -1,
+                  "maximum": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
