@@ -164,7 +164,12 @@ test("browser engine builds enclosed O-shaped footprints", () => {
         if (character === "#") cells.push([x, z]);
       });
     });
-    const result = buildFootprintBlock(cells, 2, catalogue);
+    let result;
+    try {
+      result = buildFootprintBlock(cells, 2, catalogue);
+    } catch (error) {
+      throw new Error("Failed footprint " + rows.join("/") + ": " + error.message);
+    }
     assert.ok(result.parts.length > 0);
     assert.ok(result.connections.length > 0);
     assert.ok(result.total_mating_pairs > 0);
