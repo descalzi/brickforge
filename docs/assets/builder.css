@@ -112,6 +112,7 @@
   text-align: center;
   pointer-events: none;
 }
+.builder-empty[hidden] { display: none !important; }
 .builder-empty strong { color: var(--fg); font-size: 1rem; }
 .builder-empty span { max-width: 320px; font-size: .85rem; }
 .builder-mark {
@@ -169,9 +170,11 @@
 }
 .dimension-fields {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 9px;
 }
+.dimension-fields > div:last-child { grid-column: 1 / -1; }
+.dimension-fields > div:last-child .field-control { max-width: 50%; }
 .field-label {
   display: block;
   margin-bottom: 7px;
