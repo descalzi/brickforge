@@ -35,7 +35,7 @@ jobs:
       - name: Test browser construction, irregular footprints and camera helpers
         run: node --test tests/browser-construction.test.mjs tests/browser-footprint-corpus.test.mjs tests/browser-camera.test.mjs tests/browser-catalogue.test.mjs
       - name: Lint connection and assembly implementation and tests
-        run: ruff check scripts/build_ldraw_catalogue.py scripts/validate_ldraw_library.py tests/test_ldraw_catalogue.py tests/test_ldraw_resolver.py src/brickforge/parts/ldraw_geometry.py src/brickforge/parts/ldraw_resolver.py src/brickforge/parts/connections.py src/brickforge/assembly src/brickforge/construction tests/test_connections.py tests/test_assembly.py
+        run: ruff check scripts/build_ldraw_catalogue.py scripts/validate_ldraw_library.py tests/test_ldraw_catalogue.py tests/test_ldraw_resolver.py tests/test_geometry_grid.py src/brickforge/geometry/grid.py src/brickforge/geometry/grid.py src/brickforge/parts/ldraw_geometry.py src/brickforge/parts/ldraw_resolver.py src/brickforge/parts/connections.py src/brickforge/assembly src/brickforge/construction tests/test_connections.py tests/test_assembly.py
       - name: Type-check connection and assembly implementation
         run: mypy scripts/validate_ldraw_library.py src/brickforge/parts/ldraw_geometry.py src/brickforge/parts/ldraw_resolver.py src/brickforge/parts/connections.py src/brickforge/assembly src/brickforge/construction
       - name: Verify published connection catalogue matches canonical data
