@@ -86,6 +86,21 @@ class LDrawLibrary:
             if local_candidate.is_file():
                 return self._accept_existing(local_candidate, requested)
 
+            referring_relative = referring.relative_to(self.root)
+            if (
+                len(requested_path.parts) == 1
+                and referring_relative.parts[:2] == ("parts", "s")
+            ):
+                # Bare references in LDraw subparts conventionally name p/ primitives.
+                primitive_candidate = (
+                    self.root / "p" / requested_path.name
+                ).resolve(strict=False)
+                primitive_key = self._root_key(primitive_candidate)
+                if primitive_key in self._root_index:
+                    return self._root_index[primitive_key]
+                if primitive_candidate.is_file():
+                    return self._accept_existing(primitive_candidate, requested)
+
         key = self._normalise_key(requested)
         if key in self._root_index:
             return self._root_index[key]
