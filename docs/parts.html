@@ -66,7 +66,10 @@
       <aside class="parts-controls" aria-label="Part selection and information">
         <section class="parts-control-section">
           <h2>Choose an element</h2>
-          <label class="field-label" for="part-select">LDraw part</label>
+          <label class="field-label" for="part-search">Search the full part library</label>
+          <input id="part-search" class="field-control" type="search" placeholder="Loading searchable catalogue…" autocomplete="off" disabled>
+          <p class="control-note">Search by part number, name, category or keyword. Geometry and dependencies load only when you select a part.</p>
+          <label class="field-label" for="part-select">Choose a part</label>
           <select id="part-select" class="field-control">
             <option value="3001">3001 — Brick 2 × 4</option>
             <option value="3002">3002 — Brick 2 × 3</option>
@@ -116,7 +119,7 @@
 
         <section class="parts-control-section provenance-section">
           <h2>Source & attribution</h2>
-          <p>Geometry is fetched on demand from a public mirror of the LDraw Parts Library. The browser expands the original text files; it does not upload data or modify the source files.</p>
+          <p>Geometry is fetched on demand from a public mirror of the LDraw Parts Library. The browser expands the original text files on demand; it does not upload data or modify the source files.</p>
           <dl class="provenance-list">
             <div><dt>Creators</dt><dd id="part-authors">—</dd></div>
             <div><dt>Licence notices</dt><dd id="part-licences">—</dd></div>
