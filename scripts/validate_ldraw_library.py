@@ -40,7 +40,7 @@ def audit_library(library: Path, *, max_parts: int | None = None) -> dict[str, A
     failed_count = 0
     primitive_count = 0
     source_files: set[str] = set()
-    failures: list[dict[str, str]] = []
+    failures: list[dict[str, Any]] = []
     error_types: Counter[str] = Counter()
 
     for part_path in part_paths:
