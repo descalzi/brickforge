@@ -6,7 +6,7 @@ Web first, with a Python geometry and construction engine behind it.
 
 ## Stack
 
-Core engine: Python 3.11+, Trimesh and NumPy. Public project page: static HTML, CSS and vanilla JavaScript in `/docs`, published with GitHub Pages. The public page must not expose private source or project data.
+Core engine: Python 3.11+, Trimesh and NumPy. Public project page: static HTML, CSS and vanilla JavaScript in `/docs`, published with GitHub Pages. The source repository is also public; never commit secrets, credentials, or private user project data.
 
 ## Users and scene
 
@@ -29,7 +29,7 @@ BrickForge aims to convert natural-language descriptions, reference images and 3
 ## Real assets and facts
 
 - Logo / brand assets: original wordmark and geometric mark authored for this project.
-- Real proof: the repository contains the initial architecture, Python package scaffold and mesh-inspection foundation. The full construction engine is not implemented yet.
+- Real proof: the repository contains the project specification, public mesh inspector, STL/OBJ mesh inspection, LDraw metadata and geometry parsers, and a recursive LDraw sub-file resolver with transform and inherited-colour handling. The construction engine is not implemented yet.
 - Part geometry source under evaluation: the LDraw.org Parts Library. Parts are authored by contributors and have per-author licensing and attribution requirements; retain headers and audit licences before redistribution.
 - Connection metadata: not yet selected as a production source. BrickLink Studio uses separate connection files, but their reuse terms must be checked. Initial metadata may be authored in-house for a small, tested set of parts.
 - Must not claim: that automatic LEGO construction, physical stability guarantees, instruction generation or purchasing are already implemented.
@@ -56,4 +56,4 @@ BrickForge aims to convert natural-language descriptions, reference images and 3
 - Approved source and format for part-connection metadata.
 - Initial part subset and colour catalogue.
 - Whether the eventual browser editor uses Three.js or another renderer.
-- Hosting/access arrangement for the public site while the source repository remains private.
+- Which deployment and storage services should be used for the future application.
