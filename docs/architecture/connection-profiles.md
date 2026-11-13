@@ -47,7 +47,7 @@ interference, friction, clutch force, material deformation, wear, legal part
 combinations or structural stability.
 
 A non-zero result therefore means **candidate grid alignment**, not a validated
-LEGO connection. Do not use these profiles to assert that an arbitrary part
+L-brick connection. Do not use these profiles to assert that an arbitrary part
 combination will physically hold together. Specialised elements (Technic,
 clips, bars, hinges, slopes, tiles, flex parts and others) need their own
 connection schemas and separately verified data.
