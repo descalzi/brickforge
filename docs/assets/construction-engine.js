@@ -709,7 +709,6 @@ function enumerateFootprintTilings(cells, profiles) {
       if (nextOptions === null || viable.length < nextOptions.length) {
         nextOptions = viable;
       }
-      if (nextOptions.length === 0) break;
     }
     for (const tile of nextOptions || []) {
       const nextRemaining = new Set([...remaining].filter((key) => !tile.cells.has(key)));
@@ -821,8 +820,7 @@ function sampleInterlockingFootprints(cells, profiles) {
         if (nextOptions === null || viable.length < nextOptions.length) {
           nextOptions = viable;
         }
-        if (nextOptions.length === 0) break;
-      }
+        }
       if (!nextOptions || nextOptions.length === 0) break;
       const tile = nextOptions[nextRandom() % nextOptions.length];
       chosen.push(tile);
