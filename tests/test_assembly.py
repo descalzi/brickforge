@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -77,6 +78,20 @@ def test_generated_example_files_match_canonical_assembly() -> None:
     )
     assert graph_payload == assembly.to_dict()
     assert bom_payload == assembly.bom_dict()
+
+
+def test_installed_demo_command_writes_all_three_exports(tmp_path: Path) -> None:
+    result = subprocess.run(
+        ["brickforge-demo-assembly", "--output-dir", str(tmp_path)],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+    assert "8 nominal mating pairs" in result.stdout
+    assert (tmp_path / "stacked-3001.ldr").is_file()
+    assert (tmp_path / "stacked-3001.assembly.json").is_file()
+    assert (tmp_path / "stacked-3001.bom.json").is_file()
 
 
 def test_overlapping_nominal_body_bounds_are_rejected() -> None:
