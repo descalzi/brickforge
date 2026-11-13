@@ -68,6 +68,16 @@ it depends on a third-party public mirror which may lag the official release,
 and it does not yet validate physical connection points. The Python resolver
 still needs validation against a downloaded, version-pinned official archive.
 
+## Real-library regression fixture
+
+CI resolves the verbatim LDraw 3001 (2 × 4 brick) fixture at
+`tests/fixtures/ldraw/brick-3001/`. The fixture includes its root part, nested
+sub-part and the primitive dependency files required by the resolver, plus the
+upstream attribution and licence texts. This checks real-world file paths,
+nested type-1 references, transforms and inherited colours while keeping the
+full library out of Git. It does not replace running against a version-pinned
+complete official archive.
+
 ## Nominal connection metadata
 
 The first BrickForge-authored connection profiles are documented in [connection profiles](connection-profiles.md). They are separate from render geometry and describe stud and underside receiver datums for six standard bricks and plates. A transformed feature matcher identifies opposed stud/receiver pairs within a nominal positional tolerance. This is only a candidate grid-alignment test; it does not prove clutch engagement, stability or buildability.
