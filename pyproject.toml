@@ -26,6 +26,9 @@ api = [
   "uvicorn[standard]>=0.30",
 ]
 
+[project.scripts]
+brickforge-demo-assembly = "brickforge.assembly.demo:main"
+
 [tool.hatch.build.targets.wheel]
 packages = ["src/brickforge"]
 
