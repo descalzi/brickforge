@@ -1,0 +1,165 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://descalzi.github.io/brickforge/schemas/connection-profiles-v1.schema.json",
+  "title": "BrickForge nominal connection profile catalogue",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "coordinate_system",
+    "length_unit",
+    "authoring_notice",
+    "stud_pitch_ldu",
+    "stud_projection_ldu",
+    "limitations",
+    "profiles"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "coordinate_system": {
+      "const": "LDraw"
+    },
+    "length_unit": {
+      "const": "LDU"
+    },
+    "authoring_notice": {
+      "type": "string",
+      "minLength": 1
+    },
+    "stud_pitch_ldu": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "stud_projection_ldu": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "profiles": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "part_id",
+          "description",
+          "source_filename",
+          "source_author",
+          "source_license_notice",
+          "footprint_studs_x",
+          "footprint_studs_z",
+          "body_height_ldu",
+          "stud_pitch_ldu",
+          "stud_projection_ldu",
+          "features",
+          "limitations"
+        ],
+        "properties": {
+          "part_id": {
+            "type": "string",
+            "pattern": "^[0-9]+[a-zA-Z0-9]*$"
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_filename": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_author": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_license_notice": {
+            "type": "string",
+            "minLength": 1
+          },
+          "footprint_studs_x": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "footprint_studs_z": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "body_height_ldu": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "stud_pitch_ldu": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "stud_projection_ldu": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "features": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "feature_id",
+                "kind",
+                "position_ldu",
+                "axis"
+              ],
+              "properties": {
+                "feature_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "kind": {
+                  "enum": [
+                    "stud",
+                    "stud_receiver"
+                  ]
+                },
+                "position_ldu": {
+                  "$ref": "#/$defs/vector3"
+                },
+                "axis": {
+                  "$ref": "#/$defs/vector3"
+                }
+              }
+            }
+          },
+          "limitations": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "vector3": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "number"
+        }
+      ],
+      "minItems": 3,
+      "maxItems": 3
+    }
+  }
+}\n
