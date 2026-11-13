@@ -5,7 +5,7 @@
 
 ## Context
 
-BrickForge is intended to accept descriptions of arbitrary objects and generate constructions made from genuine LEGO elements, including build instructions and parts inventories.
+BrickForge is intended to accept descriptions of arbitrary objects and generate constructions made from genuine L-brick elements, including build instructions and parts inventories.
 
 A narrow category-specific generator would constrain the product. At the same time, attempting every part family and every physical constraint in the first prototype would make progress difficult to measure.
 
@@ -21,7 +21,7 @@ A narrow category-specific generator would constrain the product. At the same ti
 
 ## Consequences
 
-- The first prototype will not support every LEGO element.
+- The first prototype will not support every L-brick element.
 - Geometry and connection metadata must be separate concepts.
 - Every generated deliverable must be traceable to one assembly graph revision.
 - The team must validate data-source licences and terms before redistributing part data.
