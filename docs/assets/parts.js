@@ -28,6 +28,7 @@ const output = {
   files: document.querySelector('#part-files'),
   studs: document.querySelector('#part-studs'),
   receivers: document.querySelector('#part-receivers'),
+  connectionStatus: document.querySelector('#part-connection-status'),
   source: document.querySelector('#part-source'),
   authors: document.querySelector('#part-authors'),
   licences: document.querySelector('#part-licences'),
@@ -65,6 +66,7 @@ const rawFileCache = new Map();
 const documentCache = new Map();
 let connectionProfilesPromise;
 let partCatalogue = [];
+let connectionProfileMap = new Map();
 
 function setMessage(text, kind) {
   message.textContent = text;
@@ -550,7 +552,11 @@ function renderPartSearchResults(query) {
   for (const part of matches) {
     const option = document.createElement('option');
     option.value = part.part_id;
-    option.textContent = part.part_id + ' — ' + (part.name || part.description || part.part_id);
+    const profileLabel = connectionProfileMap.has(part.part_id)
+      ? ' · nominal profile'
+      : ' · geometry only';
+    option.textContent = part.part_id + ' — ' + (part.name || part.description || part.part_id)
+      + profileLabel;
     partSelect.append(option);
   }
   if (matches.some((part) => part.part_id === previousValue)) {
@@ -587,6 +593,7 @@ async function loadPartCatalogue() {
     && !part.filename.includes('..')
   );
   if (!partCatalogue.length) throw new Error('The searchable part catalogue is empty.');
+  connectionProfileMap = await getConnectionProfiles();
   partSearch.disabled = false;
   partSearch.placeholder = 'Search ' + partCatalogue.length.toLocaleString()
     + ' parts by number, name or keyword';
@@ -661,6 +668,10 @@ async function loadSelectedPart() {
     output.files.textContent = expansion.files.size.toLocaleString();
     output.studs.textContent = connectionProfile ? connectionProfile.features.filter((feature) => feature.kind === 'stud').length.toLocaleString() : 'Not defined';
     output.receivers.textContent = connectionProfile ? connectionProfile.features.filter((feature) => feature.kind === 'stud_receiver').length.toLocaleString() : 'Not defined';
+    output.connectionStatus.textContent = connectionProfile
+      ? 'Nominal connection profile available. Candidate stud-grid alignment only; physical clutch and stability are not validated.'
+      : 'Geometry preview only. No nominal connection profile is defined, so the construction engine cannot currently use this part.';
+    output.connectionStatus.dataset.supported = connectionProfile ? 'true' : 'false';
     output.authors.textContent = Array.from(expansion.authors).sort().join(', ') || 'Not stated in source headers';
     output.licences.textContent = Array.from(expansion.licences).sort().join(' · ') || 'Check the individual source headers';
     output.source.href = rawBaseUrl + root.source;
@@ -701,6 +712,8 @@ resetButton.addEventListener('click', () => {
 
 async function startPartExplorer() {
   try {
+    await loadPartCatalogue();
+    renderPartSearchResults(partSearch.value);
     [THREE, { OrbitControls }] = await Promise.all([
       import('three'),
       import('three/addons/controls/OrbitControls.js'),
