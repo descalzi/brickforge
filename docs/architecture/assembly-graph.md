@@ -114,12 +114,22 @@ The second command is also a local developer/reference tool. It exercises the co
 - `examples/block-4x4x2.bom.json`
 
 The reusable `build_rectangular_block()` strategy accepts width and depth in
-studs and height in brick courses. Normal courses use 3001 (2 x 4) bricks.
-For wide footprints, the rotated course is shifted by one stud so its 2-stud
-wide bricks bridge the joints between lower columns; the two 1-stud edge
-strips are filled using rotated 3004 (1 x 2) bricks. For example, a 12 x 4,
-two-course block contains six lower 3001 bricks, five upper 3001 bricks and
-four upper 3004 edge fillers. This creates a connected graph without
-interpenetrating nominal body envelopes. Other orientations and dimensions
-remain constrained by the available tiling patterns; the strategy does not
-yet search arbitrary part combinations or cover irregular shapes.
+studs and height in brick courses. It has three staggered upper-course layouts:
+
+- For a footprint wider than 4 studs and exactly 4 studs deep (for example,
+  12 x 4), rotated 3001 (2 x 4) bricks bridge the lower columns. Four 3004
+  (1 x 2) parts close the side strips in the 12 x 4 example.
+- For a 4-stud-wide footprint deeper than 4 studs (for example, 4 x 8), the
+  upper 3001 bricks are staggered along depth and 3004 parts close the ends.
+- When both dimensions exceed 4 studs (for example, 12 x 8), the upper 3001
+  core is shifted by half a brick in X and half a row in Z, bridging the lower
+  joints in both directions. The one-stud perimeter strips are tiled with
+  standard-orientation 3004 parts.
+
+The 12 x 8, two-course block contains 12 lower 3001 parts, six upper 3001
+core parts and 24 upper 3004 perimeter fillers: 42 elements in total. Its
+graph has 48 edges and 96 nominal mating pairs. These layouts pass the
+connected-graph and nominal body-envelope checks without interpenetration.
+Other dimensions remain constrained by available tiling patterns; the
+strategy does not yet search arbitrary part combinations or cover irregular
+shapes.
