@@ -148,7 +148,9 @@
   }
   .main-nav a:hover, .text-link:hover { color: var(--accent); }
   .main-nav .nav-repo { color: var(--fg); }
-  .main-nav .nav-repo .arrow-icon { color: var(--accent); }\n  .arrow-icon { display: inline-block; width: 14px; height: 14px; vertical-align: -0.16em; }\n  .main-nav a[aria-current="location"] { color: var(--accent); }
+  .main-nav .nav-repo .arrow-icon { color: var(--accent); }
+  .arrow-icon { display: inline-block; flex: 0 0 14px; width: 14px; min-width: 14px; max-width: 14px; height: 14px; min-height: 14px; max-height: 14px; vertical-align: -0.16em; }
+  .main-nav a[aria-current="location"] { color: var(--accent); }
 
   .status-line {
     display: flex;
@@ -280,7 +282,8 @@
   .output-branches::before { content: ""; position: absolute; top: 27px; bottom: 27px; left: -15px; width: 1px; background: #A7B7C3; }
   .output-item { position: relative; display: flex; gap: 14px; align-items: center; }
   .output-item::before { content: ""; position: absolute; left: -15px; top: 50%; width: 15px; height: 1px; background: #A7B7C3; }
-  .output-icon svg { width: 18px; height: 18px; }\n  .output-icon { width: 42px; height: 42px; display: grid; place-items: center; flex: 0 0 auto; background: #FFFFFF; border: 1px solid var(--border-strong); color: var(--accent); font-family: var(--font-mono); font-size: .78rem; }
+  .output-icon svg { width: 18px; height: 18px; }
+  .output-icon { width: 42px; height: 42px; display: grid; place-items: center; flex: 0 0 auto; background: #FFFFFF; border: 1px solid var(--border-strong); color: var(--accent); font-family: var(--font-mono); font-size: .78rem; }
   .output-item strong, .output-item small { display: block; }
   .output-item strong { font-size: .95rem; }
   .output-item small { margin-top: 3px; color: var(--fg-muted); font-size: .78rem; }
