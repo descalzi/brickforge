@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#F2F4F6">
+  <meta name="description" content="Explore real LEGO element geometry from the LDraw Parts Library in the BrickForge 3D viewer.">
+  <title>Part explorer — BrickForge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="./assets/site.css">
+  <link rel="stylesheet" href="./assets/parts.css">
+  <link rel="icon" href="./assets/mark.svg" type="image/svg+xml">
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.187.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.187.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <a class="brand" href="./index.html" aria-label="BrickForge home">
+      <img src="./assets/mark.svg" width="34" height="34" alt="">
+      <span>brickforge</span>
+    </a>
+    <nav class="main-nav" aria-label="Main navigation">
+      <a href="./index.html#method">The method</a>
+      <a href="./inspector.html">Mesh inspector</a>
+      <a href="./parts.html" aria-current="page">Part explorer</a>
+      <a class="nav-repo" href="https://github.com/descalzi/brickforge" target="_blank" rel="noreferrer">Repository</a>
+    </nav>
+  </header>
+
+  <main id="main" class="parts-main">
+    <a class="back-link" href="./index.html">Back to project</a>
+    <section class="parts-intro">
+      <p class="section-index">BF / PARTS-01</p>
+      <h1>Real elements.<br><span>Real geometry.</span></h1>
+      <p>Explore a small set of genuine LDraw library parts. The viewer follows each part's sub-file references, applies their transforms and colour inheritance, then renders the result in 3D.</p>
+    </section>
+
+    <section class="parts-workspace" aria-label="LDraw part explorer">
+      <div class="parts-viewport-panel">
+        <div class="parts-viewport-topline">
+          <span>LDRAW GEOMETRY / 3D PREVIEW</span>
+          <span id="parts-state" class="parts-state" role="status" aria-live="polite">INITIALISING</span>
+        </div>
+        <div id="parts-viewport" class="parts-viewport">
+          <div id="parts-empty" class="parts-empty">
+            <div class="parts-mark" aria-hidden="true">BF</div>
+            <strong>Resolving real part geometry</strong>
+            <span>The viewer will appear when the library files are loaded.</span>
+          </div>
+        </div>
+        <div class="parts-toolbar">
+          <span>Drag to orbit · Scroll to zoom · Right-drag to pan</span>
+          <button id="parts-reset" class="tool-button" type="button" disabled>Reset view</button>
+        </div>
+      </div>
+
+      <aside class="parts-controls" aria-label="Part selection and information">
+        <section class="parts-control-section">
+          <h2>Choose an element</h2>
+          <label class="field-label" for="part-select">LDraw part</label>
+          <select id="part-select" class="field-control">
+            <option value="3001">3001 — Brick 2 × 4</option>
+            <option value="3003">3003 — Brick 2 × 2</option>
+            <option value="3004">3004 — Brick 1 × 2</option>
+            <option value="3005">3005 — Brick 1 × 1</option>
+            <option value="3020">3020 — Plate 2 × 4</option>
+            <option value="3021">3021 — Plate 2 × 3</option>
+          </select>
+
+          <label class="field-label" for="part-colour">Preview colour</label>
+          <select id="part-colour" class="field-control">
+            <option value="4" selected>Red</option>
+            <option value="1">Blue</option>
+            <option value="14">Yellow</option>
+            <option value="2">Green</option>
+            <option value="15">White</option>
+            <option value="0">Black</option>
+            <option value="7">Light grey</option>
+          </select>
+          <p class="control-note">The selected colour is applied to geometry marked with LDraw colour 16. Explicit colours inside a part remain unchanged.</p>
+        </section>
+
+        <section class="parts-control-section">
+          <h2 id="part-name">Loading part…</h2>
+          <p id="part-identity" class="part-identity">LDraw ID —</p>
+          <dl class="part-measurements">
+            <div><dt>X extent</dt><dd id="part-x">—</dd></div>
+            <div><dt>Y extent</dt><dd id="part-y">—</dd></div>
+            <div><dt>Z extent</dt><dd id="part-z">—</dd></div>
+          </dl>
+          <div class="part-stats">
+            <div><span>Triangles</span><strong id="part-triangles">—</strong></div>
+            <div><span>Source files</span><strong id="part-files">—</strong></div>
+          </div>
+          <a id="part-source" class="part-source" href="https://library.ldraw.org/" target="_blank" rel="noreferrer">View LDraw source file ↗</a>
+        </section>
+
+        <section class="parts-control-section provenance-section">
+          <h2>Source & attribution</h2>
+          <p>Geometry is fetched on demand from a public mirror of the LDraw Parts Library. The browser expands the original text files; it does not upload data or modify the source files.</p>
+          <dl class="provenance-list">
+            <div><dt>Creators</dt><dd id="part-authors">—</dd></div>
+            <div><dt>Licence notices</dt><dd id="part-licences">—</dd></div>
+          </dl>
+          <p class="control-note">Attribution and licence terms vary by source file. Read the original headers and the <a href="https://raw.githubusercontent.com/erik-larsen/ldraw/main/CAreadme.txt" target="_blank" rel="noreferrer">LDraw library agreement</a> before redistributing any part data.</p>
+        </section>
+        <div id="parts-message" class="parts-message" role="status" aria-live="polite">Connecting to the LDraw parts library…</div>
+      </aside>
+    </section>
+
+    <p class="parts-disclaimer">This is a geometry preview, not a buildability check. LDraw sub-file references describe how the surface is drawn; BrickForge still needs its own physical connection data before it can prove that separate elements can be assembled.</p>
+  </main>
+
+  <footer class="site-footer">
+    <a class="brand footer-brand" href="./index.html"><img src="./assets/mark.svg" width="28" height="28" alt=""><span>brickforge</span></a>
+    <p>Independent project. Not affiliated with or endorsed by the LEGO Group. Part geometry is sourced from the LDraw community library.</p>
+    <span class="footer-id">BF / PARTS-01</span>
+  </footer>
+
+  <script type="module" src="./assets/parts.js"></script>
+</body>
+</html>
