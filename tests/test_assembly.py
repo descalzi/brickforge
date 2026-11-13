@@ -523,3 +523,36 @@ process.stdout.write(JSON.stringify(results));
         assert browser_parts == python_parts, (
             f"browser and Python footprint placements differ for {len(cells)} cells"
         )
+
+
+
+@pytest.mark.parametrize(
+    "grid",
+    (
+        (
+            "#####",
+            "##.##",
+            "##.##",
+            "#####",
+        ),
+        (
+            "#####",
+            "##.##",
+            "##.##",
+            "#####",
+            "#####",
+        ),
+    ),
+)
+def test_footprint_builder_supports_enclosed_ring_footprints(grid: tuple[str, ...]) -> None:
+    cells = [
+        (x, z)
+        for z, row in enumerate(grid)
+        for x, character in enumerate(row)
+        if character == "#"
+    ]
+    assembly = build_footprint_block(cells, 2, PROFILES)
+
+    assert assembly.parts
+    assert assembly.connections
+    assert assembly.total_mating_pairs > 0
