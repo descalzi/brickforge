@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "model_name": "block-4x4x2",
+  "total_parts": 4,
+  "items": [
+    {
+      "part_id": "3001",
+      "colour_code": 1,
+      "quantity": 2
+    },
+    {
+      "part_id": "3001",
+      "colour_code": 4,
+      "quantity": 2
+    }
+  ]
+}
