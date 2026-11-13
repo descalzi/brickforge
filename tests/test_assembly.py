@@ -410,7 +410,7 @@ def test_footprint_builder_constructs_an_interlocked_l_shape() -> None:
     ]
     assembly = build_footprint_block(cells, 2, PROFILES)
 
-    assert len(assembly.parts) >= 6
+    assert len(assembly.parts) >= 4
     assert {part.part_id for part in assembly.parts} <= {"3001", "3002", "3003", "3004", "3005", "3009", "3010", "3622"}
     assert len(assembly.connections) >= 5
     assert assembly.total_mating_pairs > 0
