@@ -125,3 +125,14 @@ def test_zero_position_tolerance_requires_exact_alignment() -> None:
         position_tolerance_ldu=0.0,
     )
     assert matches == ()
+
+
+
+def test_different_footprints_can_align_on_a_half_pitch_offset() -> None:
+    profiles = load_connection_profiles(CATALOGUE)
+    matches = find_mating_pairs(
+        profiles["3001"],
+        profiles["3021"],
+        translation_b=(10.0, -8.0, 0.0),
+    )
+    assert len(matches) == 6
