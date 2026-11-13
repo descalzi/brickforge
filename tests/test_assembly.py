@@ -156,8 +156,8 @@ def test_wide_rectangular_block_bridges_width_and_depth_seams() -> None:
     assembly = build_rectangular_block(12, 8, 2, PROFILES)
 
     assert len(assembly.parts) == 42
-    assert len(assembly.connections) >= 30
-    assert assembly.total_mating_pairs >= 96
+    assert len(assembly.connections) == 48
+    assert assembly.total_mating_pairs == 96
     assert assembly.bom_dict()["total_parts"] == 42
     assert assembly.bom_dict()["items"] == [
         {"part_id": "3001", "colour_code": 1, "quantity": 6},
