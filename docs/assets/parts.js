@@ -517,6 +517,8 @@ function clearMeasurements() {
   output.files.textContent = '—';
   output.studs.textContent = '—';
   output.receivers.textContent = '—';
+  output.connectionStatus.textContent = 'Checking nominal connection profile…';
+  output.connectionStatus.dataset.supported = 'false';
   output.authors.textContent = '—';
   output.licences.textContent = '—';
 }
@@ -597,6 +599,12 @@ async function loadPartCatalogue() {
   partSearch.disabled = false;
   partSearch.placeholder = 'Search ' + partCatalogue.length.toLocaleString()
     + ' parts by number, name or keyword';
+  const coverage = document.querySelector('#part-profile-coverage');
+  if (coverage) {
+    coverage.textContent = connectionProfileMap.size.toLocaleString()
+      + ' of ' + partCatalogue.length.toLocaleString()
+      + ' indexed parts currently have nominal connection profiles.';
+  }
 }
 
 async function loadSelectedPart() {
