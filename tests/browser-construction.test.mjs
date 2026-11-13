@@ -100,3 +100,11 @@ test("browser engine validates a matrix of rectangular footprints", () => {
     }
   }
 });
+
+
+test("browser engine requires at least two courses for an interlocked block", () => {
+  assert.throws(
+    () => buildRectangularBlock(4, 4, 1, catalogue),
+    /at least 2 courses/,
+  );
+});
