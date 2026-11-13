@@ -264,7 +264,7 @@ function prepareModel(object, unitFactor, sourceUnit) {
   resetButton.disabled = false;
   setState('MESH LOADED', 'loaded');
   setMessage(
-    `Mesh loaded locally. Source units interpreted as ${sourceUnit}; measurements are shown in millimetres. No LEGO buildability check has been run.`,
+    `Mesh loaded locally. Source units interpreted as ${sourceUnit}; measurements are shown in millimetres. No L-brick buildability check has been run.`,
     'success',
   );
 }
