@@ -194,6 +194,22 @@ def test_rectangular_block_dimension_matrix_is_connected_and_collision_free(
     assert assembly.total_mating_pairs > 0
 
 
+@pytest.mark.parametrize("height_bricks", (3, 4))
+@pytest.mark.parametrize("width_studs", (4, 8, 12))
+@pytest.mark.parametrize("depth_studs", (4, 8, 12))
+def test_rectangular_block_repeated_courses_remain_connected(
+    width_studs: int, depth_studs: int, height_bricks: int
+) -> None:
+    assembly = build_rectangular_block(
+        width_studs, depth_studs, height_bricks, PROFILES
+    )
+
+    assert assembly.parts
+    assert assembly.connections
+    assert assembly.total_mating_pairs > 0
+    assert len({part.instance_id for part in assembly.parts}) == len(assembly.parts)
+
+
 def test_rectangular_block_alternates_course_transforms() -> None:
     assembly = build_interlocked_block_demo()
 
