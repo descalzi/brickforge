@@ -62,3 +62,14 @@ def test_catalogue_indexes_only_top_level_parts_and_is_sorted(tmp_path: Path) ->
 def test_catalogue_requires_parts_directory(tmp_path: Path) -> None:
     with pytest.raises(FileNotFoundError, match="parts directory"):
         build_catalogue(tmp_path)
+
+def test_catalogue_accepts_complete_zip_ldraw_subdirectory_layout(tmp_path: Path) -> None:
+    root = tmp_path / "archive"
+    _write(root / "ldraw" / "parts" / "3001.dat", "0 Brick 2 x 4\n")
+    _write(root / "brickforge-source.json", json.dumps({"archive_sha256": "nested"}))
+
+    catalogue = build_catalogue(root)
+
+    assert catalogue["part_count"] == 1
+    assert catalogue["parts"][0]["filename"] == "parts/3001.dat"
+    assert catalogue["source"]["archive_sha256"] == "nested"
