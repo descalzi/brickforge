@@ -53,7 +53,7 @@ test('limits search results and returns no results for an empty query', () => {
 test('resolves bare primitive references from LDraw subparts without probing parts/', () => {
   assert.deepEqual(
     ldrawReferenceCandidates('stud4.dat', 'parts/s/3001s01.dat'),
-    ['p/stud4.dat', 'parts/stud4.dat'],
+    ['p/stud4.dat'],
   );
   assert.deepEqual(
     ldrawReferenceCandidates('stud.dat', 'p/4-4cyli.dat'),
