@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "coordinate_system": "LDraw",
+  "length_unit": "LDU",
+  "model_name": "stacked-3001",
+  "parts": [
+    {
+      "instance_id": "lower-brick",
+      "part_id": "3001",
+      "colour_code": 4,
+      "translation_ldu": [
+        0,
+        0,
+        0
+      ],
+      "matrix": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "instance_id": "upper-brick",
+      "part_id": "3001",
+      "colour_code": 1,
+      "translation_ldu": [
+        0,
+        -24,
+        0
+      ],
+      "matrix": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        1
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "instance_a": "lower-brick",
+      "instance_b": "upper-brick",
+      "mating_pairs": [
+        {
+          "feature_a": "top-stud-x10_z10",
+          "feature_b": "underside-receiver-x10_z10",
+          "position_error_ldu": 0,
+          "axis_dot": -1
+        },
+        {
+          "feature_a": "top-stud-x10_zm10",
+          "feature_b": "underside-receiver-x10_zm10",
+          "position_error_ldu": 0,
+          "axis_dot": -1
+        },
+        {
+          "feature_a": "top-stud-x30_z10",
+          "feature_b": "underside-receiver-x30_z10",
+          "position_error_ldu": 0,
+          "axis_dot": -1
+        },
+        {
+          "feature_a": "top-stud-x30_zm10",
+          "feature_b": "underside-receiver-x30_zm10",
+          "position_error_ldu": 0,
+          "axis_dot": -1
+        },
+        {
+          "feature_a": "top-stud-xm10_z10",
+          "feature_b": "underside-receiver-xm10_z10",
+          "position_error_ldu": 0,
+          "axis_dot": -1
+        },
+        {
+          "feature_a": "top-stud-xm10_zm10",
+          "feature_b": "underside-receiver-xm10_zm10",
+          "position_error_ldu": 0,
+          "axis_dot": -1
+        },
+        {
+          "feature_a": "top-stud-xm30_z10",
+          "feature_b": "underside-receiver-xm30_z10",
+          "position_error_ldu": 0,
+          "axis_dot": -1
+        },
+        {
+          "feature_a": "top-stud-xm30_zm10",
+          "feature_b": "underside-receiver-xm30_zm10",
+          "position_error_ldu": 0,
+          "axis_dot": -1
+        }
+      ]
+    }
+  ]
+}
