@@ -250,7 +250,9 @@ def _append_primitive(
     )
 
 
-def _apply_matrix(matrix: Matrix3, vector: tuple[float, float, float]) -> tuple[float, float, float]:
+def _apply_matrix(
+    matrix: Matrix3, vector: tuple[float, float, float]
+) -> tuple[float, float, float]:
     x, y, z = vector
     return (
         matrix[0] * x + matrix[1] * y + matrix[2] * z,
