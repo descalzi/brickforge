@@ -318,7 +318,7 @@ function setDownloadsEnabled(enabled) {
 }
 
 function parseFootprintGrid(value) {
-  const rows = value.trim().split(/\\r?\\n/).map((row) => row.trim());
+  const rows = value.trim().split(/\r?\n/).map((row) => row.trim());
   if (!rows.length || !rows[0].length) {
     throw new Error("Enter a footprint grid using # for occupied studs and . for empty cells.");
   }
