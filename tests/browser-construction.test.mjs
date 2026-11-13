@@ -42,6 +42,31 @@ test("browser engine interlocks a wide 12x4 two-course block", () => {
   ]);
 });
 
+test("browser engine interlocks a wide 12x8 block in both dimensions", () => {
+  const result = buildRectangularBlock(12, 8, 2, catalogue);
+
+  assert.equal(result.parts.length, 42);
+  assert.equal(result.parts.filter((part) => part.part_id === "3001").length, 18);
+  assert.equal(result.parts.filter((part) => part.part_id === "3004").length, 24);
+  assert.ok(result.connections.length >= 30);
+  assert.ok(result.total_mating_pairs >= 96);
+  assert.deepEqual(result.bom.items, [
+    { part_id: "3001", colour_code: 1, quantity: 6 },
+    { part_id: "3001", colour_code: 4, quantity: 12 },
+    { part_id: "3004", colour_code: 1, quantity: 24 },
+  ]);
+});
+
+test("browser engine interlocks a 4x8 block along the depth axis", () => {
+  const result = buildRectangularBlock(4, 8, 2, catalogue);
+
+  assert.equal(result.parts.length, 11);
+  assert.equal(result.parts.filter((part) => part.part_id === "3001").length, 7);
+  assert.equal(result.parts.filter((part) => part.part_id === "3004").length, 4);
+  assert.ok(result.connections.length >= 7);
+  assert.ok(result.total_mating_pairs >= 16);
+});
+
 test("browser engine uses the same part placements as the Python demonstrator", () => {
   const result = buildRectangularBlock(4, 4, 2, catalogue);
 
