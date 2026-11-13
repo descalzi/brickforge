@@ -15,13 +15,18 @@ CATALOGUE = (
 )
 
 
-def test_catalogue_contains_six_basic_brick_and_plate_profiles() -> None:
+def test_catalogue_contains_supported_brick_and_plate_profiles() -> None:
     profiles = load_connection_profiles(CATALOGUE)
 
-    assert set(profiles) == {"3001", "3003", "3004", "3005", "3020", "3021"}
+    assert set(profiles) == {
+        "3001", "3002", "3003", "3004", "3005", "3009", "3010", "3020", "3021", "3622"
+    }
     assert len(profiles["3001"].studs) == 8
     assert len(profiles["3001"].receivers) == 8
     assert len(profiles["3005"].studs) == 1
+    assert len(profiles["3002"].studs) == 6
+    assert len(profiles["3622"].studs) == 3
+    assert len(profiles["3009"].receivers) == 6
     assert len(profiles["3021"].receivers) == 6
     assert profiles["3001"].body_height_ldu == 24
     assert profiles["3020"].body_height_ldu == 8
