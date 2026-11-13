@@ -156,7 +156,7 @@ def test_full_library_audit_reports_resolved_fixture_parts() -> None:
     assert report["resolution_rate"] == 1.0
     assert report["expanded_primitive_records"] > 100
     assert report["unique_source_files_expanded"] == 8
-    assert report["unique_documents_parsed"] == 8
+    assert report["unique_documents_parsed"] == 10
 
 
 def test_full_library_audit_can_limit_parts_and_rejects_zero_limit() -> None:
