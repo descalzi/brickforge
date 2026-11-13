@@ -279,10 +279,8 @@ def build_footprint_block(
         layer_y = -layer * body_height
         for index, tile in enumerate(tiling):
             profile = profiles[tile.part_id]
-            world_width = tile.depth if tile.rotated else tile.width
-            world_depth = tile.width if tile.rotated else tile.depth
-            centre_x = (tile.x + world_width / 2.0 - width / 2.0) * pitch
-            centre_z = (tile.z + world_depth / 2.0 - depth / 2.0) * pitch
+            centre_x = (tile.x + tile.width / 2.0 - width / 2.0) * pitch
+            centre_z = (tile.z + tile.depth / 2.0 - depth / 2.0) * pitch
             placements.append(
                 PlacedPart(
                     instance_id=f"layer-{layer:02d}-part-{index:03d}",
