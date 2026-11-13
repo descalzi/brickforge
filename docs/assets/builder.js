@@ -340,6 +340,7 @@ function generateBlock() {
     );
   } catch (error) {
     currentResult = null;
+    clearModel();
     setDownloadsEnabled(false);
     outputs.parts.textContent = "—";
     outputs.edges.textContent = "—";
