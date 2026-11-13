@@ -76,9 +76,9 @@ test('rejects unsafe LDraw reference paths', () => {
 
 test('ranks exact part IDs and part-name matches ahead of broad descriptions', () => {
   const parts = [
-    { part_id: '3001A', name: 'Special assembly', description: 'Uses part 3001' },
-    { part_id: '3001', name: 'Brick 2 x 4', description: 'Standard brick' },
-    { part_id: '3020', name: 'Plate 2 x 4', description: 'A building element' },
+    { part_id: '3001A', description: 'Special assembly using part 3001' },
+    { part_id: '3001', description: 'Brick 2 x 4 standard brick' },
+    { part_id: '3020', description: 'Plate 2 x 4 building element' },
   ];
 
   assert.deepEqual(
@@ -93,8 +93,8 @@ test('ranks exact part IDs and part-name matches ahead of broad descriptions', (
 
 test('ranks part-name prefixes and preserves source order for equal scores', () => {
   const parts = [
-    { part_id: 'a', name: 'Wheel hub' },
-    { part_id: 'b', name: 'Wheel arch' },
+    { part_id: 'a', description: 'Wheel hub' },
+    { part_id: 'b', description: 'Wheel arch' },
     { part_id: 'c', description: 'Wheel assembly' },
   ];
 
