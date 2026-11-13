@@ -36,7 +36,7 @@ let activeModel;
 let activeMeshes = [];
 let currentFile;
 let currentBounds;
-let wireframeEnabled = false;
+let wireframeEnabled = false;\nlet viewerReady = false;
 
 function setMessage(text, kind = 'info') {
   message.textContent = text;
@@ -148,9 +148,20 @@ function removeActiveModel() {
   activeMeshes = [];
 }
 
+function disposeHelper(helper) {
+  if (!helper) return;
+  scene.remove(helper);
+  helper.geometry?.dispose?.();
+  if (Array.isArray(helper.material)) {
+    helper.material.forEach((material) => material.dispose?.());
+  } else {
+    helper.material?.dispose?.();
+  }
+}
+
 function replaceReferenceHelpers(maxDimension, height) {
-  if (activeGrid) scene.remove(activeGrid);
-  if (activeAxes) scene.remove(activeAxes);
+  disposeHelper(activeGrid);
+  disposeHelper(activeAxes);
   const gridSize = Math.max(maxDimension * 2.2, 20);
   activeGrid = new THREE.GridHelper(gridSize, 22, 0x9DADB9, 0xD7E0E6);
   activeGrid.position.y = -height / 2;
@@ -275,6 +286,10 @@ async function parseFile(file) {
 
 async function handleFile(file) {
   if (!file) return;
+  if (!viewerReady) {
+    setMessage('The 3D viewer is unavailable in this browser session. Reload the page or try another browser.', 'error');
+    return;
+  }
   currentFile = file;
   clearMeasurements();
   setState('READING FILE');
@@ -337,4 +352,4 @@ resetButton.addEventListener('click', () => {
   if (currentBounds) fitCamera(currentBounds);
 });
 
-initialiseViewer();
+viewerReady = initialiseViewer();
