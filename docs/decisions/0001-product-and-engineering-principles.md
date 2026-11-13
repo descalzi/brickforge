@@ -1,6 +1,6 @@
 # ADR 0001: Product and Engineering Principles
 
-- **Status:** Proposed baseline
+- **Status:** Accepted baseline
 - **Date:** 2026-11-13
 
 ## Context
@@ -17,7 +17,7 @@ A narrow category-specific generator would constrain the product. At the same ti
 4. Begin the first implementation with a deliberately limited set of parts and connection types, while keeping the data model extensible.
 5. Accept that the eventual product should support text, reference images, and existing 3D meshes; implement these inputs in stages.
 6. Treat visual fidelity, buildability, cost, part count, stability, and ease of assembly as distinct objectives.
-7. Use visual fidelity as a candidate default priority, subject to hard buildability constraints; expose alternatives rather than hiding trade-offs.
+7. **Prioritise visual fidelity by default**, subject to hard buildability constraints. The user has confirmed this as the initial optimisation preference. Cost, part count, stability margin, and ease of assembly remain measurable secondary objectives and should be exposed as adjustable trade-offs.
 
 ## Consequences
 
