@@ -353,3 +353,25 @@
   line-height: 1.45;
   letter-spacing: .08em;
 }
+
+
+.builder-state[data-state="loading"]::before {
+  content: "";
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 8px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  vertical-align: -1px;
+  animation: builder-spin .75s linear infinite;
+}
+
+@keyframes builder-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .builder-state[data-state="loading"]::before { animation-duration: 2s; }
+}
