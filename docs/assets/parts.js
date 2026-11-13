@@ -18,6 +18,8 @@ const output = {
   z: document.querySelector('#part-z'),
   triangles: document.querySelector('#part-triangles'),
   files: document.querySelector('#part-files'),
+  studs: document.querySelector('#part-studs'),
+  receivers: document.querySelector('#part-receivers'),
   source: document.querySelector('#part-source'),
   authors: document.querySelector('#part-authors'),
   licences: document.querySelector('#part-licences'),
@@ -53,6 +55,7 @@ let loadSequence = 0;
 
 const rawFileCache = new Map();
 const documentCache = new Map();
+let connectionProfilesPromise;
 
 function setMessage(text, kind) {
   message.textContent = text;
@@ -293,6 +296,26 @@ function parseLDrawText(content, source) {
   return { source: source, records: records, metadata: metadata };
 }
 
+async function getConnectionProfiles() {
+  if (!connectionProfilesPromise) {
+    connectionProfilesPromise = fetch('./data/connection-profiles/basic-bricks.json', {
+      credentials: 'same-origin',
+      headers: { Accept: 'application/json' },
+    }).then(async (response) => {
+      if (!response.ok) throw new Error('Connection profile catalogue request failed (' + response.status + ').');
+      const catalogue = await response.json();
+      if (catalogue.schema_version !== 1 || !Array.isArray(catalogue.profiles)) {
+        throw new Error('Unsupported connection profile catalogue format.');
+      }
+      return new Map(catalogue.profiles.map((profile) => [String(profile.part_id), profile]));
+    }).catch((error) => {
+      connectionProfilesPromise = null;
+      throw error;
+    });
+  }
+  return connectionProfilesPromise;
+}
+
 async function getDocument(path) {
   if (documentCache.has(path)) return documentCache.get(path);
   const pending = fetchRawFile(path).then((content) => parseLDrawText(content, path)).catch((error) => {
@@ -481,6 +504,8 @@ function clearMeasurements() {
   output.z.textContent = '—';
   output.triangles.textContent = '—';
   output.files.textContent = '—';
+  output.studs.textContent = '—';
+  output.receivers.textContent = '—';
   output.authors.textContent = '—';
   output.licences.textContent = '—';
 }
@@ -497,7 +522,11 @@ async function loadSelectedPart() {
 
   try {
     await loadPalette();
-    const root = await getDocument('parts/' + partId + '.dat');
+    const [root, connectionProfiles] = await Promise.all([
+      getDocument('parts/' + partId + '.dat'),
+      getConnectionProfiles(),
+    ]);
+    const connectionProfile = connectionProfiles.get(partId);
     const expansion = {
       faces: new Map(),
       lines: new Map(),
@@ -546,6 +575,8 @@ async function loadSelectedPart() {
     output.z.textContent = formatMm(size.z);
     output.triangles.textContent = faceModel.triangles.toLocaleString();
     output.files.textContent = expansion.files.size.toLocaleString();
+    output.studs.textContent = connectionProfile ? connectionProfile.features.filter((feature) => feature.kind === 'stud').length.toLocaleString() : 'Not defined';
+    output.receivers.textContent = connectionProfile ? connectionProfile.features.filter((feature) => feature.kind === 'stud_receiver').length.toLocaleString() : 'Not defined';
     output.authors.textContent = Array.from(expansion.authors).sort().join(', ') || 'Not stated in source headers';
     output.licences.textContent = Array.from(expansion.licences).sort().join(' · ') || 'Check the individual source headers';
     output.source.href = RAW_BASE + root.source;
