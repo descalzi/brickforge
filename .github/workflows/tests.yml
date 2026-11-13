@@ -31,9 +31,9 @@ jobs:
       - name: Check LDraw part explorer JavaScript syntax
         run: node --check docs/assets/parts.js
       - name: Check browser construction engine syntax
-        run: node --check docs/assets/construction-engine.js && node --check docs/assets/builder.js && node --check docs/assets/footprint-worker.js
-      - name: Test browser construction and irregular footprint engines
-        run: node --test tests/browser-construction.test.mjs tests/browser-footprint-corpus.test.mjs
+        run: node --check docs/assets/construction-engine.js && node --check docs/assets/builder.js && node --check docs/assets/footprint-worker.js && node --check docs/assets/camera-utils.js
+      - name: Test browser construction, irregular footprints and camera helpers
+        run: node --test tests/browser-construction.test.mjs tests/browser-footprint-corpus.test.mjs tests/browser-camera.test.mjs
       - name: Lint connection and assembly implementation and tests
         run: ruff check src/brickforge/parts/connections.py src/brickforge/assembly src/brickforge/construction tests/test_connections.py tests/test_assembly.py
       - name: Type-check connection and assembly implementation
