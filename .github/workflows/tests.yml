@@ -28,5 +28,7 @@ jobs:
           node-version: "24"
       - name: Check mesh inspector JavaScript syntax
         run: node --check docs/assets/inspector.js
+      - name: Check LDraw part explorer JavaScript syntax
+        run: node --check docs/assets/parts.js
       - name: Run test suite
         run: python -m pytest
