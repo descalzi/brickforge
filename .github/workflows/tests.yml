@@ -31,9 +31,9 @@ jobs:
       - name: Check LDraw part explorer JavaScript syntax
         run: node --check docs/assets/parts.js
       - name: Lint connection and assembly implementation and tests
-        run: ruff check src/brickforge/parts/connections.py src/brickforge/assembly tests/test_connections.py tests/test_assembly.py
+        run: ruff check src/brickforge/parts/connections.py src/brickforge/assembly src/brickforge/construction tests/test_connections.py tests/test_assembly.py
       - name: Type-check connection and assembly implementation
-        run: mypy src/brickforge/parts/connections.py src/brickforge/assembly
+        run: mypy src/brickforge/parts/connections.py src/brickforge/assembly src/brickforge/construction
       - name: Verify published connection catalogue matches canonical data
         run: cmp data/connection-profiles/basic-bricks.json docs/data/connection-profiles/basic-bricks.json
       - name: Validate JSON data, schemas and example exports
@@ -44,6 +44,8 @@ jobs:
           python -m json.tool schemas/assembly-graph-v1.schema.json > /dev/null &&
           python -m json.tool schemas/bom-v1.schema.json > /dev/null &&
           python -m json.tool examples/stacked-3001.assembly.json > /dev/null &&
-          python -m json.tool examples/stacked-3001.bom.json > /dev/null
+          python -m json.tool examples/stacked-3001.bom.json > /dev/null &&
+          python -m json.tool examples/block-4x4x2.assembly.json > /dev/null &&
+          python -m json.tool examples/block-4x4x2.bom.json > /dev/null
       - name: Run test suite
         run: python -m pytest
