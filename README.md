@@ -28,23 +28,26 @@ The AI must not directly author arbitrary per-brick placements as the source of 
 
 ## Initial technical direction
 
-- Python 3.11+
-- FastAPI for the backend API (introduced when the service layer is needed)
-- Trimesh for mesh ingestion and geometry operations
-- LDraw as the canonical interchange format for L-brick models
-- Three.js for the browser-based mesh inspector and a future assembly viewer
-- LPub3D as a candidate downstream instruction-rendering tool
-- pytest for automated tests
+- Static HTML, CSS and JavaScript, published with GitHub Pages (Cloudflare Pages is also compatible).
+- Browser-native construction and validation, using the visitor's CPU and memory.
+- Three.js for local 3D preview and interaction.
+- LDraw as the canonical model interchange and download format.
+- Python reference implementation and test suite for engineering and regression checks.
+- Node's built-in test runner for browser-engine tests; pytest for the Python reference tests.
 
-Technology choices are provisional and should be validated with small technical spikes before they become hard dependencies.
+The user-facing construction flow does not require a Python installation, application server or model-upload service. The site fetches its published connection catalogue and static scripts; placements, validation, preview assembly and downloads are computed in the browser.
 
 ## Development status
 
 The project now has a public mesh inspector for STL and OBJ files and a browser-based LDraw part explorer for a curated set of real bricks and plates. The part explorer follows nested sub-file references, composes transforms, applies inherited colours and the LDraw colour table, and shows source-header attribution. BrickForge has its first authored nominal connection profiles for six bricks and plates, plus a deterministic stud-to-receiver datum matcher. These are candidate geometric alignments, not physical clutch or stability validation. The Python package also inspects target meshes, parses LDraw part metadata and geometry records, and recursively resolves sub-file references into transformed primitives. The resolver is regression-tested with a verbatim LDraw 3001 part/dependency fixture, preserving upstream headers and licence files; validating against a full version-pinned official archive remains outstanding.
 
-A canonical assembly graph is now implemented, with unique part instances, LDraw transforms, nominal connection edges, conservative body-envelope overlap checks, connected-graph validation, LDraw export, and a BOM derived from the same placements. On top of it, a deterministic rectangular-block strategy alternates 2 x 4 brick orientation between courses to bridge seams. It generates a 4 x 4-stud, two-course block from four real 3001 bricks: four graph edges and 16 nominal mating pairs. Both the two-brick stack and the interlocked block have example LDraw, assembly JSON and BOM files under [examples](examples/), with versioned [assembly graph](schemas/assembly-graph-v1.schema.json) and [BOM](schemas/bom-v1.schema.json) JSON schemas. For local engineering checks, install the development package with `python -m pip install -e ".[dev]"`, then run `brickforge-demo-assembly` or `brickforge-demo-block`. These are developer-only command-line tools. **They are not required to use the public browser pages.** The online site currently provides the mesh inspector and part explorer; model generation has not yet been integrated into the browser application.
+A canonical assembly graph is implemented, with unique part instances, LDraw transforms, nominal connection edges, conservative body-envelope overlap checks, connected-graph validation, LDraw export, and a BOM derived from the same placements. A deterministic rectangular-block strategy alternates 2 x 4 brick orientation between courses to bridge seams. It generates a 4 x 4-stud, two-course block from four 3001 parts: four graph edges and 16 nominal mating pairs.
 
-This is an early constrained construction engine, not yet an arbitrary-shape L-brick generator. The block strategy currently handles rectangular layouts tileable with the 4 x 2 profile and rejects disconnected courses; it does not search for shape-specific placements. Collision checks use conservative body bounds, and physical stability, build sequencing and instructions remain future work.
+The same constrained construction engine now runs in the browser at the [Block builder](https://descalzi.github.io/brickforge/builder.html). It reads the published connection catalogue, creates the placements and graph, checks connections and nominal body bounds, previews the result in 3D, and downloads LDraw, assembly JSON and BOM files. **No Python installation, account, backend or model upload is required.** Its browser-native implementation is regression-tested against the Python reference output. The two-brick stack and the interlocked block examples remain under [examples](examples/), with versioned [assembly graph](schemas/assembly-graph-v1.schema.json) and [BOM](schemas/bom-v1.schema.json) JSON schemas.
+
+For local engineering checks only, install the development package with `python -m pip install -e ".[dev]"`, then run `brickforge-demo-assembly` or `brickforge-demo-block`. These commands are not required by website users.
+
+This is an early constrained construction engine, not yet an arbitrary-shape L-brick generator. The online builder currently handles rectangular layouts tileable with the 4 x 2 profile and rejects disconnected courses; it does not yet consume the mesh inspector's uploaded STL/OBJ as a construction target. Collision checks use conservative body bounds, and physical stability, build sequencing and instructions remain future work.
 
 See [Architecture](docs/architecture/overview.md), [Assembly graph](docs/architecture/assembly-graph.md), [Roadmap](docs/roadmap.md), [Decision log](docs/decisions/0001-product-and-engineering-principles.md), [LDraw geometry ingestion](docs/architecture/ldraw-geometry.md), [nominal connection profiles](docs/architecture/connection-profiles.md), and [parts data-source notes](docs/parts-data-sources.md).
 
@@ -60,7 +63,7 @@ The archive is extracted to `data/vendor/ldraw/`, which is intentionally ignored
 
 ## Project website
 
-The public project page is published from `docs/` using GitHub Pages, and the source repository is public. Visit the [project site](https://descalzi.github.io/brickforge/), try the [mesh inspector](https://descalzi.github.io/brickforge/inspector.html), or explore [real LDraw parts](https://descalzi.github.io/brickforge/parts.html).
+The public project page is published from `docs/` using GitHub Pages, and the source repository is public. Visit the [project site](https://descalzi.github.io/brickforge/), try the [mesh inspector](https://descalzi.github.io/brickforge/inspector.html), generate a block in the [browser builder](https://descalzi.github.io/brickforge/builder.html), or explore [LDraw parts](https://descalzi.github.io/brickforge/parts.html).
 
 ## Scope and compatibility
 
