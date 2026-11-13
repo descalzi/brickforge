@@ -589,15 +589,27 @@ export function buildRectangularBlock(widthStuds, depthStuds, heightBricks, cata
 const FOOTPRINT_TILE_PART_IDS = ["3001", "3003", "3004", "3005"];
 const MAX_FOOTPRINT_CELLS = 64;
 const MAX_FOOTPRINT_SEARCH_NODES = 1000000;
-const MAX_FOOTPRINT_TILINGS = 20000;
-const MAX_FOOTPRINT_PAIR_CHECKS = 2000000;
+const MAX_FOOTPRINT_TILINGS = 100000;
+const MAX_FOOTPRINT_PAIR_CHECKS = 5000000;
 
 function cellKey(x, z) {
   return x + "," + z;
 }
 
+function footprintTilePriority(tile) {
+  const partNumber = Number(tile.part_id);
+  return (
+    Math.imul(tile.x, 73856093)
+    ^ Math.imul(tile.z, 19349663)
+    ^ Math.imul(tile.width, 83492791)
+    ^ Math.imul(tile.depth, 2654435761)
+    ^ Math.imul(partNumber, 97531)
+  ) >>> 0;
+}
+
 function compareTiles(a, b) {
   return (b.width * b.depth) - (a.width * a.depth)
+    || footprintTilePriority(a) - footprintTilePriority(b)
     || compareText(a.part_id, b.part_id)
     || a.x - b.x
     || a.z - b.z
