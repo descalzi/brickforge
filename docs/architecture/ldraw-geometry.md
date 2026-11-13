@@ -90,3 +90,27 @@ physical connection declarations. Colour-24 RGB values also require an LDraw
 colour definition table, which is not yet implemented. Connection primitives,
 compatibility, collision checks, and assembly ordering remain separate
 BrickForge subsystems.
+
+## Search catalogue and browser delivery
+
+The website does not download the complete library. A scheduled GitHub Actions
+workflow downloads the official archive into the ignored local vendor directory,
+then scans only top-level `parts/*.dat` headers to create a searchable index.
+Subparts and primitives are deliberately excluded from the search list because
+they are implementation dependencies, not selectable finished parts.
+
+The generated catalogue is published at
+`docs/data/ldraw/parts-index.json.gz`. It contains the part ID, source filename,
+description, category and keywords, plus the exact commit SHA and raw-file base
+URL of the geometry mirror. The browser decompresses this small index with the
+native `DecompressionStream` API. When a visitor selects a part, the viewer
+fetches that root file and only the recursively referenced subparts and
+primitives required to render it. Each file is cached for the current page
+session.
+
+The monthly refresh pins the catalogue and geometry to the same mirror commit,
+so newly indexed parts cannot accidentally resolve against a different library
+snapshot. The official archive SHA-256 is retained in the generated source
+metadata. Original part headers are still read at render time for creator and
+licence attribution; the search index is not a substitute for those notices.
+
