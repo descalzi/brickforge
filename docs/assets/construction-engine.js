@@ -823,15 +823,23 @@ function sampleInterlockingFootprints(cells, profiles) {
         const [bx, bz] = b.split(",").map(Number);
         return az - bz || ax - bx;
       });
-      let nextOptions = null;
+      let minimumOptions = Infinity;
+      let tiedKeys = [];
+      const optionsByKey = new Map();
       for (const key of keys) {
         const viable = byCell.get(key).filter((tile) =>
           [...tile.cells].every((cell) => remaining.has(cell)));
-        if (nextOptions === null || viable.length < nextOptions.length) {
-          nextOptions = viable;
+        optionsByKey.set(key, viable);
+        if (viable.length < minimumOptions) {
+          minimumOptions = viable.length;
+          tiedKeys = [key];
+        } else if (viable.length === minimumOptions) {
+          tiedKeys.push(key);
         }
-        }
-      if (!nextOptions || nextOptions.length === 0) break;
+      }
+      if (minimumOptions === 0) break;
+      const nextKey = tiedKeys[nextRandom() % tiedKeys.length];
+      const nextOptions = optionsByKey.get(nextKey);
       const randomFraction = nextRandom() / 0x100000000;
       const choiceIndex = Math.floor(randomFraction * randomFraction * nextOptions.length);
       const tile = nextOptions[choiceIndex];
