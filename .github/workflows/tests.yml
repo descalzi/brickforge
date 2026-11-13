@@ -30,13 +30,20 @@ jobs:
         run: node --check docs/assets/inspector.js
       - name: Check LDraw part explorer JavaScript syntax
         run: node --check docs/assets/parts.js
-      - name: Lint connection profile implementation and tests
-        run: ruff check src/brickforge/parts/connections.py tests/test_connections.py
-      - name: Type-check connection profile implementation
-        run: mypy src/brickforge/parts/connections.py
+      - name: Lint connection and assembly implementation and tests
+        run: ruff check src/brickforge/parts/connections.py src/brickforge/assembly tests/test_connections.py tests/test_assembly.py
+      - name: Type-check connection and assembly implementation
+        run: mypy src/brickforge/parts/connections.py src/brickforge/assembly
       - name: Verify published connection catalogue matches canonical data
         run: cmp data/connection-profiles/basic-bricks.json docs/data/connection-profiles/basic-bricks.json
-      - name: Validate JSON data and schemas
-        run: python -m json.tool data/connection-profiles/basic-bricks.json > /dev/null && python -m json.tool docs/data/connection-profiles/basic-bricks.json > /dev/null && python -m json.tool schemas/connection-profiles-v1.schema.json > /dev/null
+      - name: Validate JSON data, schemas and example exports
+        run: >-
+          python -m json.tool data/connection-profiles/basic-bricks.json > /dev/null &&
+          python -m json.tool docs/data/connection-profiles/basic-bricks.json > /dev/null &&
+          python -m json.tool schemas/connection-profiles-v1.schema.json > /dev/null &&
+          python -m json.tool schemas/assembly-graph-v1.schema.json > /dev/null &&
+          python -m json.tool schemas/bom-v1.schema.json > /dev/null &&
+          python -m json.tool examples/stacked-3001.assembly.json > /dev/null &&
+          python -m json.tool examples/stacked-3001.bom.json > /dev/null
       - name: Run test suite
         run: python -m pytest
