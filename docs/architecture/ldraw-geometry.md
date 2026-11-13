@@ -17,8 +17,8 @@ The geometry parser currently recognises:
 
 Type-0 metadata/comments and unknown integer line types are ignored. A malformed
 record with a recognised geometry type raises `LDrawParseError` with its
-source and line number. Direct solid and transparent colour tokens are retained
-as hexadecimal strings; ordinary colour identifiers are integers.
+source and line number. Direct RGB colour tokens are retained as hexadecimal
+strings; ordinary colour identifiers are integers.
 
 ## Coordinate units
 
