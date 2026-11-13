@@ -1,0 +1,8 @@
+0 block-4x4x2
+0 Name: block-4x4x2.ldr
+0 Author: BrickForge
+0 // Part placements use the canonical assembly graph transforms.
+1 4 0 0 -20 1 0 0 0 1 0 0 0 1 3001.dat
+1 4 0 0 20 1 0 0 0 1 0 0 0 1 3001.dat
+1 1 -20 -24 0 0 0 1 0 1 0 -1 0 0 3001.dat
+1 1 20 -24 0 0 0 1 0 1 0 -1 0 0 3001.dat
