@@ -148,23 +148,37 @@ def _tilings_connect(
     upper: tuple[_Tile, ...],
 ) -> bool:
     count = len(lower) + len(upper)
-    adjacency: list[set[int]] = [set() for _ in range(count)]
-    for lower_index, lower_tile in enumerate(lower):
-        for upper_index, upper_tile in enumerate(upper):
-            if lower_tile.cells.isdisjoint(upper_tile.cells):
-                continue
-            upper_node = len(lower) + upper_index
-            adjacency[lower_index].add(upper_node)
-            adjacency[upper_node].add(lower_index)
+    parent = list(range(count))
 
-    visited = {0}
-    pending = [0]
-    while pending:
-        current = pending.pop()
-        for neighbour in adjacency[current] - visited:
-            visited.add(neighbour)
-            pending.append(neighbour)
-    return len(visited) == count
+    def find(index: int) -> int:
+        root = index
+        while parent[root] != root:
+            root = parent[root]
+        while parent[index] != index:
+            next_index = parent[index]
+            parent[index] = root
+            index = next_index
+        return root
+
+    def join(first: int, second: int) -> None:
+        root_first = find(first)
+        root_second = find(second)
+        if root_first != root_second:
+            parent[root_second] = root_first
+
+    upper_owner = {
+        cell: upper_index
+        for upper_index, tile in enumerate(upper)
+        for cell in tile.cells
+    }
+    for lower_index, tile in enumerate(lower):
+        for cell in tile.cells:
+            upper_index = upper_owner.get(cell)
+            if upper_index is not None:
+                join(lower_index, len(lower) + upper_index)
+
+    root = find(0)
+    return all(find(index) == root for index in range(1, count))
 
 
 def _find_interlocking_tilings(
