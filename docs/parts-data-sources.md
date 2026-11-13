@@ -19,7 +19,20 @@ The library is made by community contributors. The Parts Library Policies state 
 - Keep downloaded parts outside Git history; only application code and small, specifically licensed test fixtures should live in this repository.
 - Do not use third-party CAD/3D sources to create or submit replacement LDraw parts. LDraw.org's source policy explicitly restricts the sources from which community parts may be authored.
 
-## 2. Connection metadata — open question
+## 2. Browser preview and public mirror
+
+The public [Part explorer](https://descalzi.github.io/brickforge/parts.html) currently previews a small curated set of standard elements (3001, 3003, 3004, 3005, 3020 and 3021). At runtime it fetches the individual text files and the colour configuration from the public GitHub mirror at:
+
+- Mirror repository: https://github.com/erik-larsen/ldraw
+- Individual part files: https://raw.githubusercontent.com/erik-larsen/ldraw/main/parts/3001.dat
+- Colour table: https://raw.githubusercontent.com/erik-larsen/ldraw/main/LDConfig.ldr
+- Mirror licence notes: https://raw.githubusercontent.com/erik-larsen/ldraw/main/CAreadme.txt
+
+The mirror's README describes its contents as a copy of the LDraw Parts Library archive, including `parts/`, `p/` and `LDConfig.ldr`. It is a convenience source for this browser proof of concept, not the authoritative or version-pinned library source. Its contents may lag the official LDraw release page. The reproducible local-library workflow remains `scripts/fetch_ldraw_library.py` against the official LDraw `complete.zip` URL above.
+
+The viewer collects `AUTHOR` and `!LICENSE` notices from the files it expands and exposes the original root file. The source file's own notice governs; the viewer must not assume that one licence applies to every dependency. Before using a different part or redistributing part data, inspect all participating headers and the applicable agreement.
+
+## 3. Connection metadata — open question
 
 LDraw part files provide geometry and model references, but geometry alone is not a complete physical connection model.
 
