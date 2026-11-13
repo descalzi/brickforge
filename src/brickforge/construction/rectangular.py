@@ -29,17 +29,16 @@ def build_rectangular_block(
     colour_codes: Sequence[int] = (4, 1),
     position_tolerance_ldu: float = 0.25,
 ) -> Assembly:
-    """Tile a rectangular block with alternating 2x4 brick orientations.
+    """Tile a rectangular block with interlocked 2x4 and 1x2 brick courses.
 
-    Even courses place each 2x4 brick's four-stud axis along world X. Odd
-    courses rotate the bricks 90 degrees about Y. For wider rectangles, the
-    rotated course is shifted by one stud and its two narrow edge strips are
-    completed with 1x2 bricks, so it bridges seams between lower columns.
-    Placements pass through the canonical assembly validator.
+    Even courses use a regular 4x2 grid. Odd courses use a 90-degree rotation
+    for a single-axis stagger, or a two-axis shift when both dimensions extend
+    beyond one brick. The 1x2 parts close the resulting one-stud perimeter
+    strips. Every proposed placement passes through the canonical assembly
+    validator.
 
-    The strategy uses the 2x4 profile (3001), and the 1x2 profile (3004) for
-    staggered wide courses. It does not yet optimise part choice or handle
-    irregular boundaries.
+    The strategy uses the 2x4 profile (3001) and the 1x2 profile (3004). It
+    does not yet optimise part choice or handle irregular boundaries.
     """
     dimensions = (width_studs, depth_studs, height_bricks)
     if any(
