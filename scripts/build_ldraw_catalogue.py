@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from pathlib import Path
 from typing import Any
 
@@ -56,8 +57,17 @@ def read_part_header(path: Path, library_root: Path) -> dict[str, Any]:
     return metadata
 
 
-def build_catalogue(library_root: Path) -> dict[str, Any]:
+DEFAULT_MIRROR_COMMIT = "c70360d1c588be894997b2168c61909bc8058c4d"
+
+
+def build_catalogue(
+    library_root: Path,
+    mirror_commit: str = DEFAULT_MIRROR_COMMIT,
+) -> dict[str, Any]:
     """Index only top-level parts; subparts and primitives remain lazy dependencies."""
+    if not re.fullmatch(r"[0-9a-f]{40}", mirror_commit):
+        raise ValueError("mirror_commit must be a full 40-character lowercase Git SHA")
+
     archive_root = library_root.resolve()
     root = archive_root
     if not (root / "parts").is_dir() and (root / "ldraw" / "parts").is_dir():
@@ -75,6 +85,13 @@ def build_catalogue(library_root: Path) -> dict[str, Any]:
 
     source: dict[str, Any] = {
         "name": "LDraw.org Parts Library",
+        "mirror_repository": "https://github.com/kulits/ldraw-parts",
+        "mirror_commit": mirror_commit,
+        "geometry_base_url": (
+            "https://raw.githubusercontent.com/kulits/ldraw-parts/"
+            + mirror_commit
+            + "/ldraw/"
+        ),
         "archive_sha256": None,
     }
     source_metadata_path = archive_root / "brickforge-source.json"
@@ -99,6 +116,11 @@ def main() -> None:
         help="Extracted official LDraw library root",
     )
     parser.add_argument(
+        "--mirror-commit",
+        default=DEFAULT_MIRROR_COMMIT,
+        help="Full commit SHA of the geometry mirror snapshot",
+    )
+    parser.add_argument(
         "--output",
         type=Path,
         default=(
@@ -112,7 +134,7 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    catalogue = build_catalogue(args.library)
+    catalogue = build_catalogue(args.library, mirror_commit=args.mirror_commit)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(
         json.dumps(catalogue, ensure_ascii=False, separators=(",", ":")) + "\n",
