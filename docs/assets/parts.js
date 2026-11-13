@@ -1,4 +1,4 @@
-const RAW_BASE = 'https://raw.githubusercontent.com/kulits/ldraw-parts/c70360d1c588be894997b2168c61909bc8058c4d/ldraw/';
+const DEFAULT_RAW_BASE = 'https://raw.githubusercontent.com/kulits/ldraw-parts/c70360d1c588be894997b2168c61909bc8058c4d/ldraw/';\nlet rawBaseUrl = DEFAULT_RAW_BASE;
 const LDU_TO_MM = 0.4;
 const MAX_REFERENCE_DEPTH = 64;
 
@@ -178,7 +178,7 @@ function fitCamera(size) {
 
 async function fetchRawFile(path) {
   if (rawFileCache.has(path)) return rawFileCache.get(path);
-  const request = fetch(RAW_BASE + path, {
+  const request = fetch(rawBaseUrl + path, {
     method: 'GET',
     mode: 'cors',
     credentials: 'omit',
@@ -576,6 +576,15 @@ async function loadPartCatalogue() {
   if (catalogue.schema_version !== 1 || !Array.isArray(catalogue.parts)) {
     throw new Error('Unsupported searchable part catalogue format.');
   }
+  const geometryBaseUrl = catalogue.source && catalogue.source.geometry_base_url;
+  if (
+    typeof geometryBaseUrl !== 'string'
+    || !geometryBaseUrl.startsWith('https://raw.githubusercontent.com/kulits/ldraw-parts/')
+    || !/\\/[0-9a-f]{40}\\/ldraw\\/$/.test(geometryBaseUrl)
+  ) {
+    throw new Error('The searchable catalogue has no valid pinned geometry source.');
+  }
+  rawBaseUrl = geometryBaseUrl;
   partCatalogue = catalogue.parts.filter((part) =>
     part && typeof part.part_id === 'string'
     && typeof part.filename === 'string'
@@ -659,7 +668,7 @@ async function loadSelectedPart() {
     output.receivers.textContent = connectionProfile ? connectionProfile.features.filter((feature) => feature.kind === 'stud_receiver').length.toLocaleString() : 'Not defined';
     output.authors.textContent = Array.from(expansion.authors).sort().join(', ') || 'Not stated in source headers';
     output.licences.textContent = Array.from(expansion.licences).sort().join(' · ') || 'Check the individual source headers';
-    output.source.href = RAW_BASE + root.source;
+    output.source.href = rawBaseUrl + root.source;
     output.source.textContent = 'View ' + root.source + ' ↗';
 
     emptyState.hidden = true;
