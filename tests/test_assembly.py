@@ -411,7 +411,7 @@ def test_footprint_builder_constructs_an_interlocked_l_shape() -> None:
     assembly = build_footprint_block(cells, 2, PROFILES)
 
     assert len(assembly.parts) >= 6
-    assert {part.part_id for part in assembly.parts} <= {"3001", "3003", "3004", "3005"}
+    assert {part.part_id for part in assembly.parts} <= {"3001", "3002", "3003", "3004", "3005", "3009", "3010", "3622"}
     assert len(assembly.connections) >= 5
     assert assembly.total_mating_pairs > 0
     assert assembly.model_name == "footprint-3x3-8cells-x2"
@@ -479,6 +479,7 @@ def test_browser_and_python_footprint_engines_produce_identical_placements() -> 
             2,
         ),
         ([[0, 0], [1, 0], [2, 0]], 3),
+        ([[0, 0], [1, 0], [2, 0], [3, 0], [4, 0], [2, 1], [2, 2]], 2),
         ([[0, 0], [1, 0], [2, 0], [3, 0], [4, 0], [2, 1], [2, 2]], 3),
         ([[0, 0], [1, 0], [2, 0], [3, 0], [4, 0], [2, 1], [2, 2]], 4),
         (
@@ -559,6 +560,20 @@ process.stdout.write(JSON.stringify(results));
             f"browser and Python footprint placements differ for {len(cells)} cells"
         )
 
+
+
+
+def test_footprint_builder_supports_a_t_shape_with_two_courses() -> None:
+    cells = [
+        (0, 0), (1, 0), (2, 0), (3, 0), (4, 0),
+        (2, 1), (2, 2),
+    ]
+    assembly = build_footprint_block(cells, 2, PROFILES)
+
+    assert assembly.parts
+    assert {part.translation_ldu[1] for part in assembly.parts} == {0.0, -24.0}
+    assert assembly.connections
+    assert assembly.total_mating_pairs > 0
 
 
 def test_footprint_builder_supports_a_t_shape_with_three_courses() -> None:
