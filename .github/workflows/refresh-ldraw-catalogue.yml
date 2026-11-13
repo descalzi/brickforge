@@ -8,6 +8,7 @@ on:
       - 'scripts/build_ldraw_catalogue.py'
       - 'scripts/fetch_ldraw_library.py'
       - 'scripts/validate_ldraw_library.py'
+      - 'src/brickforge/parts/ldraw_resolver.py'
   schedule:
     - cron: "17 3 1 * *"
   workflow_dispatch:
