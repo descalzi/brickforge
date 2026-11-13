@@ -206,6 +206,64 @@ def _find_interlocking_tilings(
     return None
 
 
+def _tiling_sequence_connects(sequence: Sequence[tuple[_Tile, ...]]) -> bool:
+    offsets: list[int] = []
+    count = 0
+    for tiling in sequence:
+        offsets.append(count)
+        count += len(tiling)
+    parent = list(range(count))
+
+    def find(index: int) -> int:
+        root = index
+        while parent[root] != root:
+            root = parent[root]
+        while parent[index] != index:
+            next_index = parent[index]
+            parent[index] = root
+            index = next_index
+        return root
+
+    def join(first: int, second: int) -> None:
+        root_first = find(first)
+        root_second = find(second)
+        if root_first != root_second:
+            parent[root_second] = root_first
+
+    for layer in range(len(sequence) - 1):
+        upper_owner = {
+            cell: upper_index
+            for upper_index, tile in enumerate(sequence[layer + 1])
+            for cell in tile.cells
+        }
+        for lower_index, tile in enumerate(sequence[layer]):
+            for cell in tile.cells:
+                upper_index = upper_owner.get(cell)
+                if upper_index is not None:
+                    join(
+                        offsets[layer] + lower_index,
+                        offsets[layer + 1] + upper_index,
+                    )
+
+    root = find(0)
+    return all(find(index) == root for index in range(1, count))
+
+
+def _find_three_course_sequence(
+    tilings: Sequence[tuple[_Tile, ...]],
+) -> tuple[tuple[_Tile, ...], tuple[_Tile, ...], tuple[_Tile, ...]] | None:
+    checks = 0
+    for first in tilings:
+        for second in tilings:
+            for third in tilings:
+                checks += 1
+                if checks > 250_000:
+                    return None
+                if _tiling_sequence_connects((first, second, third)):
+                    return first, second, third
+    return None
+
+
 
 
 def _sample_interlocking_tilings(
@@ -386,26 +444,31 @@ def build_footprint_block(
 
     pair = _sample_interlocking_tilings(cells, profiles)
     search_limited = False
+    tiling_sequence: tuple[tuple[_Tile, ...], ...] | None = None
     if pair is None:
         tilings, search_limited = _enumerate_tilings(cells, profiles)
         pair = _find_interlocking_tilings(tilings)
-    if pair is None:
+        if pair is None and height_bricks == 3:
+            tiling_sequence = _find_three_course_sequence(tilings)
+    if pair is None and tiling_sequence is None:
         if search_limited:
             detail = "within the bounded placement search"
         else:
             detail = "using the available rectangular brick profiles"
         raise ValueError(
-            "no connected pair of interlocking course tilings was found "
+            "no connected interlocking course arrangement was found "
             f"{detail}; try a different footprint or part catalogue"
         )
 
-    lower_tiling, upper_tiling = pair
+    if pair is not None:
+        tiling_sequence = (pair[0], pair[1])
     pitch = profiles["3001"].stud_pitch_ldu
     body_height = profiles["3001"].body_height_ldu
     placements: list[PlacedPart] = []
 
     for layer in range(height_bricks):
-        tiling = lower_tiling if layer % 2 == 0 else upper_tiling
+        assert tiling_sequence is not None
+        tiling = tiling_sequence[layer % len(tiling_sequence)]
         colour = colour_codes[layer % len(colour_codes)]
         layer_y = -layer * body_height
         for index, tile in enumerate(tiling):
