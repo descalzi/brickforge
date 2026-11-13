@@ -152,6 +152,33 @@ def test_wide_rectangular_block_staggers_courses_to_bridge_column_seams() -> Non
     )
 
 
+def test_wide_rectangular_block_bridges_width_and_depth_seams() -> None:
+    assembly = build_rectangular_block(12, 8, 2, PROFILES)
+
+    assert len(assembly.parts) == 42
+    assert len(assembly.connections) >= 30
+    assert assembly.total_mating_pairs >= 96
+    assert assembly.bom_dict()["total_parts"] == 42
+    assert assembly.bom_dict()["items"] == [
+        {"part_id": "3001", "colour_code": 1, "quantity": 6},
+        {"part_id": "3001", "colour_code": 4, "quantity": 12},
+        {"part_id": "3004", "colour_code": 1, "quantity": 24},
+    ]
+    assert len({part.instance_id for part in assembly.parts}) == 42
+    assert sum(
+        part.part_id == "3004" for part in assembly.parts
+    ) == 24
+
+
+def test_four_by_eight_block_bridges_depth_seam() -> None:
+    assembly = build_rectangular_block(4, 8, 2, PROFILES)
+
+    assert len(assembly.parts) == 11
+    assert len(assembly.connections) >= 7
+    assert assembly.bom_dict()["total_parts"] == 11
+    assert sum(part.part_id == "3004" for part in assembly.parts) == 4
+
+
 def test_rectangular_block_alternates_course_transforms() -> None:
     assembly = build_interlocked_block_demo()
 
