@@ -115,7 +115,7 @@ def test_resolve_verbatim_ldraw_3001_library_fixture() -> None:
     assert len(geometry) > 100
     source_files = {Path(item.source_file).relative_to(fixture_root).as_posix() for item in geometry}
     assert len(source_files) == 10
-    assert "parts/3001.dat" not in source_files  # the root references are sub-files, not primitives
+    assert "parts/3001.dat" in source_files
     assert "parts/s/3001s01.dat" in source_files
     assert "p/stud.dat" in source_files
     assert any(item.colour_code == 24 and item.edge_base_colour == 4 for item in geometry)
