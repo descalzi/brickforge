@@ -12,14 +12,15 @@ export async function decodeCataloguePayload(payload) {
 }
 
 export function searchPartCatalogue(parts, query, limit = 100) {
-  const terms = query.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
+  const terms = query.trim().toLocaleLowerCase().split(/\\s+/).filter(Boolean);
   if (!terms.length) return [];
 
   return parts
     .map((part, index) => {
       const partId = String(part.part_id || '').toLocaleLowerCase();
-      const name = String(part.name || '').toLocaleLowerCase();
-      const description = String(part.description || '').toLocaleLowerCase();
+      // The first LDraw header line is the human-readable part description.
+      const displayName = String(part.description || '').toLocaleLowerCase();
+      const filename = String(part.filename || part.name || '').toLocaleLowerCase();
       const category = String(part.category || '').toLocaleLowerCase();
       const keywords = (part.keywords || []).map((keyword) => String(keyword).toLocaleLowerCase());
       let score = 0;
@@ -27,8 +28,8 @@ export function searchPartCatalogue(parts, query, limit = 100) {
       for (const term of terms) {
         const matches = [
           partId.includes(term),
-          name.includes(term),
-          description.includes(term),
+          displayName.includes(term),
+          filename.includes(term),
           category.includes(term),
           keywords.some((keyword) => keyword.includes(term)),
         ];
@@ -38,11 +39,11 @@ export function searchPartCatalogue(parts, query, limit = 100) {
         else if (partId.startsWith(term)) score += 600;
         else if (partId.includes(term)) score += 350;
 
-        if (name === term) score += 700;
-        else if (name.startsWith(term)) score += 500;
-        else if (name.includes(term)) score += 350;
+        if (displayName === term) score += 700;
+        else if (displayName.startsWith(term)) score += 500;
+        else if (displayName.includes(term)) score += 350;
 
-        if (description.includes(term)) score += 180;
+        if (filename.includes(term)) score += 100;
         if (category.includes(term)) score += 120;
         if (keywords.some((keyword) => keyword.includes(term))) score += 80;
       }
