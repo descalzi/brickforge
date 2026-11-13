@@ -27,8 +27,8 @@ ROTATE_Y_90: Matrix3 = (
 _TILE_PART_IDS = ("3001", "3003", "3004", "3005")
 _MAX_FOOTPRINT_CELLS = 64
 _MAX_SEARCH_NODES = 1_000_000
-_MAX_TILINGS = 20_000
-_MAX_PAIR_CHECKS = 2_000_000
+_MAX_TILINGS = 100_000
+_MAX_PAIR_CHECKS = 5_000_000
 
 
 @dataclass(frozen=True, slots=True)
@@ -83,10 +83,21 @@ def _enumerate_tilings(
                     for cell in tile_cells:
                         by_cell[cell].append(tile)
 
+    def tile_priority(tile: _Tile) -> int:
+        part_number = int(tile.part_id)
+        return (
+            (tile.x * 73_856_093)
+            ^ (tile.z * 19_349_663)
+            ^ (tile.width * 83_492_791)
+            ^ (tile.depth * 2_654_435_761)
+            ^ (part_number * 97_531)
+        ) & 0xFFFFFFFF
+
     for options in by_cell.values():
         options.sort(
             key=lambda tile: (
                 -(tile.width * tile.depth),
+                tile_priority(tile),
                 tile.part_id,
                 tile.x,
                 tile.z,
