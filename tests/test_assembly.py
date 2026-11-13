@@ -489,7 +489,25 @@ def test_browser_and_python_footprint_engines_produce_identical_placements() -> 
                 for z, row in enumerate(("#####", "##.##", "##.##", "#####", "#####"))
                 for x, character in enumerate(row)
                 if character == "#"
+                (
+            [
+                [x, z]
+                for z, row in enumerate(("######", "##..##", "##..##", "##..##", "##..##", "######"))
+                for x, character in enumerate(row)
+                if character == "#"
             ],
+            2,
+        ),
+        (
+            [
+                [x, z]
+                for z, row in enumerate(("######", "######", "##..##", "##..##", "######", "######"))
+                for x, character in enumerate(row)
+                if character == "#"
+            ],
+            2,
+        ),
+    ],
             2,
         ),
     ]
@@ -559,6 +577,22 @@ process.stdout.write(JSON.stringify(results));
             "##.##",
             "#####",
             "#####",
+        ),
+        (
+            "######",
+            "##..##",
+            "##..##",
+            "##..##",
+            "##..##",
+            "######",
+        ),
+        (
+            "######",
+            "######",
+            "##..##",
+            "##..##",
+            "######",
+            "######",
         ),
     ),
 )
