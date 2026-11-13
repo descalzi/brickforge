@@ -385,7 +385,8 @@ def build_footprint_block(
     alternating exact-cover tilings with a connected cross-course graph. If
     that is not possible, it searches for a connected repeating cycle of three
     distinct tilings across the requested stack height. Supported tiles are the
-    2x4, 2x3, 2x2, 1x2, 1x1, 1x6, 1x4 and 1x3 brick profiles (IDs 3001, 3002, 3003, 3004, 3005, 3009, 3010 and 3622).
+    2x4, 2x3, 2x2, 1x2, 1x1, 1x6, 1x4 and 1x3 brick profiles
+    (IDs 3001, 3002, 3003, 3004, 3005, 3009, 3010 and 3622).
 
     The bounded exact-cover search is intended for small irregular footprints.
     It may reject a valid footprint when no supported tiling is found within
