@@ -85,13 +85,12 @@
           <p class="control-note">The file is read locally in this browser. It is not uploaded to a server.</p>
           <label class="field-label" for="source-units">Source units</label>
           <select id="source-units" class="field-control" required>
-            <option value="" selected disabled>Choose the file's units</option>
-            <option value="mm">Millimetres (mm)</option>
+            <option value="mm" selected>Millimetres (mm) — default assumption</option>
             <option value="cm">Centimetres (cm)</option>
             <option value="m">Metres (m)</option>
             <option value="in">Inches (in)</option>
           </select>
-          <p class="control-note">STL and OBJ files do not reliably declare their units. Select the units used when the model was exported.</p>
+          <p class="control-note">STL and OBJ files do not reliably declare their units. The initial assumption is millimetres; change this if your model was exported in centimetres, metres or inches.</p>
         </div>
 
         <div class="control-section measurements-section">
