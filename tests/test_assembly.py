@@ -69,12 +69,14 @@ def test_generated_example_files_match_canonical_assembly() -> None:
     assert (examples / "stacked-3001.ldr").read_text(encoding="utf-8") == (
         assembly.to_ldraw()
     )
-    assert (
-        examples / "stacked-3001.assembly.json"
-    ).read_text(encoding="utf-8") == assembly.to_json()
-    assert (examples / "stacked-3001.bom.json").read_text(encoding="utf-8") == (
-        assembly.bom_json()
+    graph_payload = json.loads(
+        (examples / "stacked-3001.assembly.json").read_text(encoding="utf-8")
     )
+    bom_payload = json.loads(
+        (examples / "stacked-3001.bom.json").read_text(encoding="utf-8")
+    )
+    assert graph_payload == assembly.to_dict()
+    assert bom_payload == assembly.bom_dict()
 
 
 def test_overlapping_nominal_body_bounds_are_rejected() -> None:
