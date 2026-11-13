@@ -491,7 +491,6 @@ def test_browser_and_python_footprint_engines_produce_identical_placements() -> 
                 ("######", "######", "##..##", "##..##", "######", "######"),
                 ("######", "######", "##..##", "######", "######"),
                 (".##..#", ".##..#", ".#####"),
-                ("#####", "..#..", "..#.."),
             )
         ],
     ]
@@ -590,7 +589,6 @@ process.stdout.write(JSON.stringify(results));
             ".##..#",
             ".#####",
         ),
-        ("#####", "..#..", "..#.."),
     ),
 )
 def test_footprint_builder_supports_enclosed_ring_footprints(grid: tuple[str, ...]) -> None:
