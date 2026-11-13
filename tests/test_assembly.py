@@ -8,6 +8,8 @@ import pytest
 
 from brickforge.assembly.demo import build_stacked_brick_demo
 from brickforge.assembly.model import AssemblyError, PlacedPart, build_assembly
+from brickforge.construction.demo import build_interlocked_block_demo
+from brickforge.construction.rectangular import ROTATE_Y_90, build_rectangular_block
 from brickforge.parts.connections import load_connection_profiles
 from brickforge.parts.ldraw_geometry import parse_ldraw_text
 
@@ -113,6 +115,59 @@ def test_installed_demo_command_writes_all_three_exports(tmp_path: Path) -> None
     assert (tmp_path / "stacked-3001.ldr").is_file()
     assert (tmp_path / "stacked-3001.assembly.json").is_file()
     assert (tmp_path / "stacked-3001.bom.json").is_file()
+
+
+def test_rectangular_block_builder_interlocks_alternating_courses() -> None:
+    assembly = build_interlocked_block_demo()
+
+    assert len(assembly.parts) == 4
+    assert len(assembly.connections) == 4
+    assert [len(edge.mating_pairs) for edge in assembly.connections] == [4, 4, 4, 4]
+    assert assembly.total_mating_pairs == 16
+    assert assembly.bom_dict()["total_parts"] == 4
+    assert assembly.bom_dict()["items"] == [
+        {"part_id": "3001", "colour_code": 1, "quantity": 2},
+        {"part_id": "3001", "colour_code": 4, "quantity": 2},
+    ]
+
+
+def test_rectangular_block_alternates_course_transforms() -> None:
+    assembly = build_interlocked_block_demo()
+
+    assert [part.translation_ldu for part in assembly.parts] == [
+        (0.0, 0.0, -20.0),
+        (0.0, 0.0, 20.0),
+        (-20.0, -24.0, 0.0),
+        (20.0, -24.0, 0.0),
+    ]
+    assert assembly.parts[0].matrix != ROTATE_Y_90
+    assert assembly.parts[2].matrix == ROTATE_Y_90
+    assert assembly.parts[3].matrix == ROTATE_Y_90
+
+
+def test_rectangular_block_rejects_dimensions_not_tileable_by_both_courses() -> None:
+    with pytest.raises(ValueError, match="cannot be tiled"):
+        build_rectangular_block(4, 2, 2, PROFILES)
+
+
+def test_single_course_with_multiple_unconnected_bricks_is_rejected() -> None:
+    with pytest.raises(AssemblyError, match="disconnected"):
+        build_rectangular_block(4, 4, 1, PROFILES)
+
+
+def test_block_demo_command_writes_all_three_exports(tmp_path: Path) -> None:
+    result = subprocess.run(
+        ["brickforge-demo-block", "--output-dir", str(tmp_path)],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+    assert "4 parts" in result.stdout
+    assert "16 nominal mating pairs" in result.stdout
+    assert (tmp_path / "block-4x4x2.ldr").is_file()
+    assert (tmp_path / "block-4x4x2.assembly.json").is_file()
+    assert (tmp_path / "block-4x4x2.bom.json").is_file()
 
 
 def test_overlapping_nominal_body_bounds_are_rejected() -> None:
