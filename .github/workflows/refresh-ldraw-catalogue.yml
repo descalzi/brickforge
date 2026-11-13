@@ -42,11 +42,13 @@ jobs:
           echo "commit=$commit" >> "$GITHUB_OUTPUT"
       - name: Build compact searchable part catalogue
         run: python scripts/build_ldraw_catalogue.py --mirror-commit "${{ steps.mirror.outputs.commit }}"
-      - name: Validate generated catalogue
-        run: python -m json.tool docs/data/ldraw/parts-index.json > /dev/null
+      - name: Validate generated compressed catalogue
+        run: >-
+          python -c "import gzip, json, pathlib;
+          json.loads(gzip.decompress(pathlib.Path('docs/data/ldraw/parts-index.json.gz').read_bytes()))"
       - name: Commit catalogue update
         run: |
-          git add docs/data/ldraw/parts-index.json
+          git add -A docs/data/ldraw/
           if git diff --cached --quiet; then
             echo "The searchable LDraw catalogue is already up to date."
             exit 0
