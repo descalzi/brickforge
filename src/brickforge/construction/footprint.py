@@ -212,7 +212,7 @@ def _sample_interlocking_tilings(
     cells: frozenset[tuple[int, int]],
     profiles: Mapping[str, ConnectionProfile],
 ) -> tuple[tuple[_Tile, ...], tuple[_Tile, ...]] | None:
-    if len(cells) < 14:
+    if len(cells) <= 18:
         return None
     by_cell: dict[tuple[int, int], list[_Tile]] = {cell: [] for cell in cells}
     for x, z in sorted(cells, key=lambda cell: (cell[1], cell[0])):
@@ -384,8 +384,11 @@ def build_footprint_block(
     if not any(part_id in profiles for part_id in _TILE_PART_IDS[1:]):
         raise ValueError("footprint construction requires at least one smaller brick profile")
 
-    tilings, search_limited = _enumerate_tilings(cells, profiles)
-    pair = _find_interlocking_tilings(tilings)
+    pair = _sample_interlocking_tilings(cells, profiles)
+    search_limited = False
+    if pair is None:
+        tilings, search_limited = _enumerate_tilings(cells, profiles)
+        pair = _find_interlocking_tilings(tilings)
     if pair is None:
         if search_limited:
             detail = "within the bounded placement search"
