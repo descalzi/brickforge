@@ -4,6 +4,7 @@ import test from 'node:test';
 
 import {
   decodeCataloguePayload,
+  ldrawReferenceCandidates,
   searchPartCatalogue,
 } from '../docs/assets/catalogue-utils.js';
 
@@ -46,4 +47,28 @@ test('limits search results and returns no results for an empty query', () => {
   }));
   assert.equal(searchPartCatalogue(parts, 'brick', 3).length, 3);
   assert.deepEqual(searchPartCatalogue(parts, '   '), []);
+});
+
+
+test('resolves bare primitive references from LDraw subparts without probing parts/', () => {
+  assert.deepEqual(
+    ldrawReferenceCandidates('stud4.dat', 'parts/s/3001s01.dat'),
+    ['p/stud4.dat', 'parts/stud4.dat'],
+  );
+  assert.deepEqual(
+    ldrawReferenceCandidates('stud.dat', 'p/4-4cyli.dat'),
+    ['p/stud.dat'],
+  );
+});
+
+test('preserves explicit LDraw part, subpart and primitive directories', () => {
+  assert.deepEqual(ldrawReferenceCandidates('s/3001s01.dat', 'parts/3001.dat'), ['parts/s/3001s01.dat']);
+  assert.deepEqual(ldrawReferenceCandidates('48/1-8cyli.dat', 'parts/3001.dat'), ['p/48/1-8cyli.dat']);
+  assert.deepEqual(ldrawReferenceCandidates('parts/3001.dat', 'parts/3002.dat'), ['parts/3001.dat']);
+  assert.deepEqual(ldrawReferenceCandidates('3001.dat', 'parts/3002.dat'), ['parts/3001.dat', 'p/3001.dat']);
+});
+
+test('rejects unsafe LDraw reference paths', () => {
+  assert.throws(() => ldrawReferenceCandidates('../stud.dat', 'parts/s/example.dat'), /Unsafe LDraw reference path/);
+  assert.throws(() => ldrawReferenceCandidates('/stud.dat', 'parts/s/example.dat'), /Unsafe LDraw reference path/);
 });
