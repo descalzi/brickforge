@@ -342,15 +342,34 @@ function parseFootprintGrid(value) {
   return cells;
 }
 
+async function buildFootprintInWorker(cells, height, options) {
+  return new Promise((resolve, reject) => {
+    const worker = new Worker("./assets/footprint-worker.js", { type: "module" });
+    worker.addEventListener("message", (event) => {
+      worker.terminate();
+      if (event.data && event.data.ok) {
+        resolve(event.data.result);
+      } else {
+        reject(new Error(event.data?.error || "The footprint search could not be completed."));
+      }
+    }, { once: true });
+    worker.addEventListener("error", (event) => {
+      worker.terminate();
+      reject(new Error(event.message || "The footprint search worker failed."));
+    }, { once: true });
+    worker.postMessage({ cells, height, catalogue, options });
+  });
+}
+
 function generateFootprint() {
   if (!inputs.height.reportValidity()) return;
   buildButton.disabled = true;
   footprintButton.disabled = true;
-  setState("GENERATING FOOTPRINT", "loading");
+  setState("SEARCHING FOOTPRINT", "loading");
   setMessage("Searching for connected course tilings and checking the assembly on this device…");
   try {
     const cells = parseFootprintGrid(footprintInput.value);
-    const result = buildFootprintBlock(cells, Number(inputs.height.value), catalogue, {
+    const result = await buildFootprintInWorker(cells, Number(inputs.height.value), {
       colourCodes: [
         Number(inputs.lowerColour.value),
         Number(inputs.upperColour.value),
