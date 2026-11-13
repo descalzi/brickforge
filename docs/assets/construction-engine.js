@@ -799,10 +799,7 @@ function sampleInterlockingFootprints(cells, profiles) {
   }
   if (seed === 0) seed = 0x9E3779B9;
   function nextRandom() {
-    seed ^= seed << 13;
-    seed ^= seed >>> 17;
-    seed ^= seed << 5;
-    seed >>>= 0;
+    seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
     return seed;
   }
 
