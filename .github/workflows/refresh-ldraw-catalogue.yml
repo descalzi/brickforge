@@ -1,6 +1,12 @@
 name: Refresh LDraw search catalogue
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/refresh-ldraw-catalogue.yml'
+      - 'scripts/build_ldraw_catalogue.py'
+      - 'scripts/fetch_ldraw_library.py'
   schedule:
     - cron: "17 3 1 * *"
   workflow_dispatch:
