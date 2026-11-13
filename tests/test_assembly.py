@@ -179,6 +179,21 @@ def test_four_by_eight_block_bridges_depth_seam() -> None:
     assert sum(part.part_id == "3004" for part in assembly.parts) == 4
 
 
+@pytest.mark.parametrize("width_studs", range(4, 24, 4))
+@pytest.mark.parametrize("depth_studs", range(4, 24, 4))
+def test_rectangular_block_dimension_matrix_is_connected_and_collision_free(
+    width_studs: int, depth_studs: int
+) -> None:
+    # The canonical builder rejects disconnected graphs and overlapping
+    # nominal body bounds, so a successful build passes both checks.
+    assembly = build_rectangular_block(width_studs, depth_studs, 2, PROFILES)
+
+    assert assembly.parts
+    assert len({part.instance_id for part in assembly.parts}) == len(assembly.parts)
+    assert assembly.connections
+    assert assembly.total_mating_pairs > 0
+
+
 def test_rectangular_block_alternates_course_transforms() -> None:
     assembly = build_interlocked_block_demo()
 
