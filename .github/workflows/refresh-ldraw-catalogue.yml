@@ -31,8 +31,17 @@ jobs:
           python-version: "3.11"
       - name: Download the official LDraw library
         run: python scripts/fetch_ldraw_library.py
+      - name: Resolve the current version-pinned geometry mirror
+        id: mirror
+        run: |
+          commit="$(git ls-remote https://github.com/kulits/ldraw-parts.git refs/heads/master | cut -f1)"
+          if [[ ! "$commit" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "Could not resolve a full mirror commit SHA."
+            exit 1
+          fi
+          echo "commit=$commit" >> "$GITHUB_OUTPUT"
       - name: Build compact searchable part catalogue
-        run: python scripts/build_ldraw_catalogue.py
+        run: python scripts/build_ldraw_catalogue.py --mirror-commit "${{ steps.mirror.outputs.commit }}"
       - name: Validate generated catalogue
         run: python -m json.tool docs/data/ldraw/parts-index.json > /dev/null
       - name: Commit catalogue update
