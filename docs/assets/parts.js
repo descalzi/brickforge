@@ -7,6 +7,10 @@ const emptyState = document.querySelector('#parts-empty');
 const stateLabel = document.querySelector('#parts-state');
 const message = document.querySelector('#parts-message');
 const partSelect = document.querySelector('#part-select');\nconst partSearch = document.querySelector('#part-search');
+const defaultPartOptions = Array.from(partSelect.options).map((option) => ({
+  value: option.value,
+  text: option.textContent,
+}));
 const colourSelect = document.querySelector('#part-colour');
 const resetButton = document.querySelector('#parts-reset');
 
@@ -511,8 +515,18 @@ function clearMeasurements() {
 }
 
 function renderPartSearchResults(query) {
-  const terms = query.trim().toLocaleLowerCase().split(/\\s+/).filter(Boolean);
-  if (!terms.length) return;
+  const terms = query.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
+  if (!terms.length) {
+    partSelect.disabled = false;
+    partSelect.replaceChildren();
+    for (const item of defaultPartOptions) {
+      const option = document.createElement('option');
+      option.value = item.value;
+      option.textContent = item.text;
+      partSelect.append(option);
+    }
+    return;
+  }
 
   const matches = partCatalogue.filter((part) => {
     const searchable = [
