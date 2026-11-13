@@ -27,4 +27,5 @@ dist/
 !.env.example
 data/raw/
 data/cache/
+data/vendor/ldraw/
 outputs/
