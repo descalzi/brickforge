@@ -359,7 +359,11 @@ export function buildRectangularBlock(widthStuds, depthStuds, heightBricks, cata
             + "-z-" + String(indexZ).padStart(3, "0"),
           part_id: partId,
           colour_code: colourCodes[layer % colourCodes.length],
-          translation_ldu: [centreX, -layer * profile.body_height_ldu, centreZ],
+          translation_ldu: [
+            Object.is(centreX, -0) ? 0 : centreX,
+            layer === 0 ? 0 : -layer * profile.body_height_ldu,
+            Object.is(centreZ, -0) ? 0 : centreZ,
+          ],
           matrix,
         });
         if (placements.length > maxParts) {
