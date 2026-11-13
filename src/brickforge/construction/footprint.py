@@ -326,6 +326,13 @@ def _sample_interlocking_tilings(
                 tile.rotated,
             )
         )
+    for options in by_cell.values():
+        whole_tile = next(
+            (tile for tile in options if len(tile.cells) == len(cells)),
+            None,
+        )
+        if whole_tile is not None:
+            return (whole_tile,), (whole_tile,)
 
     seed = 2_166_136_261
     for x, z in sorted(cells, key=lambda cell: (cell[1], cell[0])):
