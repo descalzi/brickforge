@@ -2,7 +2,7 @@
 
 ## 1. Purpose
 
-BrickForge converts an intended object into a construction made from real LEGO elements and produces artefacts that describe that exact construction: a 3D model, a bill of materials (BOM), and ordered building instructions.
+BrickForge converts an intended object into a construction made from real L-brick elements and produces artefacts that describe that exact construction: a 3D model, a bill of materials (BOM), and ordered building instructions.
 
 The system is intended to work across arbitrary object categories. It must therefore be built around general geometry, part connectivity, and constraints—not category-specific templates.
 
@@ -31,7 +31,7 @@ User intent / reference image / source mesh
        Shape analysis and segmentation
                   |
                   v
-     Candidate LEGO part placement search
+     Candidate L-brick placement search
                   |
                   v
        Assembly graph + LDraw export
@@ -69,7 +69,7 @@ Responsibilities:
 - Compute bounds, surfaces, normals, connected components, and useful geometric features.
 - Expose a representation that downstream construction algorithms can query.
 
-Initial implementation should focus on mesh inspection and normalisation, not automatic LEGO conversion.
+Initial implementation should focus on mesh inspection and normalisation, not automatic L-brick conversion.
 
 ### 4.3 Parts catalogue
 
@@ -82,7 +82,7 @@ Each part record should eventually include:
 - Compatibility rules for connections.
 - Source, licence/terms, and catalogue version.
 
-LDraw is the initial model interchange format. LDraw part files provide geometry; additional connection metadata may be required from compatible, appropriately licensed sources or developed in-house. Geometry alone does not fully describe legal or reliable LEGO connections.
+LDraw is the initial model interchange format. LDraw part files provide geometry; additional connection metadata may be required from compatible, appropriately licensed sources or developed in-house. Geometry alone does not fully describe legal or reliable L-brick connections.
 
 ### 4.4 Construction engine
 
@@ -135,7 +135,7 @@ LDraw MPD/ldr is the initial editable model export. LPub3D is a candidate for in
 
 ## 5. Coordinate conventions
 
-LEGO nominal system dimensions:
+Nominal L-brick system dimensions:
 - Stud pitch: 8.0 mm.
 - Standard brick height: 9.6 mm.
 - Plate height: 3.2 mm.
