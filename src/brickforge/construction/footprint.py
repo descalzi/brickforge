@@ -207,14 +207,23 @@ def _tilings_connect(
 def _find_interlocking_tilings(
     tilings: Sequence[tuple[_Tile, ...]],
 ) -> tuple[tuple[_Tile, ...], tuple[_Tile, ...]] | None:
+    """Find the lowest-part-count connected pair within the pair-check budget."""
+    by_part_count: dict[int, list[tuple[_Tile, ...]]] = {}
+    for tiling in tilings:
+        by_part_count.setdefault(len(tiling), []).append(tiling)
+
     checks = 0
-    for lower in tilings:
-        for upper in tilings:
-            checks += 1
-            if checks > _MAX_PAIR_CHECKS:
-                return None
-            if _tilings_connect(lower, upper):
-                return lower, upper
+    maximum_total = max(by_part_count, default=0) * 2
+    for total_parts in range(2, maximum_total + 1):
+        for lower_count in range(1, total_parts):
+            upper_count = total_parts - lower_count
+            for lower in by_part_count.get(lower_count, ()):
+                for upper in by_part_count.get(upper_count, ()):
+                    checks += 1
+                    if checks > _MAX_PAIR_CHECKS:
+                        return None
+                    if _tilings_connect(lower, upper):
+                        return lower, upper
     return None
 
 
