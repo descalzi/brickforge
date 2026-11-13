@@ -136,3 +136,15 @@ def test_different_footprints_can_align_on_a_half_pitch_offset() -> None:
         translation_b=(10.0, -8.0, 0.0),
     )
     assert len(matches) == 6
+
+
+
+def test_github_pages_catalogue_copy_matches_canonical_catalogue() -> None:
+    published = (
+        Path(__file__).resolve().parents[1]
+        / "docs"
+        / "data"
+        / "connection-profiles"
+        / "basic-bricks.json"
+    )
+    assert published.read_bytes() == CATALOGUE.read_bytes()
