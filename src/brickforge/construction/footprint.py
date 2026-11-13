@@ -66,9 +66,9 @@ def _enumerate_tilings(
             profile = profiles.get(part_id)
             if profile is None:
                 continue
-            orientations = {(profile.footprint_studs_x, profile.footprint_studs_z, False)}
+            orientations = [(profile.footprint_studs_x, profile.footprint_studs_z, False)]
             if profile.footprint_studs_x != profile.footprint_studs_z:
-                orientations.add((profile.footprint_studs_z, profile.footprint_studs_x, True))
+                orientations.append((profile.footprint_studs_z, profile.footprint_studs_x, True))
             for width, depth, rotated in orientations:
                 tile_cells = frozenset(
                     (x + dx, z + dz)
@@ -241,6 +241,9 @@ def build_footprint_block(
     width = max(x for x, _ in cells) + 1
     depth = max(z for _, z in cells) + 1
 
+    if "3001" not in profiles:
+        raise ValueError("footprint construction requires the 2x4 brick profile 3001")
+
     for part_id in _TILE_PART_IDS:
         if part_id not in profiles:
             continue
@@ -250,8 +253,6 @@ def build_footprint_block(
         if profile.body_height_ldu != profiles["3001"].body_height_ldu:
             raise ValueError("all footprint brick profiles must use the same brick height")
 
-    if "3001" not in profiles:
-        raise ValueError("footprint construction requires the 2x4 brick profile 3001")
     if not any(part_id in profiles for part_id in _TILE_PART_IDS[1:]):
         raise ValueError("footprint construction requires at least one smaller brick profile")
 
