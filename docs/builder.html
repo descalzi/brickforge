@@ -82,10 +82,10 @@
             </div>
             <div>
               <label class="field-label" for="block-height">Height <span>(brick courses)</span></label>
-              <input id="block-height" class="field-control" type="number" min="1" max="10" step="1" value="2" required>
+              <input id="block-height" class="field-control" type="number" min="2" max="10" step="1" value="2" required>
             </div>
           </div>
-          <p class="builder-help">This first strategy uses 2 × 4 bricks. Footprint dimensions must be tileable in both orientations.</p>
+          <p class="builder-help">Footprints use 4-stud increments from 4 to 20. At least two courses are required for interlocking; the browser prototype is limited to 200 parts per model.</p>
         </section>
 
         <section class="builder-section">
@@ -157,7 +157,7 @@
       </div>
     </section>
 
-    <p class="builder-disclaimer">This prototype constructs rectangular blocks from the 2 × 4 part profile only. Collision checks use conservative body bounds; they are not detailed mesh collision checks and do not prove physical stability, clutch force or buildability under every real-world condition.</p>
+    <p class="builder-disclaimer">This prototype constructs rectangular blocks using 2 × 4 and 1 × 2 part profiles. Collision checks use conservative body bounds; they are not detailed mesh collision checks and do not prove physical stability, clutch force or buildability under every real-world condition.</p>
   </main>
 
   <footer class="site-footer">
