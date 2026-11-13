@@ -26,6 +26,24 @@ SHAPES = {
         for x, character in enumerate(row)
         if character == "#"
     },
+    "comb": {
+        (x, z)
+        for z, row in enumerate(("######", "#.#.#.", "######", ".#.#.#", "######"))
+        for x, character in enumerate(row)
+        if character == "#"
+    },
+    "cross": {
+        (x, z)
+        for z, row in enumerate(("..##..", "..##..", "######", "######", "..##..", "..##.."))
+        for x, character in enumerate(row)
+        if character == "#"
+    },
+    "staircase": {
+        (x, z)
+        for z, row in enumerate(("##....", "###...", ".###..", "..###.", "...###", "....##"))
+        for x, character in enumerate(row)
+        if character == "#"
+    },
 }
 
 
