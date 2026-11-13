@@ -42,7 +42,21 @@ Technology choices are provisional and should be validated with small technical 
 
 The repository currently contains the initial project specification and scaffold. The first engineering milestone is a reliable geometry-to-brick pipeline, beginning with mesh inspection, LEGO coordinate conventions, a parts metadata model, and a small demonstrator.
 
-See [Architecture](docs/architecture/overview.md), [Roadmap](docs/roadmap.md), and [Decision log](docs/decisions/0001-product-and-engineering-principles.md).
+See [Architecture](docs/architecture/overview.md), [Roadmap](docs/roadmap.md), [Decision log](docs/decisions/0001-product-and-engineering-principles.md), and [parts data-source notes](docs/parts-data-sources.md).
+
+## Local LDraw parts library
+
+The project uses the community-maintained LDraw Parts Library as its initial part-geometry source candidate. Download it locally with:
+
+```bash
+python scripts/fetch_ldraw_library.py
+```
+
+The archive is extracted to `data/vendor/ldraw/`, which is intentionally ignored by Git. Original part files, headers and licence/readme notices are retained. Read [the data-source notes](docs/parts-data-sources.md) before redistributing any part data.
+
+## Project website
+
+The first static project page is in `docs/`. To publish it with GitHub Pages, open **Settings → Pages**, select **Deploy from a branch**, then choose **main** and **/docs**. The page is public on the internet even if the source repository is private. Private-repository Pages hosting requires a GitHub plan that supports it; see [GitHub's publishing-source documentation](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site).
 
 ## Scope and compatibility
 
