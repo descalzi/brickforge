@@ -150,6 +150,45 @@ def test_rectangular_block_rejects_dimensions_not_tileable_by_both_courses() -> 
         build_rectangular_block(4, 2, 2, PROFILES)
 
 
+def test_block_exports_match_canonical_assembly_graph_and_bom() -> None:
+    assembly = build_interlocked_block_demo()
+    examples = ROOT / "examples"
+
+    assert (examples / "block-4x4x2.ldr").read_text(encoding="utf-8") == (
+        assembly.to_ldraw()
+    )
+    graph_payload = json.loads(
+        (examples / "block-4x4x2.assembly.json").read_text(encoding="utf-8")
+    )
+    bom_payload = json.loads(
+        (examples / "block-4x4x2.bom.json").read_text(encoding="utf-8")
+    )
+    assert graph_payload == assembly.to_dict()
+    assert bom_payload == assembly.bom_dict()
+
+
+def test_block_ldraw_export_reparses_to_same_placements() -> None:
+    assembly = build_interlocked_block_demo()
+    document = parse_ldraw_text(assembly.to_ldraw())
+
+    assert len(document.references) == 4
+    assert [reference.filename for reference in document.references] == [
+        "3001.dat",
+        "3001.dat",
+        "3001.dat",
+        "3001.dat",
+    ]
+    assert [reference.position for reference in document.references] == [
+        part.translation_ldu for part in assembly.parts
+    ]
+    assert [reference.matrix for reference in document.references] == [
+        part.matrix for part in assembly.parts
+    ]
+    assert [reference.colour_code for reference in document.references] == [
+        part.colour_code for part in assembly.parts
+    ]
+
+
 def test_single_course_with_multiple_unconnected_bricks_is_rejected() -> None:
     with pytest.raises(AssemblyError, match="disconnected"):
         build_rectangular_block(4, 4, 1, PROFILES)
