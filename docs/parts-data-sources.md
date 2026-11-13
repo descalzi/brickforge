@@ -44,10 +44,10 @@ a public mirror of the official LDraw library, synchronised daily from
 - Upstream library: https://library.ldraw.org/
 - Mirror repository: https://github.com/kulits/ldraw-parts
 - Mirror sync workflow: https://github.com/kulits/ldraw-parts/blob/master/.github/workflows/sync.yml
-- CDN root used by this release:
-  `https://cdn.jsdelivr.net/gh/kulits/ldraw-parts@c70360d1c588be894997b2168c61909bc8058c4d/ldraw/`
-- Example part: `https://cdn.jsdelivr.net/gh/kulits/ldraw-parts@c70360d1c588be894997b2168c61909bc8058c4d/ldraw/parts/3001.dat`
-- Colour table: `https://cdn.jsdelivr.net/gh/kulits/ldraw-parts@c70360d1c588be894997b2168c61909bc8058c4d/ldraw/LDConfig.ldr`
+- Version-pinned raw-file root used by this release:
+  `https://raw.githubusercontent.com/kulits/ldraw-parts/c70360d1c588be894997b2168c61909bc8058c4d/ldraw/`
+- Example part: `https://raw.githubusercontent.com/kulits/ldraw-parts/c70360d1c588be894997b2168c61909bc8058c4d/ldraw/parts/3001.dat`
+- Colour table: `https://raw.githubusercontent.com/kulits/ldraw-parts/c70360d1c588be894997b2168c61909bc8058c4d/ldraw/LDConfig.ldr`
 
 BrickForge pins the mirror to commit `c70360d1c588be894997b2168c61909bc8058c4d` (published 9 November 2026)
 rather than following a moving branch. This makes a given site release reproducible;
