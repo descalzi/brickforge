@@ -36,7 +36,7 @@ still a separate milestone.
 
 ## 3. Browser preview and public mirror
 
-The public [Part explorer](https://descalzi.github.io/brickforge/parts.html) currently previews eight standard bricks (3001, 3002, 3003, 3004, 3005, 3009, 3010 and 3622) and two plates (3020 and 3021). At runtime it fetches the individual text files and the colour configuration from the public GitHub mirror at:
+The public [Part explorer](https://descalzi.github.io/brickforge/parts.html) currently previews eleven standard bricks (3001, 3002, 3003, 3004, 3005, 3006, 3007, 3008, 3009, 3010 and 3622) and two plates (3020 and 3021). At runtime it fetches the individual text files and the colour configuration from the public GitHub mirror at:
 
 - Mirror repository: https://github.com/erik-larsen/ldraw
 - Individual part files: https://raw.githubusercontent.com/erik-larsen/ldraw/main/parts/3001.dat
