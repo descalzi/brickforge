@@ -65,6 +65,9 @@ function setMessage(text, kind = "info") {
 function setState(text, state = "ready") {
   stateLabel.textContent = text;
   stateLabel.dataset.state = state;
+  message.dataset.status = text;
+  message.dataset.state = state;
+  message.setAttribute("aria-busy", state === "loading" ? "true" : "false");
 }
 
 function formatMillimetres(value) {
