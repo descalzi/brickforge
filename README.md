@@ -40,7 +40,7 @@ Technology choices are provisional and should be validated with small technical 
 
 ## Development status
 
-The project now has a working public mesh-inspection page for STL and OBJ files, plus a tested Python ingestion foundation. The Python package can inspect target meshes, parse LDraw part metadata and geometric records, and recursively resolve LDraw sub-file references into transformed primitives while retaining colour-inheritance context.
+The project now has a public mesh inspector for STL and OBJ files and a browser-based LDraw part explorer for a curated set of real bricks and plates. The part explorer follows nested sub-file references, composes transforms, applies inherited colours and the LDraw colour table, and shows source-header attribution. The Python package also inspects target meshes, parses LDraw part metadata and geometry records, and recursively resolves sub-file references into transformed primitives.
 
 This is still an ingestion foundation, not an automatic LEGO generator. Physical connection metadata, the construction engine, buildability validation, BOM generation, and instructions remain to be implemented.
 
@@ -58,7 +58,7 @@ The archive is extracted to `data/vendor/ldraw/`, which is intentionally ignored
 
 ## Project website
 
-The public project page is published from `docs/` using GitHub Pages, and the source repository is public. Visit the [project site](https://descalzi.github.io/brickforge/) or open the [mesh inspector](https://descalzi.github.io/brickforge/inspector.html).
+The public project page is published from `docs/` using GitHub Pages, and the source repository is public. Visit the [project site](https://descalzi.github.io/brickforge/), try the [mesh inspector](https://descalzi.github.io/brickforge/inspector.html), or explore [real LDraw parts](https://descalzi.github.io/brickforge/parts.html).
 
 ## Scope and compatibility
 
