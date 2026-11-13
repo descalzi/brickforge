@@ -6,7 +6,8 @@ const viewport = document.querySelector('#parts-viewport');
 const emptyState = document.querySelector('#parts-empty');
 const stateLabel = document.querySelector('#parts-state');
 const message = document.querySelector('#parts-message');
-const partSelect = document.querySelector('#part-select');\nconst partSearch = document.querySelector('#part-search');
+const partSelect = document.querySelector('#part-select');
+const partSearch = document.querySelector('#part-search');
 const defaultPartOptions = Array.from(partSelect.options).map((option) => ({
   value: option.value,
   text: option.textContent,
@@ -59,7 +60,8 @@ let loadSequence = 0;
 
 const rawFileCache = new Map();
 const documentCache = new Map();
-let connectionProfilesPromise;\nlet partCatalogue = [];
+let connectionProfilesPromise;
+let partCatalogue = [];
 
 function setMessage(text, kind) {
   message.textContent = text;
@@ -247,7 +249,8 @@ function parseLDrawText(content, source) {
     licence: '',
   };
 
-  content.split(/\r?\n/).forEach((rawLine, index) => {
+  content.split(/\r?
+/).forEach((rawLine, index) => {
     const lineNumber = index + 1;
     const line = rawLine.trim();
     if (!line) return;
@@ -437,7 +440,8 @@ async function expandPart(document, matrix, translation, inheritedColour, ancest
 function parsePalette(content) {
   const parsed = new Map(fallbackColours);
   const pattern = /^\s*0\s+!COLOUR\s+\S+\s+CODE\s+(-?\d+)\s+VALUE\s+#([0-9A-F]{6})\s+EDGE\s+(#[0-9A-F]{6}|-?\d+)/i;
-  content.split(/\r?\n/).forEach((line) => {
+  content.split(/\r?
+/).forEach((line) => {
     const match = line.match(pattern);
     if (!match) return;
     parsed.set(Number(match[1]), {
@@ -590,7 +594,9 @@ async function loadSelectedPart() {
   if (!viewerReady) return;
   const sequence = ++loadSequence;
   const partId = partSelect.value;
-  const colourCode = Number(colourSelect.value);\n  const selectedEntry = partCatalogue.find((part) => part.part_id === partId);\n  const partPath = selectedEntry ? selectedEntry.filename : 'parts/' + partId + '.dat';
+  const colourCode = Number(colourSelect.value);
+  const selectedEntry = partCatalogue.find((part) => part.part_id === partId);
+  const partPath = selectedEntry ? selectedEntry.filename : 'parts/' + partId + '.dat';
 
   setState('FETCHING ' + partId, 'loading');
   setMessage('Fetching source files and expanding nested LDraw references…');
@@ -678,7 +684,10 @@ async function loadSelectedPart() {
   }
 }
 
-partSearch.addEventListener('input', () => {\n  renderPartSearchResults(partSearch.value);\n});\npartSelect.addEventListener('change', () => {
+partSearch.addEventListener('input', () => {
+  renderPartSearchResults(partSearch.value);
+});
+partSelect.addEventListener('change', () => {
   loadSelectedPart();
 });
 colourSelect.addEventListener('change', () => {
