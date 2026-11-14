@@ -610,12 +610,13 @@ function renderFeaturePatterns() {
   const patterns = matchFeaturePatterns(activeTargetGrid.features, importedPartFeatureProfiles, {
     limit: 5,
     maxSearchStates: 5000,
+    targetBoundsMm: activeTargetGrid.source_bounds_mm,
   });
   if (!patterns.length) {
     featurePatternStatus.textContent = 'No complete one-to-one opening layout matched within the current spacing and size tolerances. Individual candidates above may still be useful.';
     return;
   }
-  featurePatternStatus.textContent = patterns.length + ' complete spatial pattern candidate(s). Pairwise spacing is compared independently of translation and rotation, and a rigid transform is estimated where feature centres are non-collinear; surrounding envelope and physical connections are not yet verified.';
+  featurePatternStatus.textContent = patterns.length + ' complete spatial pattern candidate(s). Pairwise spacing is compared independently of translation and rotation, and a rigid transform is estimated where feature centres are non-collinear; the AABB containment check is only a coarse bound and physical connections are not yet verified.';
   patterns.forEach((pattern) => {
     const item = document.createElement('li');
     const heading = document.createElement('strong');
@@ -626,11 +627,16 @@ function renderFeaturePatterns() {
       ? ' · envelope ' + pattern.part_dimensions_mm.map((value) => value.toFixed(1)).join(' × ') + ' mm'
       : '';
     heading.textContent = pattern.part_id + ' · ' + pattern.description;
+    const envelopeCheck = pattern.envelope_contained === true
+      ? ' · part AABB within target AABB'
+      : pattern.envelope_contained === false
+        ? ' · part AABB extends outside target bounds by ' + pattern.envelope_outside_mm.toFixed(1) + ' mm'
+        : ' · part envelope not assessed';
     detail.textContent = Math.round(pattern.score * 100) + '% pattern score · '
       + pattern.matched_feature_count + '/' + pattern.target_feature_count
       + ' target openings assigned · ' + Math.round(pattern.profile_coverage * 100)
       + '% of profile openings used · spacing RMS ' + pattern.pattern_error_mm.toFixed(2) + ' mm'
-      + envelope;
+      + envelope + envelopeCheck;
     assignment.textContent = pattern.assignments.map((entry) =>
       entry.target_feature_id + ' → ' + entry.candidate_feature_id + ' (local ' + entry.local_axis.toUpperCase() + ')'
     ).join(' · ');
