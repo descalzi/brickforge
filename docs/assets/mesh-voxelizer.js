@@ -291,13 +291,16 @@ export function voxelizeMesh({
       throw new RangeError("Mesh contains an invalid triangle index.");
     }
   }
-  validateClosedMesh(scaledVertices, indices);
+  const cleaned = removeDegenerateTriangles(scaledVertices, indices);
+  const cleanIndices = cleaned.indices;
+  const faceCount = cleanIndices.length / 3;
+  validateClosedMesh(scaledVertices, cleanIndices);
 
   const triangles = [];
   const boundsMin = [Infinity, Infinity, Infinity];
   const boundsMax = [-Infinity, -Infinity, -Infinity];
-  for (let face = 0; face < indices.length; face += 3) {
-    const triangle = triangleFrom(scaledVertices, indices[face], indices[face + 1], indices[face + 2], face / 3);
+  for (let face = 0; face < cleanIndices.length; face += 3) {
+    const triangle = triangleFrom(scaledVertices, cleanIndices[face], cleanIndices[face + 1], cleanIndices[face + 2], face / 3);
     triangles.push(triangle);
     for (let axis = 0; axis < 3; axis += 1) {
       boundsMin[axis] = Math.min(boundsMin[axis], triangle.min[axis]);
