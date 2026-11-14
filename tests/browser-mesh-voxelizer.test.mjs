@@ -255,5 +255,6 @@ test("browser voxeliser preserves sub-grid openings local to one section of a ta
   assert.ok(result.feature_keepouts.every((item) => item.method === "conservative grid-cell clearance"));
   assert.ok(result.feature_keepouts.every((item) => item.local_axial_bounds_mm[1] > item.local_axial_bounds_mm[0]));
   assert.ok(result.feature_keepouts.every((item) => item.support_slices >= 3));
+  assert.ok(result.feature_keepouts.every((item) => item.axial_cell_count === 1));
   assert.ok(result.warnings.some((warning) => warning.includes("conservative grid-cell clearance tunnels")));
 });
