@@ -82,13 +82,13 @@ test("browser voxeliser does not fill a clear gap between disconnected solids", 
   assert.equal(grid.classification[4], CellClass.BOUNDARY);
 });
 
-test("browser voxeliser rejects open, degenerate, non-finite and oversized inputs", () => {
+test("browser voxeliser removes zero-area facets but rejects open, non-finite and oversized inputs", () => {
   const mesh = boxMesh([8, 9.6, 8]);
   assert.throws(() => voxelizeMesh({
     ...mesh, indices: mesh.indices.slice(0, mesh.indices.length - 3), units: "mm",
   }), /watertight/);
   const degenerate = { ...mesh, indices: new Uint32Array([...mesh.indices, 0, 0, 0]) };
-  assert.throws(() => voxelizeMesh({ ...degenerate, units: "mm" }), /degenerate/);
+  const cleanedGrid = voxelizeMesh({ ...degenerate, units: "mm" });\n  assert.equal(cleanedGrid.removed_degenerate_triangle_count, 1);\n  assert.equal(cleanedGrid.triangle_count, mesh.indices.length / 3);\n  assert.match(cleanedGrid.warnings[0], /Removed 1/);
   const nonFinite = { ...mesh, vertices: new Float64Array(mesh.vertices) };
   nonFinite.vertices[0] = NaN;
   assert.throws(() => voxelizeMesh({ ...nonFinite, units: "mm" }), /non-finite/);
@@ -97,4 +97,14 @@ test("browser voxeliser rejects open, degenerate, non-finite and oversized input
   const inchMesh = boxMesh([24 / 25.4, 28.8 / 25.4, 24 / 25.4]);
   const inchGrid = voxelizeMesh({ ...inchMesh, units: "in" });
   assert.deepEqual(inchGrid.dimensions, [3, 3, 3]);
+});
+
+
+test("browser voxeliser removes a collinear zero-area triangle from an otherwise closed mesh", () => {
+  const mesh = boxMesh([8, 9.6, 8]);
+  const vertices = new Float64Array([...mesh.vertices, 2, 2, 2, 4, 4, 4, 6, 6, 6]);
+  const indices = new Uint32Array([...mesh.indices, 8, 9, 10]);
+  const result = voxelizeMesh({ vertices, indices, units: "mm" });
+  assert.equal(result.removed_degenerate_triangle_count, 1);
+  assert.equal(result.triangle_count, 12);
 });
