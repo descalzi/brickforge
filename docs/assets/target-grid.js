@@ -95,16 +95,18 @@ export class TargetGrid {
         || !surface_coverage || surface_coverage.length !== spec.cell_count) {
       throw new RangeError("classification and surface coverage must match grid cell count");
     }
-    const classes = Uint8Array.from(classification);
-    const coverage = Float32Array.from(surface_coverage);
     for (let index = 0; index < spec.cell_count; index += 1) {
-      if (![CellClass.EXTERIOR, CellClass.INTERIOR, CellClass.BOUNDARY].includes(classes[index])) {
+      if (!Number.isInteger(classification[index])
+          || ![CellClass.EXTERIOR, CellClass.INTERIOR, CellClass.BOUNDARY].includes(classification[index])) {
         throw new RangeError("classification contains an unknown cell class");
       }
-      if (!Number.isFinite(coverage[index]) || coverage[index] < 0 || coverage[index] > 1) {
+      if (!Number.isFinite(surface_coverage[index])
+          || surface_coverage[index] < 0 || surface_coverage[index] > 1) {
         throw new RangeError("surface coverage values must be finite and between 0 and 1");
       }
     }
+    const classes = Uint8Array.from(classification);
+    const coverage = Float32Array.from(surface_coverage);
     this.spec = spec;
     this.classification = classes;
     this.surface_coverage = coverage;
