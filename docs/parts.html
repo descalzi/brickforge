@@ -118,6 +118,16 @@
           <a id="part-source" class="part-source" href="https://library.ldraw.org/" target="_blank" rel="noreferrer">View LDraw source file ↗</a>
         </section>
 
+        <section class="parts-control-section feature-profile-section">
+          <h2>Opening geometry profile</h2>
+          <p class="control-note">Analyse nested cross-section contours in this part's resolved geometry. This helps build a measured feature catalogue for later matching.</p>
+          <button id="part-feature-analyse" class="tool-button" type="button" disabled>Analyse openings</button>
+          <p id="part-feature-status" class="feature-profile-status" role="status" aria-live="polite">Select a part, then analyse its cross-section openings.</p>
+          <ul id="part-feature-list" class="part-feature-list"></ul>
+          <button id="part-feature-download" class="tool-button" type="button" disabled>Download feature profile</button>
+          <p class="control-note">Profiles describe geometric openings only. They do not establish physical connection compatibility.</p>
+        </section>
+
         <section class="parts-control-section provenance-section">
           <h2>Source & attribution</h2>
           <p>Geometry is fetched on demand from a version-pinned public mirror of the LDraw Parts Library. The browser expands the original text files on demand; it does not upload data or modify the source files.</p>
@@ -140,6 +150,6 @@
     <span class="footer-id">BF / PARTS-01</span>
   </footer>
 
-  <script type="module" src="./assets/parts.js"></script>
+  <script type="module" src="./assets/parts.js?v=featureprofile1"></script>
 </body>
 </html>
