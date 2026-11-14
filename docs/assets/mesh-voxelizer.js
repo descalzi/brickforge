@@ -299,6 +299,64 @@ function cellIntersectsSurface(root, boxMin, boxMax, budget) {
   return false;
 }
 
+
+function preserveSubGridOpenings({ features, dimensions, origin, pitch, boundsMin, boundsMax, classification, coverage }) {
+  const [width, height, depth] = dimensions;
+  const keepouts = [];
+  for (const feature of features) {
+    const axis = feature.axis_index;
+    const otherAxes = [0, 1, 2].filter((value) => value !== axis);
+    const sourceSpan = boundsMax[axis] - boundsMin[axis];
+    const observedRatio = sourceSpan > 0 ? feature.observed_span_mm / sourceSpan : 0;
+    if (observedRatio < 0.55
+        || !["round opening", "elongated slot/opening"].includes(feature.shape)) {
+      keepouts.push({ feature_id: feature.id, axis: feature.axis, cell_count: 0, preserved: false,
+        reason: observedRatio < 0.55 ? "opening does not span enough of the source along its detected axis"
+          : "opening shape is not yet supported for conservative grid clearance" });
+      continue;
+    }
+    const radius = feature.shape === "round opening"
+      ? Math.min(feature.minimum_equivalent_diameter_mm, feature.maximum_equivalent_diameter_mm) * 0.5
+      : null;
+    let cellCount = 0;
+    for (let y = 0; y < height; y += 1) {
+      for (let z = 0; z < depth; z += 1) {
+        for (let x = 0; x < width; x += 1) {
+          const indices = [x, y, z];
+          const cellMin = indices.map((index, dimension) => origin[dimension] + index * pitch[dimension]);
+          const cellMax = cellMin.map((value, dimension) => value + pitch[dimension]);
+          if (cellMax[axis] <= boundsMin[axis] || cellMin[axis] >= boundsMax[axis]) continue;
+          let intersectsOpening = true;
+          for (const dimension of otherAxes) {
+            if (cellMax[dimension] <= feature.bounds_mm[0][dimension]
+                || cellMin[dimension] >= feature.bounds_mm[1][dimension]) {
+              intersectsOpening = false;
+              break;
+            }
+          }
+          if (!intersectsOpening) continue;
+          if (radius !== null) {
+            const nearest = otherAxes.map((dimension) => Math.max(cellMin[dimension],
+              Math.min(feature.center_mm[dimension], cellMax[dimension])));
+            const distance = Math.hypot(nearest[0] - feature.center_mm[otherAxes[0]],
+              nearest[1] - feature.center_mm[otherAxes[1]]);
+            if (distance > radius + 1e-9) continue;
+          }
+          const flat = x + width * (z + depth * y);
+          classification[flat] = CellClass.EXTERIOR;
+          coverage[flat] = 0;
+          cellCount += 1;
+        }
+      }
+    }
+    keepouts.push({ feature_id: feature.id, axis: feature.axis, cell_count: cellCount,
+      preserved: cellCount > 0, method: "conservative grid-cell clearance",
+      clearance_pitch_mm: pitch.slice(),
+      ...(cellCount ? {} : { reason: "opening did not intersect any target-grid cells" }) });
+  }
+  return keepouts;
+}
+
 export function voxelizeMesh({
   vertices,
   indices,
@@ -417,6 +475,10 @@ export function voxelizeMesh({
     onProgress({ completed: completedColumns, total: totalColumns });
   }
 
+  const featureKeepouts = preserveSubGridOpenings({ features, dimensions, origin,
+    pitch: Array.from(pitchMm), boundsMin, boundsMax, classification, coverage });
+  const preservedFeatureCount = featureKeepouts.filter((item) => item.preserved).length;
+
   return {
     dimensions,
     origin_mm: origin,
@@ -429,6 +491,7 @@ export function voxelizeMesh({
       ...(cleaned.removed ? ["Removed " + cleaned.removed + " zero-area or duplicate-vertex triangle(s) before topology validation."] : []),
       ...(topology.handle_count ? ["Detected " + topology.handle_count + " topological tunnel/handle feature(s)."] : []),
       ...(features.length ? ["Located " + features.length + " cross-section opening feature(s); dimensions are approximate and based on sampled mesh slices."] : []),
+      ...(preservedFeatureCount ? ["Mapped " + preservedFeatureCount + " sub-grid opening(s) to conservative grid-cell clearance tunnels; the represented openings may be larger than the source geometry."] : []),
       ...(topology.handle_count && !features.length ? ["Tunnel topology was detected, but individual openings could not be localised reliably by the current orthogonal slice analysis."] : []),
       "Browser voxelisation uses 3x3x3 interior sampling and triangle-box SAT for boundary-cell detection. Interior coverage remains a sampling approximation; exact surface-cell overlap is tested geometrically.",
       "The source must be a closed, consistently wound mesh; open-surface shell mode is not supported.",
@@ -438,6 +501,7 @@ export function voxelizeMesh({
     removed_degenerate_triangle_count: cleaned.removed,
     topology,
     features,
+    feature_keepouts: featureKeepouts,
     ray_triangle_tests: rayBudget.tests,
     cell_triangle_tests: cellBudget.tests,
   };
