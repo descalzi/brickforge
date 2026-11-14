@@ -27,7 +27,7 @@ jobs:
         with:
           node-version: "24"
       - name: Check mesh inspector JavaScript syntax
-        run: node --check docs/assets/inspector.js && node --check docs/assets/target-grid.js && node --check docs/assets/mesh-voxelizer.js && node --check docs/assets/mesh-voxelizer-worker.js
+        run: node --check docs/assets/inspector.js && node --check docs/assets/target-grid.js && node --check docs/assets/mesh-voxelizer.js && node --check docs/assets/mesh-voxelizer-worker.js && node --check docs/assets/layered-construction-worker.js
       - name: Check LDraw part explorer JavaScript syntax
         run: node --check docs/assets/parts.js && node --check docs/assets/catalogue-utils.js
       - name: Check browser construction engine syntax
