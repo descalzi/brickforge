@@ -110,11 +110,23 @@
           </div>
         </div>
 
+        <div class="control-section voxel-section">
+          <h2>Target grid</h2>
+          <p class="control-note">Convert the closed mesh into occupied brick-course cells. Processing runs locally in a background worker.</p>
+          <button id="voxelise-button" class="primary-button voxelise-button" type="button" disabled>Voxelise on brick grid</button>
+          <p id="voxelise-status" class="voxelise-status" role="status" aria-live="polite">Load a mesh to enable voxelisation.</p>
+          <div id="voxelise-summary" class="voxelise-summary" hidden>
+            <strong id="voxel-cell-count">—</strong>
+            <span id="voxel-grid-size">—</span>
+            <ul id="voxel-course-list"></ul>
+            <button id="voxel-overlay-toggle" class="tool-button" type="button" disabled>Hide voxel overlay</button>
+          </div>
+        </div>
         <div id="inspector-message" class="inspector-message" role="status" aria-live="polite">Waiting for a mesh file.</div>
       </aside>
     </section>
 
-    <p class="inspector-disclaimer">This page measures and previews mesh geometry only. It does not yet convert the shape into L-brick elements or verify that a construction is physically buildable.</p>
+    <p class="inspector-disclaimer">This page converts closed meshes into an approximate target occupancy grid locally in your browser. This is not yet a brick construction, and it does not prove physical buildability.</p>
   </main>
 
   <footer class="site-footer">
