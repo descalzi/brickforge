@@ -71,7 +71,7 @@ coverage; it provides deterministic cell/world mapping, flattened indexing,
 summary metadata and per-course footprint extraction. The representation is
 versioned and exported from `brickforge.geometry`.
 
-The Python reference package now also provides `voxelize_mesh()` in
+The browser now has a matching versioned `GridSpec` and `TargetGrid` data model in `docs/assets/target-grid.js`. It uses the same X/Y/Z dimensions, Y/Z/X backing layout, X-fastest flat indexing, millimetre coordinates, cell-centre mapping, classification values, source provenance and per-course footprint ordering as the Python reference. Its data-model tests exercise the same synthetic grid and summary values as the Python tests. Browser mesh voxelisation is the next step; this parity layer is deliberately separate from mesh import and classification.\n\nThe Python reference package now also provides `voxelize_mesh()` in
 `src/brickforge/geometry/voxelize.py`. It converts declared source units to
 millimetres, aligns a grid to the global pitch, enforces a cell budget, and
 classifies each cell using a deterministic 3x3x3 sample lattice. It currently
