@@ -23,6 +23,35 @@ function pointKey(x, y, z) {
   ].join(",");
 }
 
+function removeDegenerateTriangles(vertices, indices) {
+  const retained = [];
+  let removed = 0;
+  for (let face = 0; face < indices.length; face += 3) {
+    const ids = [indices[face], indices[face + 1], indices[face + 2]];
+    const points = ids.map((index) => {
+      const offset = index * 3;
+      return [vertices[offset], vertices[offset + 1], vertices[offset + 2]];
+    });
+    const keys = points.map((point) => point.map((value) =>
+      Math.round(value * EDGE_QUANTISATION)).join(","));
+    const ab = points[1].map((value, axis) => value - points[0][axis]);
+    const ac = points[2].map((value, axis) => value - points[0][axis]);
+    const cross = [
+      ab[1] * ac[2] - ab[2] * ac[1],
+      ab[2] * ac[0] - ab[0] * ac[2],
+      ab[0] * ac[1] - ab[1] * ac[0],
+    ];
+    const areaSquared = cross.reduce((sum, value) => sum + value * value, 0);
+    if (new Set(keys).size !== 3 || !Number.isFinite(areaSquared) || areaSquared <= 1e-20) {
+      removed += 1;
+      continue;
+    }
+    retained.push(...ids);
+  }
+  if (!retained.length) throw new Error("Mesh contains no non-degenerate triangles.");
+  return { indices: new Uint32Array(retained), removed };
+}
+
 function validateClosedMesh(vertices, indices) {
   const edges = new Map();
   for (let face = 0; face < indices.length; face += 3) {
@@ -247,8 +276,8 @@ export function voxelizeMesh({
     throw new TypeError("Mesh vertices and triangle indices are missing or malformed.");
   }
   const vertexCount = vertices.length / 3;
-  const faceCount = indices.length / 3;
-  if (faceCount > MAX_TRIANGLES) {
+  const inputFaceCount = indices.length / 3;
+  if (inputFaceCount > MAX_TRIANGLES) {
     throw new RangeError("Mesh exceeds the browser limit of " + MAX_TRIANGLES.toLocaleString() + " triangles.");
   }
   const scale = UNIT_TO_MM[units];
@@ -349,7 +378,7 @@ export function voxelizeMesh({
       "Browser voxelisation uses 3x3x3 interior sampling and triangle-box SAT for boundary-cell detection. Interior coverage remains a sampling approximation; exact surface-cell overlap is tested geometrically.",
       "The source must be a closed, consistently wound mesh; open-surface shell mode is not supported.",
     ],
-    triangle_count: faceCount,
+    triangle_count: faceCount,\n    input_triangle_count: inputFaceCount,\n    removed_degenerate_triangle_count: cleaned.removed,
     ray_triangle_tests: rayBudget.tests,
     cell_triangle_tests: cellBudget.tests,
   };
