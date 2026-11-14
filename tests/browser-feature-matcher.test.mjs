@@ -149,14 +149,17 @@ test("feature pattern matcher assigns unique openings and tolerates rigid rotati
   const candidate = {
     part_id: "pattern-beam",
     description: "Three-hole test beam",
-    dimensions_mm: [40, 8, 24],
+    dimensions_mm: [50, 8, 30],
+    bounds_mm: [[0, 0, 0], [50, 8, 30]],
     features: [
       patternHole("p3", [10, 1, 5], "y"),
       patternHole("p1", [40, 1, 5], "y"),
       patternHole("p2", [40, 1, 25], "y"),
     ],
   };
-  const results = matchFeaturePatterns(targetFeatures, [candidate]);
+  const results = matchFeaturePatterns(targetFeatures, [candidate], {
+    targetBoundsMm: [[-10, -10, -10], [50, 50, 50]],
+  });
   assert.equal(results.length, 1);
   assert.equal(results[0].matched_feature_count, 3);
   assert.equal(results[0].score, 1);
@@ -166,6 +169,12 @@ test("feature pattern matcher assigns unique openings and tolerates rigid rotati
   assert.ok(results[0].axis_alignment_rms_deg < 1e-6);
   assert.ok(Array.isArray(results[0].rotation_matrix_3x3));
   assert.ok(Array.isArray(results[0].translation_mm));
+  assert.equal(results[0].envelope_contained, true);
+  const outside = matchFeaturePatterns(targetFeatures, [candidate], {
+    targetBoundsMm: [[-1, -1, -1], [20, 20, 20]],
+  });
+  assert.equal(outside[0].envelope_contained, false);
+  assert.ok(outside[0].envelope_outside_mm > 0);
 });
 
 test("feature pattern matcher rejects matching hole sizes with incompatible spacing", () => {
