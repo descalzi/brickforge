@@ -46,7 +46,18 @@ function compareFeatureDimensions(target, candidate, options) {
 }
 
 function validMeasuredFeature(feature) {
-  return feature && typeof feature === "object"
+  if (!feature || typeof feature !== "object") return false;
+  const rangePairs = [
+    ["minimum_equivalent_diameter_mm", "maximum_equivalent_diameter_mm"],
+    ["minimum_width_mm", "maximum_width_mm"],
+    ["minimum_length_mm", "maximum_length_mm"],
+  ];
+  const rangesValid = rangePairs.every(([minimum, maximum]) => {
+    if (feature[minimum] === undefined && feature[maximum] === undefined) return true;
+    return Number.isFinite(feature[minimum]) && feature[minimum] > 0
+      && Number.isFinite(feature[maximum]) && feature[maximum] >= feature[minimum];
+  });
+  return rangesValid
     && typeof feature.id === "string"
     && ["round opening", "elongated slot/opening", "irregular opening"].includes(feature.shape)
     && Number.isFinite(feature.width_mm) && feature.width_mm > 0
