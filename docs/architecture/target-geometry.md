@@ -60,7 +60,7 @@ Start with small analytic and synthetic meshes whose expected results are known:
 - Open, non-watertight, degenerate and non-finite input cases.
 - Inputs that exceed the configured cell budget.
 
-Tests must cover both geometry classification and the derived per-course 2D maps. Browser/Python parity is a release requirement before the mesh-to-builder workflow is exposed.
+Tests must cover both geometry classification and the derived per-course 2D maps. Browser geometry tests are a release requirement before the mesh-to-builder workflow is exposed.
 
 ## Current implementation status
 
@@ -71,7 +71,9 @@ coverage; it provides deterministic cell/world mapping, flattened indexing,
 summary metadata and per-course footprint extraction. The representation is
 versioned and exported from `brickforge.geometry`.
 
-The browser now has the authoritative versioned `GridSpec` and `TargetGrid` data model in `docs/assets/target-grid.js`. It uses the same X/Y/Z dimensions, Y/Z/X backing layout, X-fastest flat indexing, millimetre coordinates, cell-centre mapping, classification values, source provenance and per-course footprint ordering as the Python reference. Its data-model tests exercise the same synthetic grid and summary values as the Python tests. Browser mesh voxelisation is implemented in `docs/assets/mesh-voxelizer.js` and runs in a dedicated worker. The browser path uses a triangle BVH for point-in-solid scanlines and nearest-surface queries, so it can remain responsive without introducing a second server-side processing path.\n\nThe Python reference package now also provides `voxelize_mesh()` in
+The browser now has the authoritative versioned `GridSpec` and `TargetGrid` data model in `docs/assets/target-grid.js`. It uses the same X/Y/Z dimensions, Y/Z/X backing layout, X-fastest flat indexing, millimetre coordinates, cell-centre mapping, classification values, source provenance and per-course footprint ordering as the Python reference. Its data-model tests exercise the same synthetic grid and summary values as the Python tests. Browser mesh voxelisation is implemented in `docs/assets/mesh-voxelizer.js` and runs in a dedicated worker. The browser path uses a triangle BVH for point-in-solid scanlines and nearest-surface queries, so it can remain responsive without introducing a second server-side processing path.
+
+The Python supporting package also provides `voxelize_mesh()` in
 `src/brickforge/geometry/voxelize.py`. It converts declared source units to
 millimetres, aligns a grid to the global pitch, enforces a cell budget, and
 classifies each cell using a deterministic 3x3x3 sample lattice. It currently
