@@ -7,14 +7,14 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-ROOT = Path(__file__).resolve().parents[1]
-
 from brickforge.geometry.grid import (
     BRICK_GRID_PITCH_MM,
     CellClass,
     GridSpec,
     TargetGrid,
 )
+
+ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_grid_spec_maps_cells_to_world_and_flat_indices() -> None:
