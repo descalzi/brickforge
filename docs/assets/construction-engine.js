@@ -1344,6 +1344,7 @@ export function buildLayeredFootprintBlock(layerFootprints, catalogue, config = 
           footprint_studs_x: profile.footprint_studs_x,
           footprint_studs_z: profile.footprint_studs_z,
           body_height_ldu: profile.body_height_ldu,
+          stud_pitch_ldu: profile.stud_pitch_ldu,
         }];
       }),
     ),
