@@ -29,6 +29,7 @@ const voxelCellCount = document.querySelector('#voxel-cell-count');
 const voxelGridSize = document.querySelector('#voxel-grid-size');
 const voxelFeatureStatus = document.querySelector('#voxel-feature-status');
 const voxelFeatureList = document.querySelector('#voxel-feature-list');
+const featureOverlayToggle = document.querySelector('#feature-overlay-toggle');
 const voxelCourseList = document.querySelector('#voxel-course-list');
 const voxelOverlayToggle = document.querySelector('#voxel-overlay-toggle');
 const buildConstructionButton = document.querySelector('#build-construction');
@@ -72,8 +73,10 @@ let constructionWorker = null;
 let activeConstruction;
 let activeTargetGrid;
 let activeVoxelGroup;
+let activeFeatureGroup;
 let activeConstructionGroup;
 let voxelOverlayVisible = true;
+let featureOverlayVisible = true;
 let constructionPreviewVisible = true;
 const ghostedMaterialStates = new Map();
 
@@ -219,6 +222,88 @@ function removeVoxelOverlay() {
   activeVoxelGroup = null;
 }
 
+
+function removeFeatureOverlay() {
+  if (!activeFeatureGroup) return;
+  scene.remove(activeFeatureGroup);
+  activeFeatureGroup.traverse((object) => {
+    object.geometry?.dispose?.();
+    if (Array.isArray(object.material)) object.material.forEach((material) => material.dispose?.());
+    else object.material?.dispose?.();
+  });
+  activeFeatureGroup = null;
+  if (featureOverlayToggle) {
+    featureOverlayToggle.disabled = true;
+    featureOverlayToggle.textContent = 'Show opening markers';
+  }
+}
+
+function renderFeatureOverlay(grid) {
+  removeFeatureOverlay();
+  if (!grid.features.length) return;
+  const group = new THREE.Group();
+  group.name = 'Detected mesh opening markers';
+  const ringMaterial = new THREE.MeshBasicMaterial({
+    color: 0xE66B2E,
+    transparent: true,
+    opacity: 0.98,
+    depthTest: false,
+  });
+  const lineMaterial = new THREE.LineBasicMaterial({
+    color: 0xE66B2E,
+    transparent: true,
+    opacity: 0.98,
+    depthTest: false,
+  });
+
+  for (const feature of grid.features) {
+    const centre = feature.center_mm.map((value, axis) => value - currentModelCenter[axis]);
+    if (feature.shape === 'round opening') {
+      const radius = Math.max(feature.equivalent_diameter_mm * 0.5, 0.5);
+      const geometry = new THREE.TorusGeometry(radius, Math.max(0.35, radius * 0.035), 8, 48);
+      const marker = new THREE.Mesh(geometry, ringMaterial.clone());
+      marker.position.set(...centre);
+      if (feature.axis === 'x') marker.rotation.y = Math.PI / 2;
+      else if (feature.axis === 'y') marker.rotation.x = Math.PI / 2;
+      marker.renderOrder = 20;
+      marker.userData.featureId = feature.id;
+      group.add(marker);
+    } else {
+      const minimum = feature.bounds_mm[0];
+      const maximum = feature.bounds_mm[1];
+      const otherAxes = [0, 1, 2].filter((axis) => axis !== feature.axis_index);
+      const corners = [
+        [minimum[otherAxes[0]], minimum[otherAxes[1]]],
+        [maximum[otherAxes[0]], minimum[otherAxes[1]]],
+        [maximum[otherAxes[0]], maximum[otherAxes[1]]],
+        [minimum[otherAxes[0]], maximum[otherAxes[1]]],
+      ];
+      const points = corners.map((corner) => {
+        const point = [0, 0, 0];
+        point[feature.axis_index] = feature.center_mm[feature.axis_index];
+        point[otherAxes[0]] = corner[0];
+        point[otherAxes[1]] = corner[1];
+        return new THREE.Vector3(...point.map((value, axis) => value - currentModelCenter[axis]));
+      });
+      const geometry = new THREE.BufferGeometry().setFromPoints(points);
+      const marker = new THREE.LineLoop(geometry, lineMaterial.clone());
+      marker.renderOrder = 20;
+      marker.userData.featureId = feature.id;
+      group.add(marker);
+    }
+  }
+
+  ringMaterial.dispose();
+  lineMaterial.dispose();
+  activeFeatureGroup = group;
+  featureOverlayVisible = true;
+  scene.add(group);
+  if (featureOverlayToggle) {
+    featureOverlayToggle.disabled = false;
+    featureOverlayToggle.textContent = 'Hide opening markers';
+  }
+}
+
 function setSourceMeshGhosted(ghosted) {
   for (const mesh of activeMeshes) {
     const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
@@ -351,6 +436,7 @@ function resetVoxelisation() {
   constructionDownloadGraph.disabled = true;
   constructionDownloadBom.disabled = true;
   removeVoxelOverlay();
+  removeFeatureOverlay();
   removeConstructionPreview();
   activeTargetGrid = null;
   if (voxelFeatureStatus) { voxelFeatureStatus.hidden = true; voxelFeatureStatus.textContent = ''; }
@@ -592,6 +678,7 @@ function runVoxelisation() {
       });
       voxelOverlayVisible = true;
       renderVoxelOverlay(activeTargetGrid);
+      renderFeatureOverlay(activeTargetGrid);
       displayVoxelSummary(activeTargetGrid, result.triangle_count);
       const hasUnmatchedFeatures = activeTargetGrid.topology?.handle_count > 0 || activeTargetGrid.features.length > 0;
       buildConstructionButton.disabled = hasUnmatchedFeatures;
@@ -1019,6 +1106,12 @@ constructionDownloadBom.addEventListener('click', () => {
     JSON.stringify(activeConstruction.bom, null, 2),
     'application/json;charset=utf-8',
   );
+});
+featureOverlayToggle.addEventListener('click', () => {
+  if (!activeFeatureGroup) return;
+  featureOverlayVisible = !featureOverlayVisible;
+  activeFeatureGroup.visible = featureOverlayVisible;
+  featureOverlayToggle.textContent = featureOverlayVisible ? 'Hide opening markers' : 'Show opening markers';
 });
 voxelOverlayToggle.addEventListener('click', () => {
   if (!activeVoxelGroup) return;
