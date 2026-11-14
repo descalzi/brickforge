@@ -240,7 +240,7 @@ export function voxelizeMesh({
   maxCells = MAX_CELLS,
   onProgress = () => {},
 }) {
-  if (!Object.hasOwn(UNIT_TO_MM, units)) throw new TypeError("units must be 'mm', 'cm', or 'm'");
+  if (!Object.hasOwn(UNIT_TO_MM, units)) throw new TypeError("units must be 'mm', 'cm', 'm' or 'in'");
   assertVector(pitchMm, "pitchMm", true);
   if (!Number.isSafeInteger(maxCells) || maxCells < 1 || maxCells > MAX_CELLS) {
     throw new RangeError("maxCells must be an integer between 1 and " + MAX_CELLS);
