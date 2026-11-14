@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from math import ceil, floor, isfinite
 from typing import cast
 
@@ -121,9 +122,14 @@ def voxelize_mesh(
         inside = scaled_mesh.contains(sample_points).reshape(-1, len(_SAMPLE_OFFSETS))
         fractions = inside.mean(axis=1, dtype=np.float64).astype(np.float32)
         cell_centres = cell_minimum + np.asarray(pitch_mm, dtype=np.float64) * 0.5
-        _, surface_distances, _ = trimesh.proximity.closest_point(
-            scaled_mesh, cell_centres
+        closest_point = cast(
+            Callable[
+                [trimesh.Trimesh, np.ndarray],
+                tuple[np.ndarray, np.ndarray, np.ndarray],
+            ],
+            trimesh.proximity.closest_point,
         )
+        _, surface_distances, _ = closest_point(scaled_mesh, cell_centres)
         near_surface = surface_distances <= half_cell_diagonal + 1e-9
         coverage_flat[start:stop] = fractions
         classification_flat[start:stop] = np.where(
