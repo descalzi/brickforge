@@ -248,7 +248,8 @@ class TargetGrid:
                 feature["observed_span_mm"] < 0
                 or any(feature[field] <= 0 for field in numeric_fields[1:6])
                 or feature["minimum_equivalent_diameter_mm"] <= 0
-                or feature["maximum_equivalent_diameter_mm"] < feature["minimum_equivalent_diameter_mm"]
+                or feature["maximum_equivalent_diameter_mm"]
+                < feature["minimum_equivalent_diameter_mm"]
                 or feature["minimum_width_mm"] <= 0
                 or feature["maximum_width_mm"] < feature["minimum_width_mm"]
                 or feature["minimum_length_mm"] <= 0
