@@ -855,6 +855,7 @@ function displayVoxelSummary(grid, triangleCount) {
   const summary = grid.summary();
   voxelCellCount.textContent = summary.occupied_cell_count.toLocaleString() + ' occupied cells';
   voxelGridSize.textContent = summary.dimensions.join(' × ') + ' cells · '
+    + 'pitch ' + grid.spec.pitch_mm.map((value) => value.toFixed(1)).join(' × ') + ' mm · '
     + triangleCount.toLocaleString() + ' triangles · '
     + summary.boundary_cell_count.toLocaleString() + ' boundary cells';
   voxelCourseList.replaceChildren();
@@ -862,7 +863,9 @@ function displayVoxelSummary(grid, triangleCount) {
     const item = document.createElement('li');
     const label = document.createElement('span');
     const count = document.createElement('strong');
-    label.textContent = 'Course ' + (y + 1);
+    const courseLabel = Math.abs(grid.spec.pitch_mm[1] - PLATE_GRID_PITCH_MM[1]) < 1e-6
+      ? 'Plate course ' : 'Brick course ';
+    label.textContent = courseLabel + (y + 1);
     count.textContent = grid.layer_footprint(y).length.toLocaleString() + ' cells';
     item.append(label, count);
     voxelCourseList.append(item);
