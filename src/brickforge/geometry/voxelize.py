@@ -105,6 +105,7 @@ def voxelize_mesh(
         spec.cell_count, CellClass.EXTERIOR, dtype=np.uint8
     )
     offsets = _SAMPLE_OFFSETS * np.asarray(pitch_mm, dtype=np.float64)
+    half_cell_diagonal = float(np.linalg.norm(np.asarray(pitch_mm) * 0.5))
     cell_count = spec.cell_count
 
     for start in range(0, cell_count, batch_cells):
@@ -119,11 +120,16 @@ def voxelize_mesh(
         ).reshape(-1, 3)
         inside = scaled_mesh.contains(sample_points).reshape(-1, len(_SAMPLE_OFFSETS))
         fractions = inside.mean(axis=1, dtype=np.float64).astype(np.float32)
+        cell_centres = cell_minimum + np.asarray(pitch_mm, dtype=np.float64) * 0.5
+        _, surface_distances, _ = trimesh.proximity.closest_point(
+            scaled_mesh, cell_centres
+        )
+        near_surface = surface_distances <= half_cell_diagonal + 1e-9
         coverage_flat[start:stop] = fractions
         classification_flat[start:stop] = np.where(
-            fractions <= 0.0,
-            CellClass.EXTERIOR,
-            np.where(fractions >= 1.0, CellClass.INTERIOR, CellClass.BOUNDARY),
+            near_surface | ((fractions > 0.0) & (fractions < 1.0)),
+            CellClass.BOUNDARY,
+            np.where(fractions >= 1.0, CellClass.INTERIOR, CellClass.EXTERIOR),
         ).astype(np.uint8)
 
     return TargetGrid(
