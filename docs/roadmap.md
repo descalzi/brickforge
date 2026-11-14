@@ -77,7 +77,7 @@ This roadmap is intentionally milestone-based. Each milestone should produce a d
 - [x] Locate and measure axis-aligned sub-grid openings using sampled orthogonal cross-sections; retain location, size, shape, per-slice minimum/maximum dimensions and slice-support metadata in target-grid version 4 for measured feature geometry, now extended in target-grid version 5 with conservative feature keep-out metadata.
 - [x] Preserve supported sub-grid round openings and elongated slots as conservative target-grid clearance tunnels; disclose grid-scale over-clearance and block unsupported feature types.
 - [x] Add a browser LDraw part-opening profiler and versioned feature-profile export so candidate part geometry can be measured independently of target meshes.
-- [x] Add a bounded Part Explorer scan for up to 12 user-searched candidate parts; export measured profiles as a combined catalogue.
+- [x] Add bounded Part Explorer scans that accumulate up to 48 unique profiles across multiple user searches; skip duplicates and export one combined catalogue.
 - [x] Add an initial browser geometric matcher for imported part profiles using shape and per-slice dimensional ranges; report candidates only and do not treat a match as a buildability result.
 - [x] Export optional lightweight candidate-part triangle geometry and preview its estimated rigid placement in the Inspector using a separately tested transform; keep visual alignment distinct from physical fit.
 - [ ] Build a curated, source-verified feature-profile catalogue for useful specialised parts; distinguish measured openings from nominal connection interfaces.
