@@ -1,4 +1,5 @@
 import { BRICK_GRID_PITCH_MM, CellClass } from "./target-grid.js";
+import { analyzeMeshFeatures } from "./mesh-feature-analysis.js";
 
 const UNIT_TO_MM = Object.freeze({ mm: 1, cm: 10, m: 1000, in: 25.4 });
 const SAMPLE_OFFSETS = Object.freeze([0.25, 0.5, 0.75]);
@@ -358,6 +359,13 @@ export function voxelizeMesh({
       + " cells, exceeding the browser limit of " + maxCells.toLocaleString() + ".");
   }
 
+  let features = [];
+  if (topology.handle_count > 0) {
+    onProgress({ phase: "features", completed: 0, total: 1 });
+    features = analyzeMeshFeatures(triangles, boundsMin, boundsMax);
+    onProgress({ phase: "features", completed: 1, total: 1 });
+  }
+
   const root = buildBvh(triangles);
   const [width, height, depth] = dimensions;
   const classification = new Uint8Array(cellCount);
@@ -419,7 +427,9 @@ export function voxelizeMesh({
     source_bounds_mm: [boundsMin, boundsMax],
     warnings: [
       ...(cleaned.removed ? ["Removed " + cleaned.removed + " zero-area or duplicate-vertex triangle(s) before topology validation."] : []),
-      ...(topology.handle_count ? ["Detected " + topology.handle_count + " topological tunnel/handle feature(s). The coarse occupancy grid may fill sub-grid openings; specialised feature matching is not yet available."] : []),
+      ...(topology.handle_count ? ["Detected " + topology.handle_count + " topological tunnel/handle feature(s)."] : []),
+      ...(features.length ? ["Located " + features.length + " cross-section opening feature(s); dimensions are approximate and based on sampled mesh slices."] : []),
+      ...(topology.handle_count && !features.length ? ["Tunnel topology was detected, but individual openings could not be localised reliably by the current orthogonal slice analysis."] : []),
       "Browser voxelisation uses 3x3x3 interior sampling and triangle-box SAT for boundary-cell detection. Interior coverage remains a sampling approximation; exact surface-cell overlap is tested geometrically.",
       "The source must be a closed, consistently wound mesh; open-surface shell mode is not supported.",
     ],
@@ -427,6 +437,7 @@ export function voxelizeMesh({
     input_triangle_count: inputFaceCount,
     removed_degenerate_triangle_count: cleaned.removed,
     topology,
+    features,
     ray_triangle_tests: rayBudget.tests,
     cell_triangle_tests: cellBudget.tests,
   };
