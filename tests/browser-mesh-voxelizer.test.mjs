@@ -62,13 +62,12 @@ function torusMesh(majorRadius = 4, minorRadius = 1, majorSegments = 16, minorSe
 }
 
 
-function perforatedPlateTriangles({ totalHeight = 6 } = {}) {
+function perforatedPlateTriangles({ totalHeight = 6, plateThickness = 6, addBoss = true } = {}) {
   const width = 48;
   const height = 65;
-  const thickness = 6;
   const occupied = new Set();
   const key = (x, y, z) => x + "," + y + "," + z;
-  for (let z = 0; z < thickness; z += 1) {
+  for (let z = 0; z < plateThickness; z += 1) {
     for (let y = 0; y < height; y += 1) {
       for (let x = 0; x < width; x += 1) {
         const px = x + 0.5;
@@ -83,7 +82,7 @@ function perforatedPlateTriangles({ totalHeight = 6 } = {}) {
   }
   // A raised solid boss increases the overall height without extending the
   // five bores through it, modelling openings local to one mounting section.
-  for (let z = thickness; z < totalHeight; z += 1) {
+  for (let z = plateThickness; addBoss && z < totalHeight; z += 1) {
     for (let y = 0; y < 8; y += 1) {
       for (let x = 0; x < 8; x += 1) occupied.add(key(x, y, z));
     }
@@ -267,7 +266,7 @@ test("browser voxeliser preserves sub-grid openings local to one section of a ta
 
 
 test("Z-up mesh openings flow through target grid into a connected layered construction", () => {
-  const source = perforatedPlateTriangles({ totalHeight: 12 });
+  const source = perforatedPlateTriangles({ totalHeight: 12, plateThickness: 12, addBoss: false });
   const vertices = new Float64Array(source.vertices.length);
   for (let index = 0; index < source.vertices.length; index += 3) {
     const x = source.vertices[index];
@@ -287,7 +286,7 @@ test("Z-up mesh openings flow through target grid into a connected layered const
   assert.equal(result.features.length, 5);
   assert.ok(result.feature_keepouts.every((item) => item.preserved));
   assert.ok(result.feature_keepouts.every((item) => item.axis === "y"));
-  assert.ok(result.feature_keepouts.every((item) => item.axial_cell_count === 1));
+  assert.ok(result.feature_keepouts.every((item) => item.axial_cell_count === 2));
 
   const grid = new TargetGrid({
     spec: new GridSpec({
