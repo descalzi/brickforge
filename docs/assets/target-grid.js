@@ -1,4 +1,4 @@
-export const TARGET_GRID_VERSION = 3;
+export const TARGET_GRID_VERSION = 4;
 export const BRICK_GRID_PITCH_MM = Object.freeze([8, 9.6, 8]);
 
 export const CellClass = Object.freeze({
