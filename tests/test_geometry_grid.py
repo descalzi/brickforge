@@ -83,7 +83,7 @@ def test_target_grid_counts_cells_extracts_layers_and_is_immutable() -> None:
     assert grid.boundary_cell_count == 1
     assert grid.layer_footprint(0) == ((0, 1), (0, 2), (1, 0))
     assert grid.summary() == {
-        "representation_version": 2,
+        "representation_version": 3,
         "dimensions": [2, 1, 3],
         "origin_mm": [0.0, 0.0, 0.0],
         "pitch_mm": [8.0, 9.6, 8.0],
@@ -92,6 +92,7 @@ def test_target_grid_counts_cells_extracts_layers_and_is_immutable() -> None:
         "occupied_cell_count": 3,
         "boundary_cell_count": 1,
         "topology": None,
+        "features": [],
         "warnings": ["Synthetic test target"],
     }
     assert not grid.classification.flags.writeable
@@ -160,6 +161,24 @@ def test_target_grid_summary_and_layer_match_browser_implementation() -> None:
         source_units="mm",
         source_bounds_mm=((0.0, 0.0, 0.0), (16.0, 9.6, 24.0)),
         warnings=("Synthetic test target",),
+        features=({
+            "id": "z-1",
+            "axis": "z",
+            "axis_index": 2,
+            "shape": "round opening",
+            "center_mm": (4.0, 4.0, 2.0),
+            "bounds_mm": ((2.0, 2.0, 1.0), (6.0, 6.0, 3.0)),
+            "observed_span_mm": 2.0,
+            "width_mm": 4.0,
+            "length_mm": 4.0,
+            "area_mm2": 12.56,
+            "perimeter_mm": 12.57,
+            "equivalent_diameter_mm": 4.0,
+            "circularity": 1.0,
+            "aspect_ratio": 1.0,
+            "sample_support": 3,
+            "confidence": "medium",
+        },),
     )
     script = """
 import { readFileSync } from "node:fs";
@@ -188,6 +207,24 @@ process.stdout.write(JSON.stringify({
             [16.0, 9.6, 24.0],
         ],
         "warnings": ["Synthetic test target"],
+        "features": [{
+            "id": "z-1",
+            "axis": "z",
+            "axis_index": 2,
+            "shape": "round opening",
+            "center_mm": [4.0, 4.0, 2.0],
+            "bounds_mm": [[2.0, 2.0, 1.0], [6.0, 6.0, 3.0]],
+            "observed_span_mm": 2.0,
+            "width_mm": 4.0,
+            "length_mm": 4.0,
+            "area_mm2": 12.56,
+            "perimeter_mm": 12.57,
+            "equivalent_diameter_mm": 4.0,
+            "circularity": 1.0,
+            "aspect_ratio": 1.0,
+            "sample_support": 3,
+            "confidence": "medium",
+        }],
     }
     result = subprocess.run(
         ["node", "--input-type=module", "-e", script],
