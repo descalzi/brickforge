@@ -323,11 +323,19 @@ async function scanLikelyOpeningParts() {
           continue;
         }
         const bounds = calculateTriangleBounds(positions);
+        const triangleCount = positions.length / 9;
+        const previewIncluded = triangleCount <= 4000;
+        const previewPositions = previewIncluded
+          ? Array.from(positions, (value) => Number(value.toFixed(2)))
+          : null;
         const features = await analysePositionsInWorker(positions, bounds);
         if (!features.length) continue;
         const dimensions = bounds.maximum.map((value, axis) => value - bounds.minimum[axis]);
         activeBatchFeatureProfiles.push({
-          schema_version: 2,
+          schema_version: 3,
+          preview_geometry_included: previewIncluded,
+          mesh_triangle_count: previewIncluded ? triangleCount : 0,
+          ...(previewIncluded ? { mesh_positions_mm: previewPositions } : {}),
           part_id: entry.part_id,
           description: root.metadata.description,
           source_filename: root.source,
@@ -380,7 +388,7 @@ function cancelLikelyOpeningScan() {
 function downloadPartFeatureCatalogue() {
   if (!activeBatchFeatureProfiles.length) return;
   const catalogue = {
-    schema_version: 1,
+    schema_version: 2,
     source_geometry_base_url: rawBaseUrl,
     profiles: activeBatchFeatureProfiles,
   };
@@ -397,8 +405,16 @@ function downloadPartFeatureCatalogue() {
 
 function downloadPartFeatureProfile() {
   if (!activePartDescriptor) return;
+  const previewIncluded = activePartTrianglePositions
+    && activePartTrianglePositions.length / 9 <= 4000;
+  const previewPositions = previewIncluded
+    ? Array.from(activePartTrianglePositions, (value) => Number(value.toFixed(2)))
+    : null;
   const profile = {
-    schema_version: 2,
+    schema_version: 3,
+    preview_geometry_included: Boolean(previewIncluded),
+    mesh_triangle_count: previewIncluded ? activePartTrianglePositions.length / 9 : 0,
+    ...(previewIncluded ? { mesh_positions_mm: previewPositions } : {}),
     part_id: activePartDescriptor.part_id,
     description: activePartDescriptor.description,
     source_filename: activePartDescriptor.source_filename,
