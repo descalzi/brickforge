@@ -4,6 +4,7 @@ let STLLoader;
 let OBJLoader;
 
 import { GridSpec, TargetGrid } from "./target-grid.js?v=featuremeasure2";
+import { matchTargetFeatures } from "./feature-matcher.js?v=featurematch1";
 import { constructionPreviewTransform } from "./construction-preview.js";
 
 const MAX_FILE_BYTES = 100 * 1024 * 1024;
@@ -30,6 +31,9 @@ const voxelGridSize = document.querySelector('#voxel-grid-size');
 const voxelFeatureStatus = document.querySelector('#voxel-feature-status');
 const voxelFeatureList = document.querySelector('#voxel-feature-list');
 const featureOverlayToggle = document.querySelector('#feature-overlay-toggle');
+const featureProfileInput = document.querySelector('#feature-profile-input');
+const featureMatchStatus = document.querySelector('#feature-match-status');
+const featureMatchList = document.querySelector('#feature-match-list');
 const voxelCourseList = document.querySelector('#voxel-course-list');
 const voxelOverlayToggle = document.querySelector('#voxel-overlay-toggle');
 const buildConstructionButton = document.querySelector('#build-construction');
@@ -77,6 +81,7 @@ let activeFeatureGroup;
 let activeConstructionGroup;
 let voxelOverlayVisible = true;
 let featureOverlayVisible = true;
+let importedPartFeatureProfiles = [];
 let constructionPreviewVisible = true;
 const ghostedMaterialStates = new Map();
 
@@ -555,6 +560,101 @@ function renderVoxelOverlay(grid) {
   activeVoxelGroup.visible = voxelOverlayVisible;
 }
 
+
+function validImportedFeatureProfile(profile) {
+  return profile && typeof profile === 'object'
+    && profile.schema_version === 1
+    && typeof profile.part_id === 'string' && profile.part_id.length > 0
+    && typeof profile.description === 'string'
+    && typeof profile.source_filename === 'string'
+    && Array.isArray(profile.dimensions_mm) && profile.dimensions_mm.length === 3
+    && profile.dimensions_mm.every(Number.isFinite)
+    && Array.isArray(profile.features)
+    && profile.features.every((feature) => feature
+      && typeof feature.id === 'string'
+      && ['round opening', 'elongated slot/opening', 'irregular opening'].includes(feature.shape)
+      && ['x', 'y', 'z'].includes(feature.axis)
+      && Number.isFinite(feature.width_mm) && feature.width_mm > 0
+      && Number.isFinite(feature.length_mm) && feature.length_mm > 0
+      && Number.isFinite(feature.circularity)
+      && Number.isFinite(feature.aspect_ratio)
+      && Number.isInteger(feature.sample_support) && feature.sample_support >= 2);
+}
+
+function renderFeatureMatches() {
+  if (!featureMatchStatus || !featureMatchList) return;
+  featureMatchList.replaceChildren();
+  if (!activeTargetGrid || !activeTargetGrid.features.length) {
+    featureMatchStatus.textContent = importedPartFeatureProfiles.length
+      ? importedPartFeatureProfiles.length + ' part profile(s) loaded. Voxelise a target mesh with detected openings to compare them.'
+      : 'Export measured part profiles from the Part Explorer, then import them here to compare against target openings.';
+    return;
+  }
+  if (!importedPartFeatureProfiles.length) {
+    featureMatchStatus.textContent = 'No part profiles imported yet. Use the Part Explorer to analyse a candidate part and download its feature profile.';
+    return;
+  }
+  const comparisons = matchTargetFeatures(activeTargetGrid.features, importedPartFeatureProfiles);
+  let totalMatches = 0;
+  comparisons.forEach((comparison, index) => {
+    const item = document.createElement('li');
+    const heading = document.createElement('strong');
+    const matches = document.createElement('div');
+    heading.textContent = 'Target feature ' + (index + 1);
+    if (!comparison.matches.length) {
+      const none = document.createElement('span');
+      none.textContent = 'No measured profile within the current dimensional tolerances.';
+      matches.append(none);
+    } else {
+      comparison.matches.forEach((match) => {
+        totalMatches += 1;
+        const entry = document.createElement('p');
+        const score = Math.round(match.score * 100);
+        entry.textContent = match.part_id + ' · ' + match.description
+          + ' · ' + score + '% geometric similarity'
+          + ' · size difference ' + match.size_error_mm.toFixed(2) + ' mm'
+          + ' · local opening axis ' + match.local_axis.toUpperCase()
+          + ' · ' + match.confidence + ' confidence';
+        matches.append(entry);
+      });
+    }
+    item.append(heading, matches);
+    featureMatchList.append(item);
+  });
+  featureMatchStatus.textContent = totalMatches
+    ? totalMatches + ' geometric candidate match(es) found across ' + importedPartFeatureProfiles.length
+      + ' imported part profile(s). These are not verified fits or buildability results.'
+    : 'No compatible opening profiles found in the imported set. The target features remain unresolved.';
+}
+
+async function importPartFeatureProfiles(files) {
+  const validProfiles = [];
+  const errors = [];
+  for (const file of files) {
+    if (file.size > 5 * 1024 * 1024) {
+      errors.push(file.name + ' exceeds the 5 MB profile limit');
+      continue;
+    }
+    try {
+      const profile = JSON.parse(await file.text());
+      if (!validImportedFeatureProfile(profile)) {
+        errors.push(file.name + ' is not a supported part feature profile');
+        continue;
+      }
+      validProfiles.push(profile);
+    } catch {
+      errors.push(file.name + ' is not valid JSON');
+    }
+  }
+  const merged = new Map(importedPartFeatureProfiles.map((profile) => [profile.part_id, profile]));
+  for (const profile of validProfiles) merged.set(profile.part_id, profile);
+  importedPartFeatureProfiles = [...merged.values()].slice(0, 100);
+  renderFeatureMatches();
+  if (errors.length) {
+    featureMatchStatus.textContent += ' Import issues: ' + errors.join('; ') + '.';
+  }
+}
+
 function displayVoxelSummary(grid, triangleCount) {
   const summary = grid.summary();
   voxelCellCount.textContent = summary.occupied_cell_count.toLocaleString() + ' occupied cells';
@@ -601,6 +701,7 @@ function displayVoxelSummary(grid, triangleCount) {
       });
     }
   }
+  renderFeatureMatches();
   voxeliseSummary.hidden = false;
   voxelOverlayToggle.disabled = false;
   voxelOverlayToggle.textContent = 'Hide voxel overlay';
@@ -1078,6 +1179,11 @@ resetButton.addEventListener('click', () => {
   if (currentBounds) fitCamera(currentBounds);
 });
 
+featureProfileInput.addEventListener('change', async (event) => {
+  const files = Array.from(event.target.files || []);
+  featureProfileInput.value = '';
+  if (files.length) await importPartFeatureProfiles(files);
+});
 voxeliseButton.addEventListener('click', runVoxelisation);
 buildConstructionButton.addEventListener('click', runLayeredConstruction);
 constructionPreviewToggle.addEventListener('click', () => {
