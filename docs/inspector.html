@@ -152,6 +152,12 @@
             <p id="voxel-feature-status" class="voxel-feature-status" hidden></p>
             <ul id="voxel-feature-list" class="voxel-feature-list"></ul>
             <button id="feature-overlay-toggle" class="tool-button" type="button" disabled>Show opening markers</button>
+            <div class="feature-match-panel">
+              <label for="feature-profile-input">Import measured part profiles</label>
+              <input id="feature-profile-input" type="file" accept=".json,application/json" multiple>
+              <p id="feature-match-status" role="status" aria-live="polite">Export measured part profiles from the Part Explorer, then import them here to compare against target openings.</p>
+              <ul id="feature-match-list"></ul>
+            </div>
             <ul id="voxel-course-list"></ul>
             <button id="voxel-overlay-toggle" class="tool-button" type="button" disabled>Hide voxel overlay</button>
           </div>
@@ -169,6 +175,6 @@
     <span class="footer-id">BF / MESH-01</span>
   </footer>
 
-  <script type="module" src="./assets/inspector.js?v=20261114-featuremarkers1"></script>
+  <script type="module" src="./assets/inspector.js?v=20261114-featurematch1"></script>
 </body>
 </html>
