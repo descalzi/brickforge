@@ -71,7 +71,7 @@ coverage; it provides deterministic cell/world mapping, flattened indexing,
 summary metadata and per-course footprint extraction. The representation is
 versioned and exported from `brickforge.geometry`.
 
-The browser now has the authoritative versioned `GridSpec` and `TargetGrid` data model in `docs/assets/target-grid.js`. It uses the same X/Y/Z dimensions, Y/Z/X backing layout, X-fastest flat indexing, millimetre coordinates, cell-centre mapping, classification values, source provenance and per-course footprint ordering as the Python reference. Its data-model tests exercise the same synthetic grid and summary values as the Python tests. Browser mesh voxelisation is implemented in `docs/assets/mesh-voxelizer.js` and runs in a dedicated worker. The browser path uses a triangle BVH for point-in-solid scanlines and nearest-surface queries, so it can remain responsive without introducing a second server-side processing path.
+The browser now has the authoritative versioned `GridSpec` and `TargetGrid` data model in `docs/assets/target-grid.js`. It uses the same X/Y/Z dimensions, Y/Z/X backing layout, X-fastest flat indexing, millimetre coordinates, cell-centre mapping, classification values, source provenance and per-course footprint ordering as the Python reference. Its data-model tests exercise the same synthetic grid and summary values as the Python tests. Browser mesh voxelisation is implemented in `docs/assets/mesh-voxelizer.js` and runs in a dedicated worker. The browser path uses a triangle BVH for point-in-solid scanlines and triangle-cell intersection queries, so it can remain responsive without introducing a second server-side processing path.
 
 The Python supporting package also provides `voxelize_mesh()` in
 `src/brickforge/geometry/voxelize.py`. It converts declared source units to
@@ -80,7 +80,7 @@ classifies each cell using a deterministic 3x3x3 sample lattice. It currently
 requires watertight, consistently wound meshes and processes cells in bounded
 batches. The sampled inside fraction is stored as surface coverage.
 
-The browser voxeliser is the primary implementation. It uses a 3x3x3 interior sample lattice and nearest-triangle distance to retain thin features; this is still an approximation, not exact triangle-cell clipping. It requires a closed, consistently wound mesh and enforces face, cell, scanline-triangle and nearest-surface-triangle budgets. Open-mesh shell mode, self-intersection diagnostics, orientation-aware grids and automatic mesh-driven construction remain future work.
+The browser voxeliser is the primary implementation. It uses a 3x3x3 interior sample lattice and triangle-box separating-axis tests to identify surface-intersecting cells. Thin features are retained when their triangles cross a cell; interior coverage remains a sampling approximation. It requires a closed, consistently wound mesh and enforces face, cell, scanline-triangle and nearest-surface-triangle budgets. Open-mesh shell mode, self-intersection diagnostics, orientation-aware grids and automatic mesh-driven construction remain future work.
 
 ## Deliberate boundary
 
