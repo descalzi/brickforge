@@ -313,4 +313,5 @@ test("Z-up mesh openings flow through target grid into a connected layered const
   const construction = buildLayeredFootprintBlock(footprints, connectionCatalogue, { maxParts: 200 });
   assert.ok(construction.parts.length > 0);
   assert.ok(construction.connections.length > 0);
+  assert.equal(construction.search.candidate_search_limited, true);
 });
