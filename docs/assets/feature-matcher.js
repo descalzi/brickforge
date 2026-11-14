@@ -158,6 +158,146 @@ export function matchTargetFeatures(targetFeatures, partProfiles, {
   });
 }
 
+
+function vectorSubtract(left, right) {
+  return [left[0] - right[0], left[1] - right[1], left[2] - right[2]];
+}
+
+function vectorDot(left, right) {
+  return left[0] * right[0] + left[1] * right[1] + left[2] * right[2];
+}
+
+function vectorCross(left, right) {
+  return [
+    left[1] * right[2] - left[2] * right[1],
+    left[2] * right[0] - left[0] * right[2],
+    left[0] * right[1] - left[1] * right[0],
+  ];
+}
+
+function vectorNormalise(vector) {
+  const length = Math.hypot(vector[0], vector[1], vector[2]);
+  return length > 1e-8 ? vector.map((value) => value / length) : null;
+}
+
+function makeOrthonormalBasis(origin, first, second) {
+  const firstAxis = vectorNormalise(vectorSubtract(first, origin));
+  if (!firstAxis) return null;
+  const secondVector = vectorSubtract(second, origin);
+  const projected = vectorDot(secondVector, firstAxis);
+  const perpendicular = secondVector.map((value, axis) => value - projected * firstAxis[axis]);
+  const secondAxis = vectorNormalise(perpendicular);
+  if (!secondAxis) return null;
+  const thirdAxis = vectorNormalise(vectorCross(firstAxis, secondAxis));
+  if (!thirdAxis) return null;
+  return [
+    [firstAxis[0], secondAxis[0], thirdAxis[0]],
+    [firstAxis[1], secondAxis[1], thirdAxis[1]],
+    [firstAxis[2], secondAxis[2], thirdAxis[2]],
+  ];
+}
+
+function matrixMultiply(left, right) {
+  return left.map((row) => right[0].map((_, column) =>
+    row.reduce((sum, value, index) => sum + value * right[index][column], 0)));
+}
+
+function matrixTranspose(matrix) {
+  return matrix[0].map((_, column) => matrix.map((row) => row[column]));
+}
+
+function matrixVector(matrix, vector) {
+  return matrix.map((row) => vectorDot(row, vector));
+}
+
+function estimateRigidPlacement(assignments, targetFeatures, candidateFeatures) {
+  if (assignments.length < 3) {
+    return {
+      placement_resolved: false,
+      rotation_matrix_3x3: null,
+      translation_mm: null,
+      rms_residual_mm: null,
+      axis_alignment_rms_deg: null,
+    };
+  }
+  let selectedTriplet = null;
+  let selectedArea = 0;
+  for (let first = 0; first < assignments.length; first += 1) {
+    for (let second = first + 1; second < assignments.length; second += 1) {
+      for (let third = second + 1; third < assignments.length; third += 1) {
+        const targetPoints = [first, second, third].map((index) =>
+          targetFeatures[assignments[index].target_index].center_mm);
+        const candidatePoints = [first, second, third].map((index) =>
+          candidateFeatures[assignments[index].candidate_index].center_mm);
+        const targetArea = Math.hypot(...vectorCross(
+          vectorSubtract(targetPoints[1], targetPoints[0]),
+          vectorSubtract(targetPoints[2], targetPoints[0]),
+        ));
+        const candidateArea = Math.hypot(...vectorCross(
+          vectorSubtract(candidatePoints[1], candidatePoints[0]),
+          vectorSubtract(candidatePoints[2], candidatePoints[0]),
+        ));
+        const area = Math.min(targetArea, candidateArea);
+        if (area > selectedArea) {
+          selectedArea = area;
+          selectedTriplet = { targetPoints, candidatePoints };
+        }
+      }
+    }
+  }
+  if (!selectedTriplet || selectedArea < 1e-6) {
+    return {
+      placement_resolved: false,
+      rotation_matrix_3x3: null,
+      translation_mm: null,
+      rms_residual_mm: null,
+      axis_alignment_rms_deg: null,
+    };
+  }
+  const targetBasis = makeOrthonormalBasis(...selectedTriplet.targetPoints);
+  const candidateBasis = makeOrthonormalBasis(...selectedTriplet.candidatePoints);
+  if (!targetBasis || !candidateBasis) {
+    return {
+      placement_resolved: false,
+      rotation_matrix_3x3: null,
+      translation_mm: null,
+      rms_residual_mm: null,
+      axis_alignment_rms_deg: null,
+    };
+  }
+  const rotation = matrixMultiply(targetBasis, matrixTranspose(candidateBasis));
+  const targetOrigin = selectedTriplet.targetPoints[0];
+  const candidateOrigin = selectedTriplet.candidatePoints[0];
+  const rotatedOrigin = matrixVector(rotation, candidateOrigin);
+  const translation = targetOrigin.map((value, axis) => value - rotatedOrigin[axis]);
+  let residualSquareTotal = 0;
+  let axisErrorSquareTotal = 0;
+
+  for (const assignment of assignments) {
+    const targetFeature = targetFeatures[assignment.target_index];
+    const candidateFeature = candidateFeatures[assignment.candidate_index];
+    const transformed = matrixVector(rotation, candidateFeature.center_mm)
+      .map((value, axis) => value + translation[axis]);
+    const residual = Math.hypot(...vectorSubtract(transformed, targetFeature.center_mm));
+    residualSquareTotal += residual * residual;
+    const localAxis = [0, 0, 0];
+    localAxis[axisIndex(candidateFeature)] = 1;
+    const targetAxis = [0, 0, 0];
+    targetAxis[axisIndex(targetFeature)] = 1;
+    const transformedAxis = vectorNormalise(matrixVector(rotation, localAxis));
+    const dot = Math.min(1, Math.abs(vectorDot(transformedAxis, targetAxis)));
+    const angle = Math.acos(dot);
+    axisErrorSquareTotal += angle * angle;
+  }
+  return {
+    placement_resolved: true,
+    rotation_matrix_3x3: rotation,
+    translation_mm: translation,
+    rms_residual_mm: Math.sqrt(residualSquareTotal / assignments.length),
+    axis_alignment_rms_deg: Math.sqrt(axisErrorSquareTotal / assignments.length) * (180 / Math.PI),
+  };
+}
+
 export function matchFeaturePatterns(targetFeatures, partProfiles, {
   limit = 5,
   absoluteToleranceMm = 0.75,
@@ -216,6 +356,8 @@ export function matchFeaturePatterns(targetFeatures, partProfiles, {
             assignments: assignment.map((entry, targetIndex) => ({
               target_feature_id: targetFeatures[targetIndex].id,
               candidate_feature_id: profile.features[entry.candidateIndex].id,
+              target_index: targetIndex,
+              candidate_index: entry.candidateIndex,
               local_axis: profile.features[entry.candidateIndex].axis,
               feature_score: entry.score,
               size_error_mm: entry.sizeErrorMm,
@@ -277,7 +419,9 @@ export function matchFeaturePatterns(targetFeatures, partProfiles, {
 
     visit(0, 0, 0, 0, 0);
     if (!best) continue;
+    const placement = estimateRigidPlacement(best.assignments, targetFeatures, profile.features);
     results.push({
+      ...placement,
       part_id: profile.part_id,
       description: profile.description || profile.part_id,
       source_filename: profile.source_filename || "",
