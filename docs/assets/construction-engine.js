@@ -587,6 +587,7 @@ export function buildRectangularBlock(widthStuds, depthStuds, heightBricks, cata
 
 
 const FOOTPRINT_TILE_PART_IDS = ["3001", "3002", "3003", "3004", "3005", "3006", "3007", "3008", "3009", "3010", "3622"];
+const FOOTPRINT_PLATE_TILE_PART_IDS = ["3020", "3021", "3022", "3023", "3024"];
 const MAX_FOOTPRINT_CELLS = 64;
 const MAX_FOOTPRINT_SEARCH_NODES = 1000000;
 const MAX_FOOTPRINT_TILINGS = 100000;
@@ -649,14 +650,14 @@ function footprintCellsAreConnected(cells) {
   return visited.size === cells.size;
 }
 
-function enumerateFootprintTilings(cells, profiles) {
+function enumerateFootprintTilings(cells, profiles, tilePartIds = FOOTPRINT_TILE_PART_IDS) {
   const sortedCells = [...cells].map((key) => key.split(",").map(Number))
     .sort((a, b) => a[1] - b[1] || a[0] - b[0]);
   const byCell = new Map(sortedCells.map(([x, z]) => [cellKey(x, z), []]));
   const wholeFootprintTiles = [];
 
   for (const [x, z] of sortedCells) {
-    for (const partId of FOOTPRINT_TILE_PART_IDS) {
+    for (const partId of tilePartIds) {
       const profile = profiles.get(partId);
       if (!profile) continue;
       const orientations = [[profile.footprint_studs_x, profile.footprint_studs_z, false]];
@@ -727,10 +728,10 @@ function enumerateFootprintTilings(cells, profiles) {
   return { tilings, limitReached };
 }
 
-function sampleLayerFootprintTilings(cells, profiles) {
+function sampleLayerFootprintTilings(cells, profiles, tilePartIds = FOOTPRINT_TILE_PART_IDS) {
   const ordered = [...cells].map((key) => key.split(',').map(Number)).sort((a,b) => a[1]-b[1] || a[0]-b[0]);
   const byCell = new Map(ordered.map(([x,z]) => [cellKey(x,z), []]));
-  for (const [x,z] of ordered) for (const partId of FOOTPRINT_TILE_PART_IDS) {
+  for (const [x,z] of ordered) for (const partId of tilePartIds) {
     const profile = profiles.get(partId); if (!profile) continue;
     const orientations = [[profile.footprint_studs_x,profile.footprint_studs_z,false]];
     if (profile.footprint_studs_x !== profile.footprint_studs_z) orientations.push([profile.footprint_studs_z,profile.footprint_studs_x,true]);
@@ -771,7 +772,7 @@ function sampleLayerFootprintTilings(cells, profiles) {
   return results.sort(compareTilings);
 }
 
-function sampleStripTilings(cells, profiles) {
+function sampleStripTilings(cells, profiles, tilePartIds = FOOTPRINT_TILE_PART_IDS) {
   const coordinates = [...cells].map((key) => key.split(",").map(Number));
   const minX = Math.min(...coordinates.map(([x]) => x));
   const maxX = Math.max(...coordinates.map(([x]) => x));
@@ -784,7 +785,7 @@ function sampleStripTilings(cells, profiles) {
   const axisX = horizontal;
   const length = cells.size;
   const candidates = [];
-  for (const partId of FOOTPRINT_TILE_PART_IDS) {
+  for (const partId of tilePartIds) {
     const profile = profiles.get(partId);
     if (!profile) continue;
     let tileLength = 0;
@@ -894,14 +895,14 @@ function footprintTilingsConnect(lower, upper) {
 }
 
 
-function sampleInterlockingFootprints(cells, profiles) {
+function sampleInterlockingFootprints(cells, profiles, tilePartIds = FOOTPRINT_TILE_PART_IDS) {
   if (cells.size <= 18) return null;
   const sortedCells = [...cells].map((key) => key.split(",").map(Number))
     .sort((a, b) => a[1] - b[1] || a[0] - b[0]);
   const byCell = new Map(sortedCells.map(([x, z]) => [cellKey(x, z), []]));
 
   for (const [x, z] of sortedCells) {
-    for (const partId of FOOTPRINT_TILE_PART_IDS) {
+    for (const partId of tilePartIds) {
       const profile = profiles.get(partId);
       if (!profile) continue;
       const orientations = [[profile.footprint_studs_x, profile.footprint_studs_z, false]];
@@ -1285,15 +1286,24 @@ export function buildLayeredFootprintBlock(layerFootprints, catalogue, config = 
     throw new TypeError("The connection profile catalogue is missing or unsupported.");
   }
   const profiles = new Map(catalogue.profiles.map((profile) => [String(profile.part_id), profile]));
-  const baseProfile = profiles.get("3001");
-  if (!baseProfile) {
-    throw new Error("Layered construction requires the 2×4 brick profile 3001.");
+  const courseType = config.courseType || "brick";
+  if (!["brick", "plate"].includes(courseType)) {
+    throw new RangeError("courseType must be 'brick' or 'plate'.");
   }
-  for (const partId of FOOTPRINT_TILE_PART_IDS) {
+  const tilePartIds = courseType === "plate" ? FOOTPRINT_PLATE_TILE_PART_IDS : FOOTPRINT_TILE_PART_IDS;
+  const basePartId = courseType === "plate" ? "3020" : "3001";
+  const baseProfile = profiles.get(basePartId);
+  if (!baseProfile) {
+    throw new Error("Layered " + courseType + " construction requires profile " + basePartId + ".");
+  }
+  if (!tilePartIds.slice(1).some((partId) => profiles.has(partId))) {
+    throw new Error("Layered " + courseType + " construction requires smaller tile profiles.");
+  }
+  for (const partId of tilePartIds) {
     const profile = profiles.get(partId);
     if (profile && (profile.stud_pitch_ldu !== baseProfile.stud_pitch_ldu
       || profile.body_height_ldu !== baseProfile.body_height_ldu)) {
-      throw new Error("All layered brick profiles must use the same stud pitch and brick height.");
+      throw new Error("All layered " + courseType + " profiles must use the same stud pitch and course height.");
     }
   }
 
@@ -1354,18 +1364,18 @@ export function buildLayeredFootprintBlock(layerFootprints, catalogue, config = 
     const cells = new Set(parsedLayers[layer].map(([x, z]) => cellKey(x - minX, z - minZ)));
     let search;
     if (cells.size > MAX_FOOTPRINT_CELLS) {
-      const stripTilings = sampleStripTilings(cells, profiles);
-      const interlockingPair = stripTilings.length ? null : sampleInterlockingFootprints(cells, profiles);
+      const stripTilings = sampleStripTilings(cells, profiles, tilePartIds);
+      const interlockingPair = stripTilings.length ? null : sampleInterlockingFootprints(cells, profiles, tilePartIds);
       search = {
         tilings: stripTilings.length ? stripTilings
-          : interlockingPair || sampleLayerFootprintTilings(cells, profiles),
+          : interlockingPair || sampleLayerFootprintTilings(cells, profiles, tilePartIds),
         limitReached: true,
       };
     } else {
       const interlockingPair = sampleInterlockingFootprints(cells, profiles);
       search = interlockingPair
         ? { tilings: interlockingPair, limitReached: true }
-        : enumerateFootprintTilings(cells, profiles);
+        : enumerateFootprintTilings(cells, profiles, tilePartIds);
     }
     searchLimited ||= search.limitReached;
     if (!search.tilings.length) {
@@ -1463,7 +1473,7 @@ export function buildLayeredFootprintBlock(layerFootprints, catalogue, config = 
     positionToleranceLdu,
     collisionToleranceLdu,
   });
-  const modelName = "layered-" + width + "x" + depth + "-" + bestSequence.length + "courses";
+  const modelName = courseType + "-layered-" + width + "x" + depth + "-" + bestSequence.length + "courses";
   const assemblyGraph = {
     schema_version: 1,
     coordinate_system: "LDraw",
