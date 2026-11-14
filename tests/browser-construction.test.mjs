@@ -287,9 +287,7 @@ test("browser engine uses the new long brick profiles for matching footprints", 
 
 
 test("layered construction accepts a mesh-derived course larger than 64 cells", () => {
-  const layer = Array.from({ length: 9 }, (_, z) =>
-    Array.from({ length: 9 }, (_, x) => [x, z]),
-  ).flat();
+  const layer = Array.from({ length: 72 }, (_, x) => [x, 0]);
   const result = buildLayeredFootprintBlock([layer, layer], catalogue);
   assert.ok(result.parts.length <= 200);
   assert.equal(result.course_part_counts.length, 2);
