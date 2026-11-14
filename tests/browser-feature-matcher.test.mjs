@@ -200,3 +200,23 @@ test("feature pattern matcher requires enough unique candidate openings", () => 
   };
   assert.deepEqual(matchFeaturePatterns(targetFeatures, [candidate]), []);
 });
+
+test("feature pattern matcher leaves collinear layouts without a unique 3D placement", () => {
+  const targetFeatures = [
+    patternHole("t1", [0, 0, 2]),
+    patternHole("t2", [20, 0, 2]),
+    patternHole("t3", [40, 0, 2]),
+  ];
+  const candidate = {
+    part_id: "collinear-beam",
+    features: [
+      patternHole("p1", [0, 1, 5], "y"),
+      patternHole("p2", [20, 1, 5], "y"),
+      patternHole("p3", [40, 1, 5], "y"),
+    ],
+  };
+  const results = matchFeaturePatterns(targetFeatures, [candidate]);
+  assert.equal(results.length, 1);
+  assert.equal(results[0].placement_resolved, false);
+  assert.equal(results[0].rotation_matrix_3x3, null);
+});
