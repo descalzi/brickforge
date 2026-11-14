@@ -6,12 +6,14 @@ The Part Explorer can analyse the resolved triangle geometry of a selected LDraw
 
 The browser resolves the selected part and its nested LDraw references, converts geometry into millimetres, then sends its triangle positions to a dedicated worker. The worker samples seven cross-sections along each principal axis, finds nested contours, and clusters contours that persist across slices.
 
+Version 2 profiles preserve both representative measurements and per-slice minimum/maximum dimensions, so tapered and countersunk openings are not reduced to a single average. Version 1 profiles remain importable for backward compatibility.
+
 Each detected feature records:
 
 - Local axis and centre position in millimetres.
 - Approximate bounds and observed span through the part.
-- Cross-section width, length, area and perimeter.
-- Equivalent circular diameter, circularity and aspect ratio.
+- Representative cross-section width, length, area and perimeter, plus their observed minimum/maximum ranges.
+- Representative equivalent circular diameter and its minimum/maximum range, circularity and aspect ratio.
 - Number of supporting slices and a coarse confidence label.
 
 Version 2 exports are validated against `schemas/part-feature-profile-v2.schema.json`.
