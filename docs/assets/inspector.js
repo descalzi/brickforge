@@ -645,7 +645,12 @@ function renderFeaturePatterns() {
         + ' mm · axis alignment ' + pattern.axis_alignment_rms_deg.toFixed(2)
         + '° · translation ' + pattern.translation_mm.map((value) => value.toFixed(1)).join(', ') + ' mm'
       : 'Opening layout matched, but the rigid placement is not reliable: feature centres may be collinear, spacing residual may be too high, or opening axes may not align.';
-    item.append(heading, detail, assignment, placement);
+    const inspect = document.createElement('a');
+    inspect.href = './parts.html?part=' + encodeURIComponent(pattern.part_id);
+    inspect.target = '_blank';
+    inspect.rel = 'noopener noreferrer';
+    inspect.textContent = 'Open part in Part Explorer';
+    item.append(heading, detail, assignment, placement, inspect);
     featurePatternList.append(item);
   });
 }
@@ -690,6 +695,12 @@ function renderFeatureMatches() {
           + ' · local opening axis ' + match.local_axis.toUpperCase()
           + envelope
           + ' · ' + match.confidence + ' confidence';
+        const inspect = document.createElement('a');
+        inspect.href = './parts.html?part=' + encodeURIComponent(match.part_id);
+        inspect.target = '_blank';
+        inspect.rel = 'noopener noreferrer';
+        inspect.textContent = 'Inspect part geometry';
+        entry.append(' ', inspect);
         matches.append(entry);
       });
     }
