@@ -132,3 +132,66 @@ def test_target_grid_rejects_out_of_range_layer() -> None:
 
     with pytest.raises(IndexError, match="outside height"):
         grid.layer_footprint(1)
+
+
+def test_target_grid_summary_and_layer_match_browser_implementation() -> None:
+    spec = GridSpec(dimensions=(2, 1, 3), origin_mm=(0.0, 0.0, 0.0))
+    classification = np.array(
+        [[[CellClass.EXTERIOR, CellClass.INTERIOR],
+          [CellClass.BOUNDARY, CellClass.EXTERIOR],
+          [CellClass.INTERIOR, CellClass.EXTERIOR]]],
+        dtype=np.uint8,
+    )
+    coverage = np.array(
+        [[[0.0, 0.0], [0.75, 0.0], [0.0, 0.0]]],
+        dtype=np.float32,
+    )
+    grid = TargetGrid(
+        spec=spec,
+        classification=classification,
+        surface_coverage=coverage,
+        source_units="mm",
+        source_bounds_mm=((0.0, 0.0, 0.0), (16.0, 9.6, 24.0)),
+        warnings=("Synthetic test target",),
+    )
+    script = """
+import { readFileSync } from "node:fs";
+import { GridSpec, TargetGrid, CellClass } from "./docs/assets/target-grid.js";
+const input = JSON.parse(readFileSync(0, "utf8"));
+const spec = new GridSpec(input.spec);
+const grid = new TargetGrid({ ...input, spec });
+process.stdout.write(JSON.stringify({
+  summary: grid.summary(),
+  footprint: grid.layer_footprint(0),
+  centre: spec.cell_center_mm(1, 0, 2),
+  bounds: spec.cell_bounds_mm(0, 0, 0),
+}));
+"""
+    payload = {
+        "spec": {
+            "dimensions": list(spec.dimensions),
+            "origin_mm": list(spec.origin_mm),
+            "pitch_mm": list(spec.pitch_mm),
+        },
+        "classification": classification.reshape(-1).tolist(),
+        "surface_coverage": coverage.reshape(-1).tolist(),
+        "source_units": "mm",
+        "source_bounds_mm": [
+            [0.0, 0.0, 0.0],
+            [16.0, 9.6, 24.0],
+        ],
+        "warnings": ["Synthetic test target"],
+    }
+    result = subprocess.run(
+        ["node", "--input-type=module", "-e", script],
+        input=json.dumps(payload),
+        check=True,
+        capture_output=True,
+        text=True,
+        cwd=ROOT,
+    )
+    browser = json.loads(result.stdout)
+    assert browser["summary"] == grid.summary()
+    assert browser["footprint"] == [list(cell) for cell in grid.layer_footprint(0)]
+    assert browser["centre"] == pytest.approx(spec.cell_center_mm(1, 0, 2))
+    assert browser["bounds"] == pytest.approx(spec.cell_bounds_mm(0, 0, 0))
