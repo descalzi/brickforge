@@ -218,6 +218,8 @@ test("browser voxeliser detects a sub-grid topological tunnel instead of losing 
   assert.equal(result.features[0].axis, "z");
   assert.equal(result.features[0].shape, "round opening");
   assert.ok(result.features[0].equivalent_diameter_mm > 4);
+  assert.ok(result.features[0].minimum_equivalent_diameter_mm < result.features[0].maximum_equivalent_diameter_mm);
+  assert.ok(result.features[0].minimum_area_mm2 < result.features[0].maximum_area_mm2);
   assert.ok(result.features[0].sample_support >= 2);
 });
 
