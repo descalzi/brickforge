@@ -383,7 +383,7 @@ function runVoxelisation() {
       renderVoxelOverlay(activeTargetGrid);
       displayVoxelSummary(activeTargetGrid, result.triangle_count);
       voxeliseStatus.textContent = 'Voxelisation complete. ' + result.ray_triangle_tests.toLocaleString()
-        + ' scanline tests and ' + result.nearest_triangle_tests.toLocaleString()
+        + ' scanline tests and ' + result.cell_triangle_tests.toLocaleString()
         + ' cell-surface intersection tests were completed.';
       voxeliseStatus.dataset.state = 'complete';
       setMessage('Target grid generated in your browser. Orange cells intersect the mesh surface; blue cells are interior.', 'success');
