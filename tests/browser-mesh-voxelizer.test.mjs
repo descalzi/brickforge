@@ -45,7 +45,9 @@ test("browser voxeliser converts declared centimetres into millimetres", () => {
   const mesh = boxMesh([2.4, 2.88, 2.4]);
   const grid = voxelizeMesh({ ...mesh, units: "cm" });
   assert.deepEqual(grid.dimensions, [3, 3, 3]);
-  assert.deepEqual(grid.source_bounds_mm[1], [24, 28.8, 24]);
+  assert.ok(Math.abs(grid.source_bounds_mm[1][0] - 24) < 1e-9);
+  assert.ok(Math.abs(grid.source_bounds_mm[1][1] - 28.8) < 1e-9);
+  assert.ok(Math.abs(grid.source_bounds_mm[1][2] - 24) < 1e-9);
 });
 
 test("browser voxeliser supports custom anisotropic pitch", () => {
@@ -74,4 +76,7 @@ test("browser voxeliser rejects open, degenerate, non-finite and oversized input
   assert.throws(() => voxelizeMesh({ ...nonFinite, units: "mm" }), /non-finite/);
   assert.throws(() => voxelizeMesh({ ...mesh, units: "mm", maxCells: 0 }), /maxCells/);
   assert.throws(() => voxelizeMesh({ ...mesh, units: "inch" }), /units/);
+  const inchMesh = boxMesh([24 / 25.4, 28.8 / 25.4, 24 / 25.4]);
+  const inchGrid = voxelizeMesh({ ...inchMesh, units: "in" });
+  assert.deepEqual(inchGrid.dimensions, [3, 3, 3]);
 });
