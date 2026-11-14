@@ -1,6 +1,6 @@
 # Measured part feature profiles
 
-The Part Explorer can analyse the resolved triangle geometry of a selected LDraw part and export a versioned JSON profile. This is separate from the nominal connection-profile catalogue: it records measured geometric openings, not physical connection behaviour.
+The Part Explorer can analyse the resolved triangle geometry of a selected LDraw part and export a versioned JSON profile. It can also scan a bounded set of up to 12 likely Technic beams, frames and connectors and export the measured profiles as one catalogue. This is separate from the nominal connection-profile catalogue: it records measured geometric openings, not physical connection behaviour.
 
 ## Extraction
 
@@ -26,7 +26,7 @@ The current analyser uses principal-axis sections only. It may miss or approxima
 
 ## Initial candidate matching
 
-The browser Inspector can import one or more exported profiles and compare their measured opening features with the target mesh. The first matcher uses shape, equivalent diameter or width/length, circularity and aspect ratio with explicit dimensional tolerances. It ranks candidates per target feature and records the candidate part's local opening axis. It does not yet perform one-to-one assignment across a complete part, solve the part's placement, inspect the surrounding envelope, or validate its connection interfaces.
+The browser Inspector can import one or more exported profiles or a combined catalogue and compare their measured opening features with the target mesh. The first matcher uses shape, equivalent diameter or width/length, circularity and aspect ratio with explicit dimensional tolerances. It ranks candidates per target feature and records the candidate part's local opening axis. It does not yet perform one-to-one assignment across a complete part, solve the part's placement, inspect the surrounding envelope, or validate its connection interfaces.
 
 ## Next step
 
