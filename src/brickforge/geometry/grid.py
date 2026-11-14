@@ -10,6 +10,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import IntEnum
 from math import isfinite
+from types import MappingProxyType
 
 import numpy as np
 import numpy.typing as npt
@@ -20,7 +21,7 @@ GridArray = npt.NDArray[np.uint8]
 CoverageArray = npt.NDArray[np.float32]
 
 BRICK_GRID_PITCH_MM: Vector3 = (8.0, 9.6, 8.0)
-TARGET_GRID_VERSION = 1
+TARGET_GRID_VERSION = 2
 
 
 class CellClass(IntEnum):
@@ -116,6 +117,7 @@ class TargetGrid:
     source_units: str
     source_bounds_mm: tuple[Vector3, Vector3]
     warnings: tuple[str, ...] = ()
+    topology: dict[str, int] | None = None
 
     def __post_init__(self) -> None:
         if self.source_units not in {"mm", "cm", "m"}:
@@ -156,11 +158,38 @@ class TargetGrid:
         if not np.isfinite(coverage).all() or np.any(coverage < 0) or np.any(coverage > 1):
             raise ValueError("surface coverage values must be finite and between 0 and 1")
 
+        topology = self.topology
+        if topology is not None:
+            fields = (
+                "component_count",
+                "vertex_count",
+                "edge_count",
+                "face_count",
+                "euler_characteristic",
+                "handle_count",
+            )
+            if (
+                not isinstance(topology, dict)
+                or any(
+                    isinstance(topology.get(field), bool)
+                    or not isinstance(topology.get(field), int)
+                    for field in fields
+                )
+                or topology["component_count"] < 1
+                or topology["vertex_count"] < 1
+                or topology["edge_count"] < 1
+                or topology["face_count"] < 1
+                or topology["handle_count"] < 0
+            ):
+                raise ValueError("topology must contain valid closed-mesh component, count, Euler and handle data")
+            topology = MappingProxyType({field: topology[field] for field in fields})
+
         classification.setflags(write=False)
         coverage = coverage.copy()
         coverage.setflags(write=False)
         object.__setattr__(self, "classification", classification)
         object.__setattr__(self, "surface_coverage", coverage)
+        object.__setattr__(self, "topology", topology)
 
     @property
     def occupied_cell_count(self) -> int:
@@ -200,5 +229,6 @@ class TargetGrid:
             ],
             "occupied_cell_count": self.occupied_cell_count,
             "boundary_cell_count": self.boundary_cell_count,
+            "topology": dict(self.topology) if self.topology is not None else None,
             "warnings": list(self.warnings),
         }
