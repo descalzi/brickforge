@@ -76,7 +76,7 @@ export class GridSpec {
 }
 
 export class TargetGrid {
-  constructor({ spec, classification, surface_coverage, source_units, source_bounds_mm, warnings = [], topology = null, features = [] }) {
+  constructor({ spec, classification, surface_coverage, source_units, source_bounds_mm, warnings = [], topology = null, features = [], feature_keepouts = [] }) {
     if (!(spec instanceof GridSpec)) throw new TypeError("spec must be a GridSpec");
     if (!["mm", "cm", "m", "in"].includes(source_units)) {
       throw new TypeError("source_units must be 'mm', 'cm', 'm' or 'in'");
@@ -180,6 +180,13 @@ export class TargetGrid {
         confidence: feature.confidence,
       });
     });
+    if (!Array.isArray(feature_keepouts) || feature_keepouts.some((item) =>
+      !item || typeof item.feature_id !== "string" || !["x", "y", "z"].includes(item.axis)
+      || !Number.isSafeInteger(item.cell_count) || item.cell_count < 0
+      || typeof item.preserved !== "boolean")) {
+      throw new TypeError("feature keep-outs must contain valid feature identifiers, axes and cell counts");
+    }
+    const keepoutRecords = feature_keepouts.map((item) => Object.freeze({ ...item }));
     const classes = Uint8Array.from(classification);
     const coverage = Float32Array.from(surface_coverage);
     this.spec = spec;
@@ -190,6 +197,7 @@ export class TargetGrid {
     this.warnings = warnings.slice();
     this.topology = topologySummary;
     this.features = Object.freeze(featureRecords);
+    this.feature_keepouts = Object.freeze(keepoutRecords);
     Object.freeze(this.source_bounds_mm);
     Object.freeze(this.warnings);
     Object.freeze(this);
@@ -237,6 +245,7 @@ export class TargetGrid {
         center_mm: feature.center_mm.slice(),
         bounds_mm: feature.bounds_mm.map((point) => point.slice()),
       })),
+      feature_keepouts: this.feature_keepouts.map((item) => ({ ...item })),
       warnings: this.warnings.slice(),
     };
   }
