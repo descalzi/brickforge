@@ -96,3 +96,16 @@ test("feature matcher compares tapered opening limits rather than only average d
   assert.equal(result[0].matches.length, 1);
   assert.equal(result[0].matches[0].part_id, "countersunk-match");
 });
+
+test("feature matcher remains compatible with legacy profiles without size ranges", () => {
+  const legacy = profile("legacy-beam", 4.8);
+  delete legacy.features[0].minimum_equivalent_diameter_mm;
+  delete legacy.features[0].maximum_equivalent_diameter_mm;
+  delete legacy.features[0].minimum_width_mm;
+  delete legacy.features[0].maximum_width_mm;
+  delete legacy.features[0].minimum_length_mm;
+  delete legacy.features[0].maximum_length_mm;
+  const results = matchTargetFeatures([target], [legacy]);
+  assert.equal(results[0].matches.length, 1);
+  assert.equal(results[0].matches[0].part_id, "legacy-beam");
+});
