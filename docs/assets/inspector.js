@@ -45,6 +45,7 @@ let activeModel;
 let activeMeshes = [];
 let currentFile;
 let currentBounds;
+let currentModelCenter = [0, 0, 0];
 let wireframeEnabled = false;
 let viewerReady = false;
 let viewerLoading = true;
@@ -219,9 +220,9 @@ function collectVoxelMesh() {
     for (let index = 0; index < position.count; index += 1) {
       point.fromBufferAttribute(position, index).applyMatrix4(mesh.matrixWorld);
       const offset = (vertexOffset + index) * 3;
-      vertices[offset] = point.x / unitFactor;
-      vertices[offset + 1] = point.y / unitFactor;
-      vertices[offset + 2] = point.z / unitFactor;
+      vertices[offset] = (point.x + currentModelCenter[0]) / unitFactor;
+      vertices[offset + 1] = (point.y + currentModelCenter[1]) / unitFactor;
+      vertices[offset + 2] = (point.z + currentModelCenter[2]) / unitFactor;
     }
     if (mesh.geometry.index) {
       const sourceIndices = mesh.geometry.index;
@@ -273,9 +274,9 @@ function renderVoxelOverlay(grid) {
         if (!target) continue;
         const index = value === 1 ? interiorIndex++ : boundaryIndex++;
         dummy.position.set(
-          grid.spec.origin_mm[0] + (x + 0.5) * grid.spec.pitch_mm[0],
-          grid.spec.origin_mm[1] + (y + 0.5) * grid.spec.pitch_mm[1],
-          grid.spec.origin_mm[2] + (z + 0.5) * grid.spec.pitch_mm[2],
+          grid.spec.origin_mm[0] + (x + 0.5) * grid.spec.pitch_mm[0] - currentModelCenter[0],
+          grid.spec.origin_mm[1] + (y + 0.5) * grid.spec.pitch_mm[1] - currentModelCenter[1],
+          grid.spec.origin_mm[2] + (z + 0.5) * grid.spec.pitch_mm[2] - currentModelCenter[2],
         );
         dummy.scale.set(
           grid.spec.pitch_mm[0] * 0.96,
@@ -336,7 +337,15 @@ function runVoxelisation() {
   voxeliseStatus.textContent = 'Preparing triangle acceleration structure…';
   voxeliseStatus.dataset.state = 'working';
   setMessage('Voxelising locally. The 3D viewer remains interactive while the worker processes the mesh.');
-  voxelWorker = new Worker(new URL('./mesh-voxelizer-worker.js', import.meta.url), { type: 'module' });
+  try {
+    voxelWorker = new Worker(new URL('./mesh-voxelizer-worker.js', import.meta.url), { type: 'module' });
+  } catch (error) {
+    voxeliseButton.disabled = false;
+    voxeliseStatus.textContent = error instanceof Error ? error.message : 'Could not start the voxelisation worker.';
+    voxeliseStatus.dataset.state = 'error';
+    setMessage(voxeliseStatus.textContent, 'error');
+    return;
+  }
   const worker = voxelWorker;
   worker.addEventListener('message', (event) => {
     if (worker !== voxelWorker) return;
@@ -484,6 +493,7 @@ function prepareModel(object, unitFactor, sourceUnit) {
   }
 
   const center = bounds.getCenter(new THREE.Vector3());
+  currentModelCenter = [center.x, center.y, center.z];
   object.position.sub(center);
   object.updateMatrixWorld(true);
 
