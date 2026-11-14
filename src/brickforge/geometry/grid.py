@@ -22,7 +22,7 @@ GridArray = npt.NDArray[np.uint8]
 CoverageArray = npt.NDArray[np.float32]
 
 BRICK_GRID_PITCH_MM: Vector3 = (8.0, 9.6, 8.0)
-TARGET_GRID_VERSION = 2
+TARGET_GRID_VERSION = 3
 
 
 class CellClass(IntEnum):
@@ -119,6 +119,7 @@ class TargetGrid:
     source_bounds_mm: tuple[Vector3, Vector3]
     warnings: tuple[str, ...] = ()
     topology: Mapping[str, int] | None = None
+    features: tuple[Mapping[str, object], ...] = ()
 
     def __post_init__(self) -> None:
         if self.source_units not in {"mm", "cm", "m"}:
@@ -195,6 +196,61 @@ class TargetGrid:
         object.__setattr__(self, "surface_coverage", coverage)
         object.__setattr__(self, "topology", topology)
 
+        normalized_features: list[Mapping[str, object]] = []
+        for index, feature in enumerate(self.features):
+            if not isinstance(feature, Mapping):
+                raise ValueError(f"feature {index} must be a mapping")
+            axis = feature.get("axis")
+            axis_index = feature.get("axis_index")
+            if (
+                not isinstance(feature.get("id"), str)
+                or not feature["id"]
+                or axis not in {"x", "y", "z"}
+                or isinstance(axis_index, bool)
+                or axis_index != {"x": 0, "y": 1, "z": 2}[axis]
+                or not isinstance(feature.get("shape"), str)
+                or feature.get("confidence") not in {"high", "medium"}
+                or isinstance(feature.get("sample_support"), bool)
+                or not isinstance(feature.get("sample_support"), int)
+                or feature["sample_support"] < 2
+            ):
+                raise ValueError(f"feature {index} contains invalid measured opening metadata")
+            centre = tuple(feature.get("center_mm", ()))
+            bounds = tuple(tuple(point) for point in feature.get("bounds_mm", ()))
+            if (
+                len(centre) != 3
+                or not all(isinstance(value, (int, float)) and isfinite(value) for value in centre)
+                or len(bounds) != 2
+                or any(len(point) != 3 or not all(
+                    isinstance(value, (int, float)) and isfinite(value) for value in point
+                ) for point in bounds)
+                or any(bounds[1][axis_index] < bounds[0][axis_index] for axis_index in range(3))
+            ):
+                raise ValueError(f"feature {index} has invalid centre or bounds")
+            numeric_fields = (
+                "observed_span_mm", "width_mm", "length_mm", "area_mm2",
+                "perimeter_mm", "equivalent_diameter_mm", "circularity", "aspect_ratio",
+            )
+            if any(
+                isinstance(feature.get(field), bool)
+                or not isinstance(feature.get(field), (int, float))
+                or not isfinite(feature[field])
+                for field in numeric_fields
+            ):
+                raise ValueError(f"feature {index} contains invalid measurements")
+            if (
+                feature["observed_span_mm"] < 0
+                or any(feature[field] <= 0 for field in numeric_fields[1:6])
+                or not 0 <= feature["circularity"] <= 1
+                or feature["aspect_ratio"] < 1
+            ):
+                raise ValueError(f"feature {index} contains out-of-range measurements")
+            record = dict(feature)
+            record["center_mm"] = centre
+            record["bounds_mm"] = bounds
+            normalized_features.append(MappingProxyType(record))
+        object.__setattr__(self, "features", tuple(normalized_features))
+
     @property
     def occupied_cell_count(self) -> int:
         """Count interior and boundary cells."""
@@ -234,5 +290,13 @@ class TargetGrid:
             "occupied_cell_count": self.occupied_cell_count,
             "boundary_cell_count": self.boundary_cell_count,
             "topology": dict(self.topology) if self.topology is not None else None,
+            "features": [
+                {
+                    **dict(feature),
+                    "center_mm": list(feature["center_mm"]),
+                    "bounds_mm": [list(point) for point in feature["bounds_mm"]],
+                }
+                for feature in self.features
+            ],
             "warnings": list(self.warnings),
         }
