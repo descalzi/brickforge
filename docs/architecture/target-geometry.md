@@ -80,7 +80,7 @@ classifies each cell using a deterministic 3x3x3 sample lattice. It currently
 requires watertight, consistently wound meshes and processes cells in bounded
 batches. The sampled inside fraction is stored as surface coverage.
 
-The browser voxeliser is the primary implementation. It uses a 3x3x3 interior sample lattice and triangle-box separating-axis tests to identify surface-intersecting cells. Thin features are retained when their triangles cross a cell; interior coverage remains a sampling approximation. It requires a closed, consistently wound mesh and enforces face, cell, scanline-triangle and nearest-surface-triangle budgets. Open-mesh shell mode, self-intersection diagnostics, orientation-aware grids and automatic mesh-driven construction remain future work.
+The browser voxeliser is the primary implementation. It uses a 3x3x3 interior sample lattice and triangle-box separating-axis tests to identify surface-intersecting cells. Thin features are retained when their triangles cross a cell; interior coverage remains a sampling approximation. It requires a closed, consistently wound mesh and enforces face, cell, scanline-triangle and cell-surface-intersection budgets. Open-mesh shell mode, self-intersection diagnostics, orientation-aware grids and automatic mesh-driven construction remain future work.
 
 ## Deliberate boundary
 
