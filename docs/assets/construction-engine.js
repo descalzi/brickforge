@@ -1132,6 +1132,7 @@ export function buildFootprintBlock(footprintCells, heightBricks, catalogue, con
 
 
 const MAX_LAYERED_SEQUENCE_CHECKS = 250000;
+const MAX_LAYERED_COURSE_CELLS = 256;
 
 /**
  * Build a variable-footprint stack from bottom-to-top per-course cell lists.
@@ -1196,8 +1197,8 @@ export function buildLayeredFootprintBlock(layerFootprints, catalogue, config = 
       coordinates.push([cell[0], cell[1]]);
       allCoordinates.push([cell[0], cell[1]]);
     }
-    if (keys.size > MAX_FOOTPRINT_CELLS) {
-      throw new RangeError("Each course is limited to " + MAX_FOOTPRINT_CELLS + " occupied cells.");
+    if (keys.size > MAX_LAYERED_COURSE_CELLS) {
+      throw new RangeError("Each mesh-derived course is limited to " + MAX_LAYERED_COURSE_CELLS + " occupied cells in this browser prototype.");
     }
     parsedLayers.push(coordinates);
   }
