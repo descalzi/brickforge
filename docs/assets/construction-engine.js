@@ -898,6 +898,19 @@ function findFootprintTilings(tilings) {
   return null;
 }
 
+function footprintTilingsOverlap(lower, upper) {
+  const upperCells = new Set();
+  for (const tile of upper) {
+    for (const key of tile.cells) upperCells.add(key);
+  }
+  for (const tile of lower) {
+    for (const key of tile.cells) {
+      if (upperCells.has(key)) return true;
+    }
+  }
+  return false;
+}
+
 function footprintTilingSequenceConnects(sequence) {
   const offsets = [];
   let count = 0;
@@ -1218,7 +1231,14 @@ export function buildLayeredFootprintBlock(layerFootprints, catalogue, config = 
   let budgetReached = false;
   const chosen = [];
 
+  let visitedNodes = 0;
+  const maximumSearchNodes = MAX_LAYERED_SEQUENCE_CHECKS * 4;
   function searchSequences(layer, partCount) {
+    visitedNodes += 1;
+    if (visitedNodes > maximumSearchNodes) {
+      budgetReached = true;
+      return;
+    }
     if (layer === layerCandidates.length) {
       checks += 1;
       if (checks > MAX_LAYERED_SEQUENCE_CHECKS) {
@@ -1235,7 +1255,7 @@ export function buildLayeredFootprintBlock(layerFootprints, catalogue, config = 
     for (const tiling of layerCandidates[layer]) {
       const nextCount = partCount + tiling.length;
       if (nextCount + minimumRemaining[layer + 1] >= bestPartCount) continue;
-      if (layer > 0 && !footprintTilingsConnect(chosen[layer - 1], tiling)) continue;
+      if (layer > 0 && !footprintTilingsOverlap(chosen[layer - 1], tiling)) continue;
       chosen.push(tiling);
       searchSequences(layer + 1, nextCount);
       chosen.pop();
@@ -1313,6 +1333,7 @@ export function buildLayeredFootprintBlock(layerFootprints, catalogue, config = 
     course_part_counts: bestSequence.map((tiling) => tiling.length),
     search: {
       sequence_checks: checks,
+      sequence_search_nodes: visitedNodes,
       budget_reached: budgetReached,
       candidate_tilings_per_course: layerCandidates.map((candidates) => candidates.length),
       candidate_search_limited: searchLimited,
