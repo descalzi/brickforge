@@ -56,7 +56,7 @@ function torusMesh(majorRadius = 4, minorRadius = 1, majorSegments = 16, minorSe
 }
 
 
-function perforatedPlateTriangles() {
+function perforatedPlateTriangles({ totalHeight = 6 } = {}) {
   const width = 48;
   const height = 65;
   const thickness = 6;
@@ -73,6 +73,13 @@ function perforatedPlateTriangles() {
         const inSlot = Math.abs(px - 15) < 5.4 && Math.abs(py - 32) < 3.3;
         if (!inRoundHole && !inSlot) occupied.add(key(x, y, z));
       }
+    }
+  }
+  // A raised solid boss increases the overall height without extending the
+  // five bores through it, modelling openings local to one mounting section.
+  for (let z = thickness; z < totalHeight; z += 1) {
+    for (let y = 0; y < 8; y += 1) {
+      for (let x = 0; x < 8; x += 1) occupied.add(key(x, y, z));
     }
   }
 
@@ -119,7 +126,7 @@ function perforatedPlateTriangles() {
     });
   }
   return { triangles, vertices: flatVertices, indices: flatIndices,
-    boundsMin: [0, 0, 0], boundsMax: [width, height, thickness] };
+    boundsMin: [0, 0, 0], boundsMax: [width, height, totalHeight] };
 }
 
 test("browser voxeliser classifies an aligned solid and interior core", () => {
@@ -237,13 +244,16 @@ test("cross-section analysis locates four round openings and an elongated slot b
 });
 
 
-test("browser voxeliser preserves sub-grid round holes and slots as conservative clearance tunnels", () => {
-  const mesh = perforatedPlateTriangles();
+test("browser voxeliser preserves sub-grid openings local to one section of a taller connected model", () => {
+  const mesh = perforatedPlateTriangles({ totalHeight: 12 });
   const result = voxelizeMesh({ vertices: mesh.vertices, indices: mesh.indices, units: "mm" });
   assert.equal(result.topology.handle_count, 5);
   assert.equal(result.features.length, 5);
   assert.equal(result.feature_keepouts.length, 5);
+  assert.ok(result.features.every((feature) => feature.observed_span_mm < 12 * 0.55));
   assert.ok(result.feature_keepouts.every((item) => item.preserved && item.cell_count > 0));
   assert.ok(result.feature_keepouts.every((item) => item.method === "conservative grid-cell clearance"));
+  assert.ok(result.feature_keepouts.every((item) => item.local_axial_bounds_mm[1] > item.local_axial_bounds_mm[0]));
+  assert.ok(result.feature_keepouts.every((item) => item.support_slices >= 3));
   assert.ok(result.warnings.some((warning) => warning.includes("conservative grid-cell clearance tunnels")));
 });
