@@ -48,6 +48,7 @@ jobs:
           python -m json.tool schemas/assembly-graph-v1.schema.json > /dev/null &&
           python -m json.tool schemas/bom-v1.schema.json > /dev/null &&
           python -m json.tool schemas/part-feature-profile-v1.schema.json > /dev/null &&
+          python -m json.tool schemas/part-feature-profile-v2.schema.json > /dev/null &&
           python -m json.tool examples/stacked-3001.assembly.json > /dev/null &&
           python -m json.tool examples/stacked-3001.bom.json > /dev/null &&
           python -m json.tool examples/block-4x4x2.assembly.json > /dev/null &&
