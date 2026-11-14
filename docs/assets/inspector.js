@@ -62,6 +62,8 @@ let viewerReady = false;
 let viewerLoading = true;
 let pendingFile;
 let voxelWorker;
+let constructionWorker;
+let activeConstruction;
 let activeTargetGrid;
 let activeVoxelGroup;
 let activeConstructionGroup;
