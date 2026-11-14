@@ -1,7 +1,7 @@
 const DEFAULT_RAW_BASE = 'https://raw.githubusercontent.com/kulits/ldraw-parts/c70360d1c588be894997b2168c61909bc8058c4d/ldraw/';
 let rawBaseUrl = DEFAULT_RAW_BASE;
 import { decodeCataloguePayload, ldrawReferenceCandidates, searchPartCatalogue } from './catalogue-utils.js';
-import { analyzeMeshFeatures } from './mesh-feature-analysis.js?v=featuremeasure2';
+import { analyzeMeshFeatures } from './mesh-feature-analysis.js?v=featuremeasure3';
 
 const LDU_TO_MM = 0.4;
 const MAX_REFERENCE_DEPTH = 64;
@@ -155,7 +155,7 @@ function analyseSelectedPartFeatures() {
   setMessage('Sampling orthogonal cross-sections in a background worker…');
 
   try {
-    partFeatureWorker = new Worker(new URL('./part-feature-worker.js?v=featureprofile1', import.meta.url), { type: 'module' });
+    partFeatureWorker = new Worker(new URL('./part-feature-worker.js?v=featureprofile2', import.meta.url), { type: 'module' });
   } catch (error) {
     partFeatureAnalyseButton.disabled = false;
     partFeatureStatus.textContent = error instanceof Error ? error.message : 'Could not start feature analysis.';
