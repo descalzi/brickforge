@@ -28,6 +28,7 @@ const voxeliseSummary = document.querySelector('#voxelise-summary');
 const voxelCellCount = document.querySelector('#voxel-cell-count');
 const voxelGridSize = document.querySelector('#voxel-grid-size');
 const voxelFeatureStatus = document.querySelector('#voxel-feature-status');
+const voxelFeatureList = document.querySelector('#voxel-feature-list');
 const voxelCourseList = document.querySelector('#voxel-course-list');
 const voxelOverlayToggle = document.querySelector('#voxel-overlay-toggle');
 const buildConstructionButton = document.querySelector('#build-construction');
@@ -488,9 +489,30 @@ function displayVoxelSummary(grid, triangleCount) {
     const hasHandles = topology?.handle_count > 0;
     voxelFeatureStatus.hidden = !hasHandles;
     voxelFeatureStatus.dataset.state = hasHandles ? 'warning' : 'complete';
+    const features = summary.features || [];
     voxelFeatureStatus.textContent = hasHandles
-      ? topology.handle_count.toLocaleString() + ' topological tunnel/handle feature(s) detected. The current brick profiles cannot yet guarantee these openings are preserved.'
+      ? topology.handle_count.toLocaleString() + ' topological tunnel(s) detected; '
+        + features.length.toLocaleString() + ' cross-section feature(s) localised. Measurements are approximate and need part matching before construction.'
       : '';
+    if (voxelFeatureList) {
+      voxelFeatureList.replaceChildren();
+      features.forEach((feature, index) => {
+        const item = document.createElement('li');
+        const heading = document.createElement('strong');
+        const detail = document.createElement('span');
+        const position = document.createElement('small');
+        heading.textContent = 'Feature ' + (index + 1) + ' · ' + feature.shape;
+        const size = feature.shape === 'round opening'
+          ? 'Ø ' + feature.equivalent_diameter_mm.toFixed(1) + ' mm equivalent'
+          : feature.width_mm.toFixed(1) + ' × ' + feature.length_mm.toFixed(1) + ' mm';
+        detail.textContent = size + ' · axis ' + feature.axis.toUpperCase()
+          + ' · ' + feature.sample_support + ' slices';
+        position.textContent = 'Centre ' + feature.center_mm.map((value) => value.toFixed(1)).join(', ')
+          + ' mm · observed span ' + feature.observed_span_mm.toFixed(1) + ' mm';
+        item.append(heading, detail, position);
+        voxelFeatureList.append(item);
+      });
+    }
   }
   voxeliseSummary.hidden = false;
   voxelOverlayToggle.disabled = false;
@@ -530,6 +552,11 @@ function runVoxelisation() {
     if (worker !== voxelWorker) return;
     const data = event.data;
     if (data.type === 'progress') {
+      if (data.phase === 'features') {
+        voxeliseStatus.textContent = 'Locating sub-grid openings…';
+        setActivity('Measuring mesh openings', 'Taking orthogonal cross-sections and measuring enclosed contours…', 'working', 4);
+        return;
+      }
       const percent = Math.round((data.completed / data.total) * 100);
       voxeliseStatus.textContent = 'Classifying grid columns… ' + percent + '%';
       setActivity('Voxelising mesh', 'Classifying grid columns… ' + percent + '%', 'working', 4);
@@ -560,15 +587,17 @@ function runVoxelisation() {
         source_bounds_mm: result.source_bounds_mm,
         warnings: result.warnings,
         topology: result.topology,
+        features: result.features || [],
       });
       voxelOverlayVisible = true;
       renderVoxelOverlay(activeTargetGrid);
       displayVoxelSummary(activeTargetGrid, result.triangle_count);
-      const hasUnmatchedFeatures = activeTargetGrid.topology?.handle_count > 0;
+      const hasUnmatchedFeatures = activeTargetGrid.topology?.handle_count > 0 || activeTargetGrid.features.length > 0;
       buildConstructionButton.disabled = hasUnmatchedFeatures;
       if (hasUnmatchedFeatures) {
         constructionStatus.textContent = 'Construction blocked: the target contains '
-          + activeTargetGrid.topology.handle_count + ' topological tunnel/handle feature(s), and the current part profiles cannot preserve them.';
+          + (activeTargetGrid.topology?.handle_count || activeTargetGrid.features.length)
+          + ' tunnel/opening feature(s). The measured locations are shown above, but the current part profiles cannot preserve them yet.';
         constructionStatus.dataset.state = 'warning';
       }
       voxeliseStatus.textContent = 'Voxelisation complete. ' + result.ray_triangle_tests.toLocaleString()
