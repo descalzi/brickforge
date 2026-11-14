@@ -3,7 +3,7 @@ let OrbitControls;
 let STLLoader;
 let OBJLoader;
 
-import { BRICK_GRID_PITCH_MM, PLATE_GRID_PITCH_MM, GridSpec, TargetGrid } from "./target-grid.js?v=featuregrid6";
+import { BRICK_GRID_PITCH_MM, PLATE_GRID_PITCH_MM, GridSpec, TargetGrid } from "./target-grid.js?v=featuregrid7";
 import { matchFeaturePatterns, matchTargetFeatures } from "./feature-matcher.js?v=featurematch8";
 import { constructionPreviewTransform } from "./construction-preview.js";
 import { transformPartPreviewPositions } from "./part-preview.js?v=featurepreview1";
@@ -943,7 +943,7 @@ function runVoxelisation() {
   voxeliseStatus.dataset.state = 'working';
   setMessage('Voxelising locally. The 3D viewer remains interactive while the worker processes the mesh.');
   try {
-    voxelWorker = new Worker(new URL('./mesh-voxelizer-worker.js?v=featurekeepout2', import.meta.url), { type: 'module' });
+    voxelWorker = new Worker(new URL('./mesh-voxelizer-worker.js?v=featurekeepout3', import.meta.url), { type: 'module' });
   } catch (error) {
     voxeliseButton.disabled = false;
     voxeliseStatus.textContent = error instanceof Error ? error.message : 'Could not start the voxelisation worker.';
@@ -1144,7 +1144,7 @@ function runLayeredConstruction() {
   setMessage('Searching for a connected arrangement across all occupied courses. The viewer remains interactive.');
   try {
     constructionWorker = new Worker(
-      new URL('./layered-construction-worker.js', import.meta.url),
+      new URL('./layered-construction-worker.js?v=platecourses1', import.meta.url),
       { type: 'module' },
     );
   } catch (error) {
