@@ -71,9 +71,18 @@ coverage; it provides deterministic cell/world mapping, flattened indexing,
 summary metadata and per-course footprint extraction. The representation is
 versioned and exported from `brickforge.geometry`.
 
-Mesh-to-grid voxelisation, surface classification, browser parity and automatic
-mesh-driven construction are not implemented yet. The data model is the stable
-contract those steps will build on.
+The Python reference package now also provides `voxelize_mesh()` in
+`src/brickforge/geometry/voxelize.py`. It converts declared source units to
+millimetres, aligns a grid to the global pitch, enforces a cell budget, and
+classifies each cell using a deterministic 3x3x3 sample lattice. It currently
+requires watertight, consistently wound meshes and processes cells in bounded
+batches. The sampled inside fraction is stored as surface coverage.
+
+This is a first, deliberately conservative voxeliser. Point sampling can miss
+features smaller than the sampling interval and is not exact triangle-cell
+intersection. The warning is carried with every resulting grid. Open-mesh
+shell mode, triangle-distance coverage, browser parity and automatic
+mesh-driven construction remain future work.
 
 ## Deliberate boundary
 
