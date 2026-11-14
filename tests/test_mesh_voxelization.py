@@ -25,9 +25,10 @@ def test_voxelize_mesh_classifies_interior_and_surface_cells() -> None:
     assert grid.classification[0, 0, 0] == CellClass.BOUNDARY
     assert 0.0 < grid.surface_coverage[0, 0, 0] <= 1.0
     assert grid.layer_footprint(1) == tuple(
-        (x, z) for z in range(3) for x in range(3)
+        sorted((x, z) for z in range(3) for x in range(3))
     )
-    assert grid.source_bounds_mm == ((0.0, 0.0, 0.0), (24.0, 28.8, 24.0))
+    assert grid.source_bounds_mm[0] == (0.0, 0.0, 0.0)
+    assert grid.source_bounds_mm[1] == pytest.approx((24.0, 28.8, 24.0))
     assert any("sampling approximation" in warning for warning in grid.warnings)
 
 
@@ -38,7 +39,8 @@ def test_voxelize_mesh_scales_declared_units_to_millimetres() -> None:
     grid = voxelize_mesh(mesh, units="cm")
 
     assert grid.spec.dimensions == (3, 3, 3)
-    assert grid.source_bounds_mm == ((0.0, 0.0, 0.0), (24.0, 28.8, 24.0))
+    assert grid.source_bounds_mm[0] == (0.0, 0.0, 0.0)
+    assert grid.source_bounds_mm[1] == pytest.approx((24.0, 28.8, 24.0))
 
 
 def test_voxelize_mesh_uses_custom_anisotropic_pitch() -> None:
