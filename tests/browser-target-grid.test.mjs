@@ -41,13 +41,14 @@ test("target grid counts occupancy and extracts sorted per-course footprints", (
     source_units: "mm",
     source_bounds_mm: [[0, 0, 0], [16, 9.6, 24]],
     warnings: ["Synthetic test target"],
+    topology: { component_count: 1, vertex_count: 8, edge_count: 18, face_count: 12, euler_characteristic: 2, handle_count: 0 },
   });
 
   assert.equal(grid.occupied_cell_count, 3);
   assert.equal(grid.boundary_cell_count, 1);
   assert.deepEqual(grid.layer_footprint(0), [[0, 1], [0, 2], [1, 0]]);
   assert.deepEqual(grid.summary(), {
-    representation_version: 1,
+    representation_version: 2,
     dimensions: [2, 1, 3],
     origin_mm: [0, 0, 0],
     pitch_mm: [8, 9.6, 8],
@@ -55,6 +56,7 @@ test("target grid counts occupancy and extracts sorted per-course footprints", (
     source_bounds_mm: [[0, 0, 0], [16, 9.6, 24]],
     occupied_cell_count: 3,
     boundary_cell_count: 1,
+    topology: { component_count: 1, vertex_count: 8, edge_count: 18, face_count: 12, euler_characteristic: 2, handle_count: 0 },
     warnings: ["Synthetic test target"],
   });
 });
@@ -75,4 +77,5 @@ test("target grid rejects malformed provenance and cell arrays", () => {
   assert.throws(() => new TargetGrid({ ...base, classification: [] }), /match grid cell count/);
   assert.throws(() => new TargetGrid({ ...base, source_bounds_mm: [[0, 0], [1, 1]] }), /three finite/);
   assert.throws(() => new TargetGrid({ ...base, warnings: [3] }), /strings/);
+  assert.throws(() => new TargetGrid({ ...base, topology: { component_count: 0 } }), /topology/);
 });
