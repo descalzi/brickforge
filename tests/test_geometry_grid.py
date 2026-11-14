@@ -83,7 +83,7 @@ def test_target_grid_counts_cells_extracts_layers_and_is_immutable() -> None:
     assert grid.boundary_cell_count == 1
     assert grid.layer_footprint(0) == ((0, 1), (0, 2), (1, 0))
     assert grid.summary() == {
-        "representation_version": 1,
+        "representation_version": 2,
         "dimensions": [2, 1, 3],
         "origin_mm": [0.0, 0.0, 0.0],
         "pitch_mm": [8.0, 9.6, 8.0],
@@ -91,6 +91,7 @@ def test_target_grid_counts_cells_extracts_layers_and_is_immutable() -> None:
         "source_bounds_mm": [[0.0, 0.0, 0.0], [16.0, 9.6, 24.0]],
         "occupied_cell_count": 3,
         "boundary_cell_count": 1,
+        "topology": None,
         "warnings": ["Synthetic test target"],
     }
     assert not grid.classification.flags.writeable
