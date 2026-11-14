@@ -121,7 +121,10 @@ export class TargetGrid {
       const axes = ["x", "y", "z"];
       const numericFields = [
         "observed_span_mm", "width_mm", "length_mm", "area_mm2",
-        "perimeter_mm", "equivalent_diameter_mm", "circularity", "aspect_ratio",
+        "perimeter_mm", "equivalent_diameter_mm", "minimum_equivalent_diameter_mm",
+        "maximum_equivalent_diameter_mm", "minimum_width_mm", "maximum_width_mm",
+        "minimum_length_mm", "maximum_length_mm", "minimum_area_mm2", "maximum_area_mm2",
+        "circularity", "aspect_ratio",
       ];
       if (!feature || typeof feature !== "object"
           || typeof feature.id !== "string" || !feature.id
@@ -133,6 +136,11 @@ export class TargetGrid {
           || numericFields.some((field) => !Number.isFinite(feature[field]))
           || feature.observed_span_mm < 0
           || numericFields.slice(1, 6).some((field) => feature[field] <= 0)
+          || feature.minimum_equivalent_diameter_mm <= 0
+          || feature.maximum_equivalent_diameter_mm < feature.minimum_equivalent_diameter_mm
+          || feature.minimum_width_mm <= 0 || feature.maximum_width_mm < feature.minimum_width_mm
+          || feature.minimum_length_mm <= 0 || feature.maximum_length_mm < feature.minimum_length_mm
+          || feature.minimum_area_mm2 <= 0 || feature.maximum_area_mm2 < feature.minimum_area_mm2
           || feature.circularity < 0 || feature.circularity > 1
           || feature.aspect_ratio < 1) {
         throw new TypeError("feature " + index + " contains invalid measured opening metadata");
@@ -158,6 +166,14 @@ export class TargetGrid {
         area_mm2: feature.area_mm2,
         perimeter_mm: feature.perimeter_mm,
         equivalent_diameter_mm: feature.equivalent_diameter_mm,
+        minimum_equivalent_diameter_mm: feature.minimum_equivalent_diameter_mm,
+        maximum_equivalent_diameter_mm: feature.maximum_equivalent_diameter_mm,
+        minimum_width_mm: feature.minimum_width_mm,
+        maximum_width_mm: feature.maximum_width_mm,
+        minimum_length_mm: feature.minimum_length_mm,
+        maximum_length_mm: feature.maximum_length_mm,
+        minimum_area_mm2: feature.minimum_area_mm2,
+        maximum_area_mm2: feature.maximum_area_mm2,
         circularity: feature.circularity,
         aspect_ratio: feature.aspect_ratio,
         sample_support: feature.sample_support,
