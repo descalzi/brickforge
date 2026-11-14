@@ -306,13 +306,12 @@ function preserveSubGridOpenings({ features, dimensions, origin, pitch, boundsMi
   for (const feature of features) {
     const axis = feature.axis_index;
     const otherAxes = [0, 1, 2].filter((value) => value !== axis);
-    const sourceSpan = boundsMax[axis] - boundsMin[axis];
-    const observedRatio = sourceSpan > 0 ? feature.observed_span_mm / sourceSpan : 0;
-    if (observedRatio < 0.55 || feature.sample_support < 5
-        || !["round opening", "elongated slot/opening"].includes(feature.shape)) {
+    const localSpan = feature.bounds_mm[1][axis] - feature.bounds_mm[0][axis];
+    if (feature.sample_support < 3 || !Number.isFinite(localSpan) || localSpan <= 0) {
       keepouts.push({ feature_id: feature.id, axis: feature.axis, cell_count: 0, preserved: false,
-        reason: observedRatio < 0.55 ? "opening does not span enough of the source along its detected axis"
-          : "opening shape is not yet supported for conservative grid clearance" });
+        reason: feature.sample_support < 3
+          ? "opening is not consistently present across enough sampled sections"
+          : "opening has no reliable local axial extent" });
       continue;
     }
     let cellCount = 0;
@@ -341,6 +340,8 @@ function preserveSubGridOpenings({ features, dimensions, origin, pitch, boundsMi
     }
     keepouts.push({ feature_id: feature.id, axis: feature.axis, cell_count: cellCount,
       preserved: cellCount > 0, method: "conservative grid-cell clearance",
+      local_axial_bounds_mm: [feature.bounds_mm[0][axis], feature.bounds_mm[1][axis]],
+      support_slices: feature.sample_support,
       clearance_pitch_mm: pitch.slice(),
       ...(cellCount ? {} : { reason: "opening did not intersect any target-grid cells" }) });
   }
