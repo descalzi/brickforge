@@ -36,6 +36,7 @@ const featureMatchStatus = document.querySelector('#feature-match-status');
 const featureMatchList = document.querySelector('#feature-match-list');
 const featurePatternStatus = document.querySelector('#feature-pattern-status');
 const featurePatternList = document.querySelector('#feature-pattern-list');
+const candidatePreviewToggle = document.querySelector('#candidate-preview-toggle');
 const voxelCourseList = document.querySelector('#voxel-course-list');
 const voxelOverlayToggle = document.querySelector('#voxel-overlay-toggle');
 const buildConstructionButton = document.querySelector('#build-construction');
@@ -81,6 +82,8 @@ let activeTargetGrid;
 let activeVoxelGroup;
 let activeFeatureGroup;
 let activeConstructionGroup;
+let activeCandidateGroup;
+let candidatePreviewVisible = true;
 let voxelOverlayVisible = true;
 let featureOverlayVisible = true;
 let importedPartFeatureProfiles = [];
@@ -229,6 +232,76 @@ function removeVoxelOverlay() {
   activeVoxelGroup = null;
 }
 
+
+
+function removeCandidatePreview() {
+  if (activeCandidateGroup && scene) {
+    scene.remove(activeCandidateGroup);
+    activeCandidateGroup.traverse((object) => {
+      if (!object.isMesh) return;
+      object.geometry?.dispose?.();
+      object.material?.dispose?.();
+    });
+  }
+  activeCandidateGroup = null;
+  if (candidatePreviewToggle) {
+    candidatePreviewToggle.disabled = true;
+    candidatePreviewToggle.textContent = 'Candidate overlay unavailable';
+  }
+}
+
+function renderCandidatePreview(profile, pattern) {
+  if (!scene || !pattern?.placement_resolved || !profile?.preview_geometry_included
+      || !Array.isArray(profile.mesh_positions_mm) || profile.mesh_positions_mm.length % 9 !== 0) {
+    setMessage('This profile does not contain preview geometry or the opening pattern has no reliable 3D placement.', 'warning');
+    return;
+  }
+  removeCandidatePreview();
+  const positions = new Float32Array(profile.mesh_positions_mm);
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geometry.computeVertexNormals();
+  const material = new THREE.MeshBasicMaterial({
+    color: 0xD85F2B,
+    wireframe: true,
+    transparent: true,
+    opacity: 0.92,
+    depthTest: false,
+  });
+  const mesh = new THREE.Mesh(geometry, material);
+  const rotation = pattern.rotation_matrix_3x3;
+  const translation = pattern.translation_mm.map((value, axis) => value - currentModelCenter[axis]);
+  const transform = new THREE.Matrix4().set(
+    rotation[0][0], rotation[0][1], rotation[0][2], translation[0],
+    rotation[1][0], rotation[1][1], rotation[1][2], translation[1],
+    rotation[2][0], rotation[2][1], rotation[2][2], translation[2],
+    0, 0, 0, 1,
+  );
+  mesh.applyMatrix4(transform);
+  mesh.renderOrder = 40;
+  mesh.frustumCulled = false;
+  const group = new THREE.Group();
+  group.name = 'Candidate part geometric overlay';
+  group.add(mesh);
+  scene.add(group);
+  activeCandidateGroup = group;
+  candidatePreviewVisible = true;
+  candidatePreviewToggle.disabled = false;
+  candidatePreviewToggle.textContent = 'Hide candidate part overlay';
+  setMessage(
+    'Showing ' + profile.part_id + ' aligned from its opening pattern. This is a geometric overlay, not a verified surface fit or buildability result.',
+    'info',
+  );
+}
+
+function toggleCandidatePreview() {
+  if (!activeCandidateGroup) return;
+  candidatePreviewVisible = !candidatePreviewVisible;
+  activeCandidateGroup.visible = candidatePreviewVisible;
+  candidatePreviewToggle.textContent = candidatePreviewVisible
+    ? 'Hide candidate part overlay'
+    : 'Show candidate part overlay';
+}
 
 function removeFeatureOverlay() {
   if (!activeFeatureGroup) return;
@@ -444,6 +517,7 @@ function resetVoxelisation() {
   constructionDownloadBom.disabled = true;
   removeVoxelOverlay();
   removeFeatureOverlay();
+  removeCandidatePreview();
   removeConstructionPreview();
   activeTargetGrid = null;
   if (voxelFeatureStatus) { voxelFeatureStatus.hidden = true; voxelFeatureStatus.textContent = ''; }
@@ -563,9 +637,26 @@ function renderVoxelOverlay(grid) {
 }
 
 
+
+function validPreviewGeometry(profile) {
+  if ([1, 2].includes(profile?.schema_version)) return true;
+  if (typeof profile?.preview_geometry_included !== 'boolean'
+      || !Number.isInteger(profile.mesh_triangle_count)
+      || profile.mesh_triangle_count < 0 || profile.mesh_triangle_count > 4000) return false;
+  if (!profile.preview_geometry_included) {
+    return profile.mesh_triangle_count === 0 && profile.mesh_positions_mm === undefined;
+  }
+  return profile.mesh_triangle_count > 0
+    && Array.isArray(profile.mesh_positions_mm)
+    && profile.mesh_positions_mm.length === profile.mesh_triangle_count * 9
+    && profile.mesh_positions_mm.length <= 36000
+    && profile.mesh_positions_mm.every(Number.isFinite);
+}
+
 function validImportedFeatureProfile(profile) {
   return profile && typeof profile === 'object'
-    && [1, 2].includes(profile.schema_version)
+    && [1, 2, 3].includes(profile.schema_version)
+    && validPreviewGeometry(profile)
     && typeof profile.part_id === 'string' && profile.part_id.length > 0
     && typeof profile.description === 'string'
     && typeof profile.source_filename === 'string'
@@ -645,12 +736,21 @@ function renderFeaturePatterns() {
         + ' mm · axis alignment ' + pattern.axis_alignment_rms_deg.toFixed(2)
         + '° · translation ' + pattern.translation_mm.map((value) => value.toFixed(1)).join(', ') + ' mm'
       : 'Opening layout matched, but the rigid placement is not reliable: feature centres may be collinear, spacing residual may be too high, or opening axes may not align.';
+    const profile = importedPartFeatureProfiles.find((candidate) => candidate.part_id === pattern.part_id);
+    const preview = document.createElement('button');
+    preview.type = 'button';
+    preview.className = 'feature-preview-button';
+    const canPreview = Boolean(pattern.placement_resolved && profile?.preview_geometry_included
+      && Array.isArray(profile.mesh_positions_mm));
+    preview.disabled = !canPreview;
+    preview.textContent = canPreview ? 'Preview in 3D' : '3D preview unavailable';
+    if (canPreview) preview.addEventListener('click', () => renderCandidatePreview(profile, pattern));
     const inspect = document.createElement('a');
     inspect.href = './parts.html?part=' + encodeURIComponent(pattern.part_id);
     inspect.target = '_blank';
     inspect.rel = 'noopener noreferrer';
     inspect.textContent = 'Open part in Part Explorer';
-    item.append(heading, detail, assignment, placement, inspect);
+    item.append(heading, detail, assignment, placement, preview, inspect);
     featurePatternList.append(item);
   });
 }
@@ -724,7 +824,7 @@ async function importPartFeatureProfiles(files) {
     }
     try {
       const parsed = JSON.parse(await file.text());
-      const profiles = parsed && parsed.schema_version === 1 && Array.isArray(parsed.profiles)
+      const profiles = parsed && [1, 2].includes(parsed.schema_version) && Array.isArray(parsed.profiles)
         ? parsed.profiles
         : [parsed];
       if (!profiles.length) {
@@ -744,6 +844,7 @@ async function importPartFeatureProfiles(files) {
   const merged = new Map(importedPartFeatureProfiles.map((profile) => [profile.part_id, profile]));
   for (const profile of validProfiles) merged.set(profile.part_id, profile);
   importedPartFeatureProfiles = [...merged.values()].slice(0, 100);
+  removeCandidatePreview();
   renderFeatureMatches();
   if (errors.length) {
     featureMatchStatus.textContent += ' Import issues: ' + errors.join('; ') + '.';
