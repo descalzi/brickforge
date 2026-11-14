@@ -771,6 +771,89 @@ function sampleLayerFootprintTilings(cells, profiles) {
   return results.sort(compareTilings);
 }
 
+function sampleStripTilings(cells, profiles) {
+  const coordinates = [...cells].map((key) => key.split(",").map(Number));
+  const minX = Math.min(...coordinates.map(([x]) => x));
+  const maxX = Math.max(...coordinates.map(([x]) => x));
+  const minZ = Math.min(...coordinates.map(([, z]) => z));
+  const maxZ = Math.max(...coordinates.map(([, z]) => z));
+  const horizontal = minZ === maxZ && maxX - minX + 1 === cells.size;
+  const vertical = minX === maxX && maxZ - minZ + 1 === cells.size;
+  if (!horizontal && !vertical) return [];
+
+  const axisX = horizontal;
+  const length = cells.size;
+  const candidates = [];
+  for (const partId of FOOTPRINT_TILE_PART_IDS) {
+    const profile = profiles.get(partId);
+    if (!profile) continue;
+    let tileLength = 0;
+    let rotated = false;
+    if (axisX) {
+      if (profile.footprint_studs_z === 1) tileLength = profile.footprint_studs_x;
+      else if (profile.footprint_studs_x === 1) {
+        tileLength = profile.footprint_studs_z;
+        rotated = true;
+      }
+    } else if (profile.footprint_studs_x === 1) {
+      tileLength = profile.footprint_studs_z;
+    } else if (profile.footprint_studs_z === 1) {
+      tileLength = profile.footprint_studs_x;
+      rotated = true;
+    }
+    if (tileLength > 0) candidates.push({ partId, tileLength, rotated });
+  }
+  candidates.sort((a, b) => b.tileLength - a.tileLength || compareText(a.partId, b.partId));
+  if (!candidates.length || candidates[candidates.length - 1].tileLength !== 1) return [];
+  const maxLength = candidates[0].tileLength;
+  const results = [];
+  const signatures = new Set();
+
+  for (let offset = 0; offset < maxLength; offset += 1) {
+    const tiling = [];
+    let position = 0;
+    let valid = true;
+    while (position < length) {
+      const segmentEnd = position < offset ? offset : length;
+      const remaining = segmentEnd - position;
+      const candidate = candidates.find((item) => item.tileLength <= remaining);
+      if (!candidate) {
+        valid = false;
+        break;
+      }
+      const x = axisX ? minX + position : minX;
+      const z = axisX ? minZ : minZ + position;
+      const tileCells = new Set();
+      for (let step = 0; step < candidate.tileLength; step += 1) {
+        tileCells.add(cellKey(x + (axisX ? step : 0), z + (axisX ? 0 : step)));
+      }
+      if (![...tileCells].every((key) => cells.has(key))) {
+        valid = false;
+        break;
+      }
+      tiling.push({
+        part_id: candidate.partId,
+        x,
+        z,
+        width: axisX ? candidate.tileLength : 1,
+        depth: axisX ? 1 : candidate.tileLength,
+        rotated: candidate.rotated,
+        cells: tileCells,
+      });
+      position += candidate.tileLength;
+    }
+    if (!valid || !tiling.length) continue;
+    tiling.sort(compareTiles);
+    const signature = tiling.map((tile) =>
+      tile.part_id + ":" + tile.x + ":" + tile.z + ":" + Number(tile.rotated)).join("|");
+    if (!signatures.has(signature)) {
+      signatures.add(signature);
+      results.push(tiling);
+    }
+  }
+  return results.sort(compareTilings);
+}
+
 function footprintTilingsConnect(lower, upper) {
   const count = lower.length + upper.length;
   const parent = Array.from({ length: count }, (_, index) => index);
@@ -1094,9 +1177,11 @@ export function buildFootprintBlock(footprintCells, heightBricks, catalogue, con
   if (!pair) {
     let search;
     if (cells.size > MAX_FOOTPRINT_CELLS) {
-      const interlockingPair = sampleInterlockingFootprints(cells, profiles);
+      const stripTilings = sampleStripTilings(cells, profiles);
+      const interlockingPair = stripTilings.length ? null : sampleInterlockingFootprints(cells, profiles);
       search = {
-        tilings: interlockingPair || sampleLayerFootprintTilings(cells, profiles),
+        tilings: stripTilings.length ? stripTilings
+          : interlockingPair || sampleLayerFootprintTilings(cells, profiles),
         limitReached: true,
       };
     } else {
