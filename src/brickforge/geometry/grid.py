@@ -23,7 +23,7 @@ GridArray = npt.NDArray[np.uint8]
 CoverageArray = npt.NDArray[np.float32]
 
 BRICK_GRID_PITCH_MM: Vector3 = (8.0, 9.6, 8.0)
-TARGET_GRID_VERSION = 3
+TARGET_GRID_VERSION = 4
 
 
 class CellClass(IntEnum):
