@@ -1,5 +1,6 @@
 export const TARGET_GRID_VERSION = 6;
 export const BRICK_GRID_PITCH_MM = Object.freeze([8, 9.6, 8]);
+export const PLATE_GRID_PITCH_MM = Object.freeze([8, 3.2, 8]);
 
 export const CellClass = Object.freeze({
   EXTERIOR: 0,
