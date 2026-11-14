@@ -7,6 +7,7 @@ import { GridSpec, TargetGrid } from "./target-grid.js?v=featuregrid5";
 import { matchFeaturePatterns, matchTargetFeatures } from "./feature-matcher.js?v=featurematch8";
 import { constructionPreviewTransform } from "./construction-preview.js";
 import { transformPartPreviewPositions } from "./part-preview.js?v=featurepreview1";
+import { orientationMatrixToYUp } from "./mesh-orientation.js?v=upaxis1";
 
 const MAX_FILE_BYTES = 100 * 1024 * 1024;
 const MILLIMETRES_PER_UNIT = { mm: 1, cm: 10, m: 1000, in: 25.4 };
@@ -22,6 +23,7 @@ const message = document.querySelector('#inspector-message');
 const fileInput = document.querySelector('#file-input');
 const dropZone = document.querySelector('#drop-zone');
 const unitsSelect = document.querySelector('#source-units');
+const upAxisSelect = document.querySelector('#up-axis');
 const wireframeButton = document.querySelector('#wireframe-toggle');
 const resetButton = document.querySelector('#reset-view');
 const voxeliseButton = document.querySelector('#voxelise-button');
@@ -1255,6 +1257,13 @@ function prepareModel(object, unitFactor, sourceUnit) {
   }
 
   object.scale.multiplyScalar(unitFactor);
+  const orientation = orientationMatrixToYUp(upAxisSelect.value || "y");
+  object.rotation.setFromRotationMatrix(new THREE.Matrix4().set(
+    orientation[0][0], orientation[0][1], orientation[0][2], 0,
+    orientation[1][0], orientation[1][1], orientation[1][2], 0,
+    orientation[2][0], orientation[2][1], orientation[2][2], 0,
+    0, 0, 0, 1,
+  ));
   object.updateMatrixWorld(true);
 
   const bounds = new THREE.Box3().setFromObject(object);
@@ -1381,6 +1390,10 @@ fileInput.addEventListener('change', (event) => {
 });
 
 unitsSelect.addEventListener('change', () => {
+  if (currentFile) handleFile(currentFile);
+});
+
+upAxisSelect.addEventListener('change', () => {
   if (currentFile) handleFile(currentFile);
 });
 
