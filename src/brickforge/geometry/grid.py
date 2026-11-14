@@ -7,6 +7,7 @@ the representation consumed by construction algorithms.
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
 from enum import IntEnum
 from math import isfinite
@@ -117,7 +118,7 @@ class TargetGrid:
     source_units: str
     source_bounds_mm: tuple[Vector3, Vector3]
     warnings: tuple[str, ...] = ()
-    topology: dict[str, int] | None = None
+    topology: Mapping[str, int] | None = None
 
     def __post_init__(self) -> None:
         if self.source_units not in {"mm", "cm", "m"}:
