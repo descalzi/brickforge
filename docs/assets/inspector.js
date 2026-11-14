@@ -1117,9 +1117,12 @@ function runLayeredConstruction() {
     return;
   }
   const pitch = activeTargetGrid.spec.pitch_mm;
-  const expectedPitch = [8, 9.6, 8];
-  if (pitch.some((value, index) => Math.abs(value - expectedPitch[index]) > 1e-6)) {
-    constructionStatus.textContent = 'Construction currently requires the standard 8 × 9.6 × 8 mm brick grid.';
+  const isBrickPitch = pitch.every((value, index) =>
+    Math.abs(value - BRICK_GRID_PITCH_MM[index]) <= 1e-6);
+  const isPlatePitch = pitch.every((value, index) =>
+    Math.abs(value - PLATE_GRID_PITCH_MM[index]) <= 1e-6);
+  if (!isBrickPitch && !isPlatePitch) {
+    constructionStatus.textContent = 'Construction supports the 8 × 9.6 × 8 mm brick grid or the 8 × 3.2 × 8 mm plate grid.';
     constructionStatus.dataset.state = 'error';
     setActivity('Unsupported grid spacing', constructionStatus.textContent, 'error', -1);
     return;
