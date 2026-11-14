@@ -4,7 +4,7 @@ The Part Explorer can analyse the resolved triangle geometry of a selected LDraw
 
 ## Extraction
 
-The browser resolves the selected part and its nested LDraw references, converts geometry into millimetres, then sends its triangle positions to a dedicated worker. The worker samples seven cross-sections along each principal axis, finds nested contours, and clusters contours that persist across slices.
+The browser resolves the selected part and its nested LDraw references, converts geometry into millimetres, then sends its triangle positions to a dedicated worker. The worker samples nineteen cross-sections along each principal axis, finds nested contours, and clusters contours that persist across slices.
 
 Version 2 profiles preserve both representative measurements and per-slice minimum/maximum dimensions, so tapered and countersunk openings are not reduced to a single average. Version 3 adds optional lightweight triangle positions in millimetres for profiles with at most 4,000 triangles; larger profiles remain valid without preview geometry. Versions 1 and 2 remain importable for backward compatibility.
 
