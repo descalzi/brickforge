@@ -1,4 +1,4 @@
-import { buildLayeredFootprintBlock } from "./construction-engine.js";
+import { buildLayeredFootprintBlock } from "./construction-engine.js?v=platecourses1";
 
 self.addEventListener("message", async (event) => {
   const { layerFootprints, config } = event.data || {};
