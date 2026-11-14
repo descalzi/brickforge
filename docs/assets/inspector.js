@@ -905,9 +905,14 @@ function displayVoxelSummary(grid, triangleCount) {
         const keepout = keepouts.find((entry) => entry.feature_id === feature.id);
         const preservation = keepout?.preserved
           ? ' · clearance cells ' + keepout.cell_count
+            + (keepout.local_axial_bounds_mm
+              ? ' · mapped ' + keepout.local_axial_bounds_mm.map((value) => value.toFixed(1)).join('–') + ' mm'
+              : '')
           : ' · not preserved' + (keepout?.reason ? ': ' + keepout.reason : '');
+        const axialBounds = feature.bounds_mm.map((point) => point[feature.axis_index]);
         position.textContent = 'Centre ' + feature.center_mm.map((value) => value.toFixed(1)).join(', ')
-          + ' mm · observed span ' + feature.observed_span_mm.toFixed(1) + ' mm' + preservation;
+          + ' mm · local ' + feature.axis.toUpperCase() + ' extent '
+          + axialBounds.map((value) => value.toFixed(1)).join('–') + ' mm' + preservation;
         item.append(heading, detail, position);
         voxelFeatureList.append(item);
       });
