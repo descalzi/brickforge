@@ -976,18 +976,28 @@ function runVoxelisation() {
         warnings: result.warnings,
         topology: result.topology,
         features: result.features || [],
+        feature_keepouts: result.feature_keepouts || [],
       });
       voxelOverlayVisible = true;
       renderVoxelOverlay(activeTargetGrid);
       renderFeatureOverlay(activeTargetGrid);
       displayVoxelSummary(activeTargetGrid, result.triangle_count);
-      const hasUnmatchedFeatures = activeTargetGrid.topology?.handle_count > 0 || activeTargetGrid.features.length > 0;
+      const preservedFeatureCount = activeTargetGrid.feature_keepouts.filter((item) => item.preserved).length;
+      const keepoutsComplete = activeTargetGrid.features.length > 0
+        && preservedFeatureCount === activeTargetGrid.features.length
+        && activeTargetGrid.features.length >= (activeTargetGrid.topology?.handle_count || 0);
+      const hasUnmatchedFeatures = (activeTargetGrid.topology?.handle_count > 0 || activeTargetGrid.features.length > 0)
+        && !keepoutsComplete;
       buildConstructionButton.disabled = hasUnmatchedFeatures;
       if (hasUnmatchedFeatures) {
-        constructionStatus.textContent = 'Construction blocked: the target contains '
+        constructionStatus.textContent = 'Construction blocked: ' + preservedFeatureCount + '/'
+          + activeTargetGrid.features.length + ' detected openings have a conservative grid-cell clearance representation, but '
           + (activeTargetGrid.topology?.handle_count || activeTargetGrid.features.length)
-          + ' tunnel/opening feature(s). The measured locations are shown above, but the current part profiles cannot preserve them yet.';
+          + ' topological tunnel(s) were detected. Unmapped openings must be resolved before construction.';
         constructionStatus.dataset.state = 'warning';
+      } else if (keepoutsComplete) {
+        constructionStatus.textContent = 'All detected openings have conservative grid-cell clearance tunnels. These can be larger than the source holes; inspect the target grid and generated construction carefully.';
+        constructionStatus.dataset.state = 'ready';
       }
       voxeliseStatus.textContent = 'Voxelisation complete. ' + result.ray_triangle_tests.toLocaleString()
         + ' scanline tests and ' + result.cell_triangle_tests.toLocaleString()
@@ -995,8 +1005,10 @@ function runVoxelisation() {
       voxeliseStatus.dataset.state = 'complete';
       clearActivity();
       setMessage(hasUnmatchedFeatures
-        ? 'Target grid generated. Important openings were detected; construction is blocked rather than silently filling them.'
-        : 'Target grid generated in your browser. Orange cells intersect the mesh surface; blue cells are interior.',
+        ? 'Target grid generated, but one or more detected openings could not be represented safely.'
+        : keepoutsComplete
+          ? 'Target grid generated with conservative clearance tunnels for all detected openings. These may be larger than the source features; inspect the preview before construction.'
+          : 'Target grid generated in your browser. Orange cells intersect the mesh surface; blue cells are interior.',
       hasUnmatchedFeatures ? 'warning' : 'success');
     } catch (error) {
       voxeliseStatus.textContent = error instanceof Error ? error.message : 'Could not display the target grid.';
@@ -1064,10 +1076,14 @@ function displayConstruction(result) {
 
 function runLayeredConstruction() {
   if (!activeTargetGrid || constructionWorker) return;
-  if (activeTargetGrid.topology?.handle_count > 0 || activeTargetGrid.features.length > 0) {
+  const preservedFeatureCount = activeTargetGrid.feature_keepouts.filter((item) => item.preserved).length;
+  const keepoutsComplete = activeTargetGrid.features.length > 0
+    && preservedFeatureCount === activeTargetGrid.features.length
+    && activeTargetGrid.features.length >= (activeTargetGrid.topology?.handle_count || 0);
+  if ((activeTargetGrid.topology?.handle_count > 0 || activeTargetGrid.features.length > 0) && !keepoutsComplete) {
     const count = activeTargetGrid.topology?.handle_count || activeTargetGrid.features.length;
     constructionStatus.textContent = 'Construction blocked: ' + count
-      + ' topological tunnel/handle feature(s) cannot currently be represented by the available part profiles. Add feature-compatible parts before generating a construction.';
+      + ' topological tunnel/opening feature(s) are not all represented in the target grid. Resolve any unsupported or unlocalised openings before generating a construction.';
     constructionStatus.dataset.state = 'warning';
     setActivity('Unmatched geometry features', constructionStatus.textContent, 'error', -1);
     setMessage(constructionStatus.textContent, 'warning');
