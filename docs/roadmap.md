@@ -96,7 +96,8 @@ This roadmap is intentionally milestone-based. Each milestone should produce a d
 - [ ] Add natural-language interpretation.
 - [ ] Add conversational refinement with versioned model revisions.
 - [ ] Add reference-image and source-mesh workflows.
-- [ ] Build browser-based 3D preview and project management.
+- [x] Add a target-aligned construction envelope preview to the mesh inspector, with source-mesh ghosting and visibility controls. Surface-fit scoring and detailed part geometry remain future work.
+- [ ] Build browser-based project management.
 
 **Exit criteria:** a user can describe an object, review a generated construction, request a revision, and export the deliverables.
 
