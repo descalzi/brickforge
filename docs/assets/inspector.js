@@ -370,6 +370,7 @@ function runVoxelisation() {
         source_bounds_mm: result.source_bounds_mm,
         warnings: result.warnings,
       });
+      voxelOverlayVisible = true;
       renderVoxelOverlay(activeTargetGrid);
       displayVoxelSummary(activeTargetGrid, result.triangle_count);
       voxeliseStatus.textContent = 'Voxelisation complete. ' + result.ray_triangle_tests.toLocaleString()
@@ -572,6 +573,7 @@ async function handleFile(file) {
     emptyState.hidden = false;
     wireframeButton.disabled = true;
     resetButton.disabled = true;
+    voxeliseButton.disabled = true;
     currentBounds = null;
     setState('LOAD FAILED', 'error');
     setMessage(error instanceof Error ? error.message : 'The file could not be read.', 'error');
