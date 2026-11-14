@@ -1117,6 +1117,209 @@ export function buildFootprintBlock(footprintCells, heightBricks, catalogue, con
   };
 }
 
+
+const MAX_LAYERED_SEQUENCE_CHECKS = 250000;
+
+/**
+ * Build a variable-footprint stack from bottom-to-top per-course cell lists.
+ * Coordinates are shared across courses so a tile in one course can only
+ * connect to a tile above it where their occupied stud cells overlap.
+ */
+export function buildLayeredFootprintBlock(layerFootprints, catalogue, config = {}) {
+  if (!Array.isArray(layerFootprints) || layerFootprints.length < 2) {
+    throw new TypeError("layerFootprints must contain at least two bottom-to-top courses.");
+  }
+  if (!catalogue || catalogue.schema_version !== 1 || !Array.isArray(catalogue.profiles)) {
+    throw new TypeError("The connection profile catalogue is missing or unsupported.");
+  }
+  const profiles = new Map(catalogue.profiles.map((profile) => [String(profile.part_id), profile]));
+  const baseProfile = profiles.get("3001");
+  if (!baseProfile) {
+    throw new Error("Layered construction requires the 2×4 brick profile 3001.");
+  }
+  for (const partId of FOOTPRINT_TILE_PART_IDS) {
+    const profile = profiles.get(partId);
+    if (profile && (profile.stud_pitch_ldu !== baseProfile.stud_pitch_ldu
+      || profile.body_height_ldu !== baseProfile.body_height_ldu)) {
+      throw new Error("All layered brick profiles must use the same stud pitch and brick height.");
+    }
+  }
+
+  const colourCodes = config.colourCodes || [4, 1];
+  if (!Array.isArray(colourCodes) || colourCodes.length === 0
+    || colourCodes.some((code) => !Number.isInteger(code) || code < 0)) {
+    throw new RangeError("Colour codes must be a non-empty list of non-negative integers.");
+  }
+  const positionToleranceLdu = config.positionToleranceLdu ?? DEFAULT_POSITION_TOLERANCE_LDU;
+  const collisionToleranceLdu = config.collisionToleranceLdu ?? DEFAULT_COLLISION_TOLERANCE_LDU;
+  const maxParts = config.maxParts ?? MAX_GENERATED_PARTS;
+  if (!Number.isFinite(positionToleranceLdu) || positionToleranceLdu < 0
+    || !Number.isFinite(collisionToleranceLdu) || collisionToleranceLdu < 0
+    || !Number.isInteger(maxParts) || maxParts < 1) {
+    throw new RangeError("Construction tolerances and maxParts must be valid non-negative values.");
+  }
+
+  const parsedLayers = [];
+  const allCoordinates = [];
+  for (let layer = 0; layer < layerFootprints.length; layer += 1) {
+    const footprint = layerFootprints[layer];
+    if (!Array.isArray(footprint) || footprint.length === 0) {
+      throw new RangeError("Course " + (layer + 1) + " has no occupied cells; empty courses cannot be bridged.");
+    }
+    const keys = new Set();
+    const coordinates = [];
+    for (const cell of footprint) {
+      if (!Array.isArray(cell) || cell.length !== 2
+        || !Number.isInteger(cell[0]) || !Number.isInteger(cell[1])) {
+        throw new TypeError("Each course cell must be an integer [x, z] pair.");
+      }
+      const key = cellKey(cell[0], cell[1]);
+      if (keys.has(key)) throw new RangeError("Course " + (layer + 1) + " contains duplicate cells.");
+      keys.add(key);
+      coordinates.push([cell[0], cell[1]]);
+      allCoordinates.push([cell[0], cell[1]]);
+    }
+    if (keys.size > MAX_FOOTPRINT_CELLS) {
+      throw new RangeError("Each course is limited to " + MAX_FOOTPRINT_CELLS + " occupied cells.");
+    }
+    parsedLayers.push(coordinates);
+  }
+
+  const minX = Math.min(...allCoordinates.map(([x]) => x));
+  const minZ = Math.min(...allCoordinates.map(([, z]) => z));
+  const maxX = Math.max(...allCoordinates.map(([x]) => x));
+  const maxZ = Math.max(...allCoordinates.map(([, z]) => z));
+  const width = maxX - minX + 1;
+  const depth = maxZ - minZ + 1;
+  const layerCandidates = [];
+  let searchLimited = false;
+
+  for (let layer = 0; layer < parsedLayers.length; layer += 1) {
+    const cells = new Set(parsedLayers[layer].map(([x, z]) => cellKey(x - minX, z - minZ)));
+    const search = enumerateFootprintTilings(cells, profiles);
+    searchLimited ||= search.limitReached;
+    if (!search.tilings.length) {
+      throw new Error("Course " + (layer + 1)
+        + " cannot be tiled by the available rectangular brick profiles.");
+    }
+    search.tilings.sort(compareTilings);
+    layerCandidates.push(search.tilings);
+  }
+
+  const minimumRemaining = Array(layerCandidates.length + 1).fill(0);
+  for (let layer = layerCandidates.length - 1; layer >= 0; layer -= 1) {
+    minimumRemaining[layer] = minimumRemaining[layer + 1]
+      + Math.min(...layerCandidates[layer].map((tiling) => tiling.length));
+  }
+
+  let checks = 0;
+  let bestSequence = null;
+  let bestPartCount = Infinity;
+  let budgetReached = false;
+  const chosen = [];
+
+  function searchSequences(layer, partCount) {
+    if (layer === layerCandidates.length) {
+      checks += 1;
+      if (checks > MAX_LAYERED_SEQUENCE_CHECKS) {
+        budgetReached = true;
+        return;
+      }
+      if (partCount < bestPartCount && footprintTilingSequenceConnects(chosen)) {
+        bestSequence = chosen.slice();
+        bestPartCount = partCount;
+      }
+      return;
+    }
+
+    for (const tiling of layerCandidates[layer]) {
+      const nextCount = partCount + tiling.length;
+      if (nextCount + minimumRemaining[layer + 1] >= bestPartCount) continue;
+      if (layer > 0 && !footprintTilingsConnect(chosen[layer - 1], tiling)) continue;
+      chosen.push(tiling);
+      searchSequences(layer + 1, nextCount);
+      chosen.pop();
+      if (budgetReached) return;
+    }
+  }
+
+  searchSequences(0, 0);
+  if (!bestSequence) {
+    const detail = budgetReached || searchLimited
+      ? "within the bounded course-layout search"
+      : "using the available rectangular brick profiles";
+    throw new Error("No fully connected variable-course construction was found " + detail
+      + "; try a simpler target shape or a different part catalogue.");
+  }
+
+  const pitch = baseProfile.stud_pitch_ldu;
+  const bodyHeight = baseProfile.body_height_ldu;
+  const placements = [];
+  for (let layer = 0; layer < bestSequence.length; layer += 1) {
+    const tiling = bestSequence[layer];
+    const colour = colourCodes[layer % colourCodes.length];
+    for (let index = 0; index < tiling.length; index += 1) {
+      const tile = tiling[index];
+      const centreX = (tile.x + tile.width / 2 - width / 2) * pitch;
+      const centreZ = (tile.z + tile.depth / 2 - depth / 2) * pitch;
+      placements.push({
+        instance_id: "layer-" + String(layer).padStart(2, "0")
+          + "-part-" + String(index).padStart(3, "0"),
+        part_id: tile.part_id,
+        colour_code: colour,
+        translation_ldu: [
+          Object.is(centreX, -0) ? 0 : centreX,
+          -layer * bodyHeight,
+          Object.is(centreZ, -0) ? 0 : centreZ,
+        ],
+        matrix: [...(tile.rotated ? ROTATE_Y_90 : IDENTITY_MATRIX)],
+      });
+      if (placements.length > maxParts) {
+        throw new RangeError("This browser prototype is limited to " + maxParts + " parts per model.");
+      }
+    }
+  }
+
+  const connections = validatePlacements(placements, profiles, {
+    positionToleranceLdu,
+    collisionToleranceLdu,
+  });
+  const modelName = "layered-" + width + "x" + depth + "-" + bestSequence.length + "courses";
+  const assemblyGraph = {
+    schema_version: 1,
+    coordinate_system: "LDraw",
+    length_unit: "LDU",
+    model_name: modelName,
+    parts: placements,
+    connections,
+  };
+  const bom = createBom(placements);
+  bom.model_name = modelName;
+  return {
+    model_name: modelName,
+    parts: placements,
+    connections,
+    total_mating_pairs: connections.reduce(
+      (sum, connection) => sum + connection.mating_pairs.length, 0,
+    ),
+    assembly_graph: assemblyGraph,
+    bom,
+    ldraw: exportLDraw({ model_name: modelName, parts: placements }),
+    dimensions_mm: {
+      width: width * pitch * LDU_TO_MM,
+      depth: depth * pitch * LDU_TO_MM,
+      height: bestSequence.length * bodyHeight * LDU_TO_MM,
+    },
+    course_part_counts: bestSequence.map((tiling) => tiling.length),
+    search: {
+      sequence_checks: checks,
+      budget_reached: budgetReached,
+      candidate_tilings_per_course: layerCandidates.map((candidates) => candidates.length),
+      candidate_search_limited: searchLimited,
+    },
+  };
+}
+
 export const constructionConstants = Object.freeze({
   lduToMm: LDU_TO_MM,
   maxGeneratedParts: MAX_GENERATED_PARTS,
