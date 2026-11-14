@@ -690,8 +690,11 @@ function displayVoxelSummary(grid, triangleCount) {
         const position = document.createElement('small');
         heading.textContent = 'Feature ' + (index + 1) + ' · ' + feature.shape;
         const size = feature.shape === 'round opening'
-          ? 'Ø ' + feature.equivalent_diameter_mm.toFixed(1) + ' mm equivalent'
-          : feature.width_mm.toFixed(1) + ' × ' + feature.length_mm.toFixed(1) + ' mm';
+          ? 'Ø ' + feature.minimum_equivalent_diameter_mm.toFixed(1) + '–'
+            + feature.maximum_equivalent_diameter_mm.toFixed(1) + ' mm across sections'
+          : feature.minimum_width_mm.toFixed(1) + '–' + feature.maximum_width_mm.toFixed(1)
+            + ' × ' + feature.minimum_length_mm.toFixed(1) + '–'
+            + feature.maximum_length_mm.toFixed(1) + ' mm';
         detail.textContent = size + ' · axis ' + feature.axis.toUpperCase()
           + ' · ' + feature.sample_support + ' slices';
         position.textContent = 'Centre ' + feature.center_mm.map((value) => value.toFixed(1)).join(', ')
