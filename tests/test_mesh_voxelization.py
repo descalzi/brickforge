@@ -81,3 +81,14 @@ def test_voxelize_mesh_rejects_non_finite_and_degenerate_geometry() -> None:
     degenerate.faces = np.vstack((degenerate.faces, (0, 0, 0)))
     with pytest.raises(ValueError, match="degenerate"):
         voxelize_mesh(degenerate, units="mm")
+
+
+def test_voxelize_mesh_retains_thin_feature_between_outer_sample_points() -> None:
+    mesh = trimesh.creation.box(extents=(0.5, 0.5, 0.5))
+    mesh.apply_translation((4.0, 4.8, 4.0))
+
+    grid = voxelize_mesh(mesh, units="mm")
+
+    assert grid.spec.dimensions == (1, 1, 1)
+    assert grid.classification[0, 0, 0] == CellClass.BOUNDARY
+    assert grid.surface_coverage[0, 0, 0] > 0.0
