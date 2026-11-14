@@ -212,6 +212,10 @@ function summarizeCluster(cluster, featureIndex) {
   const circularity = Math.min(1, (4 * Math.PI * area) / (perimeter * perimeter));
   const aspectRatio = Math.max(extent[0], extent[1]) / Math.max(1e-8, Math.min(extent[0], extent[1]));
   const equivalentDiameter = Math.sqrt((4 * area) / Math.PI);
+  const sampleWidths = samples.map((sample) => Math.min(sample.extent[0], sample.extent[1]));
+  const sampleLengths = samples.map((sample) => Math.max(sample.extent[0], sample.extent[1]));
+  const sampleDiameters = samples.map((sample) => Math.sqrt((4 * sample.area) / Math.PI));
+  const sampleAreas = samples.map((sample) => sample.area);
   const axis = cluster.axis;
   const otherAxes = [0, 1, 2].filter((value) => value !== axis);
   const planes = samples.map((sample) => sample.plane);
@@ -244,6 +248,14 @@ function summarizeCluster(cluster, featureIndex) {
     area_mm2: area,
     perimeter_mm: perimeter,
     equivalent_diameter_mm: equivalentDiameter,
+    minimum_equivalent_diameter_mm: Math.min(...sampleDiameters),
+    maximum_equivalent_diameter_mm: Math.max(...sampleDiameters),
+    minimum_width_mm: Math.min(...sampleWidths),
+    maximum_width_mm: Math.max(...sampleWidths),
+    minimum_length_mm: Math.min(...sampleLengths),
+    maximum_length_mm: Math.max(...sampleLengths),
+    minimum_area_mm2: Math.min(...sampleAreas),
+    maximum_area_mm2: Math.max(...sampleAreas),
     circularity,
     aspect_ratio: aspectRatio,
     sample_support: samples.length,
