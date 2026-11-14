@@ -442,14 +442,16 @@ function downloadConstructionFile(filename, contents, mediaType) {
   document.body.append(link);
   link.click();
   link.remove();
-  URL.revokeObjectURL(url);
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 function displayConstruction(result) {
   activeConstruction = result;
   constructionPartCount.textContent = result.parts.length.toLocaleString() + ' parts';
+  const boundedSearch = result.search.budget_reached || result.search.candidate_search_limited;
   constructionDetails.textContent = result.connections.length.toLocaleString() + ' candidate connections · '
-    + result.total_mating_pairs.toLocaleString() + ' nominal mating pairs';
+    + result.total_mating_pairs.toLocaleString() + ' nominal mating pairs'
+    + (boundedSearch ? ' · bounded search; not guaranteed minimum' : '');
   constructionCourseList.replaceChildren();
   result.course_part_counts.forEach((count, index) => {
     const item = document.createElement('li');
