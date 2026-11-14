@@ -1,0 +1,287 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://descalzi.github.io/brickforge/schemas/part-feature-profile-v3.schema.json",
+  "title": "BrickForge LDraw part feature profile version 3",
+  "description": "Version 3 measured opening features and optional lightweight triangle geometry for candidate-part preview. Geometry is included only for parts with at most 4,000 triangles.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "part_id",
+    "description",
+    "source_filename",
+    "source_geometry_base_url",
+    "units",
+    "dimensions_mm",
+    "bounds_mm",
+    "analysis_method",
+    "features",
+    "limitations",
+    "preview_geometry_included",
+    "mesh_triangle_count"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "part_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_filename": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_geometry_base_url": {
+      "type": "string",
+      "format": "uri"
+    },
+    "units": {
+      "const": "mm"
+    },
+    "dimensions_mm": {
+      "$ref": "#/$defs/vector3Positive"
+    },
+    "bounds_mm": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "$ref": "#/$defs/vector3"
+        },
+        {
+          "$ref": "#/$defs/vector3"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "analysis_method": {
+      "type": "string",
+      "minLength": 1
+    },
+    "features": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/feature"
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "preview_geometry_included": {
+      "type": "boolean"
+    },
+    "mesh_triangle_count": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 4000
+    },
+    "mesh_positions_mm": {
+      "type": "array",
+      "minItems": 9,
+      "maxItems": 36000,
+      "items": {
+        "type": "number"
+      }
+    }
+  },
+  "$defs": {
+    "vector3": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "feature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "axis",
+        "axis_index",
+        "shape",
+        "center_mm",
+        "bounds_mm",
+        "observed_span_mm",
+        "width_mm",
+        "length_mm",
+        "area_mm2",
+        "perimeter_mm",
+        "equivalent_diameter_mm",
+        "minimum_equivalent_diameter_mm",
+        "maximum_equivalent_diameter_mm",
+        "minimum_width_mm",
+        "maximum_width_mm",
+        "minimum_length_mm",
+        "maximum_length_mm",
+        "minimum_area_mm2",
+        "maximum_area_mm2",
+        "circularity",
+        "aspect_ratio",
+        "sample_support",
+        "confidence"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "axis": {
+          "enum": [
+            "x",
+            "y",
+            "z"
+          ]
+        },
+        "axis_index": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2
+        },
+        "shape": {
+          "enum": [
+            "round opening",
+            "elongated slot/opening",
+            "irregular opening"
+          ]
+        },
+        "center_mm": {
+          "$ref": "#/$defs/vector3"
+        },
+        "bounds_mm": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "$ref": "#/$defs/vector3"
+            },
+            {
+              "$ref": "#/$defs/vector3"
+            }
+          ],
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "observed_span_mm": {
+          "type": "number",
+          "minimum": 0
+        },
+        "width_mm": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "length_mm": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "area_mm2": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "perimeter_mm": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "equivalent_diameter_mm": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "circularity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "aspect_ratio": {
+          "type": "number",
+          "minimum": 1
+        },
+        "sample_support": {
+          "type": "integer",
+          "minimum": 2
+        },
+        "confidence": {
+          "enum": [
+            "high",
+            "medium"
+          ]
+        },
+        "minimum_equivalent_diameter_mm": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "maximum_equivalent_diameter_mm": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "minimum_width_mm": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "maximum_width_mm": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "minimum_length_mm": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "maximum_length_mm": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "minimum_area_mm2": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "maximum_area_mm2": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "preview_geometry_included": {
+            "const": true
+          }
+        },
+        "required": [
+          "preview_geometry_included"
+        ]
+      },
+      "then": {
+        "required": [
+          "mesh_positions_mm"
+        ],
+        "properties": {
+          "mesh_triangle_count": {
+            "minimum": 1
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "mesh_triangle_count": {
+            "const": 0
+          }
+        },
+        "not": {
+          "required": [
+            "mesh_positions_mm"
+          ]
+        }
+      }
+    }
+  ]
+}
