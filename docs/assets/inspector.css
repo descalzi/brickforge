@@ -422,3 +422,24 @@
 .feature-pattern-results li strong { color: var(--accent-strong); }
 .feature-pattern-results li span,
 .feature-pattern-results li small { color: var(--muted); line-height: 1.45; }
+
+.feature-preview-button {
+  justify-self: start;
+  padding: 6px 9px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #FFF4ED;
+  color: #8D3E1C;
+  font: inherit;
+  font-size: .66rem;
+  font-weight: 650;
+  cursor: pointer;
+}
+.feature-preview-button:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+.feature-pattern-results > .tool-button {
+  width: 100%;
+  margin-top: 2px;
+}
