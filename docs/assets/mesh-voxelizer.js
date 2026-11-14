@@ -81,10 +81,14 @@ function triangleFrom(vertices, aIndex, bIndex, cIndex, id) {
 
 function buildBvh(triangles) {
   if (triangles.length === 0) throw new Error("Mesh contains no triangles.");
-  const min = [0, 1, 2].map((axis) =>
-    Math.min(...triangles.map((triangle) => triangle.min[axis])));
-  const max = [0, 1, 2].map((axis) =>
-    Math.max(...triangles.map((triangle) => triangle.max[axis])));
+  const min = [Infinity, Infinity, Infinity];
+  const max = [-Infinity, -Infinity, -Infinity];
+  for (const triangle of triangles) {
+    for (let axis = 0; axis < 3; axis += 1) {
+      min[axis] = Math.min(min[axis], triangle.min[axis]);
+      max[axis] = Math.max(max[axis], triangle.max[axis]);
+    }
+  }
   if (triangles.length <= 8) return { min, max, triangles };
   const spans = [0, 1, 2].map((axis) => max[axis] - min[axis]);
   const axis = spans.indexOf(Math.max(...spans));
