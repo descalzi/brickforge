@@ -1364,7 +1364,7 @@ export function buildLayeredFootprintBlock(layerFootprints, catalogue, config = 
     } else {
       const interlockingPair = sampleInterlockingFootprints(cells, profiles);
       search = interlockingPair
-        ? { tilings: interlockingPair, limitReached: false }
+        ? { tilings: interlockingPair, limitReached: true }
         : enumerateFootprintTilings(cells, profiles);
     }
     searchLimited ||= search.limitReached;
