@@ -23,7 +23,7 @@ GridArray = npt.NDArray[np.uint8]
 CoverageArray = npt.NDArray[np.float32]
 
 BRICK_GRID_PITCH_MM: Vector3 = (8.0, 9.6, 8.0)
-TARGET_GRID_VERSION = 5
+TARGET_GRID_VERSION = 6
 
 
 class CellClass(IntEnum):
@@ -281,6 +281,27 @@ class TargetGrid:
             ):
                 raise ValueError(f"feature keep-out {index} contains invalid metadata")
             record = dict(keepout)
+            for field in ("axial_cell_count", "support_slices"):
+                value = record.get(field)
+                if value is not None and (
+                    isinstance(value, bool) or not isinstance(value, int) or value < 0
+                ):
+                    raise ValueError(f"feature keep-out {index} has invalid {field}")
+            axial_bounds = record.get("local_axial_bounds_mm")
+            if axial_bounds is not None and (
+                not isinstance(axial_bounds, (list, tuple))
+                or len(axial_bounds) != 2
+                or any(
+                    isinstance(value, bool)
+                    or not isinstance(value, (int, float))
+                    or not isfinite(value)
+                    for value in axial_bounds
+                )
+                or axial_bounds[1] <= axial_bounds[0]
+            ):
+                raise ValueError(f"feature keep-out {index} has invalid local axial bounds")
+            if axial_bounds is not None:
+                record["local_axial_bounds_mm"] = tuple(axial_bounds)
             pitch = record.get("clearance_pitch_mm")
             if pitch is not None and (
                 not isinstance(pitch, (list, tuple))
@@ -356,6 +377,10 @@ class TargetGrid:
                     **(
                         {"clearance_pitch_mm": list(keepout["clearance_pitch_mm"])}
                         if "clearance_pitch_mm" in keepout else {}
+                    ),
+                    **(
+                        {"local_axial_bounds_mm": list(keepout["local_axial_bounds_mm"])}
+                        if "local_axial_bounds_mm" in keepout else {}
                     ),
                 }
                 for keepout in self.feature_keepouts
