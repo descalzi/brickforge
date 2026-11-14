@@ -34,6 +34,21 @@ test("browser engine builds a connected stack with a narrower upper course", () 
   assert.match(result.ldraw, /3003\.dat/);
 });
 
+test("browser engine connects a narrow-wide-narrow three-course stack", () => {
+  const narrow = [[1, 0], [2, 0], [1, 1], [2, 1]];
+  const wide = [
+    [0, 0], [1, 0], [2, 0], [3, 0],
+    [0, 1], [1, 1], [2, 1], [3, 1],
+  ];
+  const result = buildLayeredFootprintBlock([narrow, wide, narrow], catalogue);
+
+  assert.deepEqual(result.course_part_counts, [1, 1, 1]);
+  assert.equal(result.parts.length, 3);
+  assert.equal(result.connections.length, 2);
+  assert.ok(result.total_mating_pairs > 0);
+  assert.equal(result.dimensions_mm.height, 28.8);
+});
+
 test("browser engine rejects variable courses with no shared connection", () => {
   assert.throws(() => buildLayeredFootprintBlock([
     [[0, 0], [1, 0], [2, 0], [3, 0], [0, 1], [1, 1], [2, 1], [3, 1]],
