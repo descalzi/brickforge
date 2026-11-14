@@ -963,6 +963,7 @@ async function loadPartCatalogue() {
   if (!partCatalogue.length) throw new Error('The searchable part catalogue is empty.');
   connectionProfileMap = await getConnectionProfiles();
   partSearch.disabled = false;
+  partFeatureBatchButton.disabled = false;
   partSearch.placeholder = 'Search ' + partCatalogue.length.toLocaleString()
     + ' parts by number, name or keyword';
   const coverage = document.querySelector('#part-profile-coverage');
