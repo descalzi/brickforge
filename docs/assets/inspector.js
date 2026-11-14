@@ -27,6 +27,7 @@ const voxeliseStatus = document.querySelector('#voxelise-status');
 const voxeliseSummary = document.querySelector('#voxelise-summary');
 const voxelCellCount = document.querySelector('#voxel-cell-count');
 const voxelGridSize = document.querySelector('#voxel-grid-size');
+const voxelFeatureStatus = document.querySelector('#voxel-feature-status');
 const voxelCourseList = document.querySelector('#voxel-course-list');
 const voxelOverlayToggle = document.querySelector('#voxel-overlay-toggle');
 const buildConstructionButton = document.querySelector('#build-construction');
@@ -351,6 +352,7 @@ function resetVoxelisation() {
   removeVoxelOverlay();
   removeConstructionPreview();
   activeTargetGrid = null;
+  if (voxelFeatureStatus) { voxelFeatureStatus.hidden = true; voxelFeatureStatus.textContent = ''; }
   voxeliseButton.disabled = !activeModel;
   voxeliseStatus.textContent = activeModel
     ? 'Ready to voxelise this mesh.'
@@ -481,6 +483,15 @@ function displayVoxelSummary(grid, triangleCount) {
     item.append(label, count);
     voxelCourseList.append(item);
   }
+  if (voxelFeatureStatus) {
+    const topology = grid.topology;
+    const hasHandles = topology?.handle_count > 0;
+    voxelFeatureStatus.hidden = !hasHandles;
+    voxelFeatureStatus.dataset.state = hasHandles ? 'warning' : 'complete';
+    voxelFeatureStatus.textContent = hasHandles
+      ? topology.handle_count.toLocaleString() + ' topological tunnel/handle feature(s) detected. The current brick profiles cannot yet guarantee these openings are preserved.'
+      : '';
+  }
   voxeliseSummary.hidden = false;
   voxelOverlayToggle.disabled = false;
   voxelOverlayToggle.textContent = 'Hide voxel overlay';
@@ -548,17 +559,27 @@ function runVoxelisation() {
         source_units: result.source_units,
         source_bounds_mm: result.source_bounds_mm,
         warnings: result.warnings,
+        topology: result.topology,
       });
       voxelOverlayVisible = true;
       renderVoxelOverlay(activeTargetGrid);
       displayVoxelSummary(activeTargetGrid, result.triangle_count);
-      buildConstructionButton.disabled = false;
+      const hasUnmatchedFeatures = activeTargetGrid.topology?.handle_count > 0;
+      buildConstructionButton.disabled = hasUnmatchedFeatures;
+      if (hasUnmatchedFeatures) {
+        constructionStatus.textContent = 'Construction blocked: the target contains '
+          + activeTargetGrid.topology.handle_count + ' topological tunnel/handle feature(s), and the current part profiles cannot preserve them.';
+        constructionStatus.dataset.state = 'warning';
+      }
       voxeliseStatus.textContent = 'Voxelisation complete. ' + result.ray_triangle_tests.toLocaleString()
         + ' scanline tests and ' + result.cell_triangle_tests.toLocaleString()
         + ' cell-surface intersection tests were completed.';
       voxeliseStatus.dataset.state = 'complete';
       clearActivity();
-      setMessage('Target grid generated in your browser. Orange cells intersect the mesh surface; blue cells are interior.', 'success');
+      setMessage(hasUnmatchedFeatures
+        ? 'Target grid generated. Important openings were detected; construction is blocked rather than silently filling them.'
+        : 'Target grid generated in your browser. Orange cells intersect the mesh surface; blue cells are interior.',
+      hasUnmatchedFeatures ? 'warning' : 'success');
     } catch (error) {
       voxeliseStatus.textContent = error instanceof Error ? error.message : 'Could not display the target grid.';
       voxeliseStatus.dataset.state = 'error';
@@ -625,6 +646,15 @@ function displayConstruction(result) {
 
 function runLayeredConstruction() {
   if (!activeTargetGrid || constructionWorker) return;
+  if (activeTargetGrid.topology?.handle_count > 0) {
+    const count = activeTargetGrid.topology.handle_count;
+    constructionStatus.textContent = 'Construction blocked: ' + count
+      + ' topological tunnel/handle feature(s) cannot currently be represented by the available part profiles. Add feature-compatible parts before generating a construction.';
+    constructionStatus.dataset.state = 'warning';
+    setActivity('Unmatched geometry features', constructionStatus.textContent, 'error', -1);
+    setMessage(constructionStatus.textContent, 'warning');
+    return;
+  }
   const pitch = activeTargetGrid.spec.pitch_mm;
   const expectedPitch = [8, 9.6, 8];
   if (pitch.some((value, index) => Math.abs(value - expectedPitch[index]) > 1e-6)) {
