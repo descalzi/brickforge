@@ -300,7 +300,7 @@ function cellIntersectsSurface(root, boxMin, boxMax, budget) {
 }
 
 
-function preserveSubGridOpenings({ features, dimensions, origin, pitch, classification, coverage }) {
+function preserveSubGridOpenings({ features, dimensions, origin, pitch, boundsMin, boundsMax, classification, coverage }) {
   const [width, height, depth] = dimensions;
   const keepouts = [];
   for (const feature of features) {
@@ -467,7 +467,7 @@ export function voxelizeMesh({
   }
 
   const featureKeepouts = preserveSubGridOpenings({ features, dimensions, origin,
-    pitch: Array.from(pitchMm), classification, coverage });
+    pitch: Array.from(pitchMm), boundsMin, boundsMax, classification, coverage });
   const preservedFeatureCount = featureKeepouts.filter((item) => item.preserved).length;
 
   return {
