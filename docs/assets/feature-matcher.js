@@ -298,6 +298,51 @@ function estimateRigidPlacement(assignments, targetFeatures, candidateFeatures) 
   };
 }
 
+
+function transformedBounds(bounds, rotation, translation) {
+  if (!Array.isArray(bounds) || bounds.length !== 2
+      || !bounds.every((vector) => Array.isArray(vector) && vector.length === 3 && vector.every(Number.isFinite))) {
+    return null;
+  }
+  const minimum = [Infinity, Infinity, Infinity];
+  const maximum = [-Infinity, -Infinity, -Infinity];
+  for (let mask = 0; mask < 8; mask += 1) {
+    const corner = [0, 1, 2].map((axis) => bounds[(mask >> axis) & 1][axis]);
+    const transformed = matrixVector(rotation, corner).map((value, axis) => value + translation[axis]);
+    for (let axis = 0; axis < 3; axis += 1) {
+      minimum[axis] = Math.min(minimum[axis], transformed[axis]);
+      maximum[axis] = Math.max(maximum[axis], transformed[axis]);
+    }
+  }
+  return [minimum, maximum];
+}
+
+function comparePartEnvelope(partBounds, targetBounds, rotation, translation, toleranceMm = 2) {
+  const transformed = transformedBounds(partBounds, rotation, translation);
+  if (!transformed || !Array.isArray(targetBounds) || targetBounds.length !== 2
+      || !targetBounds.every((vector) => Array.isArray(vector) && vector.length === 3 && vector.every(Number.isFinite))) {
+    return {
+      envelope_contained: null,
+      envelope_outside_mm: null,
+      transformed_part_bounds_mm: transformed,
+    };
+  }
+  let maximumOutside = 0;
+  for (let axis = 0; axis < 3; axis += 1) {
+    maximumOutside = Math.max(
+      maximumOutside,
+      targetBounds[0][axis] - transformed[0][axis],
+      transformed[1][axis] - targetBounds[1][axis],
+      0,
+    );
+  }
+  return {
+    envelope_contained: maximumOutside <= toleranceMm,
+    envelope_outside_mm: maximumOutside,
+    transformed_part_bounds_mm: transformed,
+  };
+}
+
 export function matchFeaturePatterns(targetFeatures, partProfiles, {
   limit = 5,
   absoluteToleranceMm = 0.75,
@@ -305,6 +350,7 @@ export function matchFeaturePatterns(targetFeatures, partProfiles, {
   patternToleranceMm = 2,
   relativePatternTolerance = 0.05,
   maxSearchStates = 100000,
+  targetBoundsMm = null,
 } = {}) {
   if (!Array.isArray(targetFeatures) || !Array.isArray(partProfiles)) {
     throw new TypeError("targetFeatures and partProfiles must be arrays");
@@ -420,8 +466,12 @@ export function matchFeaturePatterns(targetFeatures, partProfiles, {
     visit(0, 0, 0, 0, 0);
     if (!best) continue;
     const placement = estimateRigidPlacement(best.assignments, targetFeatures, profile.features);
+    const envelope = placement.placement_resolved && targetBoundsMm
+      ? comparePartEnvelope(profile.bounds_mm, targetBoundsMm, placement.rotation_matrix_3x3, placement.translation_mm)
+      : { envelope_contained: null, envelope_outside_mm: null, transformed_part_bounds_mm: null };
     results.push({
       ...placement,
+      ...envelope,
       part_id: profile.part_id,
       description: profile.description || profile.part_id,
       source_filename: profile.source_filename || "",
