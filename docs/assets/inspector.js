@@ -4,7 +4,7 @@ let STLLoader;
 let OBJLoader;
 
 import { GridSpec, TargetGrid } from "./target-grid.js?v=featuremeasure4";
-import { matchFeaturePatterns, matchTargetFeatures } from "./feature-matcher.js?v=featurematch5";
+import { matchFeaturePatterns, matchTargetFeatures } from "./feature-matcher.js?v=featurematch6";
 import { constructionPreviewTransform } from "./construction-preview.js";
 
 const MAX_FILE_BYTES = 100 * 1024 * 1024;
@@ -615,12 +615,13 @@ function renderFeaturePatterns() {
     featurePatternStatus.textContent = 'No complete one-to-one opening layout matched within the current spacing and size tolerances. Individual candidates above may still be useful.';
     return;
   }
-  featurePatternStatus.textContent = patterns.length + ' complete spatial pattern candidate(s). Pairwise spacing is compared independently of translation and rotation; surrounding envelope and physical connections are not yet verified.';
+  featurePatternStatus.textContent = patterns.length + ' complete spatial pattern candidate(s). Pairwise spacing is compared independently of translation and rotation, and a rigid transform is estimated where feature centres are non-collinear; surrounding envelope and physical connections are not yet verified.';
   patterns.forEach((pattern) => {
     const item = document.createElement('li');
     const heading = document.createElement('strong');
     const detail = document.createElement('span');
     const assignment = document.createElement('small');
+    const placement = document.createElement('small');
     const envelope = pattern.part_dimensions_mm
       ? ' · envelope ' + pattern.part_dimensions_mm.map((value) => value.toFixed(1)).join(' × ') + ' mm'
       : '';
@@ -632,7 +633,12 @@ function renderFeaturePatterns() {
     assignment.textContent = pattern.assignments.map((entry) =>
       entry.target_feature_id + ' → ' + entry.candidate_feature_id + ' (local ' + entry.local_axis.toUpperCase() + ')'
     ).join(' · ');
-    item.append(heading, detail, assignment);
+    placement.textContent = pattern.placement_resolved
+      ? 'Rigid placement estimate · residual ' + pattern.rms_residual_mm.toFixed(3)
+        + ' mm · axis alignment ' + pattern.axis_alignment_rms_deg.toFixed(2)
+        + '° · translation ' + pattern.translation_mm.map((value) => value.toFixed(1)).join(', ') + ' mm'
+      : 'Opening layout matched, but 3D placement remains underdetermined (non-collinear feature centres are needed).';
+    item.append(heading, detail, assignment, placement);
     featurePatternList.append(item);
   });
 }
