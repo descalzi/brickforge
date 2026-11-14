@@ -3,6 +3,8 @@ let OrbitControls;
 let STLLoader;
 let OBJLoader;
 
+import { GridSpec, TargetGrid } from "./target-grid.js";
+
 const MAX_FILE_BYTES = 100 * 1024 * 1024;
 const MILLIMETRES_PER_UNIT = { mm: 1, cm: 10, m: 1000, in: 25.4 };
 
@@ -15,6 +17,13 @@ const dropZone = document.querySelector('#drop-zone');
 const unitsSelect = document.querySelector('#source-units');
 const wireframeButton = document.querySelector('#wireframe-toggle');
 const resetButton = document.querySelector('#reset-view');
+const voxeliseButton = document.querySelector('#voxelise-button');
+const voxeliseStatus = document.querySelector('#voxelise-status');
+const voxeliseSummary = document.querySelector('#voxelise-summary');
+const voxelCellCount = document.querySelector('#voxel-cell-count');
+const voxelGridSize = document.querySelector('#voxel-grid-size');
+const voxelCourseList = document.querySelector('#voxel-course-list');
+const voxelOverlayToggle = document.querySelector('#voxel-overlay-toggle');
 
 const output = {
   x: document.querySelector('#dimension-x'),
@@ -40,6 +49,10 @@ let wireframeEnabled = false;
 let viewerReady = false;
 let viewerLoading = true;
 let pendingFile;
+let voxelWorker;
+let activeTargetGrid;
+let activeVoxelGroup;
+let voxelOverlayVisible = true;
 
 function setMessage(text, kind = 'info') {
   message.textContent = text;
@@ -154,6 +167,238 @@ function removeActiveModel() {
   activeMeshes = [];
 }
 
+function removeVoxelOverlay() {
+  if (!activeVoxelGroup) return;
+  scene.remove(activeVoxelGroup);
+  activeVoxelGroup.traverse((object) => {
+    if (!object.isMesh) return;
+    object.geometry?.dispose?.();
+    if (Array.isArray(object.material)) object.material.forEach((material) => material.dispose?.());
+    else object.material?.dispose?.();
+  });
+  activeVoxelGroup = null;
+}
+
+function resetVoxelisation() {
+  if (voxelWorker) {
+    voxelWorker.terminate();
+    voxelWorker = null;
+  }
+  removeVoxelOverlay();
+  activeTargetGrid = null;
+  voxeliseButton.disabled = !activeModel;
+  voxeliseStatus.textContent = activeModel
+    ? 'Ready to voxelise this mesh.'
+    : 'Load a mesh to enable voxelisation.';
+  voxeliseStatus.dataset.state = 'idle';
+  voxeliseSummary.hidden = true;
+  voxelOverlayToggle.disabled = true;
+}
+
+function collectVoxelMesh() {
+  const sourceUnit = unitsSelect.value || 'mm';
+  const unitFactor = MILLIMETRES_PER_UNIT[sourceUnit];
+  const totalVertices = activeMeshes.reduce(
+    (sum, mesh) => sum + mesh.geometry.attributes.position.count, 0,
+  );
+  const totalTriangles = activeMeshes.reduce((sum, mesh) => {
+    const geometry = mesh.geometry;
+    return sum + (geometry.index ? geometry.index.count : geometry.attributes.position.count) / 3;
+  }, 0);
+  if (totalTriangles > 100000) {
+    throw new Error('This mesh exceeds the browser voxeliser limit of 100,000 triangles. Use a lower-detail export.');
+  }
+  const vertices = new Float64Array(totalVertices * 3);
+  const indices = new Uint32Array(totalTriangles * 3);
+  let vertexOffset = 0;
+  let indexOffset = 0;
+  const point = new THREE.Vector3();
+  activeMeshes.forEach((mesh) => {
+    mesh.updateMatrixWorld(true);
+    const position = mesh.geometry.attributes.position;
+    for (let index = 0; index < position.count; index += 1) {
+      point.fromBufferAttribute(position, index).applyMatrix4(mesh.matrixWorld);
+      const offset = (vertexOffset + index) * 3;
+      vertices[offset] = point.x / unitFactor;
+      vertices[offset + 1] = point.y / unitFactor;
+      vertices[offset + 2] = point.z / unitFactor;
+    }
+    if (mesh.geometry.index) {
+      const sourceIndices = mesh.geometry.index;
+      for (let index = 0; index < sourceIndices.count; index += 1) {
+        indices[indexOffset++] = vertexOffset + sourceIndices.getX(index);
+      }
+    } else {
+      for (let index = 0; index < position.count; index += 1) {
+        indices[indexOffset++] = vertexOffset + index;
+      }
+    }
+    vertexOffset += position.count;
+  });
+  return { vertices, indices, sourceUnit };
+}
+
+function renderVoxelOverlay(grid) {
+  removeVoxelOverlay();
+  const [width, height, depth] = grid.spec.dimensions;
+  let interiorCount = 0;
+  let boundaryCount = 0;
+  for (const value of grid.classification) {
+    if (value === 1) interiorCount += 1;
+    else if (value === 2) boundaryCount += 1;
+  }
+  const group = new THREE.Group();
+  const dummy = new THREE.Object3D();
+  const makeInstances = (count, colour, opacity) => {
+    if (!count) return null;
+    const mesh = new THREE.InstancedMesh(
+      new THREE.BoxGeometry(1, 1, 1),
+      new THREE.MeshBasicMaterial({
+        color: colour, transparent: true, opacity, depthWrite: false,
+      }),
+      count,
+    );
+    mesh.frustumCulled = false;
+    return mesh;
+  };
+  const interior = makeInstances(interiorCount, 0x3D789B, 0.22);
+  const boundary = makeInstances(boundaryCount, 0xD66A32, 0.42);
+  let interiorIndex = 0;
+  let boundaryIndex = 0;
+  for (let y = 0; y < height; y += 1) {
+    for (let z = 0; z < depth; z += 1) {
+      for (let x = 0; x < width; x += 1) {
+        const value = grid.classification[grid.spec.flat_index(x, y, z)];
+        const target = value === 1 ? interior : value === 2 ? boundary : null;
+        if (!target) continue;
+        const index = value === 1 ? interiorIndex++ : boundaryIndex++;
+        dummy.position.set(
+          grid.spec.origin_mm[0] + (x + 0.5) * grid.spec.pitch_mm[0],
+          grid.spec.origin_mm[1] + (y + 0.5) * grid.spec.pitch_mm[1],
+          grid.spec.origin_mm[2] + (z + 0.5) * grid.spec.pitch_mm[2],
+        );
+        dummy.scale.set(
+          grid.spec.pitch_mm[0] * 0.96,
+          grid.spec.pitch_mm[1] * 0.96,
+          grid.spec.pitch_mm[2] * 0.96,
+        );
+        dummy.updateMatrix();
+        target.setMatrixAt(index, dummy.matrix);
+      }
+    }
+  }
+  if (interior) {
+    interior.instanceMatrix.needsUpdate = true;
+    group.add(interior);
+  }
+  if (boundary) {
+    boundary.instanceMatrix.needsUpdate = true;
+    group.add(boundary);
+  }
+  scene.add(group);
+  activeVoxelGroup = group;
+  activeVoxelGroup.visible = voxelOverlayVisible;
+}
+
+function displayVoxelSummary(grid, triangleCount) {
+  const summary = grid.summary();
+  voxelCellCount.textContent = summary.occupied_cell_count.toLocaleString() + ' occupied cells';
+  voxelGridSize.textContent = summary.dimensions.join(' × ') + ' cells · '
+    + triangleCount.toLocaleString() + ' triangles · '
+    + summary.boundary_cell_count.toLocaleString() + ' boundary cells';
+  voxelCourseList.replaceChildren();
+  for (let y = 0; y < summary.dimensions[1]; y += 1) {
+    const item = document.createElement('li');
+    const label = document.createElement('span');
+    const count = document.createElement('strong');
+    label.textContent = 'Course ' + (y + 1);
+    count.textContent = grid.layer_footprint(y).length.toLocaleString() + ' cells';
+    item.append(label, count);
+    voxelCourseList.append(item);
+  }
+  voxeliseSummary.hidden = false;
+  voxelOverlayToggle.disabled = false;
+  voxelOverlayToggle.textContent = 'Hide voxel overlay';
+}
+
+function runVoxelisation() {
+  if (!activeModel || voxelWorker) return;
+  let meshInput;
+  try {
+    meshInput = collectVoxelMesh();
+  } catch (error) {
+    voxeliseStatus.textContent = error instanceof Error ? error.message : 'Mesh preparation failed.';
+    voxeliseStatus.dataset.state = 'error';
+    return;
+  }
+  resetVoxelisation();
+  voxeliseButton.disabled = true;
+  voxeliseStatus.textContent = 'Preparing triangle acceleration structure…';
+  voxeliseStatus.dataset.state = 'working';
+  setMessage('Voxelising locally. The 3D viewer remains interactive while the worker processes the mesh.');
+  voxelWorker = new Worker(new URL('./mesh-voxelizer-worker.js', import.meta.url), { type: 'module' });
+  const worker = voxelWorker;
+  worker.addEventListener('message', (event) => {
+    if (worker !== voxelWorker) return;
+    const data = event.data;
+    if (data.type === 'progress') {
+      const percent = Math.round((data.completed / data.total) * 100);
+      voxeliseStatus.textContent = 'Classifying grid columns… ' + percent + '%';
+      return;
+    }
+    worker.terminate();
+    voxelWorker = null;
+    voxeliseButton.disabled = false;
+    if (data.type === 'error') {
+      voxeliseStatus.textContent = data.message;
+      voxeliseStatus.dataset.state = 'error';
+      setMessage(data.message, 'error');
+      return;
+    }
+    try {
+      const result = data.result;
+      const spec = new GridSpec({
+        dimensions: result.dimensions,
+        origin_mm: result.origin_mm,
+        pitch_mm: result.pitch_mm,
+      });
+      activeTargetGrid = new TargetGrid({
+        spec,
+        classification: result.classification,
+        surface_coverage: result.surface_coverage,
+        source_units: result.source_units,
+        source_bounds_mm: result.source_bounds_mm,
+        warnings: result.warnings,
+      });
+      renderVoxelOverlay(activeTargetGrid);
+      displayVoxelSummary(activeTargetGrid, result.triangle_count);
+      voxeliseStatus.textContent = 'Voxelisation complete. ' + result.ray_triangle_tests.toLocaleString()
+        + ' accelerated triangle tests were used for the interior scanlines.';
+      voxeliseStatus.dataset.state = 'complete';
+      setMessage('Target grid generated in your browser. The orange cells mark the approximate surface boundary; blue cells are interior.', 'success');
+    } catch (error) {
+      voxeliseStatus.textContent = error instanceof Error ? error.message : 'Could not display the target grid.';
+      voxeliseStatus.dataset.state = 'error';
+      setMessage(voxeliseStatus.textContent, 'error');
+    }
+  });
+  worker.addEventListener('error', (event) => {
+    if (worker !== voxelWorker) return;
+    worker.terminate();
+    voxelWorker = null;
+    voxeliseButton.disabled = false;
+    voxeliseStatus.textContent = event.message || 'The voxelisation worker failed.';
+    voxeliseStatus.dataset.state = 'error';
+    setMessage(voxeliseStatus.textContent, 'error');
+  });
+  worker.postMessage({
+    vertices: meshInput.vertices,
+    indices: meshInput.indices,
+    units: meshInput.sourceUnit,
+    maxCells: 100000,
+  }, [meshInput.vertices.buffer, meshInput.indices.buffer]);
+}
+
 function disposeHelper(helper) {
   if (!helper) return;
   scene.remove(helper);
@@ -251,6 +496,7 @@ function prepareModel(object, unitFactor, sourceUnit) {
     });
   });
 
+  resetVoxelisation();
   removeActiveModel();
   activeModel = object;
   activeMeshes = stats.meshes;
@@ -262,6 +508,8 @@ function prepareModel(object, unitFactor, sourceUnit) {
   emptyState.hidden = true;
   wireframeButton.disabled = false;
   resetButton.disabled = false;
+  voxeliseButton.disabled = false;
+  voxeliseStatus.textContent = 'Ready to voxelise this closed mesh.';
   setState('MESH LOADED', 'loaded');
   setMessage(
     `Mesh loaded locally. Source units interpreted as ${sourceUnit}; measurements are shown in millimetres. No L-brick buildability check has been run.`,
@@ -319,6 +567,7 @@ async function handleFile(file) {
     await parseFile(file);
   } catch (error) {
     console.error('BrickForge could not load the selected mesh:', error);
+    resetVoxelisation();
     removeActiveModel();
     emptyState.hidden = false;
     wireframeButton.disabled = true;
@@ -364,6 +613,14 @@ wireframeButton.addEventListener('click', () => {
 
 resetButton.addEventListener('click', () => {
   if (currentBounds) fitCamera(currentBounds);
+});
+
+voxeliseButton.addEventListener('click', runVoxelisation);
+voxelOverlayToggle.addEventListener('click', () => {
+  if (!activeVoxelGroup) return;
+  voxelOverlayVisible = !voxelOverlayVisible;
+  activeVoxelGroup.visible = voxelOverlayVisible;
+  voxelOverlayToggle.textContent = voxelOverlayVisible ? 'Hide voxel overlay' : 'Show voxel overlay';
 });
 
 async function startInspector() {
