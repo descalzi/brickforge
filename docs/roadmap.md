@@ -68,8 +68,8 @@ This roadmap is intentionally milestone-based. Each milestone should produce a d
 - [x] Define the versioned browser target-grid data model with explicit physical pitch, origin, classification and layer extraction.
 - [x] Add a bounded browser voxeliser for closed meshes, including unit conversion, BVH-accelerated occupancy sampling and nearest-surface boundary detection.
 - [ ] Define a scale-aware, orientation-aware target-shape representation for the browser product.
-- [ ] Integrate browser voxelisation into the mesh inspector and expose per-course occupancy previews.
-- [ ] Convert imported triangle meshes into a bounded 3D occupancy field at configurable stud/course resolution.
+- [x] Integrate browser voxelisation into the mesh inspector and expose per-course occupancy previews.
+- [x] Convert imported triangle meshes into a bounded 3D occupancy field at the standard stud/course resolution.
 - [ ] Add robust mesh validation and explicit handling for open, non-watertight, degenerate and self-intersecting surfaces.
 - [ ] Extract per-course 2D cross-sections while retaining surface-distance information for visual fitting.
 - [ ] Reuse the tested footprint tiler as a per-course candidate generator, then solve for connected cross-course arrangements.
