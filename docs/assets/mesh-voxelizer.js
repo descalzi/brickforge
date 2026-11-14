@@ -1,5 +1,5 @@
 import { BRICK_GRID_PITCH_MM, CellClass } from "./target-grid.js?v=featuregrid5";
-import { analyzeMeshFeatures } from "./mesh-feature-analysis.js?v=featuremeasure3";
+import { analyzeMeshFeatures } from "./mesh-feature-analysis.js?v=featuremeasure4";
 
 const UNIT_TO_MM = Object.freeze({ mm: 1, cm: 10, m: 1000, in: 25.4 });
 const SAMPLE_OFFSETS = Object.freeze([0.25, 0.5, 0.75]);
@@ -300,7 +300,7 @@ function cellIntersectsSurface(root, boxMin, boxMax, budget) {
 }
 
 
-function preserveSubGridOpenings({ features, dimensions, origin, pitch, boundsMin, boundsMax, classification, coverage }) {
+function preserveSubGridOpenings({ features, dimensions, origin, pitch, classification, coverage }) {
   const [width, height, depth] = dimensions;
   const keepouts = [];
   for (const feature of features) {
@@ -467,7 +467,7 @@ export function voxelizeMesh({
   }
 
   const featureKeepouts = preserveSubGridOpenings({ features, dimensions, origin,
-    pitch: Array.from(pitchMm), boundsMin, boundsMax, classification, coverage });
+    pitch: Array.from(pitchMm), classification, coverage });
   const preservedFeatureCount = featureKeepouts.filter((item) => item.preserved).length;
 
   return {
