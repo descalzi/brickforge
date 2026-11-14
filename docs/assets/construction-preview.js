@@ -24,7 +24,7 @@ export function constructionPreviewTransform(part, profile, grid, targetCellBoun
   if (!Array.isArray(modelCenter) || modelCenter.length !== 3 || !modelCenter.every(Number.isFinite)) {
     throw new TypeError("The source model centre must contain three finite coordinates.");
   }
-  const courseMatch = /^layer-(\\d+)-/.exec(part.instance_id || "");
+  const courseMatch = /^layer-(\d+)-/.exec(part.instance_id || "");
   if (!courseMatch) throw new TypeError("A preview part instance ID must identify its course.");
   if (Math.abs(profile.stud_pitch_ldu * LDU_TO_MM - grid.pitch_mm[0]) > 1e-6
     || Math.abs(profile.stud_pitch_ldu * LDU_TO_MM - grid.pitch_mm[2]) > 1e-6
