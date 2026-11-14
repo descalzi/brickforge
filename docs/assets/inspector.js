@@ -1233,7 +1233,7 @@ function displayMeasurements(size, stats, fileName, sourceUnit) {
   output.vertices.textContent = stats.vertices.toLocaleString();
   output.triangles.textContent = stats.triangles.toLocaleString();
   output.meshes.textContent = stats.meshes.length.toLocaleString();
-  output.hint.textContent = `${fileName} · interpreted as ${sourceUnit}`;
+  output.hint.textContent = `${fileName} · interpreted as ${sourceUnit} · source ${upAxisSelect.value.toUpperCase()}-up aligned to construction Y-up`;
 }
 
 function buildModelFromGeometry(geometry) {
