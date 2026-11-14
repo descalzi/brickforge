@@ -3,7 +3,7 @@ let OrbitControls;
 let STLLoader;
 let OBJLoader;
 
-import { GridSpec, TargetGrid } from "./target-grid.js?v=featuregrid5";
+import { GridSpec, TargetGrid } from "./target-grid.js?v=featuregrid6";
 import { matchFeaturePatterns, matchTargetFeatures } from "./feature-matcher.js?v=featurematch8";
 import { constructionPreviewTransform } from "./construction-preview.js";
 import { transformPartPreviewPositions } from "./part-preview.js?v=featurepreview1";
