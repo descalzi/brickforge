@@ -12,6 +12,10 @@ const MILLIMETRES_PER_UNIT = { mm: 1, cm: 10, m: 1000, in: 25.4 };
 const viewport = document.querySelector('#viewport');
 const emptyState = document.querySelector('#viewport-empty');
 const stateLabel = document.querySelector('#viewport-state');
+const activityPanel = document.querySelector('#preview-activity');
+const activityTitle = document.querySelector('#preview-activity-title');
+const activityDetail = document.querySelector('#preview-activity-detail');
+const activitySteps = [...document.querySelectorAll('[data-activity-step]')];
 const message = document.querySelector('#inspector-message');
 const fileInput = document.querySelector('#file-input');
 const dropZone = document.querySelector('#drop-zone');
@@ -62,7 +66,7 @@ let viewerReady = false;
 let viewerLoading = true;
 let pendingFile;
 let voxelWorker;
-let constructionWorker;
+let constructionWorker = null;
 let activeConstruction;
 let activeTargetGrid;
 let activeVoxelGroup;
@@ -74,6 +78,23 @@ const ghostedMaterialStates = new Map();
 function setMessage(text, kind = 'info') {
   message.textContent = text;
   message.dataset.kind = kind;
+}
+
+function setActivity(stage, detail, state = 'working', step = -1) {
+  if (!activityPanel) return;
+  activityPanel.hidden = false;
+  activityPanel.dataset.state = state;
+  activityTitle.textContent = stage;
+  activityDetail.textContent = detail;
+  activitySteps.forEach((item, index) => {
+    item.dataset.status = index < step ? 'complete' : index === step ? 'active' : 'pending';
+  });
+}
+
+function clearActivity() {
+  if (!activityPanel) return;
+  activityPanel.hidden = true;
+  activityPanel.dataset.state = 'idle';
 }
 
 function setState(text, state = 'ready') {
@@ -478,6 +499,7 @@ function runVoxelisation() {
   resetVoxelisation();
   voxeliseButton.disabled = true;
   voxeliseStatus.textContent = 'Preparing triangle acceleration structure…';
+  setActivity('Preparing geometry', 'Building a triangle acceleration structure for the mesh…', 'working', 3);
   voxeliseStatus.dataset.state = 'working';
   setMessage('Voxelising locally. The 3D viewer remains interactive while the worker processes the mesh.');
   try {
@@ -486,6 +508,7 @@ function runVoxelisation() {
     voxeliseButton.disabled = false;
     voxeliseStatus.textContent = error instanceof Error ? error.message : 'Could not start the voxelisation worker.';
     voxeliseStatus.dataset.state = 'error';
+    setActivity('Voxelisation worker failed', voxeliseStatus.textContent, 'error', -1);
     setMessage(voxeliseStatus.textContent, 'error');
     return;
   }
@@ -496,6 +519,7 @@ function runVoxelisation() {
     if (data.type === 'progress') {
       const percent = Math.round((data.completed / data.total) * 100);
       voxeliseStatus.textContent = 'Classifying grid columns… ' + percent + '%';
+      setActivity('Voxelising mesh', 'Classifying grid columns… ' + percent + '%', 'working', 4);
       return;
     }
     worker.terminate();
@@ -504,6 +528,7 @@ function runVoxelisation() {
     if (data.type === 'error') {
       voxeliseStatus.textContent = data.message;
       voxeliseStatus.dataset.state = 'error';
+      setActivity('Voxelisation failed', data.message, 'error', -1);
       setMessage(data.message, 'error');
       return;
     }
@@ -530,10 +555,12 @@ function runVoxelisation() {
         + ' scanline tests and ' + result.cell_triangle_tests.toLocaleString()
         + ' cell-surface intersection tests were completed.';
       voxeliseStatus.dataset.state = 'complete';
+      setActivity('Target grid ready', 'The mesh has been converted into occupied grid cells.', 'complete', 4);
       setMessage('Target grid generated in your browser. Orange cells intersect the mesh surface; blue cells are interior.', 'success');
     } catch (error) {
       voxeliseStatus.textContent = error instanceof Error ? error.message : 'Could not display the target grid.';
       voxeliseStatus.dataset.state = 'error';
+      setActivity('Could not display target grid', voxeliseStatus.textContent, 'error', -1);
       setMessage(voxeliseStatus.textContent, 'error');
     }
   });
@@ -616,6 +643,7 @@ function runLayeredConstruction() {
 
   buildConstructionButton.disabled = true;
   constructionStatus.textContent = 'Preparing per-course footprints…';
+  setActivity('Preparing construction', 'Extracting the occupied footprint from each course…', 'working', 5);
   constructionStatus.dataset.state = 'working';
   constructionSummary.hidden = true;
   setMessage('Searching for a connected arrangement across all occupied courses. The viewer remains interactive.');
@@ -638,6 +666,7 @@ function runLayeredConstruction() {
     const data = event.data;
     if (data.type === 'progress') {
       constructionStatus.textContent = data.message;
+      setActivity('Finding connected layout', data.message, 'working', 6);
       return;
     }
     worker.terminate();
@@ -646,15 +675,18 @@ function runLayeredConstruction() {
     if (data.type === 'error') {
       constructionStatus.textContent = data.message;
       constructionStatus.dataset.state = 'error';
+      setActivity('Construction search failed', data.message, 'error', -1);
       setMessage(data.message, 'error');
       return;
     }
     try {
       displayConstruction(data.result);
+      setActivity('Construction generated', 'The connected arrangement is ready in the 3D preview.', 'complete', 7);
     } catch (error) {
       constructionStatus.textContent = error instanceof Error
         ? error.message : 'Could not display the generated construction.';
       constructionStatus.dataset.state = 'error';
+      setActivity('Preview failed', constructionStatus.textContent, 'error', -1);
     }
   });
   worker.addEventListener('error', (event) => {
@@ -664,6 +696,7 @@ function runLayeredConstruction() {
     buildConstructionButton.disabled = false;
     constructionStatus.textContent = event.message || 'The construction worker failed.';
     constructionStatus.dataset.state = 'error';
+    setActivity('Construction worker failed', constructionStatus.textContent, 'error', -1);
     setMessage(constructionStatus.textContent, 'error');
   });
   worker.postMessage({ layerFootprints, config: { maxParts: 200 } });
@@ -782,6 +815,7 @@ function prepareModel(object, unitFactor, sourceUnit) {
   voxeliseButton.disabled = false;
   voxeliseStatus.textContent = 'Ready to voxelise this closed mesh.';
   setState('MESH LOADED', 'loaded');
+  setActivity('Mesh ready', 'Geometry is loaded. Choose the next processing stage.', 'complete', 0);
   setMessage(
     `Mesh loaded locally. Source units interpreted as ${sourceUnit}; measurements are shown in millimetres. No L-brick buildability check has been run.`,
     'success',
@@ -789,6 +823,7 @@ function prepareModel(object, unitFactor, sourceUnit) {
 }
 
 async function parseFile(file) {
+  setActivity('Reading file', 'Opening the selected ' + file.name.split('.').pop().toUpperCase() + ' file locally…', 'working', 0);
   const unit = unitsSelect.value || 'mm';
   unitsSelect.value = unit;
 
@@ -803,16 +838,19 @@ async function parseFile(file) {
   let object;
 
   if (extension === 'stl') {
+    setActivity('Parsing STL geometry', 'Reading triangle data and preparing the surface mesh…', 'working', 1);
     const buffer = await file.arrayBuffer();
     const geometry = new STLLoader().parse(buffer);
     object = buildModelFromGeometry(geometry);
   } else if (extension === 'obj') {
+    setActivity('Parsing OBJ geometry', 'Reading vertices, faces and object groups…', 'working', 1);
     const sourceText = await file.text();
     object = new OBJLoader().parse(sourceText);
   } else {
     throw new Error('Unsupported file type. Please choose an STL or OBJ file.');
   }
 
+  setActivity('Preparing 3D preview', 'Checking geometry, calculating dimensions and positioning the model…', 'working', 2);
   prepareModel(object, MILLIMETRES_PER_UNIT[unit], unit);
 }
 
@@ -832,6 +870,7 @@ async function handleFile(file) {
   currentFile = file;
   clearMeasurements();
   setState('READING FILE');
+  setActivity('Reading file', 'Opening ' + file.name + ' in your browser…', 'working', 0);
   setMessage(`Reading ${file.name} in your browser…`);
 
   try {
@@ -846,6 +885,7 @@ async function handleFile(file) {
     voxeliseButton.disabled = true;
     currentBounds = null;
     setState('LOAD FAILED', 'error');
+    setActivity('Could not load mesh', error instanceof Error ? error.message : 'The file could not be read.', 'error', -1);
     setMessage(error instanceof Error ? error.message : 'The file could not be read.', 'error');
     clearMeasurements();
   }
