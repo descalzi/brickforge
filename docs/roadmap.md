@@ -17,7 +17,7 @@ This roadmap is intentionally milestone-based. Each milestone should produce a d
 
 - [ ] Create Python package and CLI entry point.
 - [x] Import STL and OBJ meshes.
-- [ ] Validate empty, non-watertight, degenerate, and non-finite geometry cases.
+- [x] Validate empty, non-watertight, degenerate, and non-finite geometry cases.
 - [x] Report units, dimensions, and mesh statistics.
 - [ ] Normalise geometry without silently changing intended physical scale.
 - [x] Add deterministic unit tests and small test fixtures.
@@ -65,6 +65,8 @@ This roadmap is intentionally milestone-based. Each milestone should produce a d
 
 ## M5 — 3D target representation, shape coverage and optimisation
 
+- [x] Define the initial versioned Python target-grid data model with explicit physical pitch, origin, classification and layer extraction.
+- [x] Add a bounded Python voxeliser for watertight meshes, including unit conversion, occupancy sampling and nearest-surface boundary detection.
 - [ ] Define a scale-aware, orientation-aware target-shape representation shared by Python and browser implementations.
 - [ ] Convert imported triangle meshes into a bounded 3D occupancy field at configurable stud/course resolution.
 - [ ] Add robust mesh validation and explicit handling for open, non-watertight, degenerate and self-intersecting surfaces.
