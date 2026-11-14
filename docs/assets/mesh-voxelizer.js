@@ -5,6 +5,7 @@ const SAMPLE_OFFSETS = Object.freeze([0.25, 0.5, 0.75]);
 const MAX_TRIANGLES = 100_000;
 const MAX_CELLS = 100_000;
 const MAX_RAY_TRIANGLE_TESTS = 30_000_000;
+const MAX_NEAREST_TRIANGLE_TESTS = 50_000_000;
 const EDGE_QUANTISATION = 100_000;
 
 function assertVector(value, label, positive = false) {
@@ -211,7 +212,7 @@ function closestPointTriangleSquared(p, triangle) {
   return q.reduce((sum, value, i) => sum + (p[i] - value) ** 2, 0);
 }
 
-function nearestSurfaceDistanceSquared(root, point) {
+function nearestSurfaceDistanceSquared(root, point, budget) {
   let best = Infinity;
   const stack = [root];
   while (stack.length) {
@@ -219,6 +220,10 @@ function nearestSurfaceDistanceSquared(root, point) {
     if (pointAabbDistanceSquared(point, node.min, node.max) >= best) continue;
     if (node.triangles) {
       for (const triangle of node.triangles) {
+        budget.tests += 1;
+        if (budget.tests > MAX_NEAREST_TRIANGLE_TESTS) {
+          throw new Error("Mesh is too complex for the browser surface-distance budget. Try a lower-detail mesh.");
+        }
         const distance = closestPointTriangleSquared(point, triangle);
         if (distance < best) best = distance;
       }
@@ -295,6 +300,7 @@ export function voxelizeMesh({
   const coverage = new Float32Array(cellCount);
   const halfDiagonal = Math.hypot(pitchMm[0] * 0.5, pitchMm[1] * 0.5, pitchMm[2] * 0.5);
   const rayBudget = { tests: 0 };
+  const nearestBudget = { tests: 0 };
   let completedColumns = 0;
   const totalColumns = height * depth;
 
@@ -327,7 +333,7 @@ export function voxelizeMesh({
           origin[1] + (y + 0.5) * pitchMm[1],
           origin[2] + (z + 0.5) * pitchMm[2],
         ];
-        const nearSurface = nearestSurfaceDistanceSquared(root, centre)
+        const nearSurface = nearestSurfaceDistanceSquared(root, centre, nearestBudget)
           <= (halfDiagonal + 1e-9) ** 2;
         const fraction = insideSamples / 27;
         coverage[flat] = fraction;
@@ -354,5 +360,6 @@ export function voxelizeMesh({
     ],
     triangle_count: faceCount,
     ray_triangle_tests: rayBudget.tests,
+    nearest_triangle_tests: nearestBudget.tests,
   };
 }
