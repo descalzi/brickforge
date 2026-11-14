@@ -88,7 +88,8 @@ test("browser voxeliser removes zero-area facets but rejects open, non-finite an
     ...mesh, indices: mesh.indices.slice(0, mesh.indices.length - 3), units: "mm",
   }), /watertight/);
   const degenerate = { ...mesh, indices: new Uint32Array([...mesh.indices, 0, 0, 0]) };
-  const cleanedGrid = voxelizeMesh({ ...degenerate, units: "mm" });\n  assert.equal(cleanedGrid.removed_degenerate_triangle_count, 1);\n  assert.equal(cleanedGrid.triangle_count, mesh.indices.length / 3);\n  assert.match(cleanedGrid.warnings[0], /Removed 1/);
+  const cleanedGrid = voxelizeMesh({ ...degenerate, units: "mm" });
+  assert.equal(cleanedGrid.removed_degenerate_triangle_count, 1);\n  assert.equal(cleanedGrid.triangle_count, mesh.indices.length / 3);\n  assert.match(cleanedGrid.warnings[0], /Removed 1/);
   const nonFinite = { ...mesh, vertices: new Float64Array(mesh.vertices) };
   nonFinite.vertices[0] = NaN;
   assert.throws(() => voxelizeMesh({ ...nonFinite, units: "mm" }), /non-finite/);
