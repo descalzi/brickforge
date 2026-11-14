@@ -284,3 +284,24 @@
   font-size: .7rem;
   line-height: 1.45;
 }
+
+
+/* Live processing display in the 3D preview */
+.preview-activity { position:absolute; z-index:3; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:15px; padding:28px; color:#263746; text-align:center; background:rgba(248,250,251,.91); backdrop-filter:blur(5px); }
+.preview-activity[hidden] { display:none; }
+.preview-activity strong { font-size:clamp(1rem,2vw,1.3rem); font-weight:650; }
+.preview-activity p { max-width:470px; margin:0; color:#607384; font-size:.86rem; line-height:1.55; }
+.preview-activity[data-state="error"] strong { color:#A32935; }
+.preview-activity[data-state="complete"] strong { color:#176A4A; }
+.preview-activity-bricks { display:grid; grid-template-columns:repeat(3,34px); gap:5px; padding:12px; transform:skewY(-9deg); }
+.preview-activity-bricks span { width:34px; height:20px; border:1px solid #A93619; border-radius:3px; background:linear-gradient(145deg,#F06A42,#C43D1D); box-shadow:inset 0 3px 0 rgba(255,255,255,.24),0 3px 0 #8E2C17; animation:preview-brick-build 1.35s ease-in-out infinite; }
+.preview-activity-bricks span:nth-child(2), .preview-activity-bricks span:nth-child(5) { animation-delay:.16s; }
+.preview-activity-bricks span:nth-child(3), .preview-activity-bricks span:nth-child(6) { animation-delay:.32s; }
+.preview-activity[data-state="complete"] .preview-activity-bricks span { animation:none; }
+.preview-activity[data-state="error"] .preview-activity-bricks span { animation:none; background:#D9A3A6; border-color:#A32935; box-shadow:none; }
+@keyframes preview-brick-build { 0%,100% { transform:translateY(5px); opacity:.62; } 50% { transform:translateY(-7px); opacity:1; } }
+.preview-activity-steps { display:flex; flex-wrap:wrap; justify-content:center; gap:6px; max-width:570px; margin:5px 0 0; padding:0; list-style:none; }
+.preview-activity-steps li { padding:5px 8px; border:1px solid #D5DEE4; border-radius:3px; color:#82909B; background:rgba(255,255,255,.8); font:500 .63rem var(--font-mono); }
+.preview-activity-steps li[data-status="active"] { border-color:#C94B2A; color:#A93619; background:#FFF1EC; }
+.preview-activity-steps li[data-status="complete"] { border-color:#A7C9BA; color:#176A4A; background:#F1F8F4; }
+@media (prefers-reduced-motion:reduce) { .preview-activity-bricks span { animation:none; } }
