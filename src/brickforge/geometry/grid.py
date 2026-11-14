@@ -181,7 +181,10 @@ class TargetGrid:
                 or topology["face_count"] < 1
                 or topology["handle_count"] < 0
             ):
-                raise ValueError("topology must contain valid closed-mesh component, count, Euler and handle data")
+                raise ValueError(
+                    "topology must contain valid closed-mesh component, count, "
+                    "Euler and handle data"
+                )
             topology = MappingProxyType({field: topology[field] for field in fields})
 
         classification.setflags(write=False)
