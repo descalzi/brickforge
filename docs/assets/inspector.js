@@ -3,7 +3,7 @@ let OrbitControls;
 let STLLoader;
 let OBJLoader;
 
-import { GridSpec, TargetGrid } from "./target-grid.js?v=featuregrid6";
+import { BRICK_GRID_PITCH_MM, PLATE_GRID_PITCH_MM, GridSpec, TargetGrid } from "./target-grid.js?v=featuregrid6";
 import { matchFeaturePatterns, matchTargetFeatures } from "./feature-matcher.js?v=featurematch8";
 import { constructionPreviewTransform } from "./construction-preview.js";
 import { transformPartPreviewPositions } from "./part-preview.js?v=featurepreview1";
@@ -24,6 +24,7 @@ const fileInput = document.querySelector('#file-input');
 const dropZone = document.querySelector('#drop-zone');
 const unitsSelect = document.querySelector('#source-units');
 const upAxisSelect = document.querySelector('#up-axis');
+const courseHeightSelect = document.querySelector('#course-height');
 const wireframeButton = document.querySelector('#wireframe-toggle');
 const resetButton = document.querySelector('#reset-view');
 const voxeliseButton = document.querySelector('#voxelise-button');
@@ -1047,6 +1048,7 @@ function runVoxelisation() {
     vertices: meshInput.vertices,
     indices: meshInput.indices,
     units: meshInput.sourceUnit,
+    pitchMm: courseHeightSelect.value === "plate" ? [...PLATE_GRID_PITCH_MM] : [...BRICK_GRID_PITCH_MM],
     maxCells: 100000,
   }, [meshInput.vertices.buffer, meshInput.indices.buffer]);
 }
@@ -1192,7 +1194,9 @@ function runLayeredConstruction() {
     setActivity('Construction worker failed', constructionStatus.textContent, 'error', -1);
     setMessage(constructionStatus.textContent, 'error');
   });
-  worker.postMessage({ layerFootprints, config: { maxParts: 200 } });
+  const courseType = Math.abs(activeTargetGrid.spec.pitch_mm[1] - PLATE_GRID_PITCH_MM[1]) < 1e-6
+    ? "plate" : "brick";
+  worker.postMessage({ layerFootprints, config: { maxParts: 200, courseType } });
 }
 
 function disposeHelper(helper) {
@@ -1403,6 +1407,12 @@ unitsSelect.addEventListener('change', () => {
 
 upAxisSelect.addEventListener('change', () => {
   if (currentFile) handleFile(currentFile);
+});
+
+courseHeightSelect.addEventListener('change', () => {
+  if (!currentFile) return;
+  resetVoxelisation();
+  setMessage('Course height changed. Voxelise the mesh again to use the selected grid.', 'info');
 });
 
 dropZone.addEventListener('dragover', (event) => {
