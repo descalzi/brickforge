@@ -402,7 +402,8 @@ function runVoxelisation() {
       });
       voxelOverlayVisible = true;
       renderVoxelOverlay(activeTargetGrid);
-      displayVoxelSummary(activeTargetGrid, result.triangle_count);\n      buildConstructionButton.disabled = false;
+      displayVoxelSummary(activeTargetGrid, result.triangle_count);
+      buildConstructionButton.disabled = false;
       voxeliseStatus.textContent = 'Voxelisation complete. ' + result.ray_triangle_tests.toLocaleString()
         + ' scanline tests and ' + result.cell_triangle_tests.toLocaleString()
         + ' cell-surface intersection tests were completed.';
