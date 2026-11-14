@@ -110,6 +110,13 @@
             <option value="in">Inches (in)</option>
           </select>
           <p class="control-note">STL and OBJ files do not reliably declare their units. The initial assumption is millimetres; change this if your model was exported in centimetres, metres or inches.</p>
+          <label class="field-label" for="up-axis">Source axis to treat as vertical</label>
+          <select id="up-axis" class="field-control">
+            <option value="y" selected>Y-up (no rotation)</option>
+            <option value="z">Z-up (rotate Z onto construction Y)</option>
+            <option value="x">X-up (rotate X onto construction Y)</option>
+          </select>
+          <p class="control-note">The construction grid uses Y as its vertical course axis. Choose the source axis that should become vertical. The mesh is rotated without changing its scale.</p>
         </div>
 
         <div class="control-section measurements-section">
@@ -182,6 +189,6 @@
     <span class="footer-id">BF / MESH-01</span>
   </footer>
 
-  <script type="module" src="./assets/inspector.js?v=20261114-localopenings2"></script>
+  <script type="module" src="./assets/inspector.js?v=20261114-upaxis1"></script>
 </body>
 </html>
