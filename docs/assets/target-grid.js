@@ -139,7 +139,7 @@ export class TargetGrid {
         }
       }
     }
-    return cells;
+    return cells.sort((left, right) => left[0] - right[0] || left[1] - right[1]);
   }
 
   summary() {
