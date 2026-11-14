@@ -644,7 +644,7 @@ function renderFeaturePatterns() {
       ? 'Rigid placement estimate · residual ' + pattern.rms_residual_mm.toFixed(3)
         + ' mm · axis alignment ' + pattern.axis_alignment_rms_deg.toFixed(2)
         + '° · translation ' + pattern.translation_mm.map((value) => value.toFixed(1)).join(', ') + ' mm'
-      : 'Opening layout matched, but 3D placement remains underdetermined (non-collinear feature centres are needed).';
+      : 'Opening layout matched, but the rigid placement is not reliable: feature centres may be collinear, spacing residual may be too high, or opening axes may not align.';
     item.append(heading, detail, assignment, placement);
     featurePatternList.append(item);
   });
