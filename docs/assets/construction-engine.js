@@ -751,15 +751,16 @@ function sampleLayerFootprintTilings(cells, profiles) {
   for (let attempt=0;attempt<96 && results.length<24;attempt+=1) {
     const remaining=new Set(cells), chosen=[]; let valid=true;
     while (remaining.size) {
-      let minimum=Infinity, tied=[];
-      for (const key of remaining) {
+      const keys=[...remaining];
+      const start=Math.floor(random()*keys.length);
+      let selected=null;
+      for (let offset=0;offset<keys.length;offset+=1) {
+        const key=keys[(start+offset)%keys.length];
         const viable=byCell.get(key).filter((tile)=>[...tile.cells].every((cell)=>remaining.has(cell)));
-        if (viable.length<minimum) { minimum=viable.length; tied=[viable]; }
-        else if (viable.length===minimum) tied.push(viable);
+        if (viable.length) { selected=viable; break; }
       }
-      if (!minimum || !tied.length) { valid=false; break; }
-      const options=tied[Math.floor(random()*tied.length)];
-      const tile=options[Math.floor(random()*options.length)]; chosen.push(tile);
+      if (!selected) { valid=false; break; }
+      const tile=selected[Math.floor(random()*selected.length)]; chosen.push(tile);
       for (const key of tile.cells) remaining.delete(key);
     }
     if (!valid) continue;
