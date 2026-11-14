@@ -288,6 +288,7 @@ async function scanLikelyOpeningParts() {
   batchScanRunning = true;
   batchScanCancelled = false;
   activeBatchFeatureProfiles = [];
+  partFeatureBatchList.replaceChildren();
   partFeatureBatchButton.disabled = true;
   partFeatureBatchCancelButton.disabled = false;
   partFeatureBatchDownloadButton.disabled = true;
