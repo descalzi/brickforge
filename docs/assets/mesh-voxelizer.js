@@ -375,10 +375,13 @@ export function voxelizeMesh({
     source_units: units,
     source_bounds_mm: [boundsMin, boundsMax],
     warnings: [
+      ...(cleaned.removed ? ["Removed " + cleaned.removed + " zero-area or duplicate-vertex triangle(s) before topology validation."] : []),
       "Browser voxelisation uses 3x3x3 interior sampling and triangle-box SAT for boundary-cell detection. Interior coverage remains a sampling approximation; exact surface-cell overlap is tested geometrically.",
       "The source must be a closed, consistently wound mesh; open-surface shell mode is not supported.",
     ],
-    triangle_count: faceCount,\n    input_triangle_count: inputFaceCount,\n    removed_degenerate_triangle_count: cleaned.removed,
+    triangle_count: faceCount,
+    input_triangle_count: inputFaceCount,
+    removed_degenerate_triangle_count: cleaned.removed,
     ray_triangle_tests: rayBudget.tests,
     cell_triangle_tests: cellBudget.tests,
   };
