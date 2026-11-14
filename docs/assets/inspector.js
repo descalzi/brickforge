@@ -3,7 +3,7 @@ let OrbitControls;
 let STLLoader;
 let OBJLoader;
 
-import { GridSpec, TargetGrid } from "./target-grid.js";
+import { GridSpec, TargetGrid } from "./target-grid.js?v=featuremeasure1";
 import { constructionPreviewTransform } from "./construction-preview.js";
 
 const MAX_FILE_BYTES = 100 * 1024 * 1024;
