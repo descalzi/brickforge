@@ -1,4 +1,4 @@
-const SAMPLE_FRACTIONS = Object.freeze([0.1, 0.2, 0.3, 0.4, 0.6, 0.8, 0.9]);
+const SAMPLE_FRACTIONS = Object.freeze([0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95]);
 const AXIS_NAMES = Object.freeze(["x", "y", "z"]);
 const MIN_FEATURE_AREA_MM2 = 0.5;
 const MIN_FEATURE_SLICES = 2;
@@ -195,13 +195,13 @@ function clusterOpening(clusters, candidate, axis, sampleIndex) {
     };
     clusters.push(nearest);
   }
-  nearest.samples.push(candidate);
+  nearest.samples.push({ ...candidate, sample_index: sampleIndex });
   nearest.centroid[0] += candidate.centroid[0];
   nearest.centroid[1] += candidate.centroid[1];
   nearest.lastSampleIndex = sampleIndex;
 }
 
-function summarizeCluster(cluster, featureIndex) {
+function summarizeCluster(cluster, featureIndex, boundsMin, boundsMax) {
   const samples = cluster.samples;
   const mean = (selector, axis = null) => samples.reduce((sum, sample) =>
     sum + (axis === null ? selector(sample) : selector(sample)[axis]), 0) / samples.length;
@@ -225,8 +225,16 @@ function summarizeCluster(cluster, featureIndex) {
   centre[otherAxes[1]] = centre2d[1];
   const minimum = [0, 0, 0];
   const maximum = [0, 0, 0];
-  minimum[axis] = Math.min(...planes);
-  maximum[axis] = Math.max(...planes);
+  const firstSampleIndex = Math.min(...samples.map((sample) => sample.sample_index));
+  const lastSampleIndex = Math.max(...samples.map((sample) => sample.sample_index));
+  const previousFraction = firstSampleIndex === 0 ? 0 : SAMPLE_FRACTIONS[firstSampleIndex - 1];
+  const nextFraction = lastSampleIndex === SAMPLE_FRACTIONS.length - 1
+    ? 1 : SAMPLE_FRACTIONS[lastSampleIndex + 1];
+  const lowerFraction = (previousFraction + SAMPLE_FRACTIONS[firstSampleIndex]) * 0.5;
+  const upperFraction = (SAMPLE_FRACTIONS[lastSampleIndex] + nextFraction) * 0.5;
+  const axisSpan = boundsMax[axis] - boundsMin[axis];
+  minimum[axis] = boundsMin[axis] + axisSpan * lowerFraction;
+  maximum[axis] = boundsMin[axis] + axisSpan * upperFraction;
   for (let dimension = 0; dimension < 2; dimension += 1) {
     const worldAxis = otherAxes[dimension];
     minimum[worldAxis] = Math.min(...samples.map((sample) => sample.minimum[dimension]));
@@ -289,7 +297,7 @@ export function analyzeMeshFeatures(triangles, boundsMin, boundsMax) {
   const features = [];
   for (const cluster of clusters) {
     if (cluster.samples.length >= MIN_FEATURE_SLICES) {
-      features.push(summarizeCluster(cluster, features.length + 1));
+      features.push(summarizeCluster(cluster, features.length + 1, boundsMin, boundsMax));
     }
   }
   return features.sort((left, right) =>
