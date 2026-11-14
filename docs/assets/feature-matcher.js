@@ -218,6 +218,7 @@ function estimateRigidPlacement(assignments, targetFeatures, candidateFeatures) 
       translation_mm: null,
       rms_residual_mm: null,
       axis_alignment_rms_deg: null,
+      placement_tolerance_mm: null,
     };
   }
   let selectedTriplet = null;
@@ -252,6 +253,7 @@ function estimateRigidPlacement(assignments, targetFeatures, candidateFeatures) 
       translation_mm: null,
       rms_residual_mm: null,
       axis_alignment_rms_deg: null,
+      placement_tolerance_mm: null,
     };
   }
   const targetBasis = makeOrthonormalBasis(...selectedTriplet.targetPoints);
@@ -263,6 +265,7 @@ function estimateRigidPlacement(assignments, targetFeatures, candidateFeatures) 
       translation_mm: null,
       rms_residual_mm: null,
       axis_alignment_rms_deg: null,
+      placement_tolerance_mm: null,
     };
   }
   const rotation = matrixMultiply(targetBasis, matrixTranspose(candidateBasis));
@@ -289,12 +292,20 @@ function estimateRigidPlacement(assignments, targetFeatures, candidateFeatures) 
     const angle = Math.acos(dot);
     axisErrorSquareTotal += angle * angle;
   }
+  const rmsResidual = Math.sqrt(residualSquareTotal / assignments.length);
+  const axisAlignmentRms = Math.sqrt(axisErrorSquareTotal / assignments.length) * (180 / Math.PI);
+  const maximumTargetSpan = Math.max(...targetFeatures.flatMap((feature, index) =>
+    targetFeatures.slice(index + 1).map((other) => distance3d(feature, other))
+  ));
+  const placementTolerance = Math.max(1.5, maximumTargetSpan * 0.05);
+  const resolved = rmsResidual <= placementTolerance && axisAlignmentRms <= 5;
   return {
-    placement_resolved: true,
-    rotation_matrix_3x3: rotation,
-    translation_mm: translation,
-    rms_residual_mm: Math.sqrt(residualSquareTotal / assignments.length),
-    axis_alignment_rms_deg: Math.sqrt(axisErrorSquareTotal / assignments.length) * (180 / Math.PI),
+    placement_resolved: resolved,
+    rotation_matrix_3x3: resolved ? rotation : null,
+    translation_mm: resolved ? translation : null,
+    rms_residual_mm: rmsResidual,
+    axis_alignment_rms_deg: axisAlignmentRms,
+    placement_tolerance_mm: placementTolerance,
   };
 }
 
