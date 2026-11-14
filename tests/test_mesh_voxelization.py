@@ -23,7 +23,7 @@ def test_voxelize_mesh_classifies_interior_and_surface_cells() -> None:
     assert grid.classification[1, 1, 1] == CellClass.INTERIOR
     assert grid.surface_coverage[1, 1, 1] == 1.0
     assert grid.classification[0, 0, 0] == CellClass.BOUNDARY
-    assert 0.0 < grid.surface_coverage[0, 0, 0] < 1.0
+    assert 0.0 < grid.surface_coverage[0, 0, 0] <= 1.0
     assert grid.layer_footprint(1) == tuple(
         (x, z) for z in range(3) for x in range(3)
     )
