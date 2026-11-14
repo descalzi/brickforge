@@ -877,7 +877,7 @@ function displayVoxelSummary(grid, triangleCount) {
       && features.length >= (topology?.handle_count || 0);
     const hasUnmatchedFeatures = (hasHandles || features.length > 0) && !allRepresented;
     voxelFeatureStatus.hidden = !(hasHandles || features.length > 0);
-    voxelFeatureStatus.dataset.state = hasUnmatchedFeatures ? 'warning' : 'complete';
+    voxelFeatureStatus.dataset.state = hasHandles || features.length ? 'warning' : 'complete';
     voxelFeatureStatus.textContent = hasHandles
       ? topology.handle_count.toLocaleString() + ' topological tunnel(s) detected; '
         + features.length.toLocaleString() + ' cross-section feature(s) localised; '
@@ -998,7 +998,7 @@ function runVoxelisation() {
       const preservedFeatureCount = activeTargetGrid.feature_keepouts.filter((item) => item.preserved).length;
       const keepoutsComplete = activeTargetGrid.features.length > 0
         && preservedFeatureCount === activeTargetGrid.features.length
-        && activeTargetGrid.features.length >= (activeTargetGrid.topology?.handle_count || 0);
+        && activeTargetGrid.features.length === (activeTargetGrid.topology?.handle_count || 0);
       const hasUnmatchedFeatures = (activeTargetGrid.topology?.handle_count > 0 || activeTargetGrid.features.length > 0)
         && !keepoutsComplete;
       buildConstructionButton.disabled = hasUnmatchedFeatures;
@@ -1092,7 +1092,7 @@ function runLayeredConstruction() {
   const preservedFeatureCount = activeTargetGrid.feature_keepouts.filter((item) => item.preserved).length;
   const keepoutsComplete = activeTargetGrid.features.length > 0
     && preservedFeatureCount === activeTargetGrid.features.length
-    && activeTargetGrid.features.length >= (activeTargetGrid.topology?.handle_count || 0);
+    && activeTargetGrid.features.length === (activeTargetGrid.topology?.handle_count || 0);
   if ((activeTargetGrid.topology?.handle_count > 0 || activeTargetGrid.features.length > 0) && !keepoutsComplete) {
     const count = activeTargetGrid.topology?.handle_count || activeTargetGrid.features.length;
     constructionStatus.textContent = 'Construction blocked: ' + count
