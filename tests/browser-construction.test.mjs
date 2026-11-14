@@ -284,3 +284,15 @@ test("browser engine uses the new long brick profiles for matching footprints", 
     assert.ok(result.connections.length > 0);
   }
 });
+
+
+test("layered construction accepts a mesh-derived course larger than 64 cells", () => {
+  const layer = Array.from({ length: 9 }, (_, z) =>
+    Array.from({ length: 9 }, (_, x) => [x, z]),
+  ).flat();
+  const result = buildLayeredFootprintBlock([layer, layer], catalogue);
+  assert.ok(result.parts.length <= 200);
+  assert.equal(result.course_part_counts.length, 2);
+  assert.ok(result.connections.length > 0);
+  assert.ok(result.total_mating_pairs > 0);
+});
