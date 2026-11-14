@@ -46,8 +46,11 @@ test("target grid counts occupancy and extracts sorted per-course footprints", (
       id: "z-1", axis: "z", axis_index: 2, shape: "round opening",
       center_mm: [4, 4, 2], bounds_mm: [[2, 2, 1], [6, 6, 3]],
       observed_span_mm: 2, width_mm: 4, length_mm: 4, area_mm2: 12.56,
-      perimeter_mm: 12.57, equivalent_diameter_mm: 4, circularity: 1,
-      aspect_ratio: 1, sample_support: 3, confidence: "medium",
+      perimeter_mm: 12.57, equivalent_diameter_mm: 4,
+      minimum_equivalent_diameter_mm: 4, maximum_equivalent_diameter_mm: 4,
+      minimum_width_mm: 4, maximum_width_mm: 4, minimum_length_mm: 4, maximum_length_mm: 4,
+      minimum_area_mm2: 12.56, maximum_area_mm2: 12.56,
+      circularity: 1, aspect_ratio: 1, sample_support: 3, confidence: "medium",
     }],
   });
 
@@ -70,8 +73,11 @@ test("target grid counts occupancy and extracts sorted per-course footprints", (
       id: "z-1", axis: "z", axis_index: 2, shape: "round opening",
       center_mm: [4, 4, 2], bounds_mm: [[2, 2, 1], [6, 6, 3]],
       observed_span_mm: 2, width_mm: 4, length_mm: 4, area_mm2: 12.56,
-      perimeter_mm: 12.57, equivalent_diameter_mm: 4, circularity: 1,
-      aspect_ratio: 1, sample_support: 3, confidence: "medium",
+      perimeter_mm: 12.57, equivalent_diameter_mm: 4,
+      minimum_equivalent_diameter_mm: 4, maximum_equivalent_diameter_mm: 4,
+      minimum_width_mm: 4, maximum_width_mm: 4, minimum_length_mm: 4, maximum_length_mm: 4,
+      minimum_area_mm2: 12.56, maximum_area_mm2: 12.56,
+      circularity: 1, aspect_ratio: 1, sample_support: 3, confidence: "medium",
     }],
     warnings: ["Synthetic test target"],
   });
