@@ -4,7 +4,7 @@ let STLLoader;
 let OBJLoader;
 
 import { GridSpec, TargetGrid } from "./target-grid.js?v=featuremeasure3";
-import { matchTargetFeatures } from "./feature-matcher.js?v=featurematch2";
+import { matchTargetFeatures } from "./feature-matcher.js?v=featurematch3";
 import { constructionPreviewTransform } from "./construction-preview.js";
 
 const MAX_FILE_BYTES = 100 * 1024 * 1024;
@@ -578,12 +578,15 @@ function validImportedFeatureProfile(profile) {
       && Number.isFinite(feature.length_mm) && feature.length_mm > 0
       && Number.isFinite(feature.circularity)
       && Number.isFinite(feature.aspect_ratio)
-      && Number.isFinite(feature.minimum_width_mm) && feature.minimum_width_mm > 0
-      && Number.isFinite(feature.maximum_width_mm) && feature.maximum_width_mm >= feature.minimum_width_mm
-      && Number.isFinite(feature.minimum_length_mm) && feature.minimum_length_mm > 0
-      && Number.isFinite(feature.maximum_length_mm) && feature.maximum_length_mm >= feature.minimum_length_mm
+      && ((feature.minimum_width_mm === undefined && feature.maximum_width_mm === undefined)
+        || (Number.isFinite(feature.minimum_width_mm) && feature.minimum_width_mm > 0
+          && Number.isFinite(feature.maximum_width_mm) && feature.maximum_width_mm >= feature.minimum_width_mm))
+      && ((feature.minimum_length_mm === undefined && feature.maximum_length_mm === undefined)
+        || (Number.isFinite(feature.minimum_length_mm) && feature.minimum_length_mm > 0
+          && Number.isFinite(feature.maximum_length_mm) && feature.maximum_length_mm >= feature.minimum_length_mm))
       && Number.isInteger(feature.sample_support) && feature.sample_support >= 2
       && (feature.shape !== 'round opening'
+        || (feature.minimum_equivalent_diameter_mm === undefined && feature.maximum_equivalent_diameter_mm === undefined)
         || (Number.isFinite(feature.minimum_equivalent_diameter_mm)
           && Number.isFinite(feature.maximum_equivalent_diameter_mm)
           && feature.minimum_equivalent_diameter_mm > 0
