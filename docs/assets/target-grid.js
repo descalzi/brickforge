@@ -1,4 +1,4 @@
-export const TARGET_GRID_VERSION = 5;
+export const TARGET_GRID_VERSION = 6;
 export const BRICK_GRID_PITCH_MM = Object.freeze([8, 9.6, 8]);
 
 export const CellClass = Object.freeze({
@@ -183,7 +183,15 @@ export class TargetGrid {
     if (!Array.isArray(feature_keepouts) || feature_keepouts.some((item) =>
       !item || typeof item.feature_id !== "string" || !["x", "y", "z"].includes(item.axis)
       || !Number.isSafeInteger(item.cell_count) || item.cell_count < 0
-      || typeof item.preserved !== "boolean")) {
+      || typeof item.preserved !== "boolean"
+      || (item.axial_cell_count !== undefined
+        && (!Number.isSafeInteger(item.axial_cell_count) || item.axial_cell_count < 0))
+      || (item.support_slices !== undefined
+        && (!Number.isSafeInteger(item.support_slices) || item.support_slices < 0))
+      || (item.local_axial_bounds_mm !== undefined
+        && (!Array.isArray(item.local_axial_bounds_mm) || item.local_axial_bounds_mm.length !== 2
+          || !item.local_axial_bounds_mm.every(Number.isFinite)
+          || item.local_axial_bounds_mm[1] <= item.local_axial_bounds_mm[0])))) {
       throw new TypeError("feature keep-outs must contain valid feature identifiers, axes and cell counts");
     }
     const keepoutRecords = feature_keepouts.map((item) => Object.freeze({ ...item }));
