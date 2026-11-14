@@ -155,7 +155,7 @@ function analyseSelectedPartFeatures() {
   setMessage('Sampling orthogonal cross-sections in a background worker…');
 
   try {
-    partFeatureWorker = new Worker(new URL('./part-feature-worker.js?v=featureprofile2', import.meta.url), { type: 'module' });
+    partFeatureWorker = new Worker(new URL('./part-feature-worker.js?v=featureprofile3', import.meta.url), { type: 'module' });
   } catch (error) {
     partFeatureAnalyseButton.disabled = false;
     partFeatureStatus.textContent = error instanceof Error ? error.message : 'Could not start feature analysis.';
