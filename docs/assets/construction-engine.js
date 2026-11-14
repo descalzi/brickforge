@@ -1172,6 +1172,10 @@ export function buildLayeredFootprintBlock(layerFootprints, catalogue, config = 
     throw new RangeError("Construction tolerances and maxParts must be valid non-negative values.");
   }
 
+  if (layerFootprints.length > maxParts) {
+    throw new RangeError("The number of occupied courses exceeds the browser prototype part limit.");
+  }
+
   const parsedLayers = [];
   const allCoordinates = [];
   for (let layer = 0; layer < layerFootprints.length; layer += 1) {
@@ -1221,8 +1225,10 @@ export function buildLayeredFootprintBlock(layerFootprints, catalogue, config = 
 
   const minimumRemaining = Array(layerCandidates.length + 1).fill(0);
   for (let layer = layerCandidates.length - 1; layer >= 0; layer -= 1) {
-    minimumRemaining[layer] = minimumRemaining[layer + 1]
-      + Math.min(...layerCandidates[layer].map((tiling) => tiling.length));
+    const minimumForCourse = layerCandidates[layer].reduce(
+      (minimum, tiling) => Math.min(minimum, tiling.length), Infinity,
+    );
+    minimumRemaining[layer] = minimumRemaining[layer + 1] + minimumForCourse;
   }
 
   let checks = 0;
