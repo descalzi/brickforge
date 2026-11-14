@@ -217,7 +217,9 @@ class TargetGrid:
             ):
                 raise ValueError(f"feature {index} contains invalid measured opening metadata")
             centre: tuple[Any, ...] = tuple(feature.get("center_mm", ()))
-            bounds: tuple[tuple[Any, ...], ...] = tuple(tuple(point) for point in feature.get("bounds_mm", ()))
+            bounds: tuple[tuple[Any, ...], ...] = tuple(
+                tuple(point) for point in feature.get("bounds_mm", ())
+            )
             if (
                 len(centre) != 3
                 or not all(isinstance(value, (int, float)) and isfinite(value) for value in centre)
