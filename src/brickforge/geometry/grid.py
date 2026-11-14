@@ -232,7 +232,10 @@ class TargetGrid:
                 raise ValueError(f"feature {index} has invalid centre or bounds")
             numeric_fields = (
                 "observed_span_mm", "width_mm", "length_mm", "area_mm2",
-                "perimeter_mm", "equivalent_diameter_mm", "circularity", "aspect_ratio",
+                "perimeter_mm", "equivalent_diameter_mm", "minimum_equivalent_diameter_mm",
+                "maximum_equivalent_diameter_mm", "minimum_width_mm", "maximum_width_mm",
+                "minimum_length_mm", "maximum_length_mm", "minimum_area_mm2", "maximum_area_mm2",
+                "circularity", "aspect_ratio",
             )
             if any(
                 isinstance(feature.get(field), bool)
@@ -244,6 +247,14 @@ class TargetGrid:
             if (
                 feature["observed_span_mm"] < 0
                 or any(feature[field] <= 0 for field in numeric_fields[1:6])
+                or feature["minimum_equivalent_diameter_mm"] <= 0
+                or feature["maximum_equivalent_diameter_mm"] < feature["minimum_equivalent_diameter_mm"]
+                or feature["minimum_width_mm"] <= 0
+                or feature["maximum_width_mm"] < feature["minimum_width_mm"]
+                or feature["minimum_length_mm"] <= 0
+                or feature["maximum_length_mm"] < feature["minimum_length_mm"]
+                or feature["minimum_area_mm2"] <= 0
+                or feature["maximum_area_mm2"] < feature["minimum_area_mm2"]
                 or not 0 <= feature["circularity"] <= 1
                 or feature["aspect_ratio"] < 1
             ):
