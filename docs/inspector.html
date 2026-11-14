@@ -117,6 +117,12 @@
             <option value="x">X-up (rotate X onto construction Y)</option>
           </select>
           <p class="control-note">The construction grid uses Y as its vertical course axis. Choose the source axis that should become vertical. For a flat plate whose thickness runs along Z, choose Z-up. The mesh is rotated without changing its scale.</p>
+          <label class="field-label" for="course-height">Vertical course height</label>
+          <select id="course-height" class="field-control">
+            <option value="brick" selected>Brick course · 9.6 mm</option>
+            <option value="plate">Plate course · 3.2 mm</option>
+          </select>
+          <p class="control-note">Use plate courses for thin targets and shallow trays. The horizontal stud pitch remains 8 mm; plate mode uses matching 3.2 mm-tall plate profiles.</p>
         </div>
 
         <div class="control-section measurements-section">
@@ -137,7 +143,7 @@
         <div class="control-section voxel-section">
           <h2>Target grid</h2>
           <p class="control-note">Convert the closed mesh into occupied brick-course cells. Processing runs locally in a background worker. Current prototype limits: 100,000 triangles and 100,000 grid cells.</p>
-          <button id="voxelise-button" class="primary-button voxelise-button" type="button" disabled>Voxelise on brick grid</button>
+          <button id="voxelise-button" class="primary-button voxelise-button" type="button" disabled>Voxelise on selected grid</button>
           <p id="voxelise-status" class="voxelise-status" role="status" aria-live="polite">Load a mesh to enable voxelisation.</p>
           <button id="build-construction" class="primary-button voxelise-button" type="button" disabled>Generate connected construction</button>
           <p id="construction-status" class="voxelise-status" role="status" aria-live="polite">Voxelise a mesh first.</p>
@@ -189,6 +195,6 @@
     <span class="footer-id">BF / MESH-01</span>
   </footer>
 
-  <script type="module" src="./assets/inspector.js?v=20261114-upaxis5"></script>
+  <script type="module" src="./assets/inspector.js?v=20261114-platecourses1"></script>
 </body>
 </html>
