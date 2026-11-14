@@ -73,6 +73,8 @@ This roadmap is intentionally milestone-based. Each milestone should produce a d
 - [ ] Add robust mesh validation and explicit handling for open, non-watertight, degenerate and self-intersecting surfaces.
 - [ ] Extract per-course 2D cross-sections while retaining surface-distance information for visual fitting.
 - [x] Reuse the tested footprint tiler as a per-course candidate generator, then solve bounded connected cross-course arrangements. The browser mesh inspector can now generate and export a variable-course assembly from its target grid; only the currently profiled rectangular brick families are eligible.
+- [x] Preserve closed-mesh topological handle/tunnel counts separately from coarse occupancy and block construction when current part profiles cannot guarantee those features.
+- [ ] Locate and measure individual sub-grid holes, slots, pockets and channels; match them to feature-compatible parts or explicit preservation constraints.
 - [ ] Add surface-aware candidate placement for slopes, curves and specialised elements.
 - [ ] Combine coarse volumetric and surface-fitting strategies.
 - [ ] Add objective metrics and configurable optimisation profiles.
