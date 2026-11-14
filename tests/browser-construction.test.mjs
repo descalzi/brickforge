@@ -306,6 +306,6 @@ test("browser layered engine builds interlocking plate-height courses", () => {
   });
   assert.ok(result.parts.length > 0);
   assert.ok(result.connections.length > 0);
-  assert.ok(result.parts.every((part) => ["3020", "3021", "3022", "3023", "3024"].includes(part.part_id)));
+  assert.ok(result.parts.every((part) => ["3020", "3021", "3022", "3023", "3024", "3034", "3460", "3623", "3666", "3710", "3795", "3832"].includes(part.part_id)));
   assert.equal(result.dimensions_mm.height, 6.4);
 });
