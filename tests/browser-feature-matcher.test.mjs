@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { matchTargetFeatures } from "../docs/assets/feature-matcher.js";
+import { matchFeaturePatterns, matchTargetFeatures } from "../docs/assets/feature-matcher.js";
 
 const target = {
   id: "z-1",
