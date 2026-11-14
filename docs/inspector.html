@@ -115,6 +115,18 @@
           <p class="control-note">Convert the closed mesh into occupied brick-course cells. Processing runs locally in a background worker. Current prototype limits: 100,000 triangles and 100,000 grid cells.</p>
           <button id="voxelise-button" class="primary-button voxelise-button" type="button" disabled>Voxelise on brick grid</button>
           <p id="voxelise-status" class="voxelise-status" role="status" aria-live="polite">Load a mesh to enable voxelisation.</p>
+          <button id="build-construction" class="primary-button voxelise-button" type="button" disabled>Generate connected construction</button>
+          <p id="construction-status" class="voxelise-status" role="status" aria-live="polite">Voxelise a mesh first.</p>
+          <div id="construction-summary" class="voxelise-summary" hidden>
+            <strong id="construction-part-count">—</strong>
+            <span id="construction-details">—</span>
+            <ul id="construction-course-list"></ul>
+            <div class="construction-downloads">
+              <button id="construction-download-ldraw" class="tool-button" type="button" disabled>Download LDraw</button>
+              <button id="construction-download-graph" class="tool-button" type="button" disabled>Download assembly graph</button>
+              <button id="construction-download-bom" class="tool-button" type="button" disabled>Download parts list</button>
+            </div>
+          </div>
           <div id="voxelise-summary" class="voxelise-summary" hidden>
             <strong id="voxel-cell-count">—</strong>
             <span id="voxel-grid-size">—</span>
@@ -126,7 +138,7 @@
       </aside>
     </section>
 
-    <p class="inspector-disclaimer">This page converts closed meshes into an approximate target occupancy grid locally in your browser. This is not yet a brick construction, and it does not prove physical buildability.</p>
+    <p class="inspector-disclaimer">This page converts closed meshes into an approximate target occupancy grid and can attempt a connected construction using the currently profiled rectangular brick families. Candidate connections and nominal body checks do not prove physical clutch, stability or buildability.</p>
   </main>
 
   <footer class="site-footer">
