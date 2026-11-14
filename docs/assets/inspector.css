@@ -339,3 +339,50 @@
 .voxel-feature-list strong { color: var(--ink); font-size: .72rem; }
 .voxel-feature-list span { color: var(--accent-strong); font-weight: 600; }
 .voxel-feature-list small { color: var(--muted); font-size: .65rem; }
+
+.feature-match-panel {
+  display: grid;
+  gap: 7px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+.feature-match-panel label {
+  color: var(--ink);
+  font-size: .72rem;
+  font-weight: 650;
+}
+.feature-match-panel input {
+  width: 100%;
+  max-width: 100%;
+  font: 400 .7rem var(--font-ui);
+}
+.feature-match-panel > p {
+  margin: 0;
+  color: var(--muted);
+  font-size: .68rem;
+  line-height: 1.5;
+}
+.feature-match-panel ul {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.feature-match-panel li {
+  display: grid;
+  gap: 5px;
+  padding: 8px 9px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: rgba(255,255,255,.72);
+  font-size: .68rem;
+}
+.feature-match-panel li strong { color: var(--ink); }
+.feature-match-panel li p,
+.feature-match-panel li span {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.45;
+}
