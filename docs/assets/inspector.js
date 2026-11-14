@@ -6,6 +6,7 @@ let OBJLoader;
 import { GridSpec, TargetGrid } from "./target-grid.js?v=featuregrid5";
 import { matchFeaturePatterns, matchTargetFeatures } from "./feature-matcher.js?v=featurematch8";
 import { constructionPreviewTransform } from "./construction-preview.js";
+import { transformPartPreviewPositions } from "./part-preview.js?v=featurepreview1";
 
 const MAX_FILE_BYTES = 100 * 1024 * 1024;
 const MILLIMETRES_PER_UNIT = { mm: 1, cm: 10, m: 1000, in: 25.4 };
@@ -257,7 +258,12 @@ function renderCandidatePreview(profile, pattern) {
     return;
   }
   removeCandidatePreview();
-  const positions = new Float32Array(profile.mesh_positions_mm);
+  const positions = transformPartPreviewPositions(
+    profile.mesh_positions_mm,
+    pattern.rotation_matrix_3x3,
+    pattern.translation_mm,
+    currentModelCenter,
+  );
   const geometry = new THREE.BufferGeometry();
   geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
   geometry.computeVertexNormals();
@@ -269,15 +275,6 @@ function renderCandidatePreview(profile, pattern) {
     depthTest: false,
   });
   const mesh = new THREE.Mesh(geometry, material);
-  const rotation = pattern.rotation_matrix_3x3;
-  const translation = pattern.translation_mm.map((value, axis) => value - currentModelCenter[axis]);
-  const transform = new THREE.Matrix4().set(
-    rotation[0][0], rotation[0][1], rotation[0][2], translation[0],
-    rotation[1][0], rotation[1][1], rotation[1][2], translation[1],
-    rotation[2][0], rotation[2][1], rotation[2][2], translation[2],
-    0, 0, 0, 1,
-  );
-  mesh.applyMatrix4(transform);
   mesh.renderOrder = 40;
   mesh.frustumCulled = false;
   const group = new THREE.Group();
