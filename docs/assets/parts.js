@@ -1,6 +1,7 @@
 const DEFAULT_RAW_BASE = 'https://raw.githubusercontent.com/kulits/ldraw-parts/c70360d1c588be894997b2168c61909bc8058c4d/ldraw/';
 let rawBaseUrl = DEFAULT_RAW_BASE;
 import { decodeCataloguePayload, ldrawReferenceCandidates, searchPartCatalogue } from './catalogue-utils.js';
+import { analyzeMeshFeatures } from './mesh-feature-analysis.js?v=featuremeasure2';
 
 const LDU_TO_MM = 0.4;
 const MAX_REFERENCE_DEPTH = 64;
@@ -17,6 +18,11 @@ const defaultPartOptions = Array.from(partSelect.options).map((option) => ({
 }));
 const colourSelect = document.querySelector('#part-colour');
 const resetButton = document.querySelector('#parts-reset');
+
+const partFeatureStatus = document.querySelector('#part-feature-status');
+const partFeatureList = document.querySelector('#part-feature-list');
+const partFeatureAnalyseButton = document.querySelector('#part-feature-analyse');
+const partFeatureDownloadButton = document.querySelector('#part-feature-download');
 
 const output = {
   name: document.querySelector('#part-name'),
@@ -68,6 +74,164 @@ let connectionProfilesPromise;
 let partCatalogue = [];
 let connectionProfileMap = new Map();
 let loadedPartId = null;
+let activePartTrianglePositions = null;
+let activePartBoundsMin = null;
+let activePartBoundsMax = null;
+let activePartDescriptor = null;
+let activePartFeatures = [];
+let partFeatureWorker = null;
+
+
+function clearPartFeatureAnalysis() {
+  if (partFeatureWorker) {
+    partFeatureWorker.terminate();
+    partFeatureWorker = null;
+  }
+  activePartTrianglePositions = null;
+  activePartBoundsMin = null;
+  activePartBoundsMax = null;
+  activePartDescriptor = null;
+  activePartFeatures = [];
+  partFeatureStatus.textContent = 'Select a part, then analyse its cross-section openings.';
+  partFeatureStatus.dataset.state = 'idle';
+  partFeatureList.replaceChildren();
+  partFeatureAnalyseButton.disabled = !loadedPartId;
+  partFeatureDownloadButton.disabled = true;
+}
+
+function collectTrianglePositions(faceMap) {
+  let totalLength = 0;
+  for (const positions of faceMap.values()) totalLength += positions.length;
+  const flattened = new Float32Array(totalLength);
+  let offset = 0;
+  for (const positions of faceMap.values()) {
+    flattened.set(positions, offset);
+    offset += positions.length;
+  }
+  return flattened;
+}
+
+function calculateTriangleBounds(positions) {
+  const minimum = [Infinity, Infinity, Infinity];
+  const maximum = [-Infinity, -Infinity, -Infinity];
+  for (let index = 0; index < positions.length; index += 3) {
+    for (let axis = 0; axis < 3; axis += 1) {
+      minimum[axis] = Math.min(minimum[axis], positions[index + axis]);
+      maximum[axis] = Math.max(maximum[axis], positions[index + axis]);
+    }
+  }
+  return { minimum, maximum };
+}
+
+function renderPartFeatureResults(features) {
+  partFeatureList.replaceChildren();
+  features.forEach((feature, index) => {
+    const item = document.createElement('li');
+    const heading = document.createElement('strong');
+    const detail = document.createElement('span');
+    const position = document.createElement('small');
+    heading.textContent = 'Opening ' + (index + 1) + ' · ' + feature.shape;
+    detail.textContent = feature.shape === 'round opening'
+      ? 'Ø ' + feature.equivalent_diameter_mm.toFixed(2) + ' mm equivalent'
+      : feature.width_mm.toFixed(2) + ' × ' + feature.length_mm.toFixed(2) + ' mm';
+    position.textContent = 'Axis ' + feature.axis.toUpperCase()
+      + ' · ' + feature.sample_support + ' slices · centre '
+      + feature.center_mm.map((value) => value.toFixed(2)).join(', ') + ' mm';
+    item.append(heading, detail, position);
+    partFeatureList.append(item);
+  });
+}
+
+function analyseSelectedPartFeatures() {
+  if (!activePartTrianglePositions || !activePartDescriptor || partFeatureWorker) return;
+  partFeatureAnalyseButton.disabled = true;
+  partFeatureDownloadButton.disabled = true;
+  partFeatureStatus.textContent = 'Measuring nested contours across the part geometry…';
+  partFeatureStatus.dataset.state = 'working';
+  setState('ANALYSING PART FEATURES', 'loading');
+  setMessage('Sampling orthogonal cross-sections in a background worker…');
+
+  try {
+    partFeatureWorker = new Worker(new URL('./part-feature-worker.js?v=featureprofile1', import.meta.url), { type: 'module' });
+  } catch (error) {
+    partFeatureAnalyseButton.disabled = false;
+    partFeatureStatus.textContent = error instanceof Error ? error.message : 'Could not start feature analysis.';
+    partFeatureStatus.dataset.state = 'error';
+    setState('PART FEATURE ANALYSIS FAILED', 'error');
+    setMessage(partFeatureStatus.textContent, 'error');
+    return;
+  }
+
+  const worker = partFeatureWorker;
+  const positions = activePartTrianglePositions.slice();
+  worker.addEventListener('message', (event) => {
+    if (worker !== partFeatureWorker) return;
+    worker.terminate();
+    partFeatureWorker = null;
+    partFeatureAnalyseButton.disabled = false;
+    if (event.data.type === 'error') {
+      partFeatureStatus.textContent = event.data.message;
+      partFeatureStatus.dataset.state = 'error';
+      setState('PART FEATURE ANALYSIS FAILED', 'error');
+      setMessage(event.data.message, 'error');
+      return;
+    }
+    activePartFeatures = event.data.features;
+    renderPartFeatureResults(activePartFeatures);
+    partFeatureStatus.textContent = activePartFeatures.length
+      ? 'Located ' + activePartFeatures.length + ' nested opening feature(s). Measurements are geometric candidates, not proof of physical compatibility.'
+      : 'No stable nested opening contours were found in the sampled principal-axis sections.';
+    partFeatureStatus.dataset.state = activePartFeatures.length ? 'complete' : 'warning';
+    partFeatureDownloadButton.disabled = false;
+    setState('PART LOADED', 'loaded');
+    setMessage('Part geometry analysis complete. Export a feature profile to use it in future matching.', 'success');
+  });
+  worker.addEventListener('error', (event) => {
+    if (worker !== partFeatureWorker) return;
+    worker.terminate();
+    partFeatureWorker = null;
+    partFeatureAnalyseButton.disabled = false;
+    partFeatureStatus.textContent = event.message || 'The feature analysis worker failed.';
+    partFeatureStatus.dataset.state = 'error';
+    setState('PART FEATURE ANALYSIS FAILED', 'error');
+    setMessage(partFeatureStatus.textContent, 'error');
+  });
+  worker.postMessage({
+    trianglePositions: positions,
+    boundsMin: activePartBoundsMin,
+    boundsMax: activePartBoundsMax,
+  }, [positions.buffer]);
+}
+
+function downloadPartFeatureProfile() {
+  if (!activePartDescriptor) return;
+  const profile = {
+    schema_version: 1,
+    part_id: activePartDescriptor.part_id,
+    description: activePartDescriptor.description,
+    source_filename: activePartDescriptor.source_filename,
+    source_geometry_base_url: activePartDescriptor.source_geometry_base_url,
+    units: 'mm',
+    dimensions_mm: activePartDescriptor.dimensions_mm,
+    bounds_mm: [activePartBoundsMin, activePartBoundsMax],
+    analysis_method: 'Seven sampled orthogonal cross-sections; nested contours clustered across slices',
+    features: activePartFeatures,
+    limitations: [
+      'Measurements are based on rendered LDraw surface triangles and principal-axis sections only.',
+      'Oblique, curved, branching and blind openings may be missed or approximated.',
+      'A geometric opening match does not prove clutch engagement, legal part combinations or structural stability.',
+    ],
+  };
+  const blob = new Blob([JSON.stringify(profile, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = activePartDescriptor.part_id + '.feature-profile.json';
+  document.body.append(link);
+  link.click();
+  link.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
 
 function setMessage(text, kind) {
   message.textContent = text;
@@ -615,6 +779,7 @@ async function loadSelectedPart() {
   const partId = partSelect.value;
   if (!partId) return;
   loadedPartId = null;
+  clearPartFeatureAnalysis();
   const colourCode = Number(colourSelect.value);
   const selectedEntry = partCatalogue.find((part) => part.part_id === partId);
   const partPath = selectedEntry ? selectedEntry.filename : 'parts/' + partId + '.dat';
@@ -665,6 +830,11 @@ async function loadSelectedPart() {
     if (![size.x, size.y, size.z].every(Number.isFinite) || Math.max(size.x, size.y, size.z) <= 0) {
       throw new Error('The resolved part has invalid or zero-size geometry.');
     }
+    const trianglePositions = collectTrianglePositions(expansion.faces);
+    if (!trianglePositions.length || trianglePositions.length % 9 !== 0) {
+      throw new Error('The selected part has no complete triangle geometry for feature analysis.');
+    }
+    const triangleBounds = calculateTriangleBounds(trianglePositions);
     const centre = bounds.getCenter(new THREE.Vector3());
     model.position.sub(centre);
 
@@ -696,6 +866,18 @@ async function loadSelectedPart() {
     emptyState.hidden = true;
     resetButton.disabled = false;
     loadedPartId = partId;
+    activePartTrianglePositions = trianglePositions;
+    activePartBoundsMin = triangleBounds.minimum;
+    activePartBoundsMax = triangleBounds.maximum;
+    activePartDescriptor = {
+      part_id: partId,
+      description: root.metadata.description,
+      source_filename: root.source,
+      source_geometry_base_url: rawBaseUrl,
+      dimensions_mm: [size.x, size.y, size.z],
+    };
+    partFeatureAnalyseButton.disabled = false;
+    partFeatureDownloadButton.disabled = true;
     setState('PART LOADED', 'loaded');
     setMessage(
       'Resolved ' + expansion.files.size + ' LDraw files from the public library mirror. Geometry is converted from LDU to millimetres. This preview does not validate physical connections.',
@@ -705,6 +887,7 @@ async function loadSelectedPart() {
     if (sequence !== loadSequence) return;
     console.error('BrickForge could not load the selected LDraw part:', error);
     loadedPartId = null;
+    clearPartFeatureAnalysis();
     removeModel();
     removeHelpers();
     emptyState.hidden = false;
@@ -724,6 +907,8 @@ partSelect.addEventListener('change', () => {
 colourSelect.addEventListener('change', () => {
   loadSelectedPart();
 });
+partFeatureAnalyseButton.addEventListener('click', analyseSelectedPartFeatures);
+partFeatureDownloadButton.addEventListener('click', downloadPartFeatureProfile);
 resetButton.addEventListener('click', () => {
   if (currentBounds) fitCamera(currentBounds);
 });
