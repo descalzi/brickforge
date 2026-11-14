@@ -57,11 +57,26 @@ test("browser voxeliser supports custom anisotropic pitch", () => {
   assert.deepEqual(grid.pitch_mm, [12, 14.4, 12]);
 });
 
-test("browser voxeliser retains a sub-grid thin feature by nearest-surface distance", () => {
+test("browser voxeliser retains a sub-grid thin feature through triangle-cell intersection", () => {
   const mesh = boxMesh([0.5, 0.5, 0.5], [4, 4.8, 4]);
   const grid = voxelizeMesh({ ...mesh, units: "mm" });
   assert.deepEqual(grid.dimensions, [1, 1, 1]);
   assert.equal(grid.classification[0], CellClass.BOUNDARY);
+});
+
+test("browser voxeliser does not fill a clear gap between disconnected solids", () => {
+  const left = boxMesh([8, 9.6, 8], [4, 4.8, 4]);
+  const right = boxMesh([8, 9.6, 8], [20, 4.8, 4]);
+  const vertices = new Float64Array([...left.vertices, ...right.vertices]);
+  const indices = new Uint32Array([
+    ...left.indices,
+    ...Array.from(right.indices, (index) => index + left.vertices.length / 3),
+  ]);
+  const grid = voxelizeMesh({ vertices, indices, units: "mm" });
+  assert.deepEqual(grid.dimensions, [3, 1, 1]);
+  assert.equal(grid.classification[0], CellClass.BOUNDARY);
+  assert.equal(grid.classification[1], CellClass.EXTERIOR);
+  assert.equal(grid.classification[2], CellClass.BOUNDARY);
 });
 
 test("browser voxeliser rejects open, degenerate, non-finite and oversized inputs", () => {
