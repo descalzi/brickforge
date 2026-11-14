@@ -300,7 +300,7 @@ function cellIntersectsSurface(root, boxMin, boxMax, budget) {
 }
 
 
-function preserveSubGridOpenings({ features, dimensions, origin, pitch, boundsMin, boundsMax, classification, coverage }) {
+function preserveSubGridOpenings({ features, dimensions, origin, pitch, classification, coverage }) {
   const [width, height, depth] = dimensions;
   const keepouts = [];
   for (const feature of features) {
@@ -321,7 +321,7 @@ function preserveSubGridOpenings({ features, dimensions, origin, pitch, boundsMi
           const indices = [x, y, z];
           const cellMin = indices.map((index, dimension) => origin[dimension] + index * pitch[dimension]);
           const cellMax = cellMin.map((value, dimension) => value + pitch[dimension]);
-          if (cellMax[axis] <= boundsMin[axis] || cellMin[axis] >= boundsMax[axis]) continue;
+          if (cellMax[axis] <= feature.bounds_mm[0][axis] || cellMin[axis] >= feature.bounds_mm[1][axis]) continue;
           let intersectsOpening = true;
           for (const dimension of otherAxes) {
             if (cellMax[dimension] <= feature.bounds_mm[0][dimension]
@@ -467,7 +467,7 @@ export function voxelizeMesh({
   }
 
   const featureKeepouts = preserveSubGridOpenings({ features, dimensions, origin,
-    pitch: Array.from(pitchMm), boundsMin, boundsMax, classification, coverage });
+    pitch: Array.from(pitchMm), classification, coverage });
   const preservedFeatureCount = featureKeepouts.filter((item) => item.preserved).length;
 
   return {
