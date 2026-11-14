@@ -222,6 +222,8 @@ test("browser voxeliser detects a sub-grid topological tunnel instead of losing 
   assert.ok(result.features[0].minimum_equivalent_diameter_mm < result.features[0].maximum_equivalent_diameter_mm);
   assert.ok(result.features[0].minimum_area_mm2 < result.features[0].maximum_area_mm2);
   assert.ok(result.features[0].sample_support >= 2);
+  assert.equal(result.feature_keepouts.length, 1);
+  assert.equal(result.feature_keepouts[0].preserved, true);
 });
 
 test("cross-section analysis locates four round openings and an elongated slot below grid pitch", () => {
