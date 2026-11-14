@@ -12,6 +12,7 @@ from dataclasses import dataclass
 from enum import IntEnum
 from math import isfinite
 from types import MappingProxyType
+from typing import Any
 
 import numpy as np
 import numpy.typing as npt
@@ -119,7 +120,7 @@ class TargetGrid:
     source_bounds_mm: tuple[Vector3, Vector3]
     warnings: tuple[str, ...] = ()
     topology: Mapping[str, int] | None = None
-    features: tuple[Mapping[str, object], ...] = ()
+    features: tuple[Mapping[str, Any], ...] = ()
 
     def __post_init__(self) -> None:
         if self.source_units not in {"mm", "cm", "m"}:
@@ -196,7 +197,7 @@ class TargetGrid:
         object.__setattr__(self, "surface_coverage", coverage)
         object.__setattr__(self, "topology", topology)
 
-        normalized_features: list[Mapping[str, object]] = []
+        normalized_features: list[Mapping[str, Any]] = []
         for index, feature in enumerate(self.features):
             if not isinstance(feature, Mapping):
                 raise ValueError(f"feature {index} must be a mapping")
@@ -215,8 +216,8 @@ class TargetGrid:
                 or feature["sample_support"] < 2
             ):
                 raise ValueError(f"feature {index} contains invalid measured opening metadata")
-            centre = tuple(feature.get("center_mm", ()))
-            bounds = tuple(tuple(point) for point in feature.get("bounds_mm", ()))
+            centre: tuple[Any, ...] = tuple(feature.get("center_mm", ()))
+            bounds: tuple[tuple[Any, ...], ...] = tuple(tuple(point) for point in feature.get("bounds_mm", ()))
             if (
                 len(centre) != 3
                 or not all(isinstance(value, (int, float)) and isfinite(value) for value in centre)
