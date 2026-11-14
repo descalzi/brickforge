@@ -1,9 +1,15 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import test from "node:test";
 
-import { CellClass } from "../docs/assets/target-grid.js";
+import { CellClass, GridSpec, TargetGrid } from "../docs/assets/target-grid.js";
+import { buildLayeredFootprintBlock } from "../docs/assets/construction-engine.js";
 import { voxelizeMesh } from "../docs/assets/mesh-voxelizer.js";
 import { analyzeMeshFeatures } from "../docs/assets/mesh-feature-analysis.js";
+
+const connectionCatalogue = JSON.parse(
+  await readFile(new URL("../data/connection-profiles/basic-bricks.json", import.meta.url), "utf8"),
+);
 
 function boxMesh(size, centre = size.map((value) => value / 2)) {
   const [sx, sy, sz] = size;
@@ -257,4 +263,55 @@ test("browser voxeliser preserves sub-grid openings local to one section of a ta
   assert.ok(result.feature_keepouts.every((item) => item.support_slices >= 3));
   assert.ok(result.feature_keepouts.every((item) => item.axial_cell_count === 1));
   assert.ok(result.warnings.some((warning) => warning.includes("conservative grid-cell clearance tunnels")));
+});
+
+
+test("Z-up mesh openings flow through target grid into a connected layered construction", () => {
+  const source = perforatedPlateTriangles({ totalHeight: 12 });
+  const vertices = new Float64Array(source.vertices.length);
+  for (let index = 0; index < source.vertices.length; index += 3) {
+    const x = source.vertices[index];
+    const y = source.vertices[index + 1];
+    const z = source.vertices[index + 2];
+    // Same proper rotation as the Inspector's Z-up -> Y-up selection.
+    vertices[index] = x;
+    vertices[index + 1] = z;
+    vertices[index + 2] = -y;
+  }
+  const result = voxelizeMesh({
+    vertices,
+    indices: source.indices,
+    units: "mm",
+  });
+  assert.equal(result.topology.handle_count, 5);
+  assert.equal(result.features.length, 5);
+  assert.ok(result.feature_keepouts.every((item) => item.preserved));
+  assert.ok(result.feature_keepouts.every((item) => item.axis === "y"));
+  assert.ok(result.feature_keepouts.every((item) => item.axial_cell_count === 1));
+
+  const grid = new TargetGrid({
+    spec: new GridSpec({
+      dimensions: result.dimensions,
+      origin_mm: result.origin_mm,
+      pitch_mm: result.pitch_mm,
+    }),
+    classification: result.classification,
+    surface_coverage: result.surface_coverage,
+    source_units: result.source_units,
+    source_bounds_mm: result.source_bounds_mm,
+    warnings: result.warnings,
+    topology: result.topology,
+    features: result.features,
+    feature_keepouts: result.feature_keepouts,
+  });
+  assert.equal(grid.spec.dimensions[1], 2);
+  const footprints = Array.from(
+    { length: grid.spec.dimensions[1] },
+    (_, course) => grid.layer_footprint(course),
+  );
+  assert.ok(footprints.every((footprint) => footprint.length > 0));
+
+  const construction = buildLayeredFootprintBlock(footprints, connectionCatalogue, { maxParts: 200 });
+  assert.ok(construction.parts.length > 0);
+  assert.ok(construction.connections.length > 0);
 });
