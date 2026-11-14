@@ -308,16 +308,13 @@ function preserveSubGridOpenings({ features, dimensions, origin, pitch, boundsMi
     const otherAxes = [0, 1, 2].filter((value) => value !== axis);
     const sourceSpan = boundsMax[axis] - boundsMin[axis];
     const observedRatio = sourceSpan > 0 ? feature.observed_span_mm / sourceSpan : 0;
-    if (observedRatio < 0.55
+    if (observedRatio < 0.55 || feature.sample_support < 5
         || !["round opening", "elongated slot/opening"].includes(feature.shape)) {
       keepouts.push({ feature_id: feature.id, axis: feature.axis, cell_count: 0, preserved: false,
         reason: observedRatio < 0.55 ? "opening does not span enough of the source along its detected axis"
           : "opening shape is not yet supported for conservative grid clearance" });
       continue;
     }
-    const radius = feature.shape === "round opening"
-      ? Math.min(feature.minimum_equivalent_diameter_mm, feature.maximum_equivalent_diameter_mm) * 0.5
-      : null;
     let cellCount = 0;
     for (let y = 0; y < height; y += 1) {
       for (let z = 0; z < depth; z += 1) {
@@ -335,13 +332,6 @@ function preserveSubGridOpenings({ features, dimensions, origin, pitch, boundsMi
             }
           }
           if (!intersectsOpening) continue;
-          if (radius !== null) {
-            const nearest = otherAxes.map((dimension) => Math.max(cellMin[dimension],
-              Math.min(feature.center_mm[dimension], cellMax[dimension])));
-            const distance = Math.hypot(nearest[0] - feature.center_mm[otherAxes[0]],
-              nearest[1] - feature.center_mm[otherAxes[1]]);
-            if (distance > radius + 1e-9) continue;
-          }
           const flat = x + width * (z + depth * y);
           classification[flat] = CellClass.EXTERIOR;
           coverage[flat] = 0;
