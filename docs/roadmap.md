@@ -65,9 +65,10 @@ This roadmap is intentionally milestone-based. Each milestone should produce a d
 
 ## M5 — 3D target representation, shape coverage and optimisation
 
-- [x] Define the initial versioned Python target-grid data model with explicit physical pitch, origin, classification and layer extraction.
-- [x] Add a bounded Python voxeliser for watertight meshes, including unit conversion, occupancy sampling and nearest-surface boundary detection.
-- [ ] Define a scale-aware, orientation-aware target-shape representation shared by Python and browser implementations.
+- [x] Define the versioned browser target-grid data model with explicit physical pitch, origin, classification and layer extraction.
+- [x] Add a bounded browser voxeliser for closed meshes, including unit conversion, BVH-accelerated occupancy sampling and nearest-surface boundary detection.
+- [ ] Define a scale-aware, orientation-aware target-shape representation for the browser product.
+- [ ] Integrate browser voxelisation into the mesh inspector and expose per-course occupancy previews.
 - [ ] Convert imported triangle meshes into a bounded 3D occupancy field at configurable stud/course resolution.
 - [ ] Add robust mesh validation and explicit handling for open, non-watertight, degenerate and self-intersecting surfaces.
 - [ ] Extract per-course 2D cross-sections while retaining surface-distance information for visual fitting.
