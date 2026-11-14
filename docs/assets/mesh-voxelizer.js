@@ -315,6 +315,7 @@ function preserveSubGridOpenings({ features, dimensions, origin, pitch, classifi
       continue;
     }
     let cellCount = 0;
+    const axialCells = new Set();
     for (let y = 0; y < height; y += 1) {
       for (let z = 0; z < depth; z += 1) {
         for (let x = 0; x < width; x += 1) {
@@ -331,6 +332,7 @@ function preserveSubGridOpenings({ features, dimensions, origin, pitch, classifi
             }
           }
           if (!intersectsOpening) continue;
+          axialCells.add(indices[axis]);
           const flat = x + width * (z + depth * y);
           classification[flat] = CellClass.EXTERIOR;
           coverage[flat] = 0;
@@ -340,6 +342,7 @@ function preserveSubGridOpenings({ features, dimensions, origin, pitch, classifi
     }
     keepouts.push({ feature_id: feature.id, axis: feature.axis, cell_count: cellCount,
       preserved: cellCount > 0, method: "conservative grid-cell clearance",
+      axial_cell_count: axialCells.size,
       local_axial_bounds_mm: [feature.bounds_mm[0][axis], feature.bounds_mm[1][axis]],
       support_slices: feature.sample_support,
       clearance_pitch_mm: pitch.slice(),
