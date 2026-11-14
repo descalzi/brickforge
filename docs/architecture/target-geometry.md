@@ -45,7 +45,7 @@ Layer extraction must preserve the relationship to the original 3D target so lat
 
 ## Determinism and browser parity
 
-The Python implementation is the reference implementation and the browser implementation must use the same grid conventions, input validation, classification rules, tie-breaking and resource limits. Equivalent inputs and settings must produce identical occupied-cell sets and layer maps.
+The browser implementation is the product implementation and is authoritative for user-facing mesh ingestion and construction. The Python package is a supporting reference and offline analysis tool, not a mandatory parallel implementation. Share versioned data contracts and analytic test fixtures; require algorithm-level parity only where an independent Python result provides meaningful verification. Do not duplicate browser features in Python merely for symmetry.
 
 Each result should carry a representation version, source identifier/hash where available, source units, scale/orientation transform, grid origin, grid pitches, dimensions, classification settings and warnings. This is required for reproducible regeneration and meaningful comparisons between engine versions.
 
@@ -64,25 +64,21 @@ Tests must cover both geometry classification and the derived per-course 2D maps
 
 ## Current implementation status
 
-The Python reference package now defines `GridSpec` and immutable `TargetGrid`
+The Python supporting package defines `GridSpec` and immutable `TargetGrid`
 data types in `src/brickforge/geometry/grid.py`. The model validates physical
 grid spacing, dimensions, source bounds, cell classifications and surface
 coverage; it provides deterministic cell/world mapping, flattened indexing,
 summary metadata and per-course footprint extraction. The representation is
 versioned and exported from `brickforge.geometry`.
 
-The browser now has a matching versioned `GridSpec` and `TargetGrid` data model in `docs/assets/target-grid.js`. It uses the same X/Y/Z dimensions, Y/Z/X backing layout, X-fastest flat indexing, millimetre coordinates, cell-centre mapping, classification values, source provenance and per-course footprint ordering as the Python reference. Its data-model tests exercise the same synthetic grid and summary values as the Python tests. Browser mesh voxelisation is the next step; this parity layer is deliberately separate from mesh import and classification.\n\nThe Python reference package now also provides `voxelize_mesh()` in
+The browser now has the authoritative versioned `GridSpec` and `TargetGrid` data model in `docs/assets/target-grid.js`. It uses the same X/Y/Z dimensions, Y/Z/X backing layout, X-fastest flat indexing, millimetre coordinates, cell-centre mapping, classification values, source provenance and per-course footprint ordering as the Python reference. Its data-model tests exercise the same synthetic grid and summary values as the Python tests. Browser mesh voxelisation is implemented in `docs/assets/mesh-voxelizer.js` and runs in a dedicated worker. The browser path uses a triangle BVH for point-in-solid scanlines and nearest-surface queries, so it can remain responsive without introducing a second server-side processing path.\n\nThe Python reference package now also provides `voxelize_mesh()` in
 `src/brickforge/geometry/voxelize.py`. It converts declared source units to
 millimetres, aligns a grid to the global pitch, enforces a cell budget, and
 classifies each cell using a deterministic 3x3x3 sample lattice. It currently
 requires watertight, consistently wound meshes and processes cells in bounded
 batches. The sampled inside fraction is stored as surface coverage.
 
-This is a first, deliberately conservative voxeliser. Point sampling can miss
-features smaller than the sampling interval and is not exact triangle-cell
-intersection. The warning is carried with every resulting grid. Open-mesh
-shell mode, triangle-distance coverage, browser parity and automatic
-mesh-driven construction remain future work.
+The browser voxeliser is the primary implementation. It uses a 3x3x3 interior sample lattice and nearest-triangle distance to retain thin features; this is still an approximation, not exact triangle-cell clipping. It requires a closed, consistently wound mesh and enforces face, cell and ray-test budgets. Open-mesh shell mode, self-intersection diagnostics, orientation-aware grids and automatic mesh-driven construction remain future work.
 
 ## Deliberate boundary
 
