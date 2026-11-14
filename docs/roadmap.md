@@ -67,15 +67,16 @@ This roadmap is intentionally milestone-based. Each milestone should produce a d
 
 - [x] Define the versioned browser target-grid data model with explicit physical pitch, origin, classification and layer extraction.
 - [x] Add a bounded browser voxeliser for closed meshes, including unit conversion, BVH-accelerated occupancy sampling and triangle-cell boundary detection.
+- [x] Add explicit source X/Y/Z up-axis alignment into the canonical Y-up construction frame without changing scale.
 - [ ] Define a scale-aware, orientation-aware target-shape representation for the browser product.
 - [x] Integrate browser voxelisation into the mesh inspector and expose per-course occupancy previews.
 - [x] Convert imported triangle meshes into a bounded 3D occupancy field at the standard stud/course resolution.
 - [ ] Add robust mesh validation and explicit handling for open, non-watertight, degenerate and self-intersecting surfaces.
 - [ ] Extract per-course 2D cross-sections while retaining surface-distance information for visual fitting.
-- [x] Reuse the tested footprint tiler as a per-course candidate generator, then solve bounded connected cross-course arrangements. The browser mesh inspector can now generate and export a variable-course assembly from its target grid; only the currently profiled rectangular brick families are eligible.
+- [x] Reuse the tested footprint tiler as a per-course candidate generator, prioritise sampled interlocking layouts for complex perforated courses, then solve bounded connected cross-course arrangements. The browser mesh inspector can generate and export a variable-course assembly from its target grid; only the currently profiled rectangular brick families are eligible.
 - [x] Preserve closed-mesh topological handle/tunnel counts separately from coarse occupancy; conservatively map supported axis-aligned sub-grid openings to grid-cell clearance tunnels, and continue blocking construction for unsupported or unlocalised features.
-- [x] Locate and measure axis-aligned sub-grid openings using sampled orthogonal cross-sections; retain location, size, shape, per-slice minimum/maximum dimensions and slice-support metadata in target-grid version 4 for measured feature geometry, now extended in target-grid version 5 with conservative feature keep-out metadata, now target-grid version 6 with measured local axial intervals and per-feature clearance-course counts.
-- [x] Preserve supported sub-grid round openings and elongated slots as conservative target-grid clearance tunnels; disclose grid-scale over-clearance and block unsupported feature types.
+- [x] Locate and measure axis-aligned sub-grid openings using nineteen sampled orthogonal cross-sections; retain location, size, shape, per-slice minimum/maximum dimensions, slice support, local axial intervals and per-feature clearance-course counts in target-grid version 6.
+- [x] Preserve stable axis-aligned sub-grid openings as conservative target-grid clearance tunnels; clip clearances to measured local axial intervals and disclose grid-scale over-clearance.
 - [x] Add a browser LDraw part-opening profiler and versioned feature-profile export so candidate part geometry can be measured independently of target meshes.
 - [x] Add bounded Part Explorer scans that accumulate up to 48 unique profiles across multiple user searches; skip duplicates and export one combined catalogue.
 - [x] Add an initial browser geometric matcher for imported part profiles using shape and per-slice dimensional ranges; report candidates only and do not treat a match as a buildability result.
