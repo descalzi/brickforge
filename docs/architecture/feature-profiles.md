@@ -1,6 +1,6 @@
 # Measured part feature profiles
 
-The Part Explorer can analyse the resolved triangle geometry of a selected LDraw part and export a versioned JSON profile. It can also scan a bounded set of up to 12 likely Technic beams, frames and connectors and export the measured profiles as one catalogue. This is separate from the nominal connection-profile catalogue: it records measured geometric openings, not physical connection behaviour.
+The Part Explorer can analyse the resolved triangle geometry of a selected LDraw part and export a versioned JSON profile. It can also scan up to 12 results from a user-supplied part search phrase and export the measured profiles as one catalogue. This is separate from the nominal connection-profile catalogue: it records measured geometric openings, not physical connection behaviour.
 
 ## Extraction
 
