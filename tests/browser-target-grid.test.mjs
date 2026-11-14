@@ -42,13 +42,22 @@ test("target grid counts occupancy and extracts sorted per-course footprints", (
     source_bounds_mm: [[0, 0, 0], [16, 9.6, 24]],
     warnings: ["Synthetic test target"],
     topology: { component_count: 1, vertex_count: 8, edge_count: 18, face_count: 12, euler_characteristic: 2, handle_count: 0 },
+    features: [{
+      id: "z-1", axis: "z", axis_index: 2, shape: "round opening",
+      center_mm: [4, 4, 2], bounds_mm: [[2, 2, 1], [6, 6, 3]],
+      observed_span_mm: 2, width_mm: 4, length_mm: 4, area_mm2: 12.56,
+      perimeter_mm: 12.57, equivalent_diameter_mm: 4, circularity: 1,
+      aspect_ratio: 1, sample_support: 3, confidence: "medium",
+    }],
   });
 
   assert.equal(grid.occupied_cell_count, 3);
   assert.equal(grid.boundary_cell_count, 1);
+  assert.equal(grid.features.length, 1);
+  assert.equal(grid.features[0].center_mm[2], 2);
   assert.deepEqual(grid.layer_footprint(0), [[0, 1], [0, 2], [1, 0]]);
   assert.deepEqual(grid.summary(), {
-    representation_version: 2,
+    representation_version: 3,
     dimensions: [2, 1, 3],
     origin_mm: [0, 0, 0],
     pitch_mm: [8, 9.6, 8],
@@ -57,6 +66,13 @@ test("target grid counts occupancy and extracts sorted per-course footprints", (
     occupied_cell_count: 3,
     boundary_cell_count: 1,
     topology: { component_count: 1, vertex_count: 8, edge_count: 18, face_count: 12, euler_characteristic: 2, handle_count: 0 },
+    features: [{
+      id: "z-1", axis: "z", axis_index: 2, shape: "round opening",
+      center_mm: [4, 4, 2], bounds_mm: [[2, 2, 1], [6, 6, 3]],
+      observed_span_mm: 2, width_mm: 4, length_mm: 4, area_mm2: 12.56,
+      perimeter_mm: 12.57, equivalent_diameter_mm: 4, circularity: 1,
+      aspect_ratio: 1, sample_support: 3, confidence: "medium",
+    }],
     warnings: ["Synthetic test target"],
   });
 });
@@ -78,4 +94,5 @@ test("target grid rejects malformed provenance and cell arrays", () => {
   assert.throws(() => new TargetGrid({ ...base, source_bounds_mm: [[0, 0], [1, 1]] }), /three finite/);
   assert.throws(() => new TargetGrid({ ...base, warnings: [3] }), /strings/);
   assert.throws(() => new TargetGrid({ ...base, topology: { component_count: 0 } }), /topology/);
+  assert.throws(() => new TargetGrid({ ...base, features: [{ id: "bad" }] }), /feature 0/);
 });
