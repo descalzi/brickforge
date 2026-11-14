@@ -76,8 +76,9 @@ This roadmap is intentionally milestone-based. Each milestone should produce a d
 - [x] Preserve closed-mesh topological handle/tunnel counts separately from coarse occupancy and block construction when current part profiles cannot guarantee those features.
 - [x] Locate and measure axis-aligned sub-grid openings using sampled orthogonal cross-sections; retain location, size, shape and slice-support metadata in the versioned target grid.
 - [x] Add a browser LDraw part-opening profiler and versioned feature-profile export so candidate part geometry can be measured independently of target meshes.
+- [x] Add an initial browser geometric matcher for imported part profiles using shape and dimensional tolerances; report candidates only and do not treat a match as a buildability result.
 - [ ] Build a curated, source-verified feature-profile catalogue for useful specialised parts; distinguish measured openings from nominal connection interfaces.
-- [ ] Match target openings to part profiles with orientation, scale, tolerance and surrounding-envelope checks; keep unmatched features as explicit construction constraints.
+- [ ] Improve matching with one-to-one feature assignment, explicit part rotations, surrounding-envelope checks and validated connection interfaces; keep unmatched features as construction constraints.
 - [ ] Improve feature analysis for oblique, curved, branching and blind openings; match measured features to compatible parts or explicit preservation constraints.
 - [ ] Add surface-aware candidate placement for slopes, curves and specialised elements.
 - [ ] Combine coarse volumetric and surface-fitting strategies.
