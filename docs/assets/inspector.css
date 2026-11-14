@@ -317,3 +317,25 @@
 .preview-activity-steps li[data-status="active"] { border-color:#C94B2A; color:#A93619; background:#FFF1EC; }
 .preview-activity-steps li[data-status="complete"] { border-color:#A7C9BA; color:#176A4A; background:#F1F8F4; }
 @media (prefers-reduced-motion:reduce) { .preview-activity-bricks span { animation:none; } }
+
+.voxel-feature-list {
+  display: grid;
+  gap: 7px;
+  margin: 8px 0 12px;
+  padding: 0;
+  list-style: none;
+}
+.voxel-feature-list:empty { display: none; }
+.voxel-feature-list li {
+  display: grid;
+  gap: 3px;
+  padding: 8px 9px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255,255,255,.72);
+  font-size: .7rem;
+  line-height: 1.4;
+}
+.voxel-feature-list strong { color: var(--ink); font-size: .72rem; }
+.voxel-feature-list span { color: var(--accent-strong); font-weight: 600; }
+.voxel-feature-list small { color: var(--muted); font-size: .65rem; }
