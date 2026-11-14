@@ -1337,6 +1337,16 @@ export function buildLayeredFootprintBlock(layerFootprints, catalogue, config = 
       height: bestSequence.length * bodyHeight * LDU_TO_MM,
     },
     course_part_counts: bestSequence.map((tiling) => tiling.length),
+    profile_dimensions: Object.fromEntries(
+      [...new Set(placements.map((part) => part.part_id))].map((partId) => {
+        const profile = profiles.get(partId);
+        return [partId, {
+          footprint_studs_x: profile.footprint_studs_x,
+          footprint_studs_z: profile.footprint_studs_z,
+          body_height_ldu: profile.body_height_ldu,
+        }];
+      }),
+    ),
     search: {
       sequence_checks: checks,
       sequence_search_nodes: visitedNodes,
