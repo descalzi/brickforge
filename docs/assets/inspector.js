@@ -652,12 +652,20 @@ async function importPartFeatureProfiles(files) {
       continue;
     }
     try {
-      const profile = JSON.parse(await file.text());
-      if (!validImportedFeatureProfile(profile)) {
-        errors.push(file.name + ' is not a supported part feature profile');
+      const parsed = JSON.parse(await file.text());
+      const profiles = parsed && parsed.schema_version === 1 && Array.isArray(parsed.profiles)
+        ? parsed.profiles
+        : [parsed];
+      if (!profiles.length) {
+        errors.push(file.name + ' contains no part feature profiles');
         continue;
       }
-      validProfiles.push(profile);
+      const invalid = profiles.filter((profile) => !validImportedFeatureProfile(profile));
+      if (invalid.length) {
+        errors.push(file.name + ' contains ' + invalid.length + ' unsupported profile(s)');
+        continue;
+      }
+      validProfiles.push(...profiles);
     } catch {
       errors.push(file.name + ' is not valid JSON');
     }
