@@ -30,6 +30,12 @@ test("browser engine builds a connected stack with a narrower upper course", () 
   assert.equal(result.connections.length, 1);
   assert.ok(result.total_mating_pairs > 0);
   assert.equal(result.assembly_graph.parts, result.parts);
+  assert.deepEqual(result.profile_dimensions["3001"], {
+    footprint_studs_x: 4,
+    footprint_studs_z: 2,
+    body_height_ldu: 24,
+    stud_pitch_ldu: 20,
+  });
   assert.match(result.ldraw, /3001\.dat/);
   assert.match(result.ldraw, /3003\.dat/);
 });
