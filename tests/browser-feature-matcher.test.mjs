@@ -76,3 +76,23 @@ test("feature matcher validates its search limits", () => {
   assert.throws(() => matchTargetFeatures([target], [], { limit: 0 }), /limits and tolerances/);
   assert.throws(() => matchTargetFeatures({}, []), /must be arrays/);
 });
+
+test("feature matcher compares tapered opening limits rather than only average diameter", () => {
+  const taperedTarget = {
+    ...target,
+    equivalent_diameter_mm: 6.8,
+    minimum_equivalent_diameter_mm: 4.3,
+    maximum_equivalent_diameter_mm: 7.7,
+  };
+  const matchingTaper = profile("countersunk-match", 6.8, {
+    minimum_equivalent_diameter_mm: 4.3,
+    maximum_equivalent_diameter_mm: 7.7,
+  });
+  const straightHole = profile("straight-hole", 6.8, {
+    minimum_equivalent_diameter_mm: 6.8,
+    maximum_equivalent_diameter_mm: 6.8,
+  });
+  const result = matchTargetFeatures([taperedTarget], [straightHole, matchingTaper]);
+  assert.equal(result[0].matches.length, 1);
+  assert.equal(result[0].matches[0].part_id, "countersunk-match");
+});
