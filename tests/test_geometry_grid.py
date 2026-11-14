@@ -83,7 +83,7 @@ def test_target_grid_counts_cells_extracts_layers_and_is_immutable() -> None:
     assert grid.boundary_cell_count == 1
     assert grid.layer_footprint(0) == ((0, 1), (0, 2), (1, 0))
     assert grid.summary() == {
-        "representation_version": 5,
+        "representation_version": 6,
         "dimensions": [2, 1, 3],
         "origin_mm": [0.0, 0.0, 0.0],
         "pitch_mm": [8.0, 9.6, 8.0],
@@ -100,6 +100,38 @@ def test_target_grid_counts_cells_extracts_layers_and_is_immutable() -> None:
     assert not grid.surface_coverage.flags.writeable
     with pytest.raises(ValueError):
         grid.classification[0, 0, 0] = CellClass.INTERIOR
+
+
+
+def test_target_grid_validates_local_opening_clearance_metadata() -> None:
+    spec = GridSpec(dimensions=(1, 1, 1), origin_mm=(0.0, 0.0, 0.0))
+    valid = np.zeros((1, 1, 1), dtype=np.uint8)
+    bounds = ((0.0, 0.0, 0.0), (8.0, 9.6, 8.0))
+    keepout = {
+        "feature_id": "z-1",
+        "axis": "z",
+        "cell_count": 2,
+        "preserved": True,
+        "axial_cell_count": 1,
+        "local_axial_bounds_mm": (0.25, 5.1),
+        "support_slices": 9,
+    }
+    grid = TargetGrid(
+        spec, valid, np.zeros_like(valid, dtype=np.float32), "mm", bounds,
+        feature_keepouts=(keepout,),
+    )
+    summary = grid.summary()
+    assert summary["feature_keepouts"][0]["axial_cell_count"] == 1
+    assert summary["feature_keepouts"][0]["local_axial_bounds_mm"] == [0.25, 5.1]
+    for invalid in (
+        {**keepout, "axial_cell_count": -1},
+        {**keepout, "local_axial_bounds_mm": (5.0, 1.0)},
+    ):
+        with pytest.raises(ValueError, match="feature keep-out"):
+            TargetGrid(
+                spec, valid, np.zeros_like(valid, dtype=np.float32), "mm", bounds,
+                feature_keepouts=(invalid,),
+            )
 
 
 def test_target_grid_rejects_invalid_shapes_classes_and_coverage() -> None:
