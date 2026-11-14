@@ -1,7 +1,13 @@
 from __future__ import annotations
 
+import json
+import subprocess
+from pathlib import Path
+
 import numpy as np
 import pytest
+
+ROOT = Path(__file__).resolve().parents[1]
 
 from brickforge.geometry.grid import (
     BRICK_GRID_PITCH_MM,
@@ -194,4 +200,6 @@ process.stdout.write(JSON.stringify({
     assert browser["summary"] == grid.summary()
     assert browser["footprint"] == [list(cell) for cell in grid.layer_footprint(0)]
     assert browser["centre"] == pytest.approx(spec.cell_center_mm(1, 0, 2))
-    assert browser["bounds"] == pytest.approx(spec.cell_bounds_mm(0, 0, 0))
+    expected_bounds = spec.cell_bounds_mm(0, 0, 0)
+    assert browser["bounds"][0] == pytest.approx(expected_bounds[0])
+    assert browser["bounds"][1] == pytest.approx(expected_bounds[1])
