@@ -166,7 +166,7 @@ function analyseSelectedPartFeatures() {
   setMessage('Sampling orthogonal cross-sections in a background worker…');
 
   try {
-    partFeatureWorker = new Worker(new URL('./part-feature-worker.js?v=featureprofile4', import.meta.url), { type: 'module' });
+    partFeatureWorker = new Worker(new URL('./part-feature-worker.js?v=featureprofile5', import.meta.url), { type: 'module' });
   } catch (error) {
     partFeatureAnalyseButton.disabled = false;
     partFeatureBatchButton.disabled = partCatalogue.length === 0;
@@ -228,7 +228,7 @@ function likelyOpeningPartCandidates(limit = 12, query = 'technic beam') {
 
 function analysePositionsInWorker(positions, bounds) {
   return new Promise((resolve, reject) => {
-    const worker = new Worker(new URL('./part-feature-worker.js?v=featureprofile4', import.meta.url), { type: 'module' });
+    const worker = new Worker(new URL('./part-feature-worker.js?v=featureprofile5', import.meta.url), { type: 'module' });
     batchFeatureWorker = worker;
     worker.addEventListener('message', (event) => {
       if (worker !== batchFeatureWorker) return;
@@ -358,7 +358,7 @@ async function scanLikelyOpeningParts() {
           units: 'mm',
           dimensions_mm: dimensions,
           bounds_mm: [bounds.minimum, bounds.maximum],
-          analysis_method: 'Seven sampled orthogonal cross-sections; nested contours clustered across slices',
+          analysis_method: 'Nineteen sampled orthogonal cross-sections; nested contours clustered across slices',
           features,
           limitations: [
             'Measurements are based on rendered LDraw surface triangles and principal-axis sections only.',
@@ -450,7 +450,7 @@ function downloadPartFeatureProfile() {
     units: 'mm',
     dimensions_mm: activePartDescriptor.dimensions_mm,
     bounds_mm: [activePartBoundsMin, activePartBoundsMax],
-    analysis_method: 'Seven sampled orthogonal cross-sections; nested contours clustered across slices',
+    analysis_method: 'Nineteen sampled orthogonal cross-sections; nested contours clustered across slices',
     features: activePartFeatures,
     limitations: [
       'Measurements are based on rendered LDraw surface triangles and principal-axis sections only.',
