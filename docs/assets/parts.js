@@ -154,8 +154,9 @@ function renderPartFeatureResults(features) {
 }
 
 function analyseSelectedPartFeatures() {
-  if (!activePartTrianglePositions || !activePartDescriptor || partFeatureWorker) return;
+  if (!activePartTrianglePositions || !activePartDescriptor || partFeatureWorker || batchScanRunning) return;
   partFeatureAnalyseButton.disabled = true;
+  partFeatureBatchButton.disabled = true;
   partFeatureDownloadButton.disabled = true;
   partFeatureStatus.textContent = 'Measuring nested contours across the part geometry…';
   partFeatureStatus.dataset.state = 'working';
@@ -166,6 +167,7 @@ function analyseSelectedPartFeatures() {
     partFeatureWorker = new Worker(new URL('./part-feature-worker.js?v=featureprofile4', import.meta.url), { type: 'module' });
   } catch (error) {
     partFeatureAnalyseButton.disabled = false;
+    partFeatureBatchButton.disabled = partCatalogue.length === 0;
     partFeatureStatus.textContent = error instanceof Error ? error.message : 'Could not start feature analysis.';
     partFeatureStatus.dataset.state = 'error';
     setState('PART FEATURE ANALYSIS FAILED', 'error');
@@ -180,6 +182,7 @@ function analyseSelectedPartFeatures() {
     worker.terminate();
     partFeatureWorker = null;
     partFeatureAnalyseButton.disabled = false;
+    partFeatureBatchButton.disabled = partCatalogue.length === 0;
     if (event.data.type === 'error') {
       partFeatureStatus.textContent = event.data.message;
       partFeatureStatus.dataset.state = 'error';
@@ -202,6 +205,7 @@ function analyseSelectedPartFeatures() {
     worker.terminate();
     partFeatureWorker = null;
     partFeatureAnalyseButton.disabled = false;
+    partFeatureBatchButton.disabled = partCatalogue.length === 0;
     partFeatureStatus.textContent = event.message || 'The feature analysis worker failed.';
     partFeatureStatus.dataset.state = 'error';
     setState('PART FEATURE ANALYSIS FAILED', 'error');
@@ -277,7 +281,7 @@ function renderBatchFeatureProfiles(profiles) {
 }
 
 async function scanLikelyOpeningParts() {
-  if (batchScanRunning) return;
+  if (batchScanRunning || partFeatureWorker) return;
   const candidates = likelyOpeningPartCandidates(12);
   if (!candidates.length) {
     partFeatureBatchStatus.textContent = 'No likely Technic beams, frames or connectors were found in this catalogue snapshot. Search for a part and profile it individually instead.';
