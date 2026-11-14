@@ -37,7 +37,10 @@ def test_catalogue_contains_supported_brick_and_plate_profiles() -> None:
     assert len(profiles["3022"].studs) == 4
     assert len(profiles["3023"].studs) == 2
     assert len(profiles["3024"].studs) == 1
-    assert all(profiles[part_id].body_height_ldu == 8 for part_id in ("3020", "3021", "3022", "3023", "3024"))
+    assert all(
+        profiles[part_id].body_height_ldu == 8
+        for part_id in ("3020", "3021", "3022", "3023", "3024")
+    )
 
 
 def test_brick_2x4_can_align_with_identical_upper_brick() -> None:
