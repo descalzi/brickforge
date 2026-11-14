@@ -6,7 +6,7 @@ The Part Explorer can analyse the resolved triangle geometry of a selected LDraw
 
 The browser resolves the selected part and its nested LDraw references, converts geometry into millimetres, then sends its triangle positions to a dedicated worker. The worker samples seven cross-sections along each principal axis, finds nested contours, and clusters contours that persist across slices.
 
-Version 2 profiles preserve both representative measurements and per-slice minimum/maximum dimensions, so tapered and countersunk openings are not reduced to a single average. Version 1 profiles remain importable for backward compatibility.
+Version 2 profiles preserve both representative measurements and per-slice minimum/maximum dimensions, so tapered and countersunk openings are not reduced to a single average. Version 3 adds optional lightweight triangle positions in millimetres for profiles with at most 4,000 triangles; larger profiles remain valid without preview geometry. Versions 1 and 2 remain importable for backward compatibility.
 
 Each detected feature records:
 
@@ -16,7 +16,7 @@ Each detected feature records:
 - Representative equivalent circular diameter and its minimum/maximum range, circularity and aspect ratio.
 - Number of supporting slices and a coarse confidence label.
 
-Version 2 exports are validated against `schemas/part-feature-profile-v2.schema.json`.
+Version 2 exports are validated against `schemas/part-feature-profile-v2.schema.json`; version 3 exports are validated against `schemas/part-feature-profile-v3.schema.json`.
 
 ## Interpretation and limitations
 
@@ -26,7 +26,7 @@ The current analyser uses principal-axis sections only. It may miss or approxima
 
 ## Initial candidate matching
 
-The browser Inspector can import one or more exported profiles or a combined catalogue and compare their measured opening features with the target mesh. The matcher uses shape, per-slice equivalent-diameter or width/length ranges, circularity and aspect ratio with explicit dimensional tolerances. It ranks candidates per target feature and records the candidate part's local opening axis. A second bounded search assigns distinct candidate openings to every target opening and compares pairwise centre distances and relative axis relationships, making the pattern comparison invariant to rigid translation and rotation. For non-collinear feature centres, the matcher now derives a rigid rotation matrix and translation vector, then reports centre residual and opening-axis alignment. Collinear layouts are explicitly marked underdetermined. The transform is accepted only when centre RMS residual is at most the larger of 1.5 mm or 5% of the target feature span, and opening-axis alignment RMS is at most 5 degrees. Collinear layouts, high-residual fits and axis-incompatible layouts remain unresolved. The Inspector also transforms the candidate part's eight bounding-box corners and reports whether that AABB remains within the target mesh AABB (with a 2 mm tolerance). This is only a coarse necessary-condition check; it does not test the part's actual surfaces against target material or validate connection interfaces.
+The browser Inspector can import one or more exported profiles or a combined catalogue and compare their measured opening features with the target mesh. The matcher uses shape, per-slice equivalent-diameter or width/length ranges, circularity and aspect ratio with explicit dimensional tolerances. It ranks candidates per target feature and records the candidate part's local opening axis. A second bounded search assigns distinct candidate openings to every target opening and compares pairwise centre distances and relative axis relationships, making the pattern comparison invariant to rigid translation and rotation. For non-collinear feature centres, the matcher now derives a rigid rotation matrix and translation vector, then reports centre residual and opening-axis alignment. Collinear layouts are explicitly marked underdetermined. The transform is accepted only when centre RMS residual is at most the larger of 1.5 mm or 5% of the target feature span, and opening-axis alignment RMS is at most 5 degrees. Collinear layouts, high-residual fits and axis-incompatible layouts remain unresolved. The Inspector also transforms the candidate part's eight bounding-box corners and reports whether that AABB remains within the target mesh AABB (with a 2 mm tolerance). This is only a coarse necessary-condition check; it does not test the part's actual surfaces against target material or validate connection interfaces. When lightweight geometry is included, the Inspector can display the candidate mesh after applying the estimated rigid transform and subtracting the target model centre. The preview transform is a tested pure geometry operation that rejects non-finite positions and non-rigid matrices. This visual overlay helps inspect alignment, but it still does not prove surface fit or buildability.
 
 ## Next step
 
