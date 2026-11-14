@@ -30,8 +30,8 @@ test("browser engine builds a connected stack with a narrower upper course", () 
   assert.equal(result.connections.length, 1);
   assert.ok(result.total_mating_pairs > 0);
   assert.equal(result.assembly_graph.parts, result.parts);
-  assert.match(result.ldraw, /3001\\.dat/);
-  assert.match(result.ldraw, /3003\\.dat/);
+  assert.match(result.ldraw, /3001\.dat/);
+  assert.match(result.ldraw, /3003\.dat/);
 });
 
 test("browser engine rejects variable courses with no shared connection", () => {
