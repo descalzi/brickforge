@@ -6,6 +6,9 @@ self.addEventListener("message", (event) => {
     if (!trianglePositions || trianglePositions.length < 9 || trianglePositions.length % 9 !== 0) {
       throw new TypeError("Part feature analysis requires complete triangle positions.");
     }
+    if (trianglePositions.length / 9 > 100000) {
+      throw new RangeError("Part feature analysis is limited to 100,000 triangles per part.");
+    }
     const triangles = [];
     for (let index = 0; index < trianglePositions.length; index += 9) {
       triangles.push({
