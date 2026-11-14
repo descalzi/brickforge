@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { CellClass, GridSpec, TargetGrid } from "../docs/assets/target-grid.js";
+import { BRICK_GRID_PITCH_MM, PLATE_GRID_PITCH_MM, CellClass, GridSpec, TargetGrid } from "../docs/assets/target-grid.js";
 
 test("grid maps cells to world coordinates and deterministic flat indices", () => {
   const spec = new GridSpec({
@@ -100,6 +100,8 @@ test("target grid validates and preserves local opening clearance metadata", () 
   };
   const grid = new TargetGrid({ ...base, feature_keepouts: [keepout] });
   assert.deepEqual(grid.summary().feature_keepouts[0], keepout);
+  assert.deepEqual(BRICK_GRID_PITCH_MM, [8, 9.6, 8]);
+  assert.deepEqual(PLATE_GRID_PITCH_MM, [8, 3.2, 8]);
   assert.throws(() => new TargetGrid({
     ...base, feature_keepouts: [{ ...keepout, axial_cell_count: -1 }],
   }), /feature keep-outs/);
