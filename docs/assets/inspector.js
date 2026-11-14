@@ -622,10 +622,14 @@ function renderFeatureMatches() {
         totalMatches += 1;
         const entry = document.createElement('p');
         const score = Math.round(match.score * 100);
+        const envelope = match.part_dimensions_mm
+          ? ' · part envelope ' + match.part_dimensions_mm.map((value) => value.toFixed(1)).join(' × ') + ' mm'
+          : '';
         entry.textContent = match.part_id + ' · ' + match.description
           + ' · ' + score + '% geometric similarity'
           + ' · size difference ' + match.size_error_mm.toFixed(2) + ' mm'
           + ' · local opening axis ' + match.local_axis.toUpperCase()
+          + envelope
           + ' · ' + match.confidence + ' confidence';
         matches.append(entry);
       });
