@@ -1,4 +1,4 @@
-import { BRICK_GRID_PITCH_MM, CellClass } from "./target-grid.js?v=featuregrid6";
+import { BRICK_GRID_PITCH_MM, CellClass } from "./target-grid.js?v=featuregrid7";
 import { analyzeMeshFeatures } from "./mesh-feature-analysis.js?v=featuremeasure4";
 
 const UNIT_TO_MM = Object.freeze({ mm: 1, cm: 10, m: 1000, in: 25.4 });
