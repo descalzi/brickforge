@@ -229,3 +229,24 @@ test("feature pattern matcher leaves collinear layouts without a unique 3D place
   assert.equal(results[0].placement_resolved, false);
   assert.equal(results[0].rotation_matrix_3x3, null);
 });
+
+test("feature pattern matcher refuses a transform when opening axes do not align", () => {
+  const targetFeatures = [
+    patternHole("t1", [0, 0, 2]),
+    patternHole("t2", [20, 0, 2]),
+    patternHole("t3", [0, 30, 2]),
+  ];
+  const candidate = {
+    part_id: "axis-mismatch",
+    features: [
+      patternHole("p1", [40, 1, 5], "x"),
+      patternHole("p2", [40, 1, 25], "x"),
+      patternHole("p3", [10, 1, 5], "x"),
+    ],
+  };
+  const results = matchFeaturePatterns(targetFeatures, [candidate]);
+  assert.equal(results.length, 1);
+  assert.equal(results[0].placement_resolved, false);
+  assert.ok(results[0].axis_alignment_rms_deg > 5);
+  assert.equal(results[0].rotation_matrix_3x3, null);
+});
