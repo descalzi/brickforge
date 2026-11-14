@@ -132,8 +132,11 @@ function renderPartFeatureResults(features) {
     const position = document.createElement('small');
     heading.textContent = 'Opening ' + (index + 1) + ' · ' + feature.shape;
     detail.textContent = feature.shape === 'round opening'
-      ? 'Ø ' + feature.equivalent_diameter_mm.toFixed(2) + ' mm equivalent'
-      : feature.width_mm.toFixed(2) + ' × ' + feature.length_mm.toFixed(2) + ' mm';
+      ? 'Ø ' + feature.minimum_equivalent_diameter_mm.toFixed(2) + '–'
+        + feature.maximum_equivalent_diameter_mm.toFixed(2) + ' mm across sections'
+      : feature.minimum_width_mm.toFixed(2) + '–' + feature.maximum_width_mm.toFixed(2)
+        + ' × ' + feature.minimum_length_mm.toFixed(2) + '–'
+        + feature.maximum_length_mm.toFixed(2) + ' mm';
     position.textContent = 'Axis ' + feature.axis.toUpperCase()
       + ' · ' + feature.sample_support + ' slices · centre '
       + feature.center_mm.map((value) => value.toFixed(2)).join(', ') + ' mm';
