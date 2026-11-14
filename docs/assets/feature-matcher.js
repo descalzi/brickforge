@@ -5,20 +5,39 @@ function sizeTolerance(value, absoluteTolerance, relativeTolerance) {
 function compareFeatureDimensions(target, candidate, options) {
   if (target.shape !== candidate.shape) return null;
   if (target.shape === "round opening") {
-    const difference = Math.abs(target.equivalent_diameter_mm - candidate.equivalent_diameter_mm);
-    const tolerance = sizeTolerance(target.equivalent_diameter_mm, options.absoluteToleranceMm, options.relativeTolerance);
-    if (difference > tolerance) return null;
-    return { normalisedError: difference / tolerance, maximumError: difference };
+    const targetRange = [
+      Number.isFinite(target.minimum_equivalent_diameter_mm) ? target.minimum_equivalent_diameter_mm : target.equivalent_diameter_mm,
+      Number.isFinite(target.maximum_equivalent_diameter_mm) ? target.maximum_equivalent_diameter_mm : target.equivalent_diameter_mm,
+    ];
+    const candidateRange = [
+      Number.isFinite(candidate.minimum_equivalent_diameter_mm) ? candidate.minimum_equivalent_diameter_mm : candidate.equivalent_diameter_mm,
+      Number.isFinite(candidate.maximum_equivalent_diameter_mm) ? candidate.maximum_equivalent_diameter_mm : candidate.equivalent_diameter_mm,
+    ];
+    const errors = targetRange.map((value, index) => {
+      const difference = Math.abs(value - candidateRange[index]);
+      return { difference, tolerance: sizeTolerance(value, options.absoluteToleranceMm, options.relativeTolerance) };
+    });
+    if (errors.some((entry) => entry.difference > entry.tolerance)) return null;
+    return {
+      normalisedError: errors.reduce((sum, entry) => sum + entry.difference / entry.tolerance, 0) / errors.length,
+      maximumError: Math.max(...errors.map((entry) => entry.difference)),
+    };
   }
-  const targetDimensions = [target.width_mm, target.length_mm];
-  const candidateDimensions = [candidate.width_mm, candidate.length_mm];
-  const errors = targetDimensions.map((value, index) => {
-    const difference = Math.abs(value - candidateDimensions[index]);
+  const targetDimensions = [
+    [target.minimum_width_mm ?? target.width_mm, target.maximum_width_mm ?? target.width_mm],
+    [target.minimum_length_mm ?? target.length_mm, target.maximum_length_mm ?? target.length_mm],
+  ];
+  const candidateDimensions = [
+    [candidate.minimum_width_mm ?? candidate.width_mm, candidate.maximum_width_mm ?? candidate.width_mm],
+    [candidate.minimum_length_mm ?? candidate.length_mm, candidate.maximum_length_mm ?? candidate.length_mm],
+  ];
+  const errors = targetDimensions.flatMap((range, index) => range.map((value, endpoint) => {
+    const difference = Math.abs(value - candidateDimensions[index][endpoint]);
     return {
       difference,
       tolerance: sizeTolerance(value, options.absoluteToleranceMm, options.relativeTolerance),
     };
-  });
+  }));
   if (errors.some((entry) => entry.difference > entry.tolerance)) return null;
   return {
     normalisedError: errors.reduce((sum, entry) => sum + entry.difference / entry.tolerance, 0) / errors.length,
