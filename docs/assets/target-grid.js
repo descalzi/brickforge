@@ -78,8 +78,8 @@ export class GridSpec {
 export class TargetGrid {
   constructor({ spec, classification, surface_coverage, source_units, source_bounds_mm, warnings = [] }) {
     if (!(spec instanceof GridSpec)) throw new TypeError("spec must be a GridSpec");
-    if (!["mm", "cm", "m"].includes(source_units)) {
-      throw new TypeError("source_units must be 'mm', 'cm', or 'm'");
+    if (!["mm", "cm", "m", "in"].includes(source_units)) {
+      throw new TypeError("source_units must be 'mm', 'cm', 'm' or 'in'");
     }
     if (!Array.isArray(source_bounds_mm) || source_bounds_mm.length !== 2) {
       throw new TypeError("source bounds must contain two finite 3D points");
