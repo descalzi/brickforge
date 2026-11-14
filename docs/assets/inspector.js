@@ -578,7 +578,16 @@ function validImportedFeatureProfile(profile) {
       && Number.isFinite(feature.length_mm) && feature.length_mm > 0
       && Number.isFinite(feature.circularity)
       && Number.isFinite(feature.aspect_ratio)
-      && Number.isInteger(feature.sample_support) && feature.sample_support >= 2);
+      && Number.isFinite(feature.minimum_width_mm) && feature.minimum_width_mm > 0
+      && Number.isFinite(feature.maximum_width_mm) && feature.maximum_width_mm >= feature.minimum_width_mm
+      && Number.isFinite(feature.minimum_length_mm) && feature.minimum_length_mm > 0
+      && Number.isFinite(feature.maximum_length_mm) && feature.maximum_length_mm >= feature.minimum_length_mm
+      && Number.isInteger(feature.sample_support) && feature.sample_support >= 2
+      && (feature.shape !== 'round opening'
+        || (Number.isFinite(feature.minimum_equivalent_diameter_mm)
+          && Number.isFinite(feature.maximum_equivalent_diameter_mm)
+          && feature.minimum_equivalent_diameter_mm > 0
+          && feature.maximum_equivalent_diameter_mm >= feature.minimum_equivalent_diameter_mm)));
 }
 
 function renderFeatureMatches() {
