@@ -4,6 +4,7 @@ let STLLoader;
 let OBJLoader;
 
 import { GridSpec, TargetGrid } from "./target-grid.js";
+import { constructionPreviewTransform } from "./construction-preview.js";
 
 const MAX_FILE_BYTES = 100 * 1024 * 1024;
 const MILLIMETRES_PER_UNIT = { mm: 1, cm: 10, m: 1000, in: 25.4 };
@@ -245,20 +246,18 @@ function renderConstructionPreview(result) {
     throw new Error('The generated assembly is missing preview dimensions or its target grid.');
   }
 
-  const [gridWidth, , gridDepth] = activeTargetGrid.spec.dimensions;
-  const [pitchX, pitchY, pitchZ] = activeTargetGrid.spec.pitch_mm;
   const allCells = [];
   const [, courseCount] = activeTargetGrid.spec.dimensions;
   for (let layer = 0; layer < courseCount; layer += 1) {
     for (const [x, z] of activeTargetGrid.layer_footprint(layer)) allCells.push([x, z]);
   }
   if (!allCells.length) throw new Error('The target grid contains no occupied cells.');
-  const minX = Math.min(...allCells.map(([x]) => x));
-  const maxX = Math.max(...allCells.map(([x]) => x));
-  const minZ = Math.min(...allCells.map(([, z]) => z));
-  const maxZ = Math.max(...allCells.map(([, z]) => z));
-  const targetCentreX = activeTargetGrid.spec.origin_mm[0] + (minX + (maxX - minX + 1) / 2) * pitchX;
-  const targetCentreZ = activeTargetGrid.spec.origin_mm[2] + (minZ + (maxZ - minZ + 1) / 2) * pitchZ;
+  const targetCellBounds = {
+    minX: Math.min(...allCells.map(([x]) => x)),
+    maxX: Math.max(...allCells.map(([x]) => x)),
+    minZ: Math.min(...allCells.map(([, z]) => z)),
+    maxZ: Math.max(...allCells.map(([, z]) => z)),
+  };
   const palette = new Map([
     [4, 0xC91A09],
     [1, 0x0055BF],
@@ -275,15 +274,12 @@ function renderConstructionPreview(result) {
   for (const part of result.parts) {
     const dimensions = result.profile_dimensions[part.part_id];
     if (!dimensions) throw new Error('Missing preview dimensions for part ' + part.part_id + '.');
-    const sizeX = dimensions.footprint_studs_x * pitchX;
-    const sizeZ = dimensions.footprint_studs_z * pitchZ;
+    const transform = constructionPreviewTransform(
+      part, dimensions, activeTargetGrid.spec, targetCellBounds, currentModelCenter,
+    );
     const geometryKey = part.part_id;
     if (!geometries.has(geometryKey)) {
-      geometries.set(geometryKey, new THREE.BoxGeometry(
-        sizeX,
-        dimensions.body_height_ldu * 0.4,
-        sizeZ,
-      ));
+      geometries.set(geometryKey, new THREE.BoxGeometry(...transform.size_mm));
     }
     const colourCode = part.colour_code;
     if (!materials.has(colourCode)) {
@@ -296,13 +292,8 @@ function renderConstructionPreview(result) {
     const mesh = new THREE.Mesh(geometries.get(geometryKey), materials.get(colourCode));
     mesh.castShadow = false;
     mesh.receiveShadow = false;
-    mesh.position.set(
-      part.translation_ldu[0] * 0.4 + targetCentreX - currentModelCenter[0],
-      activeTargetGrid.spec.origin_mm[1] + (Number(part.instance_id.match(/^layer-(\d+)/)?.[1] || 0) + 0.5) * pitchY
-        - currentModelCenter[1],
-      part.translation_ldu[2] * 0.4 + targetCentreZ - currentModelCenter[2],
-    );
-    if (part.matrix?.[0] === 0 && part.matrix?.[2] === 1) mesh.rotation.y = Math.PI / 2;
+    mesh.position.set(...transform.position_mm);
+    mesh.rotation.y = transform.rotation_y_rad;
     mesh.userData.partId = part.part_id;
     group.add(mesh);
   }
