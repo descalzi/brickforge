@@ -1386,6 +1386,7 @@ featureProfileInput.addEventListener('change', async (event) => {
 });
 voxeliseButton.addEventListener('click', runVoxelisation);
 buildConstructionButton.addEventListener('click', runLayeredConstruction);
+candidatePreviewToggle.addEventListener('click', toggleCandidatePreview);
 constructionPreviewToggle.addEventListener('click', () => {
   if (!activeConstructionGroup) return;
   constructionPreviewVisible = !constructionPreviewVisible;
