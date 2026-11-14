@@ -4,6 +4,7 @@ import test from "node:test";
 
 import {
   buildFootprintBlock,
+  buildLayeredFootprintBlock,
   buildRectangularBlock,
   findMatingPairs,
 } from "../docs/assets/construction-engine.js";
@@ -11,6 +12,34 @@ import {
 const catalogue = JSON.parse(
   await readFile(new URL("../data/connection-profiles/basic-bricks.json", import.meta.url), "utf8"),
 );
+
+test("browser engine builds a connected stack with a narrower upper course", () => {
+  const result = buildLayeredFootprintBlock([
+    [
+      [0, 0], [1, 0], [2, 0], [3, 0],
+      [0, 1], [1, 1], [2, 1], [3, 1],
+    ],
+    [
+      [1, 0], [2, 0],
+      [1, 1], [2, 1],
+    ],
+  ], catalogue);
+
+  assert.deepEqual(result.course_part_counts, [1, 1]);
+  assert.deepEqual(result.parts.map((part) => part.part_id), ["3001", "3003"]);
+  assert.equal(result.connections.length, 1);
+  assert.ok(result.total_mating_pairs > 0);
+  assert.equal(result.assembly_graph.parts, result.parts);
+  assert.match(result.ldraw, /3001\\.dat/);
+  assert.match(result.ldraw, /3003\\.dat/);
+});
+
+test("browser engine rejects variable courses with no shared connection", () => {
+  assert.throws(() => buildLayeredFootprintBlock([
+    [[0, 0], [1, 0], [2, 0], [3, 0], [0, 1], [1, 1], [2, 1], [3, 1]],
+    [[8, 0], [9, 0], [8, 1], [9, 1]],
+  ], catalogue), /No fully connected variable-course construction/);
+});
 
 test("browser engine builds the 4x4 two-course interlocked block", () => {
   const result = buildRectangularBlock(4, 4, 2, catalogue);
