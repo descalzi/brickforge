@@ -494,6 +494,7 @@ function runVoxelisation() {
   } catch (error) {
     voxeliseStatus.textContent = error instanceof Error ? error.message : 'Mesh preparation failed.';
     voxeliseStatus.dataset.state = 'error';
+    setActivity('Mesh preparation failed', voxeliseStatus.textContent, 'error', -1);
     return;
   }
   resetVoxelisation();
@@ -509,6 +510,7 @@ function runVoxelisation() {
     voxeliseStatus.textContent = error instanceof Error ? error.message : 'Could not start the voxelisation worker.';
     voxeliseStatus.dataset.state = 'error';
     setActivity('Voxelisation worker failed', voxeliseStatus.textContent, 'error', -1);
+    setActivity('Could not start voxeliser', voxeliseStatus.textContent, 'error', -1);
     setMessage(voxeliseStatus.textContent, 'error');
     return;
   }
@@ -555,7 +557,7 @@ function runVoxelisation() {
         + ' scanline tests and ' + result.cell_triangle_tests.toLocaleString()
         + ' cell-surface intersection tests were completed.';
       voxeliseStatus.dataset.state = 'complete';
-      setActivity('Target grid ready', 'The mesh has been converted into occupied grid cells.', 'complete', 4);
+      clearActivity();
       setMessage('Target grid generated in your browser. Orange cells intersect the mesh surface; blue cells are interior.', 'success');
     } catch (error) {
       voxeliseStatus.textContent = error instanceof Error ? error.message : 'Could not display the target grid.';
@@ -628,6 +630,7 @@ function runLayeredConstruction() {
   if (pitch.some((value, index) => Math.abs(value - expectedPitch[index]) > 1e-6)) {
     constructionStatus.textContent = 'Construction currently requires the standard 8 × 9.6 × 8 mm brick grid.';
     constructionStatus.dataset.state = 'error';
+    setActivity('Unsupported grid spacing', constructionStatus.textContent, 'error', -1);
     return;
   }
   const [, courseCount] = activeTargetGrid.spec.dimensions;
@@ -638,6 +641,7 @@ function runLayeredConstruction() {
   if (layerFootprints.some((footprint) => footprint.length === 0)) {
     constructionStatus.textContent = 'At least one course is empty. A continuous stack cannot bridge an empty course.';
     constructionStatus.dataset.state = 'error';
+    setActivity('Cannot build empty course', constructionStatus.textContent, 'error', -1);
     return;
   }
 
@@ -681,7 +685,7 @@ function runLayeredConstruction() {
     }
     try {
       displayConstruction(data.result);
-      setActivity('Construction generated', 'The connected arrangement is ready in the 3D preview.', 'complete', 7);
+      clearActivity();
     } catch (error) {
       constructionStatus.textContent = error instanceof Error
         ? error.message : 'Could not display the generated construction.';
@@ -815,7 +819,7 @@ function prepareModel(object, unitFactor, sourceUnit) {
   voxeliseButton.disabled = false;
   voxeliseStatus.textContent = 'Ready to voxelise this closed mesh.';
   setState('MESH LOADED', 'loaded');
-  setActivity('Mesh ready', 'Geometry is loaded. Choose the next processing stage.', 'complete', 0);
+  clearActivity();
   setMessage(
     `Mesh loaded locally. Source units interpreted as ${sourceUnit}; measurements are shown in millimetres. No L-brick buildability check has been run.`,
     'success',
