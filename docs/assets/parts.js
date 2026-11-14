@@ -703,7 +703,7 @@ function parseLDrawText(content, source) {
 
 async function getConnectionProfiles() {
   if (!connectionProfilesPromise) {
-    connectionProfilesPromise = fetch('./data/connection-profiles/basic-bricks.json', {
+    connectionProfilesPromise = fetch('./data/connection-profiles/basic-bricks.json?v=plateprofiles12', {
       credentials: 'same-origin',
       headers: { Accept: 'application/json' },
     }).then(async (response) => {
