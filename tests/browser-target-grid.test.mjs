@@ -79,6 +79,7 @@ test("target grid counts occupancy and extracts sorted per-course footprints", (
       minimum_area_mm2: 12.56, maximum_area_mm2: 12.56,
       circularity: 1, aspect_ratio: 1, sample_support: 3, confidence: "medium",
     }],
+    feature_keepouts: [],
     warnings: ["Synthetic test target"],
   });
 });
