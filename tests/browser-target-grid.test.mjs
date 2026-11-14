@@ -60,7 +60,7 @@ test("target grid counts occupancy and extracts sorted per-course footprints", (
   assert.equal(grid.features[0].center_mm[2], 2);
   assert.deepEqual(grid.layer_footprint(0), [[0, 1], [0, 2], [1, 0]]);
   assert.deepEqual(grid.summary(), {
-    representation_version: 5,
+    representation_version: 6,
     dimensions: [2, 1, 3],
     origin_mm: [0, 0, 0],
     pitch_mm: [8, 9.6, 8],
@@ -82,6 +82,30 @@ test("target grid counts occupancy and extracts sorted per-course footprints", (
     feature_keepouts: [],
     warnings: ["Synthetic test target"],
   });
+});
+
+
+test("target grid validates and preserves local opening clearance metadata", () => {
+  const spec = new GridSpec({ dimensions: [1, 1, 1], origin_mm: [0, 0, 0] });
+  const base = {
+    spec,
+    classification: [CellClass.EXTERIOR],
+    surface_coverage: [0],
+    source_units: "mm",
+    source_bounds_mm: [[0, 0, 0], [8, 9.6, 8]],
+  };
+  const keepout = {
+    feature_id: "z-1", axis: "z", cell_count: 2, preserved: true,
+    axial_cell_count: 1, local_axial_bounds_mm: [0.25, 5.1], support_slices: 9,
+  };
+  const grid = new TargetGrid({ ...base, feature_keepouts: [keepout] });
+  assert.deepEqual(grid.summary().feature_keepouts[0], keepout);
+  assert.throws(() => new TargetGrid({
+    ...base, feature_keepouts: [{ ...keepout, axial_cell_count: -1 }],
+  }), /feature keep-outs/);
+  assert.throws(() => new TargetGrid({
+    ...base, feature_keepouts: [{ ...keepout, local_axial_bounds_mm: [5, 1] }],
+  }), /feature keep-outs/);
 });
 
 test("target grid rejects malformed provenance and cell arrays", () => {
