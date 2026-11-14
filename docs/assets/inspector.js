@@ -874,7 +874,7 @@ function displayVoxelSummary(grid, triangleCount) {
     const keepouts = summary.feature_keepouts || [];
     const preserved = keepouts.filter((item) => item.preserved).length;
     const allRepresented = features.length > 0 && preserved === features.length
-      && features.length >= (topology?.handle_count || 0);
+      && features.length === (topology?.handle_count || 0);
     const hasUnmatchedFeatures = (hasHandles || features.length > 0) && !allRepresented;
     voxelFeatureStatus.hidden = !(hasHandles || features.length > 0);
     voxelFeatureStatus.dataset.state = hasHandles || features.length ? 'warning' : 'complete';
