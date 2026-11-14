@@ -727,6 +727,49 @@ function enumerateFootprintTilings(cells, profiles) {
   return { tilings, limitReached };
 }
 
+function sampleLayerFootprintTilings(cells, profiles) {
+  const ordered = [...cells].map((key) => key.split(',').map(Number)).sort((a,b) => a[1]-b[1] || a[0]-b[0]);
+  const byCell = new Map(ordered.map(([x,z]) => [cellKey(x,z), []]));
+  for (const [x,z] of ordered) for (const partId of FOOTPRINT_TILE_PART_IDS) {
+    const profile = profiles.get(partId); if (!profile) continue;
+    const orientations = [[profile.footprint_studs_x,profile.footprint_studs_z,false]];
+    if (profile.footprint_studs_x !== profile.footprint_studs_z) orientations.push([profile.footprint_studs_z,profile.footprint_studs_x,true]);
+    for (const [width,depth,rotated] of orientations) {
+      const tileCells = new Set();
+      for (let dx=0;dx<width;dx+=1) for (let dz=0;dz<depth;dz+=1) tileCells.add(cellKey(x+dx,z+dz));
+      if ([...tileCells].every((key) => cells.has(key))) {
+        const tile={part_id:partId,x,z,width,depth,rotated,cells:tileCells};
+        for (const key of tileCells) byCell.get(key).push(tile);
+      }
+    }
+  }
+  for (const options of byCell.values()) options.sort(compareTiles);
+  let seed=2166136261; for (const [x,z] of ordered) { seed=Math.imul(seed^x,16777619)>>>0; seed=Math.imul(seed^z,16777619)>>>0; }
+  if (!seed) seed=0x9E3779B9;
+  const random=()=>{ seed=(Math.imul(seed,1664525)+1013904223)>>>0; return seed/0x100000000; };
+  const results=[], signatures=new Set();
+  for (let attempt=0;attempt<96 && results.length<24;attempt+=1) {
+    const remaining=new Set(cells), chosen=[]; let valid=true;
+    while (remaining.size) {
+      let minimum=Infinity, tied=[];
+      for (const key of remaining) {
+        const viable=byCell.get(key).filter((tile)=>[...tile.cells].every((cell)=>remaining.has(cell)));
+        if (viable.length<minimum) { minimum=viable.length; tied=[viable]; }
+        else if (viable.length===minimum) tied.push(viable);
+      }
+      if (!minimum || !tied.length) { valid=false; break; }
+      const options=tied[Math.floor(random()*tied.length)];
+      const tile=options[Math.floor(random()*options.length)]; chosen.push(tile);
+      for (const key of tile.cells) remaining.delete(key);
+    }
+    if (!valid) continue;
+    chosen.sort(compareTiles);
+    const signature=chosen.map((tile)=>tile.part_id+':'+tile.x+':'+tile.z+':'+Number(tile.rotated)).join('|');
+    if (!signatures.has(signature)) { signatures.add(signature); results.push(chosen); }
+  }
+  return results.sort(compareTilings);
+}
+
 function footprintTilingsConnect(lower, upper) {
   const count = lower.length + upper.length;
   const parent = Array.from({ length: count }, (_, index) => index);
@@ -1048,7 +1091,9 @@ export function buildFootprintBlock(footprintCells, heightBricks, catalogue, con
   let searchLimited = false;
   let tilingSequence = null;
   if (!pair) {
-    const search = enumerateFootprintTilings(cells, profiles);
+    const search = cells.size > MAX_FOOTPRINT_CELLS
+      ? { tilings: sampleLayerFootprintTilings(cells, profiles), limitReached: true }
+      : enumerateFootprintTilings(cells, profiles);
     searchLimited = search.limitReached;
     pair = findFootprintTilings(search.tilings);
     if (!pair) {
