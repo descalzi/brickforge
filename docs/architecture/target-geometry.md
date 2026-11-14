@@ -8,7 +8,7 @@ The representation must be independent of the part catalogue and assembly graph.
 
 ## Coordinate and grid conventions
 
-- Canonical world coordinates are millimetres, with **Y up**.
+- Canonical world coordinates are millimetres, with **Y up**. The Inspector exposes an explicit source-axis selector (X, Y or Z up) and applies a proper rigid rotation into this frame before measuring, voxelising or matching features; it never silently changes scale.
 - Horizontal stud-grid pitch is 8.0 mm along X and Z.
 - A standard brick course is 9.6 mm high along Y; a plate course is 3.2 mm.
 - Grid indices are integer triples `(x, y, z)`; Y is the course axis.
