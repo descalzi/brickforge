@@ -128,10 +128,11 @@
           <p class="control-note">Profiles describe geometric openings only. They do not establish physical connection compatibility.</p>
           <div class="feature-profile-batch">
             <h3>Build a small candidate catalogue</h3>
-            <p class="control-note">Search the part library, then scan up to 12 results. Try “technic beam”, “technic frame”, “technic wheel” or “connector”. Only parts with measured openings are included. Profiles up to 4,000 triangles also carry lightweight geometry for an Inspector overlay preview.</p>
+            <p class="control-note">Search the part library and scan up to 12 new results per phrase. Repeat with “technic beam”, “technic frame”, “technic wheel” or “connector” to build one combined catalogue (up to 48 unique profiles). Previously scanned part IDs are skipped. Only parts with measured openings are included. Profiles up to 4,000 triangles also carry lightweight geometry for an Inspector overlay preview.</p>
             <label for="part-feature-batch-query">Part search phrase</label>
             <input id="part-feature-batch-query" type="search" value="technic beam" placeholder="e.g. technic frame">
-            <button id="part-feature-batch" class="tool-button" type="button" disabled>Scan top 12 matches</button>
+            <button id="part-feature-batch" class="tool-button" type="button" disabled>Scan up to 12 new matches</button>
+            <button id="part-feature-batch-clear" class="tool-button" type="button" disabled>Clear combined catalogue</button>
             <button id="part-feature-batch-cancel" class="tool-button" type="button" disabled>Stop after current part</button>
             <p id="part-feature-batch-status" class="feature-profile-status" role="status" aria-live="polite">No candidate scan run yet.</p>
             <ul id="part-feature-batch-list" class="part-feature-list"></ul>
