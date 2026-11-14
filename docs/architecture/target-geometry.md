@@ -39,7 +39,7 @@ This allows the construction engine to distinguish a solid core from thin surfac
 
 ## Layer extraction and construction hand-off
 
-A brick-course grid can be sliced into 2D X/Z occupancy maps, one per Y course. Each map is a candidate target footprint, not a final brick layout. The existing bounded footprint tiler can be reused to propose part arrangements for individual courses; the complete 3D candidate must still pass cross-course connection, collision, and graph-connectivity checks.
+A brick-course grid can be sliced into 2D X/Z occupancy maps, one per Y course. Each map is a candidate target footprint, not a final brick layout. The browser now passes these ordered course footprints to `buildLayeredFootprintBlock()`, which enumerates exact-cover tilings per course, searches bounded combinations across the full stack, and accepts only a sequence whose complete part graph is connected. The canonical placement list is then rechecked by the nominal body-collision and connection-profile validator before deriving the assembly graph, BOM and LDraw export. Courses retain a common X/Z coordinate frame, so tapered and stepped outlines are not artificially expanded to a shared footprint. The current hand-off requires the standard 8 × 9.6 × 8 mm grid and at most 64 occupied cells per course; the search is bounded and may fail on a tileable shape it has not explored.
 
 Layer extraction must preserve the relationship to the original 3D target so later surface fitting can distinguish a solid internal fill from visible exterior geometry. A layer that cannot be tiled or connected must be reported as such; the engine must not silently omit occupied cells.
 
@@ -80,7 +80,7 @@ classifies each cell using a deterministic 3x3x3 sample lattice. It currently
 requires watertight, consistently wound meshes and processes cells in bounded
 batches. The sampled inside fraction is stored as surface coverage.
 
-The browser voxeliser is the primary implementation. It uses a 3x3x3 interior sample lattice and triangle-box separating-axis tests to identify surface-intersecting cells. Thin features are retained when their triangles cross a cell; interior coverage remains a sampling approximation. It requires a closed, consistently wound mesh and enforces face, cell, scanline-triangle and cell-surface-intersection budgets. Open-mesh shell mode, self-intersection diagnostics, orientation-aware grids and automatic mesh-driven construction remain future work.
+The browser voxeliser is the primary implementation. It uses a 3x3x3 interior sample lattice and triangle-box separating-axis tests to identify surface-intersecting cells. Thin features are retained when their triangles cross a cell; interior coverage remains a sampling approximation. It requires a closed, consistently wound mesh and enforces face, cell, scanline-triangle and cell-surface-intersection budgets. The mesh inspector can now pass per-course footprints to the browser layered-construction worker and download a connected nominal assembly graph, LDraw model and parts list. This first integration uses the existing rectangular brick profiles only; it does not yet fit the generated assembly back against the original mesh surface or preview the generated parts in the inspector viewport. Open-mesh shell mode, self-intersection diagnostics, orientation-aware grids, specialised elements and surface-aware fitting remain future work.
 
 ## Deliberate boundary
 
