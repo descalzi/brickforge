@@ -759,12 +759,13 @@ function displayVoxelSummary(grid, triangleCount) {
     const topology = grid.topology;
     const features = summary.features || [];
     const hasHandles = topology?.handle_count > 0;
-    voxelFeatureStatus.hidden = !hasHandles && features.length === 0;
-    voxelFeatureStatus.dataset.state = hasHandles ? 'warning' : 'complete';
+    const hasUnmatchedFeatures = hasHandles || features.length > 0;
+    voxelFeatureStatus.hidden = !hasUnmatchedFeatures;
+    voxelFeatureStatus.dataset.state = hasUnmatchedFeatures ? 'warning' : 'complete';
     voxelFeatureStatus.textContent = hasHandles
       ? topology.handle_count.toLocaleString() + ' topological tunnel(s) detected; '
-        + features.length.toLocaleString() + ' cross-section feature(s) localised. Measurements are approximate and need part matching before construction.'
-      : features.length.toLocaleString() + ' cross-section feature(s) detected; confirm their topology before construction.';
+        + features.length.toLocaleString() + ' cross-section feature(s) localised. Construction remains blocked until compatible parts can preserve them.'
+      : features.length.toLocaleString() + ' cross-section feature(s) detected. Construction remains blocked until compatible parts can preserve them.';
     if (voxelFeatureList) {
       voxelFeatureList.replaceChildren();
       features.forEach((feature, index) => {
