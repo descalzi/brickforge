@@ -1,5 +1,5 @@
 import { BRICK_GRID_PITCH_MM, CellClass } from "./target-grid.js";
-import { analyzeMeshFeatures } from "./mesh-feature-analysis.js";
+import { analyzeMeshFeatures } from "./mesh-feature-analysis.js?v=featuremeasure1";
 
 const UNIT_TO_MM = Object.freeze({ mm: 1, cm: 10, m: 1000, in: 25.4 });
 const SAMPLE_OFFSETS = Object.freeze([0.25, 0.5, 0.75]);
