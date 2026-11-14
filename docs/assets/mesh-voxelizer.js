@@ -216,7 +216,7 @@ function cellIntersectsSurface(root, boxMin, boxMax, budget) {
     if (node.triangles) {
       for (const triangle of node.triangles) {
         budget.tests += 1;
-        if (budget.tests > MAX_NEAREST_TRIANGLE_TESTS) {
+        if (budget.tests > MAX_CELL_TRIANGLE_TESTS) {
           throw new Error("Mesh is too complex for the browser surface-intersection budget. Try a lower-detail mesh.");
         }
         if (boundsOverlap(triangle.min, triangle.max, boxMin, boxMax)
