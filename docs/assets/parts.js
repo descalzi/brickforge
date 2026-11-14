@@ -26,6 +26,7 @@ const partFeatureBatchButton = document.querySelector('#part-feature-batch');
 const partFeatureBatchCancelButton = document.querySelector('#part-feature-batch-cancel');
 const partFeatureBatchDownloadButton = document.querySelector('#part-feature-batch-download');
 const partFeatureBatchStatus = document.querySelector('#part-feature-batch-status');
+const partFeatureBatchQuery = document.querySelector('#part-feature-batch-query');
 const partFeatureBatchList = document.querySelector('#part-feature-batch-list');
 
 const output = {
@@ -219,27 +220,9 @@ function analyseSelectedPartFeatures() {
 }
 
 
-function likelyOpeningPartCandidates(limit = 12) {
-  const matches = partCatalogue.map((part) => {
-    const description = String(part.description || "");
-    const category = String(part.category || "");
-    const keywords = Array.isArray(part.keywords) ? part.keywords.join(" ") : "";
-    const text = [description, category, keywords].join(" ").toLocaleLowerCase();
-    if (!/technic/.test(text) || !/(beam|liftarm|frame|connector|axle|bush|panel|hole)/.test(text)) return null;
-    let score = 0;
-    if (/beam/.test(text)) score += 5;
-    if (/liftarm/.test(text)) score += 5;
-    if (/frame/.test(text)) score += 4;
-    if (/connector/.test(text)) score += 3;
-    if (/axle|bush/.test(text)) score += 2;
-    if (/panel|hole/.test(text)) score += 1;
-    if (/technic/.test(category.toLocaleLowerCase())) score += 2;
-    return { part, score };
-  }).filter(Boolean);
-  return matches.sort((left, right) => right.score - left.score
-    || String(left.part.part_id).localeCompare(String(right.part.part_id), undefined, { numeric: true }))
-    .slice(0, limit)
-    .map((entry) => entry.part);
+function likelyOpeningPartCandidates(limit = 12, query = 'technic beam') {
+  const search = String(query || '').trim() || 'technic';
+  return searchPartCatalogue(partCatalogue, search, limit);
 }
 
 function analysePositionsInWorker(positions, bounds) {
@@ -282,9 +265,10 @@ function renderBatchFeatureProfiles(profiles) {
 
 async function scanLikelyOpeningParts() {
   if (batchScanRunning || partFeatureWorker) return;
-  const candidates = likelyOpeningPartCandidates(12);
+  const query = partFeatureBatchQuery.value.trim() || 'technic';
+  const candidates = likelyOpeningPartCandidates(12, query);
   if (!candidates.length) {
-    partFeatureBatchStatus.textContent = 'No likely Technic beams, frames or connectors were found in this catalogue snapshot. Search for a part and profile it individually instead.';
+    partFeatureBatchStatus.textContent = 'No catalogue parts matched “' + query + '”. Try a broader part search phrase.';
     partFeatureBatchStatus.dataset.state = 'warning';
     return;
   }
