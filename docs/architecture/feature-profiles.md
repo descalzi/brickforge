@@ -26,7 +26,7 @@ The current analyser uses principal-axis sections only. It may miss or approxima
 
 ## Initial candidate matching
 
-The browser Inspector can import one or more exported profiles or a combined catalogue and compare their measured opening features with the target mesh. The first matcher uses shape, equivalent diameter or width/length, circularity and aspect ratio with explicit dimensional tolerances. It ranks candidates per target feature and records the candidate part's local opening axis. It does not yet perform one-to-one assignment across a complete part, solve the part's placement, inspect the surrounding envelope, or validate its connection interfaces.
+The browser Inspector can import one or more exported profiles or a combined catalogue and compare their measured opening features with the target mesh. The matcher uses shape, per-slice equivalent-diameter or width/length ranges, circularity and aspect ratio with explicit dimensional tolerances. It ranks candidates per target feature and records the candidate part's local opening axis. A second bounded search assigns distinct candidate openings to every target opening and compares pairwise centre distances and relative axis relationships, making the pattern comparison invariant to rigid translation and rotation. It still does not solve the part's full 3D placement, inspect the surrounding envelope or validate connection interfaces.
 
 ## Next step
 
