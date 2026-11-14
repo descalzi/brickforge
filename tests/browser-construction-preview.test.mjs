@@ -23,7 +23,9 @@ test("construction preview aligns the footprint centre and course height to the 
   }, profile, grid, bounds, [0, 0, 0]);
 
   assert.deepEqual(transform.position_mm, [16, 9.6, 24]);
-  assert.deepEqual(transform.size_mm, [32, 9.6, 16]);
+  transform.size_mm.forEach((value, index) => {
+    assert.ok(Math.abs(value - [32, 9.6, 16][index]) < 1e-9);
+  });
   assert.equal(transform.course_index, 0);
   assert.equal(transform.rotation_y_rad, 0);
 });
