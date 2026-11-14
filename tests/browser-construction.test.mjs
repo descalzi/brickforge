@@ -294,3 +294,18 @@ test("layered construction accepts a mesh-derived course larger than 64 cells", 
   assert.ok(result.connections.length > 0);
   assert.ok(result.total_mating_pairs > 0);
 });
+
+
+test("browser layered engine builds interlocking plate-height courses", () => {
+  const footprint = [];
+  for (let z = 0; z < 4; z += 1) {
+    for (let x = 0; x < 4; x += 1) footprint.push([x, z]);
+  }
+  const result = buildLayeredFootprintBlock([footprint, footprint], catalogue, {
+    courseType: "plate",
+  });
+  assert.ok(result.parts.length > 0);
+  assert.ok(result.connections.length > 0);
+  assert.ok(result.parts.every((part) => ["3020", "3021", "3022", "3023", "3024"].includes(part.part_id)));
+  assert.equal(result.dimensions_mm.height, 6.4);
+});
