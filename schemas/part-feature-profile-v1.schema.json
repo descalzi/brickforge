@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://descalzi.github.io/brickforge/schemas/part-feature-profile-v1.schema.json",
-  "title": "BrickForge LDraw part feature profile",
-  "description": "Measured geometric opening features extracted from a resolved LDraw part. These measurements are candidates, not proof of physical compatibility.",
+  "title": "BrickForge LDraw part feature profile version 1",
+  "description": "Legacy measured geometric opening features extracted from a resolved LDraw part. Version 1 records representative mean dimensions only; it does not include per-slice size ranges.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -99,14 +99,6 @@
         "area_mm2",
         "perimeter_mm",
         "equivalent_diameter_mm",
-        "minimum_equivalent_diameter_mm",
-        "maximum_equivalent_diameter_mm",
-        "minimum_width_mm",
-        "maximum_width_mm",
-        "minimum_length_mm",
-        "maximum_length_mm",
-        "minimum_area_mm2",
-        "maximum_area_mm2",
         "circularity",
         "aspect_ratio",
         "sample_support",
@@ -194,38 +186,6 @@
             "high",
             "medium"
           ]
-        },
-        "minimum_equivalent_diameter_mm": {
-          "type": "number",
-          "exclusiveMinimum": 0
-        },
-        "maximum_equivalent_diameter_mm": {
-          "type": "number",
-          "exclusiveMinimum": 0
-        },
-        "minimum_width_mm": {
-          "type": "number",
-          "exclusiveMinimum": 0
-        },
-        "maximum_width_mm": {
-          "type": "number",
-          "exclusiveMinimum": 0
-        },
-        "minimum_length_mm": {
-          "type": "number",
-          "exclusiveMinimum": 0
-        },
-        "maximum_length_mm": {
-          "type": "number",
-          "exclusiveMinimum": 0
-        },
-        "minimum_area_mm2": {
-          "type": "number",
-          "exclusiveMinimum": 0
-        },
-        "maximum_area_mm2": {
-          "type": "number",
-          "exclusiveMinimum": 0
         }
       }
     }
