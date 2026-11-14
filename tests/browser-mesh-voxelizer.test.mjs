@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 
-import { CellClass, GridSpec, TargetGrid } from "../docs/assets/target-grid.js";
+import { PLATE_GRID_PITCH_MM, CellClass, GridSpec, TargetGrid } from "../docs/assets/target-grid.js";
 import { buildLayeredFootprintBlock } from "../docs/assets/construction-engine.js";
 import { voxelizeMesh } from "../docs/assets/mesh-voxelizer.js";
 import { analyzeMeshFeatures } from "../docs/assets/mesh-feature-analysis.js";
@@ -291,12 +291,13 @@ test("Z-up mesh openings flow through target grid into a connected layered const
     vertices,
     indices: source.indices,
     units: "mm",
+    pitchMm: [...PLATE_GRID_PITCH_MM],
   });
   assert.equal(result.topology.handle_count, 5);
   assert.equal(result.features.length, 5);
   assert.ok(result.feature_keepouts.every((item) => item.preserved));
   assert.ok(result.feature_keepouts.every((item) => item.axis === "y"));
-  assert.ok(result.feature_keepouts.every((item) => item.axial_cell_count === 1));
+  assert.ok(result.feature_keepouts.every((item) => item.axial_cell_count === 2));
 
   const grid = new TargetGrid({
     spec: new GridSpec({
@@ -313,15 +314,16 @@ test("Z-up mesh openings flow through target grid into a connected layered const
     features: result.features,
     feature_keepouts: result.feature_keepouts,
   });
-  assert.equal(grid.spec.dimensions[1], 2);
+  assert.equal(grid.spec.dimensions[1], 4);
   const footprints = Array.from(
     { length: grid.spec.dimensions[1] },
     (_, course) => grid.layer_footprint(course),
   );
   assert.ok(footprints.every((footprint) => footprint.length > 0));
 
-  const construction = buildLayeredFootprintBlock(footprints, connectionCatalogue, { maxParts: 200 });
+  const construction = buildLayeredFootprintBlock(footprints, connectionCatalogue, { maxParts: 200, courseType: "plate" });
   assert.ok(construction.parts.length > 0);
   assert.ok(construction.connections.length > 0);
+  assert.ok(construction.parts.every((part) => ["3020", "3021", "3022", "3023", "3024"].includes(part.part_id)));
   assert.equal(construction.search.candidate_search_limited, true);
 });
