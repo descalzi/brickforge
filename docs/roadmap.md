@@ -72,7 +72,7 @@ This roadmap is intentionally milestone-based. Each milestone should produce a d
 - [x] Convert imported triangle meshes into a bounded 3D occupancy field at the standard stud/course resolution.
 - [ ] Add robust mesh validation and explicit handling for open, non-watertight, degenerate and self-intersecting surfaces.
 - [ ] Extract per-course 2D cross-sections while retaining surface-distance information for visual fitting.
-- [ ] Reuse the tested footprint tiler as a per-course candidate generator, then solve for connected cross-course arrangements.
+- [x] Reuse the tested footprint tiler as a per-course candidate generator, then solve bounded connected cross-course arrangements. The browser mesh inspector can now generate and export a variable-course assembly from its target grid; only the currently profiled rectangular brick families are eligible.
 - [ ] Add surface-aware candidate placement for slopes, curves and specialised elements.
 - [ ] Combine coarse volumetric and surface-fitting strategies.
 - [ ] Add objective metrics and configurable optimisation profiles.
