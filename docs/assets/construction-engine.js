@@ -1092,9 +1092,16 @@ export function buildFootprintBlock(footprintCells, heightBricks, catalogue, con
   let searchLimited = false;
   let tilingSequence = null;
   if (!pair) {
-    const search = cells.size > MAX_FOOTPRINT_CELLS
-      ? { tilings: sampleLayerFootprintTilings(cells, profiles), limitReached: true }
-      : enumerateFootprintTilings(cells, profiles);
+    let search;
+    if (cells.size > MAX_FOOTPRINT_CELLS) {
+      const interlockingPair = sampleInterlockingFootprints(cells, profiles);
+      search = {
+        tilings: interlockingPair || sampleLayerFootprintTilings(cells, profiles),
+        limitReached: true,
+      };
+    } else {
+      search = enumerateFootprintTilings(cells, profiles);
+    }
     searchLimited = search.limitReached;
     pair = findFootprintTilings(search.tilings);
     if (!pair) {
