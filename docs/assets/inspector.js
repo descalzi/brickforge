@@ -383,7 +383,8 @@ function runVoxelisation() {
       renderVoxelOverlay(activeTargetGrid);
       displayVoxelSummary(activeTargetGrid, result.triangle_count);
       voxeliseStatus.textContent = 'Voxelisation complete. ' + result.ray_triangle_tests.toLocaleString()
-        + ' accelerated triangle tests were used for the interior scanlines.';
+        + ' scanline tests and ' + result.nearest_triangle_tests.toLocaleString()
+        + ' nearest-surface tests were completed.';
       voxeliseStatus.dataset.state = 'complete';
       setMessage('Target grid generated in your browser. The orange cells mark the approximate surface boundary; blue cells are interior.', 'success');
     } catch (error) {
