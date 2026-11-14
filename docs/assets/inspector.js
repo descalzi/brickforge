@@ -563,7 +563,7 @@ function renderVoxelOverlay(grid) {
 
 function validImportedFeatureProfile(profile) {
   return profile && typeof profile === 'object'
-    && profile.schema_version === 1
+    && [1, 2].includes(profile.schema_version)
     && typeof profile.part_id === 'string' && profile.part_id.length > 0
     && typeof profile.description === 'string'
     && typeof profile.source_filename === 'string'
