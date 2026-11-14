@@ -24,6 +24,15 @@ const voxelCellCount = document.querySelector('#voxel-cell-count');
 const voxelGridSize = document.querySelector('#voxel-grid-size');
 const voxelCourseList = document.querySelector('#voxel-course-list');
 const voxelOverlayToggle = document.querySelector('#voxel-overlay-toggle');
+const buildConstructionButton = document.querySelector('#build-construction');
+const constructionStatus = document.querySelector('#construction-status');
+const constructionSummary = document.querySelector('#construction-summary');
+const constructionPartCount = document.querySelector('#construction-part-count');
+const constructionDetails = document.querySelector('#construction-details');
+const constructionCourseList = document.querySelector('#construction-course-list');
+const constructionDownloadLDraw = document.querySelector('#construction-download-ldraw');
+const constructionDownloadGraph = document.querySelector('#construction-download-graph');
+const constructionDownloadBom = document.querySelector('#construction-download-bom');
 
 const output = {
   x: document.querySelector('#dimension-x'),
@@ -185,6 +194,18 @@ function resetVoxelisation() {
     voxelWorker.terminate();
     voxelWorker = null;
   }
+  if (constructionWorker) {
+    constructionWorker.terminate();
+    constructionWorker = null;
+  }
+  activeConstruction = null;
+  buildConstructionButton.disabled = true;
+  constructionStatus.textContent = 'Voxelise a mesh first.';
+  constructionStatus.dataset.state = 'idle';
+  constructionSummary.hidden = true;
+  constructionDownloadLDraw.disabled = true;
+  constructionDownloadGraph.disabled = true;
+  constructionDownloadBom.disabled = true;
   removeVoxelOverlay();
   activeTargetGrid = null;
   voxeliseButton.disabled = !activeModel;
@@ -381,7 +402,7 @@ function runVoxelisation() {
       });
       voxelOverlayVisible = true;
       renderVoxelOverlay(activeTargetGrid);
-      displayVoxelSummary(activeTargetGrid, result.triangle_count);
+      displayVoxelSummary(activeTargetGrid, result.triangle_count);\n      buildConstructionButton.disabled = false;
       voxeliseStatus.textContent = 'Voxelisation complete. ' + result.ray_triangle_tests.toLocaleString()
         + ' scanline tests and ' + result.cell_triangle_tests.toLocaleString()
         + ' cell-surface intersection tests were completed.';
@@ -408,6 +429,118 @@ function runVoxelisation() {
     units: meshInput.sourceUnit,
     maxCells: 100000,
   }, [meshInput.vertices.buffer, meshInput.indices.buffer]);
+}
+
+
+function downloadConstructionFile(filename, contents, mediaType) {
+  const blob = new Blob([contents], { type: mediaType });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
+function displayConstruction(result) {
+  activeConstruction = result;
+  constructionPartCount.textContent = result.parts.length.toLocaleString() + ' parts';
+  constructionDetails.textContent = result.connections.length.toLocaleString() + ' candidate connections · '
+    + result.total_mating_pairs.toLocaleString() + ' nominal mating pairs';
+  constructionCourseList.replaceChildren();
+  result.course_part_counts.forEach((count, index) => {
+    const item = document.createElement('li');
+    const label = document.createElement('span');
+    const value = document.createElement('strong');
+    label.textContent = 'Course ' + (index + 1);
+    value.textContent = count.toLocaleString() + ' parts';
+    item.append(label, value);
+    constructionCourseList.append(item);
+  });
+  constructionSummary.hidden = false;
+  constructionDownloadLDraw.disabled = false;
+  constructionDownloadGraph.disabled = false;
+  constructionDownloadBom.disabled = false;
+  constructionStatus.textContent = 'Connected construction generated. Review the stated nominal limitations before treating it as buildable.';
+  constructionStatus.dataset.state = 'complete';
+  setMessage('The variable-course assembly passed nominal body-overlap and connection-graph checks.', 'success');
+}
+
+function runLayeredConstruction() {
+  if (!activeTargetGrid || constructionWorker) return;
+  const pitch = activeTargetGrid.spec.pitch_mm;
+  const expectedPitch = [8, 9.6, 8];
+  if (pitch.some((value, index) => Math.abs(value - expectedPitch[index]) > 1e-6)) {
+    constructionStatus.textContent = 'Construction currently requires the standard 8 × 9.6 × 8 mm brick grid.';
+    constructionStatus.dataset.state = 'error';
+    return;
+  }
+  const [, courseCount] = activeTargetGrid.spec.dimensions;
+  const layerFootprints = Array.from(
+    { length: courseCount },
+    (_, layer) => activeTargetGrid.layer_footprint(layer),
+  );
+  if (layerFootprints.some((footprint) => footprint.length === 0)) {
+    constructionStatus.textContent = 'At least one course is empty. A continuous stack cannot bridge an empty course.';
+    constructionStatus.dataset.state = 'error';
+    return;
+  }
+
+  buildConstructionButton.disabled = true;
+  constructionStatus.textContent = 'Preparing per-course footprints…';
+  constructionStatus.dataset.state = 'working';
+  constructionSummary.hidden = true;
+  setMessage('Searching for a connected arrangement across all occupied courses. The viewer remains interactive.');
+  try {
+    constructionWorker = new Worker(
+      new URL('./layered-construction-worker.js', import.meta.url),
+      { type: 'module' },
+    );
+  } catch (error) {
+    buildConstructionButton.disabled = false;
+    constructionStatus.textContent = error instanceof Error
+      ? error.message : 'Could not start the construction worker.';
+    constructionStatus.dataset.state = 'error';
+    return;
+  }
+
+  const worker = constructionWorker;
+  worker.addEventListener('message', (event) => {
+    if (worker !== constructionWorker) return;
+    const data = event.data;
+    if (data.type === 'progress') {
+      constructionStatus.textContent = data.message;
+      return;
+    }
+    worker.terminate();
+    constructionWorker = null;
+    buildConstructionButton.disabled = false;
+    if (data.type === 'error') {
+      constructionStatus.textContent = data.message;
+      constructionStatus.dataset.state = 'error';
+      setMessage(data.message, 'error');
+      return;
+    }
+    try {
+      displayConstruction(data.result);
+    } catch (error) {
+      constructionStatus.textContent = error instanceof Error
+        ? error.message : 'Could not display the generated construction.';
+      constructionStatus.dataset.state = 'error';
+    }
+  });
+  worker.addEventListener('error', (event) => {
+    if (worker !== constructionWorker) return;
+    worker.terminate();
+    constructionWorker = null;
+    buildConstructionButton.disabled = false;
+    constructionStatus.textContent = event.message || 'The construction worker failed.';
+    constructionStatus.dataset.state = 'error';
+    setMessage(constructionStatus.textContent, 'error');
+  });
+  worker.postMessage({ layerFootprints, config: { maxParts: 200 } });
 }
 
 function disposeHelper(helper) {
@@ -629,6 +762,26 @@ resetButton.addEventListener('click', () => {
 });
 
 voxeliseButton.addEventListener('click', runVoxelisation);
+buildConstructionButton.addEventListener('click', runLayeredConstruction);
+constructionDownloadLDraw.addEventListener('click', () => {
+  if (activeConstruction) downloadConstructionFile(
+    activeConstruction.model_name + '.ldr', activeConstruction.ldraw, 'text/plain;charset=utf-8',
+  );
+});
+constructionDownloadGraph.addEventListener('click', () => {
+  if (activeConstruction) downloadConstructionFile(
+    activeConstruction.model_name + '.assembly.json',
+    JSON.stringify(activeConstruction.assembly_graph, null, 2),
+    'application/json;charset=utf-8',
+  );
+});
+constructionDownloadBom.addEventListener('click', () => {
+  if (activeConstruction) downloadConstructionFile(
+    activeConstruction.model_name + '.bom.json',
+    JSON.stringify(activeConstruction.bom, null, 2),
+    'application/json;charset=utf-8',
+  );
+});
 voxelOverlayToggle.addEventListener('click', () => {
   if (!activeVoxelGroup) return;
   voxelOverlayVisible = !voxelOverlayVisible;
