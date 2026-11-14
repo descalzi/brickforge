@@ -161,6 +161,11 @@ test("feature pattern matcher assigns unique openings and tolerates rigid rotati
   assert.equal(results[0].matched_feature_count, 3);
   assert.equal(results[0].score, 1);
   assert.equal(new Set(results[0].assignments.map((entry) => entry.candidate_feature_id)).size, 3);
+  assert.equal(results[0].placement_resolved, true);
+  assert.ok(results[0].rms_residual_mm < 1e-8);
+  assert.ok(results[0].axis_alignment_rms_deg < 1e-6);
+  assert.ok(Array.isArray(results[0].rotation_matrix_3x3));
+  assert.ok(Array.isArray(results[0].translation_mm));
 });
 
 test("feature pattern matcher rejects matching hole sizes with incompatible spacing", () => {
