@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://descalzi.github.io/brickforge/schemas/part-feature-catalogue-v2.schema.json",
+  "title": "BrickForge measured part feature catalogue version 2",
+  "description": "A user-generated collection of version 3 LDraw part feature profiles, with optional lightweight geometry for 3D preview.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "source_geometry_base_url",
+    "profiles"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 2
+    },
+    "source_geometry_base_url": {
+      "type": "string",
+      "format": "uri"
+    },
+    "profiles": {
+      "type": "array",
+      "items": {
+        "$ref": "part-feature-profile-v3.schema.json"
+      }
+    }
+  }
+}
