@@ -2986,6 +2986,716 @@
       ]
     },
     {
+      "part_id": "3034",
+      "description": "Plate 2 x 8",
+      "source_filename": "parts/3034.dat",
+      "source_author": "Unknown (see LDraw source header)",
+      "source_license_notice": "Licensed under CC BY 4.0 : see CAreadme.txt",
+      "footprint_studs_x": 2,
+      "footprint_studs_z": 8,
+      "body_height_ldu": 8,
+      "stud_pitch_ldu": 20,
+      "stud_projection_ldu": 4,
+      "features": [
+        {
+          "feature_id": "top-stud-xm10_zm70",
+          "kind": "stud",
+          "position_ldu": [
+            -10,
+            0,
+            -70
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-xm10_zm50",
+          "kind": "stud",
+          "position_ldu": [
+            -10,
+            0,
+            -50
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-xm10_zm30",
+          "kind": "stud",
+          "position_ldu": [
+            -10,
+            0,
+            -30
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-xm10_zm10",
+          "kind": "stud",
+          "position_ldu": [
+            -10,
+            0,
+            -10
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-xm10_z10",
+          "kind": "stud",
+          "position_ldu": [
+            -10,
+            0,
+            10
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-xm10_z30",
+          "kind": "stud",
+          "position_ldu": [
+            -10,
+            0,
+            30
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-xm10_z50",
+          "kind": "stud",
+          "position_ldu": [
+            -10,
+            0,
+            50
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-xm10_z70",
+          "kind": "stud",
+          "position_ldu": [
+            -10,
+            0,
+            70
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-x10_zm70",
+          "kind": "stud",
+          "position_ldu": [
+            10,
+            0,
+            -70
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-x10_zm50",
+          "kind": "stud",
+          "position_ldu": [
+            10,
+            0,
+            -50
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-x10_zm30",
+          "kind": "stud",
+          "position_ldu": [
+            10,
+            0,
+            -30
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-x10_zm10",
+          "kind": "stud",
+          "position_ldu": [
+            10,
+            0,
+            -10
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-x10_z10",
+          "kind": "stud",
+          "position_ldu": [
+            10,
+            0,
+            10
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-x10_z30",
+          "kind": "stud",
+          "position_ldu": [
+            10,
+            0,
+            30
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-x10_z50",
+          "kind": "stud",
+          "position_ldu": [
+            10,
+            0,
+            50
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-x10_z70",
+          "kind": "stud",
+          "position_ldu": [
+            10,
+            0,
+            70
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-xm10_zm70",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10,
+            8,
+            -70
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-xm10_zm50",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10,
+            8,
+            -50
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-xm10_zm30",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10,
+            8,
+            -30
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-xm10_zm10",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10,
+            8,
+            -10
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-xm10_z10",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10,
+            8,
+            10
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-xm10_z30",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10,
+            8,
+            30
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-xm10_z50",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10,
+            8,
+            50
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-xm10_z70",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10,
+            8,
+            70
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-x10_zm70",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10,
+            8,
+            -70
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-x10_zm50",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10,
+            8,
+            -50
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-x10_zm30",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10,
+            8,
+            -30
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-x10_zm10",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10,
+            8,
+            -10
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-x10_z10",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10,
+            8,
+            10
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-x10_z30",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10,
+            8,
+            30
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-x10_z50",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10,
+            8,
+            50
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-x10_z70",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10,
+            8,
+            70
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        }
+      ],
+      "limitations": [
+        "Nominal stud-grid locations are based on the LDraw part's regular footprint.",
+        "Receiver datums describe intended stud entry locations only; they are not a measured model of the internal tube or clutch profile.",
+        "Geometric alignment does not prove clutch engagement, legal combination, or structural stability."
+      ]
+    },
+    {
+      "part_id": "3460",
+      "description": "Plate 1 x 8",
+      "source_filename": "parts/3460.dat",
+      "source_author": "Unknown (see LDraw source header)",
+      "source_license_notice": "Licensed under CC BY 4.0 : see CAreadme.txt",
+      "footprint_studs_x": 1,
+      "footprint_studs_z": 8,
+      "body_height_ldu": 8,
+      "stud_pitch_ldu": 20,
+      "stud_projection_ldu": 4,
+      "features": [
+        {
+          "feature_id": "top-stud-x0_zm70",
+          "kind": "stud",
+          "position_ldu": [
+            0,
+            0,
+            -70
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-x0_zm50",
+          "kind": "stud",
+          "position_ldu": [
+            0,
+            0,
+            -50
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-x0_zm30",
+          "kind": "stud",
+          "position_ldu": [
+            0,
+            0,
+            -30
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-x0_zm10",
+          "kind": "stud",
+          "position_ldu": [
+            0,
+            0,
+            -10
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-x0_z10",
+          "kind": "stud",
+          "position_ldu": [
+            0,
+            0,
+            10
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-x0_z30",
+          "kind": "stud",
+          "position_ldu": [
+            0,
+            0,
+            30
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-x0_z50",
+          "kind": "stud",
+          "position_ldu": [
+            0,
+            0,
+            50
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-x0_z70",
+          "kind": "stud",
+          "position_ldu": [
+            0,
+            0,
+            70
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-x0_zm70",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            0,
+            8,
+            -70
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-x0_zm50",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            0,
+            8,
+            -50
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-x0_zm30",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            0,
+            8,
+            -30
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-x0_zm10",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            0,
+            8,
+            -10
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-x0_z10",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            0,
+            8,
+            10
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-x0_z30",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            0,
+            8,
+            30
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-x0_z50",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            0,
+            8,
+            50
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-x0_z70",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            0,
+            8,
+            70
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        }
+      ],
+      "limitations": [
+        "Nominal stud-grid locations are based on the LDraw part's regular footprint.",
+        "Receiver datums describe intended stud entry locations only; they are not a measured model of the internal tube or clutch profile.",
+        "Geometric alignment does not prove clutch engagement, legal combination, or structural stability."
+      ]
+    },
+    {
       "part_id": "3622",
       "description": "Brick 1 x 3",
       "source_filename": "parts/3622.dat",
@@ -3074,6 +3784,1361 @@
             20,
             24,
             0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        }
+      ],
+      "limitations": [
+        "Nominal stud-grid locations are based on the LDraw part's regular footprint.",
+        "Receiver datums describe intended stud entry locations only; they are not a measured model of the internal tube or clutch profile.",
+        "Geometric alignment does not prove clutch engagement, legal combination, or structural stability."
+      ]
+    },
+    {
+      "part_id": "3623",
+      "description": "Plate 1 x 3",
+      "source_filename": "parts/3623.dat",
+      "source_author": "Unknown (see LDraw source header)",
+      "source_license_notice": "Licensed under CC BY 4.0 : see CAreadme.txt",
+      "footprint_studs_x": 1,
+      "footprint_studs_z": 3,
+      "body_height_ldu": 8,
+      "stud_pitch_ldu": 20,
+      "stud_projection_ldu": 4,
+      "features": [
+        {
+          "feature_id": "top-stud-x0_zm20",
+          "kind": "stud",
+          "position_ldu": [
+            0,
+            0,
+            -20
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-x0_z0",
+          "kind": "stud",
+          "position_ldu": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-x0_z20",
+          "kind": "stud",
+          "position_ldu": [
+            0,
+            0,
+            20
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-x0_zm20",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            0,
+            8,
+            -20
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-x0_z0",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            0,
+            8,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-x0_z20",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            0,
+            8,
+            20
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        }
+      ],
+      "limitations": [
+        "Nominal stud-grid locations are based on the LDraw part's regular footprint.",
+        "Receiver datums describe intended stud entry locations only; they are not a measured model of the internal tube or clutch profile.",
+        "Geometric alignment does not prove clutch engagement, legal combination, or structural stability."
+      ]
+    },
+    {
+      "part_id": "3666",
+      "description": "Plate 1 x 6",
+      "source_filename": "parts/3666.dat",
+      "source_author": "Unknown (see LDraw source header)",
+      "source_license_notice": "Licensed under CC BY 4.0 : see CAreadme.txt",
+      "footprint_studs_x": 1,
+      "footprint_studs_z": 6,
+      "body_height_ldu": 8,
+      "stud_pitch_ldu": 20,
+      "stud_projection_ldu": 4,
+      "features": [
+        {
+          "feature_id": "top-stud-x0_zm50",
+          "kind": "stud",
+          "position_ldu": [
+            0,
+            0,
+            -50
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-x0_zm30",
+          "kind": "stud",
+          "position_ldu": [
+            0,
+            0,
+            -30
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-x0_zm10",
+          "kind": "stud",
+          "position_ldu": [
+            0,
+            0,
+            -10
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-x0_z10",
+          "kind": "stud",
+          "position_ldu": [
+            0,
+            0,
+            10
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-x0_z30",
+          "kind": "stud",
+          "position_ldu": [
+            0,
+            0,
+            30
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-x0_z50",
+          "kind": "stud",
+          "position_ldu": [
+            0,
+            0,
+            50
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-x0_zm50",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            0,
+            8,
+            -50
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-x0_zm30",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            0,
+            8,
+            -30
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-x0_zm10",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            0,
+            8,
+            -10
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-x0_z10",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            0,
+            8,
+            10
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-x0_z30",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            0,
+            8,
+            30
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-x0_z50",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            0,
+            8,
+            50
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        }
+      ],
+      "limitations": [
+        "Nominal stud-grid locations are based on the LDraw part's regular footprint.",
+        "Receiver datums describe intended stud entry locations only; they are not a measured model of the internal tube or clutch profile.",
+        "Geometric alignment does not prove clutch engagement, legal combination, or structural stability."
+      ]
+    },
+    {
+      "part_id": "3710",
+      "description": "Plate 1 x 4",
+      "source_filename": "parts/3710.dat",
+      "source_author": "Unknown (see LDraw source header)",
+      "source_license_notice": "Licensed under CC BY 4.0 : see CAreadme.txt",
+      "footprint_studs_x": 1,
+      "footprint_studs_z": 4,
+      "body_height_ldu": 8,
+      "stud_pitch_ldu": 20,
+      "stud_projection_ldu": 4,
+      "features": [
+        {
+          "feature_id": "top-stud-x0_zm30",
+          "kind": "stud",
+          "position_ldu": [
+            0,
+            0,
+            -30
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-x0_zm10",
+          "kind": "stud",
+          "position_ldu": [
+            0,
+            0,
+            -10
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-x0_z10",
+          "kind": "stud",
+          "position_ldu": [
+            0,
+            0,
+            10
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-x0_z30",
+          "kind": "stud",
+          "position_ldu": [
+            0,
+            0,
+            30
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-x0_zm30",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            0,
+            8,
+            -30
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-x0_zm10",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            0,
+            8,
+            -10
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-x0_z10",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            0,
+            8,
+            10
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-x0_z30",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            0,
+            8,
+            30
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        }
+      ],
+      "limitations": [
+        "Nominal stud-grid locations are based on the LDraw part's regular footprint.",
+        "Receiver datums describe intended stud entry locations only; they are not a measured model of the internal tube or clutch profile.",
+        "Geometric alignment does not prove clutch engagement, legal combination, or structural stability."
+      ]
+    },
+    {
+      "part_id": "3795",
+      "description": "Plate 2 x 6",
+      "source_filename": "parts/3795.dat",
+      "source_author": "Unknown (see LDraw source header)",
+      "source_license_notice": "Licensed under CC BY 4.0 : see CAreadme.txt",
+      "footprint_studs_x": 2,
+      "footprint_studs_z": 6,
+      "body_height_ldu": 8,
+      "stud_pitch_ldu": 20,
+      "stud_projection_ldu": 4,
+      "features": [
+        {
+          "feature_id": "top-stud-xm10_zm50",
+          "kind": "stud",
+          "position_ldu": [
+            -10,
+            0,
+            -50
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-xm10_zm30",
+          "kind": "stud",
+          "position_ldu": [
+            -10,
+            0,
+            -30
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-xm10_zm10",
+          "kind": "stud",
+          "position_ldu": [
+            -10,
+            0,
+            -10
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-xm10_z10",
+          "kind": "stud",
+          "position_ldu": [
+            -10,
+            0,
+            10
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-xm10_z30",
+          "kind": "stud",
+          "position_ldu": [
+            -10,
+            0,
+            30
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-xm10_z50",
+          "kind": "stud",
+          "position_ldu": [
+            -10,
+            0,
+            50
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-x10_zm50",
+          "kind": "stud",
+          "position_ldu": [
+            10,
+            0,
+            -50
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-x10_zm30",
+          "kind": "stud",
+          "position_ldu": [
+            10,
+            0,
+            -30
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-x10_zm10",
+          "kind": "stud",
+          "position_ldu": [
+            10,
+            0,
+            -10
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-x10_z10",
+          "kind": "stud",
+          "position_ldu": [
+            10,
+            0,
+            10
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-x10_z30",
+          "kind": "stud",
+          "position_ldu": [
+            10,
+            0,
+            30
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-x10_z50",
+          "kind": "stud",
+          "position_ldu": [
+            10,
+            0,
+            50
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-xm10_zm50",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10,
+            8,
+            -50
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-xm10_zm30",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10,
+            8,
+            -30
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-xm10_zm10",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10,
+            8,
+            -10
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-xm10_z10",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10,
+            8,
+            10
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-xm10_z30",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10,
+            8,
+            30
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-xm10_z50",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10,
+            8,
+            50
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-x10_zm50",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10,
+            8,
+            -50
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-x10_zm30",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10,
+            8,
+            -30
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-x10_zm10",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10,
+            8,
+            -10
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-x10_z10",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10,
+            8,
+            10
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-x10_z30",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10,
+            8,
+            30
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-x10_z50",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10,
+            8,
+            50
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        }
+      ],
+      "limitations": [
+        "Nominal stud-grid locations are based on the LDraw part's regular footprint.",
+        "Receiver datums describe intended stud entry locations only; they are not a measured model of the internal tube or clutch profile.",
+        "Geometric alignment does not prove clutch engagement, legal combination, or structural stability."
+      ]
+    },
+    {
+      "part_id": "3832",
+      "description": "Plate 2 x 10",
+      "source_filename": "parts/3832.dat",
+      "source_author": "Unknown (see LDraw source header)",
+      "source_license_notice": "Licensed under CC BY 4.0 : see CAreadme.txt",
+      "footprint_studs_x": 2,
+      "footprint_studs_z": 10,
+      "body_height_ldu": 8,
+      "stud_pitch_ldu": 20,
+      "stud_projection_ldu": 4,
+      "features": [
+        {
+          "feature_id": "top-stud-xm10_zm90",
+          "kind": "stud",
+          "position_ldu": [
+            -10,
+            0,
+            -90
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-xm10_zm70",
+          "kind": "stud",
+          "position_ldu": [
+            -10,
+            0,
+            -70
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-xm10_zm50",
+          "kind": "stud",
+          "position_ldu": [
+            -10,
+            0,
+            -50
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-xm10_zm30",
+          "kind": "stud",
+          "position_ldu": [
+            -10,
+            0,
+            -30
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-xm10_zm10",
+          "kind": "stud",
+          "position_ldu": [
+            -10,
+            0,
+            -10
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-xm10_z10",
+          "kind": "stud",
+          "position_ldu": [
+            -10,
+            0,
+            10
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-xm10_z30",
+          "kind": "stud",
+          "position_ldu": [
+            -10,
+            0,
+            30
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-xm10_z50",
+          "kind": "stud",
+          "position_ldu": [
+            -10,
+            0,
+            50
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-xm10_z70",
+          "kind": "stud",
+          "position_ldu": [
+            -10,
+            0,
+            70
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-xm10_z90",
+          "kind": "stud",
+          "position_ldu": [
+            -10,
+            0,
+            90
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-x10_zm90",
+          "kind": "stud",
+          "position_ldu": [
+            10,
+            0,
+            -90
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-x10_zm70",
+          "kind": "stud",
+          "position_ldu": [
+            10,
+            0,
+            -70
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-x10_zm50",
+          "kind": "stud",
+          "position_ldu": [
+            10,
+            0,
+            -50
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-x10_zm30",
+          "kind": "stud",
+          "position_ldu": [
+            10,
+            0,
+            -30
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-x10_zm10",
+          "kind": "stud",
+          "position_ldu": [
+            10,
+            0,
+            -10
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-x10_z10",
+          "kind": "stud",
+          "position_ldu": [
+            10,
+            0,
+            10
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-x10_z30",
+          "kind": "stud",
+          "position_ldu": [
+            10,
+            0,
+            30
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-x10_z50",
+          "kind": "stud",
+          "position_ldu": [
+            10,
+            0,
+            50
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-x10_z70",
+          "kind": "stud",
+          "position_ldu": [
+            10,
+            0,
+            70
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "top-stud-x10_z90",
+          "kind": "stud",
+          "position_ldu": [
+            10,
+            0,
+            90
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-xm10_zm90",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10,
+            8,
+            -90
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-xm10_zm70",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10,
+            8,
+            -70
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-xm10_zm50",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10,
+            8,
+            -50
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-xm10_zm30",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10,
+            8,
+            -30
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-xm10_zm10",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10,
+            8,
+            -10
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-xm10_z10",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10,
+            8,
+            10
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-xm10_z30",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10,
+            8,
+            30
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-xm10_z50",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10,
+            8,
+            50
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-xm10_z70",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10,
+            8,
+            70
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-xm10_z90",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10,
+            8,
+            90
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-x10_zm90",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10,
+            8,
+            -90
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-x10_zm70",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10,
+            8,
+            -70
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-x10_zm50",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10,
+            8,
+            -50
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-x10_zm30",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10,
+            8,
+            -30
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-x10_zm10",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10,
+            8,
+            -10
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-x10_z10",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10,
+            8,
+            10
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-x10_z30",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10,
+            8,
+            30
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-x10_z50",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10,
+            8,
+            50
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-x10_z70",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10,
+            8,
+            70
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "underside-receiver-x10_z90",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10,
+            8,
+            90
           ],
           "axis": [
             0,
