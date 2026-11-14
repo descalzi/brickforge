@@ -292,3 +292,18 @@
 .part-feature-list strong { color: var(--fg); font-size: .72rem; }
 .part-feature-list span { color: var(--accent); font-weight: 600; }
 .part-feature-list small { color: var(--fg-muted); font-size: .65rem; }
+
+.feature-profile-batch {
+  display: grid;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 13px;
+  border-top: 1px solid var(--border);
+}
+.feature-profile-batch h3 {
+  margin: 0;
+  color: var(--fg);
+  font-size: .82rem;
+  font-weight: 650;
+}
+.feature-profile-batch .tool-button { width: 100%; }
