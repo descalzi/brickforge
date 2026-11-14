@@ -163,7 +163,7 @@ function analyseSelectedPartFeatures() {
   setMessage('Sampling orthogonal cross-sections in a background worker…');
 
   try {
-    partFeatureWorker = new Worker(new URL('./part-feature-worker.js?v=featureprofile3', import.meta.url), { type: 'module' });
+    partFeatureWorker = new Worker(new URL('./part-feature-worker.js?v=featureprofile4', import.meta.url), { type: 'module' });
   } catch (error) {
     partFeatureAnalyseButton.disabled = false;
     partFeatureStatus.textContent = error instanceof Error ? error.message : 'Could not start feature analysis.';
@@ -240,7 +240,7 @@ function likelyOpeningPartCandidates(limit = 12) {
 
 function analysePositionsInWorker(positions, bounds) {
   return new Promise((resolve, reject) => {
-    const worker = new Worker(new URL('./part-feature-worker.js?v=featureprofile3', import.meta.url), { type: 'module' });
+    const worker = new Worker(new URL('./part-feature-worker.js?v=featureprofile4', import.meta.url), { type: 'module' });
     batchFeatureWorker = worker;
     worker.addEventListener('message', (event) => {
       if (worker !== batchFeatureWorker) return;
