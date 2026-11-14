@@ -22,6 +22,10 @@ These profiles are geometry measurements, not connection instructions. A circula
 
 The current analyser uses principal-axis sections only. It may miss or approximate oblique, curved, branching and blind openings, and it does not infer topology for the LDraw part. A missing profile is not proof that a part has no openings.
 
+## Initial candidate matching
+
+The browser Inspector can import one or more exported profiles and compare their measured opening features with the target mesh. The first matcher uses shape, equivalent diameter or width/length, circularity and aspect ratio with explicit dimensional tolerances. It ranks candidates per target feature and records the candidate part's local opening axis. It does not yet perform one-to-one assignment across a complete part, solve the part's placement, inspect the surrounding envelope, or validate its connection interfaces.
+
 ## Next step
 
-Build a curated set of source-verified profiles for useful specialised parts, then compare target-mesh features against those profiles. A match must remain a geometric candidate until its placement, surrounding envelope and connection interfaces have been independently validated.
+Build a curated set of source-verified profiles for useful specialised parts, then improve matching with one-to-one feature assignment, explicit rotations, surrounding-envelope checks and verified connection interfaces. A match must remain a geometric candidate until its placement and buildability have been independently validated.
