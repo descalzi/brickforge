@@ -1362,7 +1362,10 @@ export function buildLayeredFootprintBlock(layerFootprints, catalogue, config = 
         limitReached: true,
       };
     } else {
-      search = enumerateFootprintTilings(cells, profiles);
+      const interlockingPair = sampleInterlockingFootprints(cells, profiles);
+      search = interlockingPair
+        ? { tilings: interlockingPair, limitReached: false }
+        : enumerateFootprintTilings(cells, profiles);
     }
     searchLimited ||= search.limitReached;
     if (!search.tilings.length) {
