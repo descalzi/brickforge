@@ -268,3 +268,12 @@
 @media (prefers-reduced-motion: reduce) {
   .drop-zone { transition: none; }
 }
+
+.construction-downloads {
+  display: grid;
+  gap: 6px;
+  margin-top: 8px;
+}
+.construction-downloads .tool-button {
+  width: 100%;
+}
