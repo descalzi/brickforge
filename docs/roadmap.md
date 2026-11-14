@@ -73,8 +73,9 @@ This roadmap is intentionally milestone-based. Each milestone should produce a d
 - [ ] Add robust mesh validation and explicit handling for open, non-watertight, degenerate and self-intersecting surfaces.
 - [ ] Extract per-course 2D cross-sections while retaining surface-distance information for visual fitting.
 - [x] Reuse the tested footprint tiler as a per-course candidate generator, then solve bounded connected cross-course arrangements. The browser mesh inspector can now generate and export a variable-course assembly from its target grid; only the currently profiled rectangular brick families are eligible.
-- [x] Preserve closed-mesh topological handle/tunnel counts separately from coarse occupancy and block construction when current part profiles cannot guarantee those features.
+- [x] Preserve closed-mesh topological handle/tunnel counts separately from coarse occupancy; conservatively map supported axis-aligned sub-grid openings to grid-cell clearance tunnels, and continue blocking construction for unsupported or unlocalised features.
 - [x] Locate and measure axis-aligned sub-grid openings using sampled orthogonal cross-sections; retain location, size, shape, per-slice minimum/maximum dimensions and slice-support metadata in target-grid version 4.
+- [x] Preserve supported sub-grid round openings and elongated slots as conservative target-grid clearance tunnels; disclose grid-scale over-clearance and block unsupported feature types.
 - [x] Add a browser LDraw part-opening profiler and versioned feature-profile export so candidate part geometry can be measured independently of target meshes.
 - [x] Add a bounded Part Explorer scan for up to 12 user-searched candidate parts; export measured profiles as a combined catalogue.
 - [x] Add an initial browser geometric matcher for imported part profiles using shape and per-slice dimensional ranges; report candidates only and do not treat a match as a buildability result.
