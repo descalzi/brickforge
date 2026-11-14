@@ -1352,9 +1352,18 @@ export function buildLayeredFootprintBlock(layerFootprints, catalogue, config = 
 
   for (let layer = 0; layer < parsedLayers.length; layer += 1) {
     const cells = new Set(parsedLayers[layer].map(([x, z]) => cellKey(x - minX, z - minZ)));
-    const search = cells.size > MAX_FOOTPRINT_CELLS
-      ? { tilings: sampleLayerFootprintTilings(cells, profiles), limitReached: true }
-      : enumerateFootprintTilings(cells, profiles);
+    let search;
+    if (cells.size > MAX_FOOTPRINT_CELLS) {
+      const stripTilings = sampleStripTilings(cells, profiles);
+      const interlockingPair = stripTilings.length ? null : sampleInterlockingFootprints(cells, profiles);
+      search = {
+        tilings: stripTilings.length ? stripTilings
+          : interlockingPair || sampleLayerFootprintTilings(cells, profiles),
+        limitReached: true,
+      };
+    } else {
+      search = enumerateFootprintTilings(cells, profiles);
+    }
     searchLimited ||= search.limitReached;
     if (!search.tilings.length) {
       throw new Error("Course " + (layer + 1)
