@@ -871,13 +871,22 @@ function displayVoxelSummary(grid, triangleCount) {
     const topology = grid.topology;
     const features = summary.features || [];
     const hasHandles = topology?.handle_count > 0;
-    const hasUnmatchedFeatures = hasHandles || features.length > 0;
-    voxelFeatureStatus.hidden = !hasUnmatchedFeatures;
+    const keepouts = summary.feature_keepouts || [];
+    const preserved = keepouts.filter((item) => item.preserved).length;
+    const allRepresented = features.length > 0 && preserved === features.length
+      && features.length >= (topology?.handle_count || 0);
+    const hasUnmatchedFeatures = (hasHandles || features.length > 0) && !allRepresented;
+    voxelFeatureStatus.hidden = !(hasHandles || features.length > 0);
     voxelFeatureStatus.dataset.state = hasUnmatchedFeatures ? 'warning' : 'complete';
     voxelFeatureStatus.textContent = hasHandles
       ? topology.handle_count.toLocaleString() + ' topological tunnel(s) detected; '
-        + features.length.toLocaleString() + ' cross-section feature(s) localised. Construction remains blocked until compatible parts can preserve them.'
-      : features.length.toLocaleString() + ' cross-section feature(s) detected. Construction remains blocked until compatible parts can preserve them.';
+        + features.length.toLocaleString() + ' cross-section feature(s) localised; '
+        + preserved.toLocaleString() + ' mapped to conservative grid-cell clearance tunnels. '
+        + (allRepresented
+          ? 'The represented openings may be larger than the source holes; inspect the voxel and construction previews.'
+          : 'Construction remains blocked until every tunnel is localised and mapped.')
+      : features.length.toLocaleString() + ' cross-section feature(s) detected. '
+        + (allRepresented ? 'Conservative grid-cell clearances are applied.' : 'Construction remains blocked until the openings can be represented.');
     if (voxelFeatureList) {
       voxelFeatureList.replaceChildren();
       features.forEach((feature, index) => {
@@ -894,8 +903,12 @@ function displayVoxelSummary(grid, triangleCount) {
             + feature.maximum_length_mm.toFixed(1) + ' mm';
         detail.textContent = size + ' · axis ' + feature.axis.toUpperCase()
           + ' · ' + feature.sample_support + ' slices';
+        const keepout = keepouts.find((entry) => entry.feature_id === feature.id);
+        const preservation = keepout?.preserved
+          ? ' · clearance cells ' + keepout.cell_count
+          : ' · not preserved' + (keepout?.reason ? ': ' + keepout.reason : '');
         position.textContent = 'Centre ' + feature.center_mm.map((value) => value.toFixed(1)).join(', ')
-          + ' mm · observed span ' + feature.observed_span_mm.toFixed(1) + ' mm';
+          + ' mm · observed span ' + feature.observed_span_mm.toFixed(1) + ' mm' + preservation;
         item.append(heading, detail, position);
         voxelFeatureList.append(item);
       });
