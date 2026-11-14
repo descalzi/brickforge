@@ -1079,9 +1079,14 @@ function displayConstruction(result) {
   constructionDownloadLDraw.disabled = false;
   constructionDownloadGraph.disabled = false;
   constructionDownloadBom.disabled = false;
-  constructionStatus.textContent = 'Connected construction generated. Review the stated nominal limitations before treating it as buildable.';
+  const preservedOpeningCount = activeTargetGrid.feature_keepouts.filter((item) => item.preserved).length;
+  constructionStatus.textContent = 'Connected construction generated.'
+    + (preservedOpeningCount
+      ? ' ' + preservedOpeningCount + ' opening(s) are represented by conservative grid-cell clearances, which may be larger than the source holes.'
+      : '')
+    + ' Review the target and assembly previews and the stated nominal limitations before treating it as buildable.';
   constructionStatus.dataset.state = 'complete';
-  setMessage('The variable-course assembly passed nominal body-overlap and connection-graph checks.', 'success');
+  setMessage('The variable-course assembly passed nominal body-overlap and connection-graph checks against the preserved target-grid occupancy.', 'success');
 }
 
 function runLayeredConstruction() {
