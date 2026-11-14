@@ -1437,8 +1437,15 @@ export function buildLayeredFootprintBlock(layerFootprints, catalogue, config = 
     const detail = budgetReached || searchLimited
       ? "within the bounded course-layout search"
       : "using the available rectangular brick profiles";
+    const courseSummary = layerCandidates.map((candidates, index) =>
+      "course " + (index + 1) + ": " + parsedLayers[index].length + " cell(s), "
+        + candidates.length + " layout candidate(s)").join("; ");
+    const searchSummary = " " + courseSummary + ". Checked " + checks
+      + " complete sequence(s) across " + visitedNodes + " search node(s)"
+      + (budgetReached ? "; sequence budget reached" : "")
+      + (searchLimited ? "; course layouts were sampled or bounded" : "");
     throw new Error("No fully connected variable-course construction was found " + detail
-      + "; try a simpler target shape or a different part catalogue.");
+      + "; " + searchSummary + ". Try a different course family, target orientation or part catalogue.");
   }
 
   const pitch = baseProfile.stud_pitch_ldu;
