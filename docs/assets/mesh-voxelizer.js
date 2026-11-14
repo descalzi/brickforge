@@ -209,11 +209,9 @@ function triangleIntersectsBox(triangle, boxMin, boxMax) {
 }
 
 function cellIntersectsSurface(root, boxMin, boxMax, budget) {
-  let nodeTests = 0;
   const stack = [root];
   while (stack.length) {
     const node = stack.pop();
-    nodeTests += 1;
     if (!boundsOverlap(node.min, node.max, boxMin, boxMax)) continue;
     if (node.triangles) {
       for (const triangle of node.triangles) {
@@ -292,7 +290,6 @@ export function voxelizeMesh({
   const [width, height, depth] = dimensions;
   const classification = new Uint8Array(cellCount);
   const coverage = new Float32Array(cellCount);
-  const halfDiagonal = Math.hypot(pitchMm[0] * 0.5, pitchMm[1] * 0.5, pitchMm[2] * 0.5);
   const rayBudget = { tests: 0 };
   const cellBudget = { tests: 0 };
   let completedColumns = 0;
