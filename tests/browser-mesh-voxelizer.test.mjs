@@ -3,6 +3,7 @@ import test from "node:test";
 
 import { CellClass } from "../docs/assets/target-grid.js";
 import { voxelizeMesh } from "../docs/assets/mesh-voxelizer.js";
+import { analyzeMeshFeatures } from "../docs/assets/mesh-feature-analysis.js";
 
 function boxMesh(size, centre = size.map((value) => value / 2)) {
   const [sx, sy, sz] = size;
@@ -52,6 +53,72 @@ function torusMesh(majorRadius = 4, minorRadius = 1, majorSegments = 16, minorSe
     }
   }
   return { vertices: new Float64Array(vertices), indices: new Uint32Array(indices) };
+}
+
+
+function perforatedPlateTriangles() {
+  const width = 48;
+  const height = 65;
+  const thickness = 6;
+  const occupied = new Set();
+  const key = (x, y, z) => x + "," + y + "," + z;
+  for (let z = 0; z < thickness; z += 1) {
+    for (let y = 0; y < height; y += 1) {
+      for (let x = 0; x < width; x += 1) {
+        const px = x + 0.5;
+        const py = y + 0.5;
+        const roundHoles = [[15, 19], [33, 19], [15, 45], [33, 45]];
+        const inRoundHole = roundHoles.some(([cx, cy]) =>
+          (px - cx) ** 2 + (py - cy) ** 2 < 2.2 ** 2);
+        const inSlot = Math.abs(px - 15) < 5.4 && Math.abs(py - 32) < 3.3;
+        if (!inRoundHole && !inSlot) occupied.add(key(x, y, z));
+      }
+    }
+  }
+
+  const vertices = [];
+  const indices = [];
+  const vertexIds = new Map();
+  const vertexId = (point) => {
+    const pointKey = point.join(",");
+    if (!vertexIds.has(pointKey)) {
+      vertexIds.set(pointKey, vertices.length / 3);
+      vertices.push(...point);
+    }
+    return vertexIds.get(pointKey);
+  };
+  const quads = [
+    { delta: [-1, 0, 0], points: (x, y, z) => [[x, y, z], [x, y, z + 1], [x, y + 1, z + 1], [x, y + 1, z]] },
+    { delta: [1, 0, 0], points: (x, y, z) => [[x + 1, y, z], [x + 1, y + 1, z], [x + 1, y + 1, z + 1], [x + 1, y, z + 1]] },
+    { delta: [0, -1, 0], points: (x, y, z) => [[x, y, z], [x + 1, y, z], [x + 1, y, z + 1], [x, y, z + 1]] },
+    { delta: [0, 1, 0], points: (x, y, z) => [[x, y + 1, z], [x, y + 1, z + 1], [x + 1, y + 1, z + 1], [x + 1, y + 1, z]] },
+    { delta: [0, 0, -1], points: (x, y, z) => [[x, y, z], [x, y + 1, z], [x + 1, y + 1, z], [x + 1, y, z]] },
+    { delta: [0, 0, 1], points: (x, y, z) => [[x, y, z + 1], [x + 1, y, z + 1], [x + 1, y + 1, z + 1], [x, y + 1, z + 1]] },
+  ];
+  for (const cell of occupied) {
+    const [x, y, z] = cell.split(",").map(Number);
+    for (const face of quads) {
+      if (occupied.has(key(x + face.delta[0], y + face.delta[1], z + face.delta[2]))) continue;
+      const ids = face.points(x, y, z).map(vertexId);
+      indices.push(ids[0], ids[1], ids[2], ids[0], ids[2], ids[3]);
+    }
+  }
+  const flatVertices = new Float64Array(vertices);
+  const flatIndices = new Uint32Array(indices);
+  const triangles = [];
+  for (let index = 0; index < flatIndices.length; index += 3) {
+    const point = (vertex) => [
+      flatVertices[vertex * 3],
+      flatVertices[vertex * 3 + 1],
+      flatVertices[vertex * 3 + 2],
+    ];
+    triangles.push({
+      a: point(flatIndices[index]),
+      b: point(flatIndices[index + 1]),
+      c: point(flatIndices[index + 2]),
+    });
+  }
+  return { triangles, boundsMin: [0, 0, 0], boundsMax: [width, height, thickness] };
 }
 
 test("browser voxeliser classifies an aligned solid and interior core", () => {
@@ -152,4 +219,14 @@ test("browser voxeliser detects a sub-grid topological tunnel instead of losing 
   assert.equal(result.features[0].shape, "round opening");
   assert.ok(result.features[0].equivalent_diameter_mm > 4);
   assert.ok(result.features[0].sample_support >= 2);
+});
+
+test("cross-section analysis locates four round openings and an elongated slot below grid pitch", () => {
+  const mesh = perforatedPlateTriangles();
+  const features = analyzeMeshFeatures(mesh.triangles, mesh.boundsMin, mesh.boundsMax);
+  assert.equal(features.length, 5);
+  assert.equal(features.filter((feature) => feature.shape === "round opening").length, 4);
+  assert.equal(features.filter((feature) => feature.shape === "elongated slot/opening").length, 1);
+  assert.ok(features.every((feature) => feature.axis === "z" && feature.sample_support >= 2));
+  assert.ok(features.every((feature) => feature.center_mm[2] > 0 && feature.center_mm[2] < 6));
 });
