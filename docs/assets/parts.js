@@ -1,7 +1,6 @@
 const DEFAULT_RAW_BASE = 'https://raw.githubusercontent.com/kulits/ldraw-parts/c70360d1c588be894997b2168c61909bc8058c4d/ldraw/';
 let rawBaseUrl = DEFAULT_RAW_BASE;
 import { decodeCataloguePayload, ldrawReferenceCandidates, searchPartCatalogue } from './catalogue-utils.js';
-import { analyzeMeshFeatures } from './mesh-feature-analysis.js?v=featuremeasure3';
 
 const LDU_TO_MM = 0.4;
 const MAX_REFERENCE_DEPTH = 64;
@@ -326,6 +325,10 @@ async function scanLikelyOpeningParts() {
           expansion,
         );
         const positions = collectTrianglePositions(expansion.faces);
+        if (positions.length / 9 > 100000) {
+          errors.push(entry.part_id + ': exceeds the 100,000-triangle feature analysis limit');
+          continue;
+        }
         if (!positions.length || positions.length % 9 !== 0) {
           errors.push(entry.part_id + ': no complete triangle geometry');
           continue;
@@ -1033,6 +1036,9 @@ async function loadSelectedPart() {
       throw new Error('The resolved part has invalid or zero-size geometry.');
     }
     const trianglePositions = collectTrianglePositions(expansion.faces);
+    if (trianglePositions.length / 9 > 100000) {
+      throw new Error('The selected part exceeds the 100,000-triangle feature analysis limit.');
+    }
     if (!trianglePositions.length || trianglePositions.length % 9 !== 0) {
       throw new Error('The selected part has no complete triangle geometry for feature analysis.');
     }
