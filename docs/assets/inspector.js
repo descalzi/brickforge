@@ -4,7 +4,7 @@ let STLLoader;
 let OBJLoader;
 
 import { GridSpec, TargetGrid } from "./target-grid.js?v=featuremeasure4";
-import { matchFeaturePatterns, matchTargetFeatures } from "./feature-matcher.js?v=featurematch4";
+import { matchFeaturePatterns, matchTargetFeatures } from "./feature-matcher.js?v=featurematch5";
 import { constructionPreviewTransform } from "./construction-preview.js";
 
 const MAX_FILE_BYTES = 100 * 1024 * 1024;
