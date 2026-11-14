@@ -277,3 +277,10 @@
 .construction-downloads .tool-button {
   width: 100%;
 }
+
+.construction-preview-note {
+  margin: 2px 0;
+  color: var(--fg-muted);
+  font-size: .7rem;
+  line-height: 1.45;
+}
