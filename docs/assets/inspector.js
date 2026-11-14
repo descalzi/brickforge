@@ -3,7 +3,7 @@ let OrbitControls;
 let STLLoader;
 let OBJLoader;
 
-import { GridSpec, TargetGrid } from "./target-grid.js?v=featuremeasure4";
+import { GridSpec, TargetGrid } from "./target-grid.js?v=featuregrid5";
 import { matchFeaturePatterns, matchTargetFeatures } from "./feature-matcher.js?v=featurematch8";
 import { constructionPreviewTransform } from "./construction-preview.js";
 
@@ -938,7 +938,7 @@ function runVoxelisation() {
   voxeliseStatus.dataset.state = 'working';
   setMessage('Voxelising locally. The 3D viewer remains interactive while the worker processes the mesh.');
   try {
-    voxelWorker = new Worker(new URL('./mesh-voxelizer-worker.js?v=featuremeasure4', import.meta.url), { type: 'module' });
+    voxelWorker = new Worker(new URL('./mesh-voxelizer-worker.js?v=featurekeepout1', import.meta.url), { type: 'module' });
   } catch (error) {
     voxeliseButton.disabled = false;
     voxeliseStatus.textContent = error instanceof Error ? error.message : 'Could not start the voxelisation worker.';
