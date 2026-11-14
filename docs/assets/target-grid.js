@@ -1,4 +1,4 @@
-export const TARGET_GRID_VERSION = 2;
+export const TARGET_GRID_VERSION = 3;
 export const BRICK_GRID_PITCH_MM = Object.freeze([8, 9.6, 8]);
 
 export const CellClass = Object.freeze({
@@ -76,7 +76,7 @@ export class GridSpec {
 }
 
 export class TargetGrid {
-  constructor({ spec, classification, surface_coverage, source_units, source_bounds_mm, warnings = [], topology = null }) {
+  constructor({ spec, classification, surface_coverage, source_units, source_bounds_mm, warnings = [], topology = null, features = [] }) {
     if (!(spec instanceof GridSpec)) throw new TypeError("spec must be a GridSpec");
     if (!["mm", "cm", "m", "in"].includes(source_units)) {
       throw new TypeError("source_units must be 'mm', 'cm', 'm' or 'in'");
@@ -116,6 +116,54 @@ export class TargetGrid {
       }
       topologySummary = Object.freeze(Object.fromEntries(fields.map((field) => [field, topology[field]])));
     }
+    if (!Array.isArray(features)) throw new TypeError("features must be an array");
+    const featureRecords = features.map((feature, index) => {
+      const axes = ["x", "y", "z"];
+      const numericFields = [
+        "observed_span_mm", "width_mm", "length_mm", "area_mm2",
+        "perimeter_mm", "equivalent_diameter_mm", "circularity", "aspect_ratio",
+      ];
+      if (!feature || typeof feature !== "object"
+          || typeof feature.id !== "string" || !feature.id
+          || !axes.includes(feature.axis)
+          || feature.axis_index !== axes.indexOf(feature.axis)
+          || typeof feature.shape !== "string" || !feature.shape
+          || !["high", "medium"].includes(feature.confidence)
+          || !Number.isSafeInteger(feature.sample_support) || feature.sample_support < 2
+          || numericFields.some((field) => !Number.isFinite(feature[field]))
+          || feature.observed_span_mm < 0
+          || numericFields.slice(1, 6).some((field) => feature[field] <= 0)
+          || feature.circularity < 0 || feature.circularity > 1
+          || feature.aspect_ratio < 1) {
+        throw new TypeError("feature " + index + " contains invalid measured opening metadata");
+      }
+      const centre = finiteVector(feature.center_mm, "feature centre");
+      if (!Array.isArray(feature.bounds_mm) || feature.bounds_mm.length !== 2) {
+        throw new TypeError("feature bounds must contain two 3D points");
+      }
+      const featureBounds = feature.bounds_mm.map((point) => finiteVector(point, "feature bounds"));
+      if (featureBounds[1].some((value, axis) => value < featureBounds[0][axis])) {
+        throw new RangeError("feature maximum bounds must not be below minimum bounds");
+      }
+      return Object.freeze({
+        id: feature.id,
+        axis: feature.axis,
+        axis_index: feature.axis_index,
+        shape: feature.shape,
+        center_mm: Object.freeze(centre),
+        bounds_mm: Object.freeze(featureBounds.map((point) => Object.freeze(point))),
+        observed_span_mm: feature.observed_span_mm,
+        width_mm: feature.width_mm,
+        length_mm: feature.length_mm,
+        area_mm2: feature.area_mm2,
+        perimeter_mm: feature.perimeter_mm,
+        equivalent_diameter_mm: feature.equivalent_diameter_mm,
+        circularity: feature.circularity,
+        aspect_ratio: feature.aspect_ratio,
+        sample_support: feature.sample_support,
+        confidence: feature.confidence,
+      });
+    });
     const classes = Uint8Array.from(classification);
     const coverage = Float32Array.from(surface_coverage);
     this.spec = spec;
@@ -125,6 +173,7 @@ export class TargetGrid {
     this.source_bounds_mm = bounds.map((point) => Object.freeze(point));
     this.warnings = warnings.slice();
     this.topology = topologySummary;
+    this.features = Object.freeze(featureRecords);
     Object.freeze(this.source_bounds_mm);
     Object.freeze(this.warnings);
     Object.freeze(this);
@@ -167,6 +216,11 @@ export class TargetGrid {
       occupied_cell_count: this.occupied_cell_count,
       boundary_cell_count: this.boundary_cell_count,
       topology: this.topology ? { ...this.topology } : null,
+      features: this.features.map((feature) => ({
+        ...feature,
+        center_mm: feature.center_mm.slice(),
+        bounds_mm: feature.bounds_mm.map((point) => point.slice()),
+      })),
       warnings: this.warnings.slice(),
     };
   }
