@@ -1197,7 +1197,7 @@ export function buildFootprintBlock(footprintCells, heightBricks, catalogue, con
   if (!pair && !tilingSequence) {
     const detail = searchLimited
       ? "within the bounded placement search"
-      : "using the available rectangular brick profiles";
+      : "using the available rectangular course profiles";
     throw new Error(
       "No connected interlocking course arrangement was found " + detail
         + "; try a different footprint or part catalogue.",
@@ -1380,7 +1380,7 @@ export function buildLayeredFootprintBlock(layerFootprints, catalogue, config = 
     searchLimited ||= search.limitReached;
     if (!search.tilings.length) {
       throw new Error("Course " + (layer + 1)
-        + " cannot be tiled by the available rectangular brick profiles.");
+        + " cannot be tiled by the available rectangular course profiles.");
     }
     search.tilings.sort(compareTilings);
     layerCandidates.push(search.tilings);
