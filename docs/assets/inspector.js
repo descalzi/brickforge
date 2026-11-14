@@ -487,10 +487,10 @@ function displayVoxelSummary(grid, triangleCount) {
   }
   if (voxelFeatureStatus) {
     const topology = grid.topology;
+    const features = summary.features || [];
     const hasHandles = topology?.handle_count > 0;
     voxelFeatureStatus.hidden = !hasHandles && features.length === 0;
     voxelFeatureStatus.dataset.state = hasHandles ? 'warning' : 'complete';
-    const features = summary.features || [];
     voxelFeatureStatus.textContent = hasHandles
       ? topology.handle_count.toLocaleString() + ' topological tunnel(s) detected; '
         + features.length.toLocaleString() + ' cross-section feature(s) localised. Measurements are approximate and need part matching before construction.'
