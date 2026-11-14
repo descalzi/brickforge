@@ -30,6 +30,7 @@ const constructionSummary = document.querySelector('#construction-summary');
 const constructionPartCount = document.querySelector('#construction-part-count');
 const constructionDetails = document.querySelector('#construction-details');
 const constructionCourseList = document.querySelector('#construction-course-list');
+const constructionPreviewToggle = document.querySelector('#construction-preview-toggle');
 const constructionDownloadLDraw = document.querySelector('#construction-download-ldraw');
 const constructionDownloadGraph = document.querySelector('#construction-download-graph');
 const constructionDownloadBom = document.querySelector('#construction-download-bom');
@@ -62,7 +63,10 @@ let pendingFile;
 let voxelWorker;
 let activeTargetGrid;
 let activeVoxelGroup;
+let activeConstructionGroup;
 let voxelOverlayVisible = true;
+let constructionPreviewVisible = true;
+const ghostedMaterialStates = new Map();
 
 function setMessage(text, kind = 'info') {
   message.textContent = text;
@@ -189,6 +193,130 @@ function removeVoxelOverlay() {
   activeVoxelGroup = null;
 }
 
+function setSourceMeshGhosted(ghosted) {
+  for (const mesh of activeMeshes) {
+    const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+    for (const material of materials) {
+      if (!material) continue;
+      if (ghosted) {
+        if (!ghostedMaterialStates.has(material)) {
+          ghostedMaterialStates.set(material, {
+            opacity: material.opacity,
+            transparent: material.transparent,
+            depthWrite: material.depthWrite,
+          });
+        }
+        material.transparent = true;
+        material.opacity = 0.22;
+        material.depthWrite = false;
+      } else {
+        const original = ghostedMaterialStates.get(material);
+        if (original) {
+          material.opacity = original.opacity;
+          material.transparent = original.transparent;
+          material.depthWrite = original.depthWrite;
+          ghostedMaterialStates.delete(material);
+        }
+      }
+      material.needsUpdate = true;
+    }
+  }
+}
+
+function removeConstructionPreview() {
+  if (activeConstructionGroup && scene) {
+    scene.remove(activeConstructionGroup);
+    activeConstructionGroup.traverse((object) => {
+      if (!object.isMesh) return;
+      object.geometry?.dispose?.();
+      if (Array.isArray(object.material)) object.material.forEach((material) => material.dispose?.());
+      else object.material?.dispose?.();
+    });
+  }
+  activeConstructionGroup = null;
+  setSourceMeshGhosted(false);
+  constructionPreviewToggle.disabled = true;
+  constructionPreviewToggle.textContent = 'Show generated construction';
+}
+
+function renderConstructionPreview(result) {
+  removeConstructionPreview();
+  if (!activeTargetGrid || !result?.parts?.length || !result.profile_dimensions) {
+    throw new Error('The generated assembly is missing preview dimensions or its target grid.');
+  }
+
+  const [gridWidth, , gridDepth] = activeTargetGrid.spec.dimensions;
+  const [pitchX, pitchY, pitchZ] = activeTargetGrid.spec.pitch_mm;
+  const allCells = [];
+  const [, courseCount] = activeTargetGrid.spec.dimensions;
+  for (let layer = 0; layer < courseCount; layer += 1) {
+    for (const [x, z] of activeTargetGrid.layer_footprint(layer)) allCells.push([x, z]);
+  }
+  if (!allCells.length) throw new Error('The target grid contains no occupied cells.');
+  const minX = Math.min(...allCells.map(([x]) => x));
+  const maxX = Math.max(...allCells.map(([x]) => x));
+  const minZ = Math.min(...allCells.map(([, z]) => z));
+  const maxZ = Math.max(...allCells.map(([, z]) => z));
+  const targetCentreX = activeTargetGrid.spec.origin_mm[0] + (minX + (maxX - minX + 1) / 2) * pitchX;
+  const targetCentreZ = activeTargetGrid.spec.origin_mm[2] + (minZ + (maxZ - minZ + 1) / 2) * pitchZ;
+  const palette = new Map([
+    [4, 0xC91A09],
+    [1, 0x0055BF],
+    [14, 0xF2CD37],
+    [2, 0x237841],
+    [15, 0xFFFFFF],
+    [0, 0x05131D],
+  ]);
+  const materials = new Map();
+  const geometries = new Map();
+  const group = new THREE.Group();
+  group.name = 'Generated construction preview';
+
+  for (const part of result.parts) {
+    const dimensions = result.profile_dimensions[part.part_id];
+    if (!dimensions) throw new Error('Missing preview dimensions for part ' + part.part_id + '.');
+    const sizeX = dimensions.footprint_studs_x * pitchX;
+    const sizeZ = dimensions.footprint_studs_z * pitchZ;
+    const geometryKey = part.part_id;
+    if (!geometries.has(geometryKey)) {
+      geometries.set(geometryKey, new THREE.BoxGeometry(
+        sizeX,
+        dimensions.body_height_ldu * 0.4,
+        sizeZ,
+      ));
+    }
+    const colourCode = part.colour_code;
+    if (!materials.has(colourCode)) {
+      materials.set(colourCode, new THREE.MeshStandardMaterial({
+        color: palette.get(colourCode) ?? 0xA0A0A0,
+        roughness: 0.68,
+        metalness: 0,
+      }));
+    }
+    const mesh = new THREE.Mesh(geometries.get(geometryKey), materials.get(colourCode));
+    mesh.castShadow = false;
+    mesh.receiveShadow = false;
+    mesh.position.set(
+      part.translation_ldu[0] * 0.4 + targetCentreX - currentModelCenter[0],
+      activeTargetGrid.spec.origin_mm[1] + (Number(part.instance_id.match(/^layer-(\d+)/)?.[1] || 0) + 0.5) * pitchY
+        - currentModelCenter[1],
+      part.translation_ldu[2] * 0.4 + targetCentreZ - currentModelCenter[2],
+    );
+    if (part.matrix?.[0] === 0 && part.matrix?.[2] === 1) mesh.rotation.y = Math.PI / 2;
+    mesh.userData.partId = part.part_id;
+    group.add(mesh);
+  }
+
+  activeConstructionGroup = group;
+  scene.add(group);
+  constructionPreviewVisible = true;
+  setSourceMeshGhosted(true);
+  constructionPreviewToggle.disabled = false;
+  constructionPreviewToggle.textContent = 'Hide generated construction';
+  group.visible = true;
+}
+
+
 function resetVoxelisation() {
   if (voxelWorker) {
     voxelWorker.terminate();
@@ -207,6 +335,7 @@ function resetVoxelisation() {
   constructionDownloadGraph.disabled = true;
   constructionDownloadBom.disabled = true;
   removeVoxelOverlay();
+  removeConstructionPreview();
   activeTargetGrid = null;
   voxeliseButton.disabled = !activeModel;
   voxeliseStatus.textContent = activeModel
@@ -447,6 +576,7 @@ function downloadConstructionFile(filename, contents, mediaType) {
 
 function displayConstruction(result) {
   activeConstruction = result;
+  renderConstructionPreview(result);
   constructionPartCount.textContent = result.parts.length.toLocaleString() + ' parts';
   const boundedSearch = result.search.budget_reached || result.search.candidate_search_limited;
   constructionDetails.textContent = result.connections.length.toLocaleString() + ' candidate connections · '
@@ -766,6 +896,14 @@ resetButton.addEventListener('click', () => {
 
 voxeliseButton.addEventListener('click', runVoxelisation);
 buildConstructionButton.addEventListener('click', runLayeredConstruction);
+constructionPreviewToggle.addEventListener('click', () => {
+  if (!activeConstructionGroup) return;
+  constructionPreviewVisible = !constructionPreviewVisible;
+  activeConstructionGroup.visible = constructionPreviewVisible;
+  setSourceMeshGhosted(constructionPreviewVisible);
+  constructionPreviewToggle.textContent = constructionPreviewVisible
+    ? 'Hide generated construction' : 'Show generated construction';
+});
 constructionDownloadLDraw.addEventListener('click', () => {
   if (activeConstruction) downloadConstructionFile(
     activeConstruction.model_name + '.ldr', activeConstruction.ldraw, 'text/plain;charset=utf-8',
