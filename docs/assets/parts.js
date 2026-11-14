@@ -23,6 +23,7 @@ const partFeatureList = document.querySelector('#part-feature-list');
 const partFeatureAnalyseButton = document.querySelector('#part-feature-analyse');
 const partFeatureDownloadButton = document.querySelector('#part-feature-download');
 const partFeatureBatchButton = document.querySelector('#part-feature-batch');
+const partFeatureBatchClearButton = document.querySelector('#part-feature-batch-clear');
 const partFeatureBatchCancelButton = document.querySelector('#part-feature-batch-cancel');
 const partFeatureBatchDownloadButton = document.querySelector('#part-feature-batch-download');
 const partFeatureBatchStatus = document.querySelector('#part-feature-batch-status');
@@ -266,20 +267,34 @@ function renderBatchFeatureProfiles(profiles) {
 async function scanLikelyOpeningParts() {
   if (batchScanRunning || partFeatureWorker) return;
   const query = partFeatureBatchQuery.value.trim() || 'technic';
-  const candidates = likelyOpeningPartCandidates(12, query);
-  if (!candidates.length) {
+  const existingIds = new Set(activeBatchFeatureProfiles.map((profile) => profile.part_id));
+  const matchingCandidates = likelyOpeningPartCandidates(48, query);
+  if (!matchingCandidates.length) {
     partFeatureBatchStatus.textContent = 'No catalogue parts matched “' + query + '”. Try a broader part search phrase.';
     partFeatureBatchStatus.dataset.state = 'warning';
+    return;
+  }
+  const remainingCapacity = 48 - activeBatchFeatureProfiles.length;
+  if (remainingCapacity <= 0) {
+    partFeatureBatchStatus.textContent = 'The combined catalogue has reached its 48-profile limit. Clear it to start a new catalogue.';
+    partFeatureBatchStatus.dataset.state = 'warning';
+    return;
+  }
+  const candidates = matchingCandidates.filter((entry) => !existingIds.has(entry.part_id))
+    .slice(0, Math.min(12, remainingCapacity));
+  if (!candidates.length) {
+    partFeatureBatchStatus.textContent = 'All matching candidates for “' + query + '” are already in the combined catalogue.';
+    partFeatureBatchStatus.dataset.state = 'complete';
     return;
   }
 
   batchScanRunning = true;
   batchScanCancelled = false;
-  activeBatchFeatureProfiles = [];
-  partFeatureBatchList.replaceChildren();
+  const startingProfileCount = activeBatchFeatureProfiles.length;
   partFeatureBatchButton.disabled = true;
   partFeatureBatchCancelButton.disabled = false;
   partFeatureBatchDownloadButton.disabled = true;
+  partFeatureBatchClearButton.disabled = true;
   partFeatureAnalyseButton.disabled = true;
   partSearch.disabled = true;
   partSelect.disabled = true;
@@ -359,23 +374,36 @@ async function scanLikelyOpeningParts() {
     }
   } finally {
     batchScanRunning = false;
-    partFeatureBatchButton.disabled = false;
+    partFeatureBatchButton.disabled = activeBatchFeatureProfiles.length >= 48;
     partFeatureBatchCancelButton.disabled = true;
     partFeatureBatchDownloadButton.disabled = activeBatchFeatureProfiles.length === 0;
+    partFeatureBatchClearButton.disabled = activeBatchFeatureProfiles.length === 0;
     partFeatureAnalyseButton.disabled = !loadedPartId;
     partSearch.disabled = false;
     partSelect.disabled = false;
     colourSelect.disabled = false;
     const suffix = errors.length ? ' ' + errors.length + ' candidate(s) could not be scanned.' : '';
+    const addedCount = activeBatchFeatureProfiles.length - startingProfileCount;
     partFeatureBatchStatus.textContent = (batchScanCancelled ? 'Scan cancelled. ' : 'Scan complete. ')
-      + activeBatchFeatureProfiles.length + ' part profile(s) with opening features found from '
-      + candidates.length + ' candidates.' + suffix;
+      + addedCount + ' new profile(s) added from ' + candidates.length + ' candidates; '
+      + activeBatchFeatureProfiles.length + ' total profile(s) in the combined catalogue.' + suffix;
     partFeatureBatchStatus.dataset.state = activeBatchFeatureProfiles.length ? 'complete' : 'warning';
     setState(loadedPartId ? 'PART LOADED' : 'READY', loadedPartId ? 'loaded' : 'ready');
     setMessage(activeBatchFeatureProfiles.length
       ? 'A local feature catalogue is ready to export and import into the Mesh Inspector.'
       : 'No opening profiles were found in the scanned candidate set.', activeBatchFeatureProfiles.length ? 'success' : 'info');
   }
+}
+
+function clearBatchFeatureProfiles() {
+  if (batchScanRunning) return;
+  activeBatchFeatureProfiles = [];
+  renderBatchFeatureProfiles(activeBatchFeatureProfiles);
+  partFeatureBatchDownloadButton.disabled = true;
+  partFeatureBatchClearButton.disabled = true;
+  partFeatureBatchButton.disabled = false;
+  partFeatureBatchStatus.textContent = 'Combined candidate catalogue cleared.';
+  partFeatureBatchStatus.dataset.state = 'info';
 }
 
 function cancelLikelyOpeningScan() {
@@ -1122,6 +1150,7 @@ colourSelect.addEventListener('change', () => {
 });
 partFeatureAnalyseButton.addEventListener('click', analyseSelectedPartFeatures);
 partFeatureBatchButton.addEventListener('click', scanLikelyOpeningParts);
+partFeatureBatchClearButton.addEventListener('click', clearBatchFeatureProfiles);
 partFeatureBatchCancelButton.addEventListener('click', cancelLikelyOpeningScan);
 partFeatureBatchDownloadButton.addEventListener('click', downloadPartFeatureCatalogue);
 partFeatureDownloadButton.addEventListener('click', downloadPartFeatureProfile);
