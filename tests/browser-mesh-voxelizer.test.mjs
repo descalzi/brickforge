@@ -28,6 +28,32 @@ function boxMesh(size, centre = size.map((value) => value / 2)) {
   return { vertices: new Float64Array(vertices), indices: new Uint32Array(indices) };
 }
 
+function torusMesh(majorRadius = 4, minorRadius = 1, majorSegments = 16, minorSegments = 8) {
+  const vertices = [];
+  const indices = [];
+  for (let major = 0; major < majorSegments; major += 1) {
+    const u = major * Math.PI * 2 / majorSegments;
+    for (let minor = 0; minor < minorSegments; minor += 1) {
+      const v = minor * Math.PI * 2 / minorSegments;
+      vertices.push(
+        (majorRadius + minorRadius * Math.cos(v)) * Math.cos(u),
+        (majorRadius + minorRadius * Math.cos(v)) * Math.sin(u),
+        minorRadius * Math.sin(v),
+      );
+    }
+  }
+  for (let major = 0; major < majorSegments; major += 1) {
+    for (let minor = 0; minor < minorSegments; minor += 1) {
+      const a = major * minorSegments + minor;
+      const b = ((major + 1) % majorSegments) * minorSegments + minor;
+      const c = ((major + 1) % majorSegments) * minorSegments + (minor + 1) % minorSegments;
+      const d = major * minorSegments + (minor + 1) % minorSegments;
+      indices.push(a, b, d, b, c, d);
+    }
+  }
+  return { vertices: new Float64Array(vertices), indices: new Uint32Array(indices) };
+}
+
 test("browser voxeliser classifies an aligned solid and interior core", () => {
   const mesh = boxMesh([24, 28.8, 24]);
   const grid = voxelizeMesh({ ...mesh, units: "mm" });
@@ -37,6 +63,8 @@ test("browser voxeliser classifies an aligned solid and interior core", () => {
   assert.equal(grid.classification[1 + 3 * (1 + 3 * 1)], CellClass.INTERIOR);
   assert.equal(grid.surface_coverage[1 + 3 * (1 + 3 * 1)], 1);
   assert.equal(grid.classification[0], CellClass.BOUNDARY);
+  assert.equal(grid.topology.handle_count, 0);
+  assert.equal(grid.topology.component_count, 1);
   assert.ok(grid.surface_coverage[0] > 0);
   assert.equal(grid.classification.reduce((n, value) => n + (value !== CellClass.EXTERIOR ? 1 : 0), 0), 27);
 });
@@ -110,4 +138,13 @@ test("browser voxeliser removes a collinear zero-area triangle from an otherwise
   const result = voxelizeMesh({ vertices, indices, units: "mm" });
   assert.equal(result.removed_degenerate_triangle_count, 1);
   assert.equal(result.triangle_count, 12);
+});
+
+test("browser voxeliser detects a sub-grid topological tunnel instead of losing its feature metadata", () => {
+  const mesh = torusMesh();
+  const result = voxelizeMesh({ ...mesh, units: "mm" });
+  assert.equal(result.topology.component_count, 1);
+  assert.equal(result.topology.handle_count, 1);
+  assert.equal(result.topology.euler_characteristic, 0);
+  assert.ok(result.warnings.some((warning) => /topological tunnel\/handle feature/.test(warning)));
 });
