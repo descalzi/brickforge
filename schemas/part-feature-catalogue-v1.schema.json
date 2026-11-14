@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://descalzi.github.io/brickforge/schemas/part-feature-catalogue-v1.schema.json",
+  "title": "BrickForge measured part feature catalogue",
+  "description": "A user-generated collection of version 2 LDraw part feature profiles. It contains geometric opening measurements, not physical connection data.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "source_geometry_base_url",
+    "profiles"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "source_geometry_base_url": {
+      "type": "string",
+      "format": "uri"
+    },
+    "profiles": {
+      "type": "array",
+      "items": {
+        "$ref": "part-feature-profile-v2.schema.json"
+      }
+    }
+  }
+}
