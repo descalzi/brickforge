@@ -354,6 +354,7 @@ function resetVoxelisation() {
   removeConstructionPreview();
   activeTargetGrid = null;
   if (voxelFeatureStatus) { voxelFeatureStatus.hidden = true; voxelFeatureStatus.textContent = ''; }
+  if (voxelFeatureList) voxelFeatureList.replaceChildren();
   voxeliseButton.disabled = !activeModel;
   voxeliseStatus.textContent = activeModel
     ? 'Ready to voxelise this mesh.'
@@ -487,13 +488,13 @@ function displayVoxelSummary(grid, triangleCount) {
   if (voxelFeatureStatus) {
     const topology = grid.topology;
     const hasHandles = topology?.handle_count > 0;
-    voxelFeatureStatus.hidden = !hasHandles;
+    voxelFeatureStatus.hidden = !hasHandles && features.length === 0;
     voxelFeatureStatus.dataset.state = hasHandles ? 'warning' : 'complete';
     const features = summary.features || [];
     voxelFeatureStatus.textContent = hasHandles
       ? topology.handle_count.toLocaleString() + ' topological tunnel(s) detected; '
         + features.length.toLocaleString() + ' cross-section feature(s) localised. Measurements are approximate and need part matching before construction.'
-      : '';
+      : features.length.toLocaleString() + ' cross-section feature(s) detected; confirm their topology before construction.';
     if (voxelFeatureList) {
       voxelFeatureList.replaceChildren();
       features.forEach((feature, index) => {
