@@ -1,4 +1,4 @@
-export const TARGET_GRID_VERSION = 1;
+export const TARGET_GRID_VERSION = 2;
 export const BRICK_GRID_PITCH_MM = Object.freeze([8, 9.6, 8]);
 
 export const CellClass = Object.freeze({
@@ -76,7 +76,7 @@ export class GridSpec {
 }
 
 export class TargetGrid {
-  constructor({ spec, classification, surface_coverage, source_units, source_bounds_mm, warnings = [] }) {
+  constructor({ spec, classification, surface_coverage, source_units, source_bounds_mm, warnings = [], topology = null }) {
     if (!(spec instanceof GridSpec)) throw new TypeError("spec must be a GridSpec");
     if (!["mm", "cm", "m", "in"].includes(source_units)) {
       throw new TypeError("source_units must be 'mm', 'cm', 'm' or 'in'");
@@ -105,6 +105,17 @@ export class TargetGrid {
         throw new RangeError("surface coverage values must be finite and between 0 and 1");
       }
     }
+    let topologySummary = null;
+    if (topology !== null) {
+      const fields = ["component_count", "vertex_count", "edge_count", "face_count", "euler_characteristic", "handle_count"];
+      if (!topology || typeof topology !== "object"
+          || fields.some((field) => !Number.isSafeInteger(topology[field]))
+          || topology.component_count < 1 || topology.vertex_count < 1
+          || topology.edge_count < 1 || topology.face_count < 1 || topology.handle_count < 0) {
+        throw new TypeError("topology must contain valid closed-mesh component, count, Euler and handle data");
+      }
+      topologySummary = Object.freeze(Object.fromEntries(fields.map((field) => [field, topology[field]])));
+    }
     const classes = Uint8Array.from(classification);
     const coverage = Float32Array.from(surface_coverage);
     this.spec = spec;
@@ -113,6 +124,7 @@ export class TargetGrid {
     this.source_units = source_units;
     this.source_bounds_mm = bounds.map((point) => Object.freeze(point));
     this.warnings = warnings.slice();
+    this.topology = topologySummary;
     Object.freeze(this.source_bounds_mm);
     Object.freeze(this.warnings);
     Object.freeze(this);
@@ -154,6 +166,7 @@ export class TargetGrid {
       source_bounds_mm: this.source_bounds_mm.map((point) => point.slice()),
       occupied_cell_count: this.occupied_cell_count,
       boundary_cell_count: this.boundary_cell_count,
+      topology: this.topology ? { ...this.topology } : null,
       warnings: this.warnings.slice(),
     };
   }
