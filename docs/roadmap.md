@@ -79,6 +79,7 @@ This roadmap is intentionally milestone-based. Each milestone should produce a d
 - [x] Add a browser LDraw part-opening profiler and versioned feature-profile export so candidate part geometry can be measured independently of target meshes.
 - [x] Add a bounded Part Explorer scan for up to 12 user-searched candidate parts; export measured profiles as a combined catalogue.
 - [x] Add an initial browser geometric matcher for imported part profiles using shape and per-slice dimensional ranges; report candidates only and do not treat a match as a buildability result.
+- [x] Export optional lightweight candidate-part triangle geometry and preview its estimated rigid placement in the Inspector using a separately tested transform; keep visual alignment distinct from physical fit.
 - [ ] Build a curated, source-verified feature-profile catalogue for useful specialised parts; distinguish measured openings from nominal connection interfaces.
 - [ ] Improve matching with one-to-one feature assignment, explicit part rotations, surrounding-envelope checks and validated connection interfaces; keep unmatched features as construction constraints.
 - [ ] Improve feature analysis for oblique, curved, branching and blind openings; match measured features to compatible parts or explicit preservation constraints.
