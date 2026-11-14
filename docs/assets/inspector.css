@@ -204,6 +204,19 @@
   line-height: 1.5;
 }
 .voxelise-status[data-state="working"] { color: var(--accent); }
+.voxelise-status[data-state="working"]::before {
+  content: "";
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  margin-right: 8px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  vertical-align: -1px;
+  animation: voxelise-spin .8s linear infinite;
+}
+@keyframes voxelise-spin { to { transform: rotate(360deg); } }
 .voxelise-status[data-state="error"] { color: var(--crit); }
 .voxelise-status[data-state="complete"] { color: var(--ok); }
 .voxelise-summary {
