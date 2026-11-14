@@ -23,7 +23,7 @@ GridArray = npt.NDArray[np.uint8]
 CoverageArray = npt.NDArray[np.float32]
 
 BRICK_GRID_PITCH_MM: Vector3 = (8.0, 9.6, 8.0)
-TARGET_GRID_VERSION = 4
+TARGET_GRID_VERSION = 5
 
 
 class CellClass(IntEnum):
@@ -121,6 +121,7 @@ class TargetGrid:
     warnings: tuple[str, ...] = ()
     topology: Mapping[str, int] | None = None
     features: tuple[Mapping[str, Any], ...] = ()
+    feature_keepouts: tuple[Mapping[str, Any], ...] = ()
 
     def __post_init__(self) -> None:
         if self.source_units not in {"mm", "cm", "m"}:
@@ -266,6 +267,42 @@ class TargetGrid:
             normalized_features.append(MappingProxyType(record))
         object.__setattr__(self, "features", tuple(normalized_features))
 
+        normalized_keepouts: list[Mapping[str, Any]] = []
+        for index, keepout in enumerate(self.feature_keepouts):
+            if (
+                not isinstance(keepout, Mapping)
+                or not isinstance(keepout.get("feature_id"), str)
+                or not keepout["feature_id"]
+                or keepout.get("axis") not in {"x", "y", "z"}
+                or isinstance(keepout.get("cell_count"), bool)
+                or not isinstance(keepout.get("cell_count"), int)
+                or keepout["cell_count"] < 0
+                or not isinstance(keepout.get("preserved"), bool)
+            ):
+                raise ValueError(f"feature keep-out {index} contains invalid metadata")
+            record = dict(keepout)
+            pitch = record.get("clearance_pitch_mm")
+            if pitch is not None and (
+                not isinstance(pitch, (list, tuple))
+                or len(pitch) != 3
+                or any(
+                    isinstance(value, bool)
+                    or not isinstance(value, (int, float))
+                    or not isfinite(value)
+                    or value <= 0
+                    for value in pitch
+                )
+            ):
+                raise ValueError(f"feature keep-out {index} has invalid clearance pitch")
+            if "method" in record and not isinstance(record["method"], str):
+                raise ValueError(f"feature keep-out {index} has an invalid method")
+            if "reason" in record and not isinstance(record["reason"], str):
+                raise ValueError(f"feature keep-out {index} has an invalid reason")
+            if pitch is not None:
+                record["clearance_pitch_mm"] = tuple(pitch)
+            normalized_keepouts.append(MappingProxyType(record))
+        object.__setattr__(self, "feature_keepouts", tuple(normalized_keepouts))
+
     @property
     def occupied_cell_count(self) -> int:
         """Count interior and boundary cells."""
@@ -312,6 +349,16 @@ class TargetGrid:
                     "bounds_mm": [list(point) for point in feature["bounds_mm"]],
                 }
                 for feature in self.features
+            ],
+            "feature_keepouts": [
+                {
+                    **dict(keepout),
+                    **(
+                        {"clearance_pitch_mm": list(keepout["clearance_pitch_mm"])}
+                        if "clearance_pitch_mm" in keepout else {}
+                    ),
+                }
+                for keepout in self.feature_keepouts
             ],
             "warnings": list(self.warnings),
         }
