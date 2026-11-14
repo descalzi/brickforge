@@ -1123,7 +1123,15 @@ async function startPartExplorer() {
     ]);
     viewerReady = initialiseViewer();
     if (viewerReady) {
-      partSelect.value = defaultPartOptions[0]?.value || '';
+      const requestedPartId = new URLSearchParams(window.location.search).get('part');
+      const requestedPart = partCatalogue.find((part) => part.part_id === requestedPartId);
+      if (requestedPart) {
+        partSearch.value = requestedPart.part_id;
+        renderPartSearchResults(requestedPart.part_id);
+        partSelect.value = requestedPart.part_id;
+      } else {
+        partSelect.value = defaultPartOptions[0]?.value || '';
+      }
       await loadSelectedPart();
     }
   } catch (error) {
