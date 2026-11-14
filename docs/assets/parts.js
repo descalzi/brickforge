@@ -23,6 +23,11 @@ const partFeatureStatus = document.querySelector('#part-feature-status');
 const partFeatureList = document.querySelector('#part-feature-list');
 const partFeatureAnalyseButton = document.querySelector('#part-feature-analyse');
 const partFeatureDownloadButton = document.querySelector('#part-feature-download');
+const partFeatureBatchButton = document.querySelector('#part-feature-batch');
+const partFeatureBatchCancelButton = document.querySelector('#part-feature-batch-cancel');
+const partFeatureBatchDownloadButton = document.querySelector('#part-feature-batch-download');
+const partFeatureBatchStatus = document.querySelector('#part-feature-batch-status');
+const partFeatureBatchList = document.querySelector('#part-feature-batch-list');
 
 const output = {
   name: document.querySelector('#part-name'),
@@ -80,6 +85,10 @@ let activePartBoundsMax = null;
 let activePartDescriptor = null;
 let activePartFeatures = [];
 let partFeatureWorker = null;
+let batchFeatureWorker = null;
+let batchScanCancelled = false;
+let batchScanRunning = false;
+let activeBatchFeatureProfiles = [];
 
 
 function clearPartFeatureAnalysis() {
@@ -204,6 +213,194 @@ function analyseSelectedPartFeatures() {
     boundsMin: activePartBoundsMin,
     boundsMax: activePartBoundsMax,
   }, [positions.buffer]);
+}
+
+
+function likelyOpeningPartCandidates(limit = 12) {
+  const matches = partCatalogue.map((part) => {
+    const description = String(part.description || "");
+    const category = String(part.category || "");
+    const keywords = Array.isArray(part.keywords) ? part.keywords.join(" ") : "";
+    const text = [description, category, keywords].join(" ").toLocaleLowerCase();
+    if (!/technic/.test(text) || !/(beam|liftarm|frame|connector|axle|bush|panel|hole)/.test(text)) return null;
+    let score = 0;
+    if (/beam/.test(text)) score += 5;
+    if (/liftarm/.test(text)) score += 5;
+    if (/frame/.test(text)) score += 4;
+    if (/connector/.test(text)) score += 3;
+    if (/axle|bush/.test(text)) score += 2;
+    if (/panel|hole/.test(text)) score += 1;
+    if (/technic/.test(category.toLocaleLowerCase())) score += 2;
+    return { part, score };
+  }).filter(Boolean);
+  return matches.sort((left, right) => right.score - left.score
+    || String(left.part.part_id).localeCompare(String(right.part.part_id), undefined, { numeric: true }))
+    .slice(0, limit)
+    .map((entry) => entry.part);
+}
+
+function analysePositionsInWorker(positions, bounds) {
+  return new Promise((resolve, reject) => {
+    const worker = new Worker(new URL('./part-feature-worker.js?v=featureprofile3', import.meta.url), { type: 'module' });
+    batchFeatureWorker = worker;
+    worker.addEventListener('message', (event) => {
+      if (worker !== batchFeatureWorker) return;
+      worker.terminate();
+      batchFeatureWorker = null;
+      if (event.data.type === 'error') reject(new Error(event.data.message));
+      else resolve(event.data.features);
+    });
+    worker.addEventListener('error', (event) => {
+      if (worker !== batchFeatureWorker) return;
+      worker.terminate();
+      batchFeatureWorker = null;
+      reject(new Error(event.message || 'Part feature scan worker failed.'));
+    });
+    worker.postMessage({
+      trianglePositions: positions,
+      boundsMin: bounds.minimum,
+      boundsMax: bounds.maximum,
+    }, [positions.buffer]);
+  });
+}
+
+function renderBatchFeatureProfiles(profiles) {
+  partFeatureBatchList.replaceChildren();
+  profiles.forEach((profile) => {
+    const item = document.createElement('li');
+    const heading = document.createElement('strong');
+    const detail = document.createElement('span');
+    heading.textContent = profile.part_id + ' · ' + profile.description;
+    detail.textContent = profile.features.length + ' measured opening feature(s)';
+    item.append(heading, detail);
+    partFeatureBatchList.append(item);
+  });
+}
+
+async function scanLikelyOpeningParts() {
+  if (batchScanRunning) return;
+  const candidates = likelyOpeningPartCandidates(12);
+  if (!candidates.length) {
+    partFeatureBatchStatus.textContent = 'No likely Technic beams, frames or connectors were found in this catalogue snapshot. Search for a part and profile it individually instead.';
+    partFeatureBatchStatus.dataset.state = 'warning';
+    return;
+  }
+
+  batchScanRunning = true;
+  batchScanCancelled = false;
+  activeBatchFeatureProfiles = [];
+  partFeatureBatchButton.disabled = true;
+  partFeatureBatchCancelButton.disabled = false;
+  partFeatureBatchDownloadButton.disabled = true;
+  partFeatureAnalyseButton.disabled = true;
+  partSearch.disabled = true;
+  partSelect.disabled = true;
+  colourSelect.disabled = true;
+  const errors = [];
+
+  try {
+    for (let index = 0; index < candidates.length; index += 1) {
+      if (batchScanCancelled) break;
+      const entry = candidates[index];
+      partFeatureBatchStatus.textContent = 'Scanning ' + (index + 1) + ' of ' + candidates.length
+        + ' · ' + entry.part_id + ' · ' + (entry.description || entry.part_id);
+      partFeatureBatchStatus.dataset.state = 'working';
+      setState('SCANNING PART FEATURES ' + (index + 1) + '/' + candidates.length, 'loading');
+      setMessage('Resolving candidate part geometry and measuring openings in a background worker…');
+      try {
+        const root = await getDocument(entry.filename);
+        const expansion = {
+          faces: new Map(),
+          lines: new Map(),
+          files: new Set(),
+          authors: new Set(),
+          licences: new Set(),
+        };
+        await expandPart(
+          root,
+          [1, 0, 0, 0, 1, 0, 0, 0, 1],
+          [0, 0, 0],
+          16,
+          new Set(),
+          0,
+          expansion,
+        );
+        const positions = collectTrianglePositions(expansion.faces);
+        if (!positions.length || positions.length % 9 !== 0) {
+          errors.push(entry.part_id + ': no complete triangle geometry');
+          continue;
+        }
+        const bounds = calculateTriangleBounds(positions);
+        const features = await analysePositionsInWorker(positions, bounds);
+        if (!features.length) continue;
+        const dimensions = bounds.maximum.map((value, axis) => value - bounds.minimum[axis]);
+        activeBatchFeatureProfiles.push({
+          schema_version: 2,
+          part_id: entry.part_id,
+          description: root.metadata.description,
+          source_filename: root.source,
+          source_geometry_base_url: rawBaseUrl,
+          units: 'mm',
+          dimensions_mm: dimensions,
+          bounds_mm: [bounds.minimum, bounds.maximum],
+          analysis_method: 'Seven sampled orthogonal cross-sections; nested contours clustered across slices',
+          features,
+          limitations: [
+            'Measurements are based on rendered LDraw surface triangles and principal-axis sections only.',
+            'Oblique, curved, branching and blind openings may be missed or approximated.',
+            'A geometric opening match does not prove physical fit or structural stability.',
+          ],
+        });
+        renderBatchFeatureProfiles(activeBatchFeatureProfiles);
+      } catch (error) {
+        errors.push(entry.part_id + ': ' + (error instanceof Error ? error.message : 'scan failed'));
+      }
+      await new Promise((resolve) => window.setTimeout(resolve, 0));
+    }
+  } finally {
+    batchScanRunning = false;
+    partFeatureBatchButton.disabled = false;
+    partFeatureBatchCancelButton.disabled = true;
+    partFeatureBatchDownloadButton.disabled = activeBatchFeatureProfiles.length === 0;
+    partFeatureAnalyseButton.disabled = !loadedPartId;
+    partSearch.disabled = false;
+    partSelect.disabled = false;
+    colourSelect.disabled = false;
+    const suffix = errors.length ? ' ' + errors.length + ' candidate(s) could not be scanned.' : '';
+    partFeatureBatchStatus.textContent = (batchScanCancelled ? 'Scan cancelled. ' : 'Scan complete. ')
+      + activeBatchFeatureProfiles.length + ' part profile(s) with opening features found from '
+      + candidates.length + ' candidates.' + suffix;
+    partFeatureBatchStatus.dataset.state = activeBatchFeatureProfiles.length ? 'complete' : 'warning';
+    setState(loadedPartId ? 'PART LOADED' : 'READY', loadedPartId ? 'loaded' : 'ready');
+    setMessage(activeBatchFeatureProfiles.length
+      ? 'A local feature catalogue is ready to export and import into the Mesh Inspector.'
+      : 'No opening profiles were found in the scanned candidate set.', activeBatchFeatureProfiles.length ? 'success' : 'info');
+  }
+}
+
+function cancelLikelyOpeningScan() {
+  if (!batchScanRunning) return;
+  batchScanCancelled = true;
+  partFeatureBatchCancelButton.disabled = true;
+  partFeatureBatchStatus.textContent = 'Finishing the current part, then stopping the scan…';
+}
+
+function downloadPartFeatureCatalogue() {
+  if (!activeBatchFeatureProfiles.length) return;
+  const catalogue = {
+    schema_version: 1,
+    source_geometry_base_url: rawBaseUrl,
+    profiles: activeBatchFeatureProfiles,
+  };
+  const blob = new Blob([JSON.stringify(catalogue, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'ldraw-opening-feature-catalogue.json';
+  document.body.append(link);
+  link.click();
+  link.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 function downloadPartFeatureProfile() {
@@ -782,6 +979,7 @@ async function loadSelectedPart() {
   const partId = partSelect.value;
   if (!partId) return;
   loadedPartId = null;
+  if (batchScanRunning) batchScanCancelled = true;
   clearPartFeatureAnalysis();
   const colourCode = Number(colourSelect.value);
   const selectedEntry = partCatalogue.find((part) => part.part_id === partId);
@@ -911,6 +1109,9 @@ colourSelect.addEventListener('change', () => {
   loadSelectedPart();
 });
 partFeatureAnalyseButton.addEventListener('click', analyseSelectedPartFeatures);
+partFeatureBatchButton.addEventListener('click', scanLikelyOpeningParts);
+partFeatureBatchCancelButton.addEventListener('click', cancelLikelyOpeningScan);
+partFeatureBatchDownloadButton.addEventListener('click', downloadPartFeatureCatalogue);
 partFeatureDownloadButton.addEventListener('click', downloadPartFeatureProfile);
 resetButton.addEventListener('click', () => {
   if (currentBounds) fitCamera(currentBounds);
