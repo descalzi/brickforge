@@ -118,7 +118,8 @@ function perforatedPlateTriangles() {
       c: point(flatIndices[index + 2]),
     });
   }
-  return { triangles, boundsMin: [0, 0, 0], boundsMax: [width, height, thickness] };
+  return { triangles, vertices: flatVertices, indices: flatIndices,
+    boundsMin: [0, 0, 0], boundsMax: [width, height, thickness] };
 }
 
 test("browser voxeliser classifies an aligned solid and interior core", () => {
@@ -231,4 +232,16 @@ test("cross-section analysis locates four round openings and an elongated slot b
   assert.equal(features.filter((feature) => feature.shape === "elongated slot/opening").length, 1);
   assert.ok(features.every((feature) => feature.axis === "z" && feature.sample_support >= 2));
   assert.ok(features.every((feature) => feature.center_mm[2] > 0 && feature.center_mm[2] < 6));
+});
+
+
+test("browser voxeliser preserves sub-grid round holes and slots as conservative clearance tunnels", () => {
+  const mesh = perforatedPlateTriangles();
+  const result = voxelizeMesh({ vertices: mesh.vertices, indices: mesh.indices, units: "mm" });
+  assert.equal(result.topology.handle_count, 5);
+  assert.equal(result.features.length, 5);
+  assert.equal(result.feature_keepouts.length, 5);
+  assert.ok(result.feature_keepouts.every((item) => item.preserved && item.cell_count > 0));
+  assert.ok(result.feature_keepouts.every((item) => item.method === "conservative grid-cell clearance"));
+  assert.ok(result.warnings.some((warning) => warning.includes("conservative grid-cell clearance tunnels")));
 });
