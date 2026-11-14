@@ -5,7 +5,7 @@ const SAMPLE_OFFSETS = Object.freeze([0.25, 0.5, 0.75]);
 const MAX_TRIANGLES = 100_000;
 const MAX_CELLS = 100_000;
 const MAX_RAY_TRIANGLE_TESTS = 30_000_000;
-const MAX_NEAREST_TRIANGLE_TESTS = 50_000_000;
+const MAX_CELL_TRIANGLE_TESTS = 50_000_000;
 const EDGE_QUANTISATION = 100_000;
 
 function assertVector(value, label, positive = false) {
@@ -157,84 +157,78 @@ function pointInsideFromHits(x, hits) {
   return crossings % 2 === 1;
 }
 
-function pointAabbDistanceSquared(point, min, max) {
-  let distance = 0;
+function boundsOverlap(aMin, aMax, bMin, bMax) {
+  return aMin[0] <= bMax[0] + 1e-9 && aMax[0] >= bMin[0] - 1e-9
+    && aMin[1] <= bMax[1] + 1e-9 && aMax[1] >= bMin[1] - 1e-9
+    && aMin[2] <= bMax[2] + 1e-9 && aMax[2] >= bMin[2] - 1e-9;
+}
+
+function triangleIntersectsBox(triangle, boxMin, boxMax) {
+  const centre = boxMin.map((value, axis) => (value + boxMax[axis]) * 0.5);
+  const half = boxMin.map((value, axis) => (boxMax[axis] - value) * 0.5);
+  const vertices = [triangle.a, triangle.b, triangle.c].map((point) =>
+    point.map((value, axis) => value - centre[axis]));
   for (let axis = 0; axis < 3; axis += 1) {
-    const delta = point[axis] < min[axis]
-      ? min[axis] - point[axis]
-      : point[axis] > max[axis] ? point[axis] - max[axis] : 0;
-    distance += delta * delta;
+    const minimum = Math.min(vertices[0][axis], vertices[1][axis], vertices[2][axis]);
+    const maximum = Math.max(vertices[0][axis], vertices[1][axis], vertices[2][axis]);
+    if (minimum > half[axis] + 1e-9 || maximum < -half[axis] - 1e-9) return false;
   }
-  return distance;
+
+  const edges = [
+    vertices[1].map((value, axis) => value - vertices[0][axis]),
+    vertices[2].map((value, axis) => value - vertices[1][axis]),
+    vertices[0].map((value, axis) => value - vertices[2][axis]),
+  ];
+  const axes = [];
+  for (const edge of edges) {
+    axes.push(
+      [0, edge[2], -edge[1]],
+      [-edge[2], 0, edge[0]],
+      [edge[1], -edge[0], 0],
+    );
+  }
+  const normal = [
+    edges[0][1] * edges[1][2] - edges[0][2] * edges[1][1],
+    edges[0][2] * edges[1][0] - edges[0][0] * edges[1][2],
+    edges[0][0] * edges[1][1] - edges[0][1] * edges[1][0],
+  ];
+  axes.push(normal);
+  for (const axis of axes) {
+    const lengthSquared = axis[0] ** 2 + axis[1] ** 2 + axis[2] ** 2;
+    if (lengthSquared <= 1e-24) continue;
+    const projections = vertices.map((point) =>
+      point[0] * axis[0] + point[1] * axis[1] + point[2] * axis[2]);
+    const minimum = Math.min(...projections);
+    const maximum = Math.max(...projections);
+    const radius = half[0] * Math.abs(axis[0])
+      + half[1] * Math.abs(axis[1])
+      + half[2] * Math.abs(axis[2]);
+    if (minimum > radius + 1e-9 || maximum < -radius - 1e-9) return false;
+  }
+  return true;
 }
 
-function closestPointTriangleSquared(p, triangle) {
-  const a = triangle.a;
-  const b = triangle.b;
-  const c = triangle.c;
-  const ab = b.map((value, i) => value - a[i]);
-  const ac = c.map((value, i) => value - a[i]);
-  const ap = p.map((value, i) => value - a[i]);
-  const dot = (u, v) => u.reduce((sum, value, i) => sum + value * v[i], 0);
-  const d1 = dot(ab, ap);
-  const d2 = dot(ac, ap);
-  if (d1 <= 0 && d2 <= 0) return dot(ap, ap);
-  const bp = p.map((value, i) => value - b[i]);
-  const d3 = dot(ab, bp);
-  const d4 = dot(ac, bp);
-  if (d3 >= 0 && d4 <= d3) return dot(bp, bp);
-  const vc = d1 * d4 - d3 * d2;
-  if (vc <= 0 && d1 >= 0 && d3 <= 0) {
-    const v = d1 / (d1 - d3);
-    const q = a.map((value, i) => value + v * ab[i]);
-    return q.reduce((sum, value, i) => sum + (p[i] - value) ** 2, 0);
-  }
-  const cp = p.map((value, i) => value - c[i]);
-  const d5 = dot(ab, cp);
-  const d6 = dot(ac, cp);
-  if (d6 >= 0 && d5 <= d6) return dot(cp, cp);
-  const vb = d5 * d2 - d1 * d6;
-  if (vb <= 0 && d2 >= 0 && d6 <= 0) {
-    const w = d2 / (d2 - d6);
-    const q = a.map((value, i) => value + w * ac[i]);
-    return q.reduce((sum, value, i) => sum + (p[i] - value) ** 2, 0);
-  }
-  const va = d3 * d6 - d5 * d4;
-  if (va <= 0 && d4 - d3 >= 0 && d5 - d6 >= 0) {
-    const w = (d4 - d3) / ((d4 - d3) + (d5 - d6));
-    const q = b.map((value, i) => value + w * (c[i] - b[i]));
-    return q.reduce((sum, value, i) => sum + (p[i] - value) ** 2, 0);
-  }
-  const denominator = 1 / (va + vb + vc);
-  const v = vb * denominator;
-  const w = vc * denominator;
-  const q = a.map((value, i) => value + ab[i] * v + ac[i] * w);
-  return q.reduce((sum, value, i) => sum + (p[i] - value) ** 2, 0);
-}
-
-function nearestSurfaceDistanceSquared(root, point, budget) {
-  let best = Infinity;
+function cellIntersectsSurface(root, boxMin, boxMax, budget) {
+  let nodeTests = 0;
   const stack = [root];
   while (stack.length) {
     const node = stack.pop();
-    if (pointAabbDistanceSquared(point, node.min, node.max) >= best) continue;
+    nodeTests += 1;
+    if (!boundsOverlap(node.min, node.max, boxMin, boxMax)) continue;
     if (node.triangles) {
       for (const triangle of node.triangles) {
         budget.tests += 1;
         if (budget.tests > MAX_NEAREST_TRIANGLE_TESTS) {
-          throw new Error("Mesh is too complex for the browser surface-distance budget. Try a lower-detail mesh.");
+          throw new Error("Mesh is too complex for the browser surface-intersection budget. Try a lower-detail mesh.");
         }
-        const distance = closestPointTriangleSquared(point, triangle);
-        if (distance < best) best = distance;
+        if (boundsOverlap(triangle.min, triangle.max, boxMin, boxMax)
+            && triangleIntersectsBox(triangle, boxMin, boxMax)) return true;
       }
     } else {
-      const leftDistance = pointAabbDistanceSquared(point, node.left.min, node.left.max);
-      const rightDistance = pointAabbDistanceSquared(point, node.right.min, node.right.max);
-      if (leftDistance < rightDistance) stack.push(node.right, node.left);
-      else stack.push(node.left, node.right);
+      stack.push(node.left, node.right);
     }
   }
-  return best;
+  return false;
 }
 
 export function voxelizeMesh({
@@ -300,7 +294,7 @@ export function voxelizeMesh({
   const coverage = new Float32Array(cellCount);
   const halfDiagonal = Math.hypot(pitchMm[0] * 0.5, pitchMm[1] * 0.5, pitchMm[2] * 0.5);
   const rayBudget = { tests: 0 };
-  const nearestBudget = { tests: 0 };
+  const cellBudget = { tests: 0 };
   let completedColumns = 0;
   const totalColumns = height * depth;
 
@@ -328,16 +322,16 @@ export function voxelizeMesh({
             sample += 1;
           }
         }
-        const centre = [
-          origin[0] + (x + 0.5) * pitchMm[0],
-          origin[1] + (y + 0.5) * pitchMm[1],
-          origin[2] + (z + 0.5) * pitchMm[2],
+        const cellMin = [
+          origin[0] + x * pitchMm[0],
+          origin[1] + y * pitchMm[1],
+          origin[2] + z * pitchMm[2],
         ];
-        const nearSurface = nearestSurfaceDistanceSquared(root, centre, nearestBudget)
-          <= (halfDiagonal + 1e-9) ** 2;
+        const cellMax = cellMin.map((value, axis) => value + pitchMm[axis]);
+        const intersectsSurface = cellIntersectsSurface(root, cellMin, cellMax, cellBudget);
         const fraction = insideSamples / 27;
         coverage[flat] = fraction;
-        classification[flat] = nearSurface || (fraction > 0 && fraction < 1)
+        classification[flat] = intersectsSurface || (fraction > 0 && fraction < 1)
           ? CellClass.BOUNDARY
           : fraction >= 1 ? CellClass.INTERIOR : CellClass.EXTERIOR;
       }
@@ -355,11 +349,11 @@ export function voxelizeMesh({
     source_units: units,
     source_bounds_mm: [boundsMin, boundsMax],
     warnings: [
-      "Browser voxelisation uses 3x3x3 interior sampling and nearest-triangle boundary distance. It is an approximation, not exact triangle-cell clipping.",
+      "Browser voxelisation uses 3x3x3 interior sampling and triangle-box SAT for boundary-cell detection. Interior coverage remains a sampling approximation; exact surface-cell overlap is tested geometrically.",
       "The source must be a closed, consistently wound mesh; open-surface shell mode is not supported.",
     ],
     triangle_count: faceCount,
     ray_triangle_tests: rayBudget.tests,
-    nearest_triangle_tests: nearestBudget.tests,
+    cell_triangle_tests: cellBudget.tests,
   };
 }
