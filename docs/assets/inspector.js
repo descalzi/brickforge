@@ -676,8 +676,8 @@ function displayConstruction(result) {
 
 function runLayeredConstruction() {
   if (!activeTargetGrid || constructionWorker) return;
-  if (activeTargetGrid.topology?.handle_count > 0) {
-    const count = activeTargetGrid.topology.handle_count;
+  if (activeTargetGrid.topology?.handle_count > 0 || activeTargetGrid.features.length > 0) {
+    const count = activeTargetGrid.topology?.handle_count || activeTargetGrid.features.length;
     constructionStatus.textContent = 'Construction blocked: ' + count
       + ' topological tunnel/handle feature(s) cannot currently be represented by the available part profiles. Add feature-compatible parts before generating a construction.';
     constructionStatus.dataset.state = 'warning';
