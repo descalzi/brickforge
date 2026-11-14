@@ -68,7 +68,7 @@ def voxelize_mesh(
 
     scale = _UNIT_TO_MM[units]
     scaled_mesh = mesh.copy()
-    scaled_mesh.apply_scale(scale)
+    scaled_mesh.vertices = vertices * scale
     bounds = np.asarray(scaled_mesh.bounds, dtype=np.float64)
     origin = np.array(
         [
