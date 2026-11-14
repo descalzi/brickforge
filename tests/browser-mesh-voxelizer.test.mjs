@@ -213,7 +213,7 @@ test("browser voxeliser detects a sub-grid topological tunnel instead of losing 
   assert.equal(result.topology.component_count, 1);
   assert.equal(result.topology.handle_count, 1);
   assert.equal(result.topology.euler_characteristic, 0);
-  assert.ok(result.warnings.some((warning) => /topological tunnel\\/handle feature/.test(warning)));
+  assert.ok(result.warnings.some((warning) => warning.includes("topological tunnel/handle feature")));
   assert.equal(result.features.length, 1);
   assert.equal(result.features[0].axis, "z");
   assert.equal(result.features[0].shape, "round opening");
