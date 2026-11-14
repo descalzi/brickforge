@@ -54,6 +54,24 @@ function removeDegenerateTriangles(vertices, indices) {
 
 function validateClosedMesh(vertices, indices) {
   const edges = new Map();
+  const parents = new Map();
+  const find = (key) => {
+    let root = key;
+    while (parents.get(root) !== root) root = parents.get(root);
+    let current = key;
+    while (parents.get(current) !== root) {
+      const next = parents.get(current);
+      parents.set(current, root);
+      current = next;
+    }
+    return root;
+  };
+  const union = (left, right) => {
+    const leftRoot = find(left);
+    const rightRoot = find(right);
+    if (leftRoot !== rightRoot) parents.set(rightRoot, leftRoot);
+  };
+
   for (let face = 0; face < indices.length; face += 3) {
     const ids = [indices[face], indices[face + 1], indices[face + 2]];
     const keys = ids.map((index) => {
@@ -61,6 +79,9 @@ function validateClosedMesh(vertices, indices) {
       return pointKey(vertices[offset], vertices[offset + 1], vertices[offset + 2]);
     });
     if (new Set(keys).size !== 3) throw new Error("Mesh contains a degenerate triangle.");
+    for (const key of keys) if (!parents.has(key)) parents.set(key, key);
+    union(keys[0], keys[1]);
+    union(keys[1], keys[2]);
     for (let edge = 0; edge < 3; edge += 1) {
       const a = keys[edge];
       const b = keys[(edge + 1) % 3];
@@ -80,6 +101,25 @@ function validateClosedMesh(vertices, indices) {
       throw new Error("Solid voxelisation requires consistent face winding.");
     }
   }
+
+  const componentCount = new Set([...parents.keys()].map(find)).size;
+  const vertexCount = parents.size;
+  const edgeCount = edges.size;
+  const faceCount = indices.length / 3;
+  const eulerCharacteristic = vertexCount - edgeCount + faceCount;
+  const handleNumerator = 2 * componentCount - eulerCharacteristic;
+  const handleCount = Math.round(handleNumerator / 2);
+  if (handleNumerator < 0 || handleNumerator % 2 !== 0 || handleCount < 0) {
+    throw new Error("Mesh topology is not a closed orientable surface; tunnel analysis is uncertain.");
+  }
+  return {
+    component_count: componentCount,
+    vertex_count: vertexCount,
+    edge_count: edgeCount,
+    face_count: faceCount,
+    euler_characteristic: eulerCharacteristic,
+    handle_count: handleCount,
+  };
 }
 
 function triangleFrom(vertices, aIndex, bIndex, cIndex, id) {
@@ -294,7 +334,7 @@ export function voxelizeMesh({
   const cleaned = removeDegenerateTriangles(scaledVertices, indices);
   const cleanIndices = cleaned.indices;
   const faceCount = cleanIndices.length / 3;
-  validateClosedMesh(scaledVertices, cleanIndices);
+  const topology = validateClosedMesh(scaledVertices, cleanIndices);
 
   const triangles = [];
   const boundsMin = [Infinity, Infinity, Infinity];
@@ -379,12 +419,14 @@ export function voxelizeMesh({
     source_bounds_mm: [boundsMin, boundsMax],
     warnings: [
       ...(cleaned.removed ? ["Removed " + cleaned.removed + " zero-area or duplicate-vertex triangle(s) before topology validation."] : []),
+      ...(topology.handle_count ? ["Detected " + topology.handle_count + " topological tunnel/handle feature(s). The coarse occupancy grid may fill sub-grid openings; specialised feature matching is not yet available."] : []),
       "Browser voxelisation uses 3x3x3 interior sampling and triangle-box SAT for boundary-cell detection. Interior coverage remains a sampling approximation; exact surface-cell overlap is tested geometrically.",
       "The source must be a closed, consistently wound mesh; open-surface shell mode is not supported.",
     ],
     triangle_count: faceCount,
     input_triangle_count: inputFaceCount,
     removed_degenerate_triangle_count: cleaned.removed,
+    topology,
     ray_triangle_tests: rayBudget.tests,
     cell_triangle_tests: cellBudget.tests,
   };
