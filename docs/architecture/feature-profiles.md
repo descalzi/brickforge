@@ -14,7 +14,7 @@ Each detected feature records:
 - Equivalent circular diameter, circularity and aspect ratio.
 - Number of supporting slices and a coarse confidence label.
 
-The export is validated against `schemas/part-feature-profile-v1.schema.json`.
+Version 2 exports are validated against `schemas/part-feature-profile-v2.schema.json`.
 
 ## Interpretation and limitations
 
