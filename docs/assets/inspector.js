@@ -4,7 +4,7 @@ let STLLoader;
 let OBJLoader;
 
 import { GridSpec, TargetGrid } from "./target-grid.js?v=featuremeasure4";
-import { matchTargetFeatures } from "./feature-matcher.js?v=featurematch3";
+import { matchFeaturePatterns, matchTargetFeatures } from "./feature-matcher.js?v=featurematch4";
 import { constructionPreviewTransform } from "./construction-preview.js";
 
 const MAX_FILE_BYTES = 100 * 1024 * 1024;
@@ -34,6 +34,8 @@ const featureOverlayToggle = document.querySelector('#feature-overlay-toggle');
 const featureProfileInput = document.querySelector('#feature-profile-input');
 const featureMatchStatus = document.querySelector('#feature-match-status');
 const featureMatchList = document.querySelector('#feature-match-list');
+const featurePatternStatus = document.querySelector('#feature-pattern-status');
+const featurePatternList = document.querySelector('#feature-pattern-list');
 const voxelCourseList = document.querySelector('#voxel-course-list');
 const voxelOverlayToggle = document.querySelector('#voxel-overlay-toggle');
 const buildConstructionButton = document.querySelector('#build-construction');
@@ -593,6 +595,48 @@ function validImportedFeatureProfile(profile) {
           && feature.maximum_equivalent_diameter_mm >= feature.minimum_equivalent_diameter_mm)));
 }
 
+
+function renderFeaturePatterns() {
+  if (!featurePatternStatus || !featurePatternList) return;
+  featurePatternList.replaceChildren();
+  if (!activeTargetGrid || activeTargetGrid.features.length < 2 || activeTargetGrid.features.length > 10) {
+    featurePatternStatus.textContent = 'Whole-pattern matching needs between 2 and 10 detected target openings.';
+    return;
+  }
+  if (!importedPartFeatureProfiles.length) {
+    featurePatternStatus.textContent = 'Import part feature profiles to compare complete opening layouts.';
+    return;
+  }
+  const patterns = matchFeaturePatterns(activeTargetGrid.features, importedPartFeatureProfiles, {
+    limit: 5,
+    maxSearchStates: 5000,
+  });
+  if (!patterns.length) {
+    featurePatternStatus.textContent = 'No complete one-to-one opening layout matched within the current spacing and size tolerances. Individual candidates above may still be useful.';
+    return;
+  }
+  featurePatternStatus.textContent = patterns.length + ' complete spatial pattern candidate(s). Pairwise spacing is compared independently of translation and rotation; surrounding envelope and physical connections are not yet verified.';
+  patterns.forEach((pattern) => {
+    const item = document.createElement('li');
+    const heading = document.createElement('strong');
+    const detail = document.createElement('span');
+    const assignment = document.createElement('small');
+    const envelope = pattern.part_dimensions_mm
+      ? ' · envelope ' + pattern.part_dimensions_mm.map((value) => value.toFixed(1)).join(' × ') + ' mm'
+      : '';
+    heading.textContent = pattern.part_id + ' · ' + pattern.description;
+    detail.textContent = Math.round(pattern.score * 100) + '% pattern score · '
+      + pattern.matched_feature_count + '/' + pattern.target_feature_count
+      + ' target openings assigned · spacing RMS ' + pattern.pattern_error_mm.toFixed(2) + ' mm'
+      + envelope;
+    assignment.textContent = pattern.assignments.map((entry) =>
+      entry.target_feature_id + ' → ' + entry.candidate_feature_id + ' (local ' + entry.local_axis.toUpperCase() + ')'
+    ).join(' · ');
+    item.append(heading, detail, assignment);
+    featurePatternList.append(item);
+  });
+}
+
 function renderFeatureMatches() {
   if (!featureMatchStatus || !featureMatchList) return;
   featureMatchList.replaceChildren();
@@ -600,10 +644,12 @@ function renderFeatureMatches() {
     featureMatchStatus.textContent = importedPartFeatureProfiles.length
       ? importedPartFeatureProfiles.length + ' part profile(s) loaded. Voxelise a target mesh with detected openings to compare them.'
       : 'Export measured part profiles from the Part Explorer, then import them here to compare against target openings.';
+    renderFeaturePatterns();
     return;
   }
   if (!importedPartFeatureProfiles.length) {
     featureMatchStatus.textContent = 'No part profiles imported yet. Use the Part Explorer to analyse a candidate part and download its feature profile.';
+    renderFeaturePatterns();
     return;
   }
   const comparisons = matchTargetFeatures(activeTargetGrid.features, importedPartFeatureProfiles);
@@ -641,6 +687,7 @@ function renderFeatureMatches() {
     ? totalMatches + ' geometric candidate match(es) found across ' + importedPartFeatureProfiles.length
       + ' imported part profile(s). These are not verified fits or buildability results.'
     : 'No compatible opening profiles found in the imported set. The target features remain unresolved.';
+  renderFeaturePatterns();
 }
 
 async function importPartFeatureProfiles(files) {
