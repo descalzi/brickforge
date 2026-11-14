@@ -50,7 +50,24 @@
           <span>3D PREVIEW</span>
           <span id="viewport-state" class="viewport-state" role="status" aria-live="polite">READY / WAITING FOR FILE</span>
         </div>
-        <div id="viewport" class="viewport">
+        <div id="viewport" class="viewport">\n          <div id="preview-activity" class="preview-activity" data-state="idle" hidden role="status" aria-live="polite">
+            <div class="preview-activity-bricks" aria-hidden="true">
+              <span></span><span></span><span></span><span></span><span></span><span></span>
+            </div>
+            <strong id="preview-activity-title">Preparing preview</strong>
+            <p id="preview-activity-detail">The processing status will appear here.</p>
+            <ol class="preview-activity-steps" aria-label="Processing stages">
+              <li data-activity-step="0">Read</li>
+              <li data-activity-step="1">Parse</li>
+              <li data-activity-step="2">Preview</li>
+              <li data-activity-step="3">Prepare</li>
+              <li data-activity-step="4">Voxelise</li>
+              <li data-activity-step="5">Footprints</li>
+              <li data-activity-step="6">Connect</li>
+              <li data-activity-step="7">Build</li>
+            </ol>
+          </div>
+
           <div id="viewport-empty" class="viewport-empty">
             <div class="empty-cube" aria-hidden="true">
               <svg viewBox="0 0 120 110">
@@ -149,6 +166,6 @@
     <span class="footer-id">BF / MESH-01</span>
   </footer>
 
-  <script type="module" src="./assets/inspector.js"></script>
+  <script type="module" src="./assets/inspector.js?v=20261114-activity1"></script>
 </body>
 </html>
