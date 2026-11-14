@@ -29,7 +29,7 @@ function profile(partId, diameter, overrides = {}) {
       width_mm: diameter,
       length_mm: diameter,
       circularity: 0.94,
-      aspect_ratio: 1,
+      aspect_ratio: 1.02,
       sample_support: 5,
       confidence: "high",
       ...overrides,
