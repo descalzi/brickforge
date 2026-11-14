@@ -209,7 +209,7 @@ function analyseSelectedPartFeatures() {
 function downloadPartFeatureProfile() {
   if (!activePartDescriptor) return;
   const profile = {
-    schema_version: 1,
+    schema_version: 2,
     part_id: activePartDescriptor.part_id,
     description: activePartDescriptor.description,
     source_filename: activePartDescriptor.source_filename,
