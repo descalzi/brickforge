@@ -1372,7 +1372,7 @@ export function buildLayeredFootprintBlock(layerFootprints, catalogue, config = 
         limitReached: true,
       };
     } else {
-      const interlockingPair = sampleInterlockingFootprints(cells, profiles);
+      const interlockingPair = sampleInterlockingFootprints(cells, profiles, tilePartIds);
       search = interlockingPair
         ? { tilings: interlockingPair, limitReached: true }
         : enumerateFootprintTilings(cells, profiles, tilePartIds);
