@@ -45,7 +45,7 @@ test("target grid counts occupancy and extracts sorted per-course footprints", (
 
   assert.equal(grid.occupied_cell_count, 3);
   assert.equal(grid.boundary_cell_count, 1);
-  assert.deepEqual(grid.layer_footprint(0), [[1, 0], [0, 1], [0, 2]]);
+  assert.deepEqual(grid.layer_footprint(0), [[0, 1], [0, 2], [1, 0]]);
   assert.deepEqual(grid.summary(), {
     representation_version: 1,
     dimensions: [2, 1, 3],
