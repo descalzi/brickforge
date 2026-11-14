@@ -628,7 +628,8 @@ function renderFeaturePatterns() {
     heading.textContent = pattern.part_id + ' · ' + pattern.description;
     detail.textContent = Math.round(pattern.score * 100) + '% pattern score · '
       + pattern.matched_feature_count + '/' + pattern.target_feature_count
-      + ' target openings assigned · spacing RMS ' + pattern.pattern_error_mm.toFixed(2) + ' mm'
+      + ' target openings assigned · ' + Math.round(pattern.profile_coverage * 100)
+      + '% of profile openings used · spacing RMS ' + pattern.pattern_error_mm.toFixed(2) + ' mm'
       + envelope;
     assignment.textContent = pattern.assignments.map((entry) =>
       entry.target_feature_id + ' → ' + entry.candidate_feature_id + ' (local ' + entry.local_axis.toUpperCase() + ')'
