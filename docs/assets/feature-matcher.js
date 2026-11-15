@@ -90,9 +90,26 @@ function scoreFeaturePair(targetFeature, candidateFeature, options) {
   };
 }
 
+function featureAxisVector(feature) {
+  if (Array.isArray(feature.axis_vector_world) && feature.axis_vector_world.length === 3
+      && feature.axis_vector_world.every(Number.isFinite)) {
+    return vectorNormalise(feature.axis_vector_world);
+  }
+  const index = Number.isInteger(feature.axis_index)
+    ? feature.axis_index : ["x", "y", "z"].indexOf(feature.axis);
+  if (index < 0 || index > 2) return null;
+  return [0, 1, 2].map((axis) => axis === index ? 1 : 0);
+}
+
+function axesParallel(left, right, tolerance = 0.96) {
+  const first = featureAxisVector(left);
+  const second = featureAxisVector(right);
+  return Boolean(first && second && Math.abs(vectorDot(first, second)) >= tolerance);
+}
+
 function spatialFeature(feature) {
   return validMeasuredFeature(feature)
-    && ["x", "y", "z"].includes(feature.axis)
+    && Boolean(featureAxisVector(feature))
     && Array.isArray(feature.center_mm)
     && feature.center_mm.length === 3
     && feature.center_mm.every(Number.isFinite);
@@ -283,12 +300,10 @@ function estimateRigidPlacement(assignments, targetFeatures, candidateFeatures) 
       .map((value, axis) => value + translation[axis]);
     const residual = Math.hypot(...vectorSubtract(transformed, targetFeature.center_mm));
     residualSquareTotal += residual * residual;
-    const localAxis = [0, 0, 0];
-    localAxis[axisIndex(candidateFeature)] = 1;
-    const targetAxis = [0, 0, 0];
-    targetAxis[axisIndex(targetFeature)] = 1;
-    const transformedAxis = vectorNormalise(matrixVector(rotation, localAxis));
-    const dot = Math.min(1, Math.abs(vectorDot(transformedAxis, targetAxis)));
+    const localAxis = featureAxisVector(candidateFeature);
+    const targetAxis = featureAxisVector(targetFeature);
+    const transformedAxis = localAxis ? vectorNormalise(matrixVector(rotation, localAxis)) : null;
+    const dot = Math.min(1, Math.abs(vectorDot(transformedAxis || [0, 1, 0], targetAxis || [0, 1, 0])));
     const angle = Math.acos(dot);
     axisErrorSquareTotal += angle * angle;
   }
@@ -439,8 +454,8 @@ export function matchFeaturePatterns(targetFeatures, partProfiles, {
           if (!other) continue;
           const otherTarget = targetFeatures[otherIndex];
           const otherCandidate = profile.features[other.candidateIndex];
-          const targetAxesParallel = axisIndex(targetFeature) === axisIndex(otherTarget);
-          const candidateAxesParallel = axisIndex(candidateFeature) === axisIndex(otherCandidate);
+          const targetAxesParallel = axesParallel(targetFeature, otherTarget);
+          const candidateAxesParallel = axesParallel(candidateFeature, otherCandidate);
           if (targetAxesParallel !== candidateAxesParallel) {
             compatible = false;
             break;
