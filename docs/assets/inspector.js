@@ -63,6 +63,8 @@ const constructionDownloadValidation = document.querySelector('#construction-dow
 const constructionPriceInput = document.querySelector('#construction-price-input');
 const constructionCostStatus = document.querySelector('#construction-cost-status');
 const constructionCostList = document.querySelector('#construction-cost-list');
+const constructionFidelityStatus = document.querySelector('#construction-fidelity-status');
+const constructionFidelityList = document.querySelector('#construction-fidelity-list');
 
 const output = {
   x: document.querySelector('#dimension-x'),
@@ -1276,6 +1278,125 @@ function downloadConstructionFile(filename, contents, mediaType) {
   window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
+function constructionTargetCellBounds() {
+  if (!activeTargetGrid) throw new Error("Voxelise the source mesh before comparing construction surfaces.");
+  const cells = [];
+  for (let course = 0; course < activeTargetGrid.spec.dimensions[1]; course += 1) {
+    for (const [x, z] of activeTargetGrid.layer_footprint(course)) cells.push([x, z]);
+  }
+  if (!cells.length) throw new Error("The target grid contains no occupied cells.");
+  return {
+    minX: Math.min(...cells.map(([x]) => x)),
+    maxX: Math.max(...cells.map(([x]) => x)),
+    minZ: Math.min(...cells.map(([, z]) => z)),
+    maxZ: Math.max(...cells.map(([, z]) => z)),
+  };
+}
+
+function constructionEnvelopeSurfacePositions(result) {
+  const targetBounds = constructionTargetCellBounds();
+  const boxes = result.parts.map((part) => {
+    const profile = result.profile_dimensions[part.part_id];
+    if (!profile) throw new Error("Missing part envelope for " + part.part_id + ".");
+    const transform = constructionPreviewTransform(
+      part, profile, activeTargetGrid.spec, targetBounds, currentModelCenter,
+    );
+    return {
+      partId: part.part_id,
+      position: transform.position_mm,
+      size: transform.size_mm,
+      angle: transform.rotation_y_rad,
+      cosine: Math.cos(transform.rotation_y_rad),
+      sine: Math.sin(transform.rotation_y_rad),
+    };
+  });
+  const quads = [
+    [0, 3, 2, 1], [4, 5, 6, 7], [0, 1, 5, 4],
+    [1, 2, 6, 5], [2, 3, 7, 6], [3, 0, 4, 7],
+  ];
+  const positions = [];
+  boxes.forEach((box, boxIndex) => {
+    const [sx, sy, sz] = box.size;
+    const localCorners = [
+      [-sx / 2, -sy / 2, -sz / 2], [sx / 2, -sy / 2, -sz / 2],
+      [sx / 2, sy / 2, -sz / 2], [-sx / 2, sy / 2, -sz / 2],
+      [-sx / 2, -sy / 2, sz / 2], [sx / 2, -sy / 2, sz / 2],
+      [sx / 2, sy / 2, sz / 2], [-sx / 2, sy / 2, sz / 2],
+    ];
+    const corners = localCorners.map(([x, y, z]) => [
+      box.position[0] + x * box.cosine + z * box.sine,
+      box.position[1] + y,
+      box.position[2] - x * box.sine + z * box.cosine,
+    ]);
+    for (const quad of quads) {
+      const faceCentre = [0, 1, 2].map((axis) =>
+        quad.reduce((sum, index) => sum + corners[index][axis] / 4, 0));
+      const hidden = boxes.some((other, otherIndex) => {
+        if (otherIndex === boxIndex) return false;
+        const dx = faceCentre[0] - other.position[0];
+        const dy = faceCentre[1] - other.position[1];
+        const dz = faceCentre[2] - other.position[2];
+        const localX = dx * other.cosine - dz * other.sine;
+        const localZ = dx * other.sine + dz * other.cosine;
+        return Math.abs(localX) <= other.size[0] / 2 + 0.05
+          && Math.abs(dy) <= other.size[1] / 2 + 0.05
+          && Math.abs(localZ) <= other.size[2] / 2 + 0.05;
+      });
+      if (hidden) continue;
+      const points = quad.map((index) => corners[index]);
+      positions.push(...points[0], ...points[1], ...points[2], ...points[0], ...points[2], ...points[3]);
+    }
+  });
+  if (!positions.length) throw new Error("No exposed construction envelope faces were available for comparison.");
+  return new Float32Array(positions);
+}
+
+function compareConstructionAlternativeSurfaces() {
+  if (!constructionFidelityStatus || !constructionFidelityList) return;
+  constructionFidelityList.replaceChildren();
+  const alternatives = activeConstructionAlternatives.length
+    ? activeConstructionAlternatives : activeConstruction ? [activeConstruction] : [];
+  if (!alternatives.length || !activeTargetGrid) {
+    constructionFidelityStatus.textContent = "Generate alternatives to compare their target-surface fidelity.";
+    return;
+  }
+  constructionFidelityStatus.textContent = "Comparing exposed part-body envelope surfaces with the source mesh…";
+  const targetPositions = collectSurfaceTrianglePositions();
+  alternatives.forEach((alternative, index) => {
+    try {
+      if (!alternative.surface_fidelity_report) {
+        const candidatePositions = constructionEnvelopeSurfacePositions(alternative);
+        const report = scoreSurfaceFit(candidatePositions, targetPositions);
+        alternative.surface_fidelity_report = {
+          score: report.global_bidirectional_score,
+          candidate_coverage: report.candidate_to_target.within_tolerance_fraction,
+          target_coverage: report.target_to_candidate.within_tolerance_fraction,
+          mean_distance_mm: report.global_bidirectional_mean_distance_mm,
+          percentile_95_distance_mm: report.global_bidirectional_95th_percentile_distance_mm,
+          candidate_triangle_count: candidatePositions.length / 9,
+          method: "exposed-simplified-part-body-envelopes",
+        };
+      }
+      const report = alternative.surface_fidelity_report;
+      const item = document.createElement("li");
+      item.textContent = "Option " + (index + 1) + " · envelope fidelity "
+        + Math.round(report.score * 100) + "/100"
+        + " · candidate coverage " + Math.round(report.candidate_coverage * 100) + "%"
+        + " · target coverage " + Math.round(report.target_coverage * 100) + "%"
+        + " · mean distance " + report.mean_distance_mm.toFixed(2) + " mm"
+        + " · 95th percentile " + report.percentile_95_distance_mm.toFixed(2) + " mm"
+        + " · " + report.candidate_triangle_count.toLocaleString() + " exposed envelope triangles";
+      constructionFidelityList.append(item);
+    } catch (error) {
+      const item = document.createElement("li");
+      item.textContent = "Option " + (index + 1) + " · surface comparison unavailable: "
+        + (error instanceof Error ? error.message : "geometry comparison failed");
+      constructionFidelityList.append(item);
+    }
+  });
+  constructionFidelityStatus.textContent = "Higher scores indicate closer sampled coverage in both directions. Simplified body envelopes are used instead of detailed LDraw part meshes; this is a comparative proxy, not an exact Hausdorff distance or physical fit test.";
+}
+
 function renderConstructionCostEstimates() {
   if (!constructionCostStatus || !constructionCostList) return;
   constructionCostList.replaceChildren();
@@ -1343,13 +1464,15 @@ function displayConstruction(result) {
       option.setAttribute('aria-pressed', String(alternative.model_name === result.model_name));
       option.textContent = 'Option ' + (index + 1) + ' · ' + alternative.parts.length + ' parts · '
         + alternative.optimization_metrics.unique_part_types + ' part types · '
-        + Math.round(alternative.optimization_score * 100) + '/100 · '
-        + alternative.course_part_counts.join(' / ') + ' per course';
+        + Math.round(alternative.optimization_score * 100) + '/100'
+        + (alternative.surface_fidelity_report ? ' · surface ' + Math.round(alternative.surface_fidelity_report.score * 100) + '/100' : '')
+        + ' · ' + alternative.course_part_counts.join(' / ') + ' per course';
       if (alternative.model_name === result.model_name) option.disabled = true;
       option.addEventListener('click', () => displayConstruction(alternative));
       constructionAlternatives.append(option);
     });
   }
+  compareConstructionAlternativeSurfaces();
   renderConstructionPreview(result);
   renderConstructionCostEstimates();
   constructionPartCount.textContent = result.parts.length.toLocaleString() + ' parts';
