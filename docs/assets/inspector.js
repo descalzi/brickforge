@@ -100,6 +100,7 @@ let activePriceCatalogue = null;
 let surfaceComparisonSequence = 0;
 let activeTargetGrid;
 let activeObliqueFeatures = [];
+let activeSelfIntersectionReport = null;
 let activeVoxelGroup;
 let activeFeatureGroup;
 let activeConstructionGroup;
@@ -541,6 +542,7 @@ function resetVoxelisation() {
   removeConstructionPreview();
   activeTargetGrid = null;
   activeObliqueFeatures = [];
+  activeSelfIntersectionReport = null;
   surfaceComparisonSequence += 1;
   if (voxelFeatureStatus) { voxelFeatureStatus.hidden = true; voxelFeatureStatus.textContent = ''; }
   if (voxelFeatureList) voxelFeatureList.replaceChildren();
@@ -1204,6 +1206,7 @@ function runVoxelisation() {
         pitch_mm: result.pitch_mm,
       });
       activeObliqueFeatures = result.oblique_features || [];
+      activeSelfIntersectionReport = result.self_intersections || null;
       activeTargetGrid = new TargetGrid({
         spec,
         classification: result.classification,
@@ -1591,6 +1594,19 @@ function displayConstruction(result) {
   constructionDownloadBom.disabled = false;
   constructionDownloadValidation.disabled = !result.validation_report;
   const preservedOpeningCount = activeTargetGrid.feature_keepouts.filter((item) => item.preserved).length;
+  if (result.validation_report) {
+    result.validation_report.source_mesh_integrity = {
+      status: activeSelfIntersectionReport?.status || "not_assessed",
+      intersection_pair_count: activeSelfIntersectionReport?.intersection_pair_count ?? null,
+      candidate_pair_count: activeSelfIntersectionReport?.candidate_pair_count ?? null,
+      method: "sweep-and-prune broad phase with triangle separating-axis tests",
+      limitations: [
+        "Triangle pairs sharing a geometric vertex are skipped to avoid ordinary adjacent-face contacts.",
+        "The scan is bounded by a candidate-pair budget and is not a formal proof against every possible self-contact.",
+      ],
+    };
+  }
+  const intersectionWarning = activeSelfIntersectionReport?.status === "not_assessed_pair_limit";
   constructionStatus.textContent = 'Connected construction generated.'
     + (preservedOpeningCount
       ? ' ' + preservedOpeningCount + ' opening(s) are represented by conservative grid-cell clearances, which may be larger than the source holes.'
@@ -1598,13 +1614,27 @@ function displayConstruction(result) {
     + (result.search?.candidate_search_limited
       ? ' The course-layout search used bounded interlocking samples, so this is not guaranteed to be the minimum-part solution.'
       : '')
+    + (intersectionWarning
+      ? ' Warning: the source-mesh intersection scan reached its candidate limit; mesh integrity is not fully assessed.'
+      : '')
     + ' Review the target and assembly previews and the stated nominal limitations before treating it as buildable.';
-  constructionStatus.dataset.state = 'complete';
-  setMessage('The variable-course assembly passed nominal body-overlap and connection-graph checks against the preserved target-grid occupancy.', 'success');
+  constructionStatus.dataset.state = intersectionWarning ? 'warning' : 'complete';
+  setMessage(intersectionWarning
+    ? 'Construction generated, but source mesh self-intersections were not fully assessed.'
+    : 'The variable-course assembly passed nominal body-overlap and connection-graph checks against the preserved target-grid occupancy.', intersectionWarning ? 'warning' : 'success');
 }
 
 function runLayeredConstruction() {
   if (!activeTargetGrid || constructionWorker) return;
+  if (activeSelfIntersectionReport?.status === "intersections_detected") {
+    constructionStatus.textContent = "Construction blocked: the source mesh contains "
+      + activeSelfIntersectionReport.intersection_pair_count
+      + " intersecting non-adjacent triangle pair(s). Repair the mesh before generating a construction.";
+    constructionStatus.dataset.state = "error";
+    setActivity("Source mesh intersections", constructionStatus.textContent, "error", -1);
+    setMessage(constructionStatus.textContent, "error");
+    return;
+  }
   const preservedFeatureCount = activeTargetGrid.feature_keepouts.filter((item) => item.preserved).length;
   const keepoutsComplete = activeTargetGrid.features.length > 0
     && preservedFeatureCount === activeTargetGrid.features.length
