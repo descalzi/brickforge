@@ -27,7 +27,9 @@
         4.8,
         1.6,
         1.92
-      ]
+      ],
+      "up_axis": "z",
+      "preferred_course": "brick"
     },
     {
       "id": "block-through-hole",
@@ -52,7 +54,9 @@
         4.8,
         1.6,
         1.92
-      ]
+      ],
+      "up_axis": "z",
+      "preferred_course": "brick"
     },
     {
       "id": "block-three-hole-pattern",
@@ -77,7 +81,9 @@
         4.8,
         1.6,
         1.92
-      ]
+      ],
+      "up_axis": "z",
+      "preferred_course": "brick"
     },
     {
       "id": "block-blind-pocket",
@@ -98,7 +104,9 @@
         "blind/through distinction"
       ],
       "description": "A cylindrical pocket opens on one face but stops inside the solid.",
-      "units": "mm"
+      "units": "mm",
+      "up_axis": "z",
+      "preferred_course": "brick"
     },
     {
       "id": "block-oblique-bore",
@@ -118,7 +126,9 @@
         "arbitrary-axis feature matching"
       ],
       "description": "A diagonal cylindrical bore crosses the block at an angle.",
-      "units": "mm"
+      "units": "mm",
+      "up_axis": "z",
+      "preferred_course": "brick"
     },
     {
       "id": "block-curved-tunnel",
@@ -138,7 +148,9 @@
         "curved feature candidate classification"
       ],
       "description": "A smoothly bending tunnel passes through the block. It is deliberately more difficult than a straight cylindrical opening.",
-      "units": "mm"
+      "units": "mm",
+      "up_axis": "z",
+      "preferred_course": "brick"
     },
     {
       "id": "block-branching-tunnel",
@@ -159,7 +171,9 @@
         "topology limitations"
       ],
       "description": "Two intersecting bores form a T-shaped internal passage.",
-      "units": "mm"
+      "units": "mm",
+      "up_axis": "z",
+      "preferred_course": "brick"
     },
     {
       "id": "car-simple",
@@ -181,7 +195,9 @@
         "construction envelope"
       ],
       "description": "A deliberately blocky car-like shape with integrated wheel volumes. It is a geometry challenge rather than a detailed vehicle model.",
-      "units": "mm"
+      "units": "mm",
+      "up_axis": "z",
+      "preferred_course": "brick"
     },
     {
       "id": "thin-wall-panel",
@@ -202,7 +218,9 @@
         "voxel resolution sensitivity"
       ],
       "description": "A long, narrow 2 mm-thick wall with reinforcing returns. Challenges thin-feature preservation and grid resolution.",
-      "units": "mm"
+      "units": "mm",
+      "up_axis": "z",
+      "preferred_course": "brick"
     },
     {
       "id": "arched-bridge",
@@ -223,7 +241,9 @@
         "concave silhouette"
       ],
       "description": "A solid bridge-like form with a semicircular arch passing through its depth.",
-      "units": "mm"
+      "units": "mm",
+      "up_axis": "z",
+      "preferred_course": "brick"
     },
     {
       "id": "cantilever-overhang",
@@ -244,7 +264,9 @@
         "course-by-course support"
       ],
       "description": "A stepped base supports an upper beam that projects beyond the base, leaving a clear underside.",
-      "units": "mm"
+      "units": "mm",
+      "up_axis": "z",
+      "preferred_course": "brick"
     },
     {
       "id": "hollow-sphere",
@@ -265,7 +287,9 @@
         "thin shell voxelisation"
       ],
       "description": "A closed spherical shell with an internal void, useful for distinguishing an enclosed cavity from an open tunnel.",
-      "units": "mm"
+      "units": "mm",
+      "up_axis": "z",
+      "preferred_course": "brick"
     },
     {
       "id": "intersecting-solids",
@@ -286,7 +310,9 @@
         "watertight repair behaviour"
       ],
       "description": "Two rectangular volumes overlap and are fused into one solid, testing compound geometry and overlap handling.",
-      "units": "mm"
+      "units": "mm",
+      "up_axis": "z",
+      "preferred_course": "brick"
     },
     {
       "id": "organic-lobed",
@@ -307,7 +333,9 @@
         "non-rectangular construction envelope"
       ],
       "description": "A fused multi-lobed solid with rounded contours, a step beyond simple block geometry.",
-      "units": "mm"
+      "units": "mm",
+      "up_axis": "z",
+      "preferred_course": "brick"
     },
     {
       "id": "block-two-hole-pattern",
@@ -331,7 +359,9 @@
         "grid clearance mapping",
         "brick-course construction"
       ],
-      "description": "A 6 × 2 × 2-stud beam with two 4.8 mm through-bores at two-stud spacing, aligned to the stud grid."
+      "description": "A 6 × 2 × 2-stud beam with two 4.8 mm through-bores at two-stud spacing, aligned to the stud grid.",
+      "up_axis": "z",
+      "preferred_course": "brick"
     }
   ],
   "limitations": [
