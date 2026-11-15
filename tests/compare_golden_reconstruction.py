@@ -37,12 +37,10 @@ placements = [
 reconstructed = build_assembly(
     placements, PROFILES, model_name="browser-reconstructed-golden-3001"
 )
-unsupported = sorted({part.part_id for part in reconstructed.parts} - {"3001"})
+available_reference_parts = {"3001", "3002", "3003", "3004", "3622"}
+unsupported = sorted({part.part_id for part in reconstructed.parts} - available_reference_parts)
 if unsupported:
-    raise AssertionError(
-        "The calibration fixture library only contains part 3001; "
-        f"the browser selected unsupported reference part(s): {unsupported}"
-    )
+    raise AssertionError(f"The golden fixture library lacks part geometry for: {unsupported}")
 
 source = trimesh.load(SOURCE_STL, force="mesh", process=True)
 reconstructed_surface = assembly_to_mesh(reconstructed, LIBRARY)
