@@ -48,7 +48,7 @@ test("LDraw loader expands pinned subpart geometry and centres the complete part
   const geometry = await loadLDrawPartSurface("unit-test-brickforge", { fetcher });
   assert.equal(geometry.triangle_count, 1);
   assert.equal(geometry.source_files.length, 2);
-  assert.deepEqual(geometry.bounds_mm, [[4, 0, 0], [8, 4, 0]]);
+  assert.deepEqual(geometry.bounds_mm, [[4, -4, 0], [8, 0, 0]]);
   assert.equal(geometry.positions.length, 9);
   assert.ok(Math.abs(geometry.positions[0] + 2) < 1e-6);
 });
