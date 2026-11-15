@@ -145,6 +145,13 @@
           <p class="control-note">Convert the closed mesh into occupied cells at the selected brick or plate course height. Processing runs locally in a background worker. Current prototype limits: 100,000 triangles and 100,000 grid cells.</p>
           <button id="voxelise-button" class="primary-button voxelise-button" type="button" disabled>Voxelise on selected grid</button>
           <p id="voxelise-status" class="voxelise-status" role="status" aria-live="polite">Load a mesh to enable voxelisation.</p>
+          <label class="control-note" for="construction-optimization-profile">Construction optimisation</label>
+          <select id="construction-optimization-profile" class="tool-select">
+            <option value="balanced" selected>Balanced</option>
+            <option value="economy">Fewer parts</option>
+            <option value="simplicity">Fewer part types</option>
+            <option value="interlock">More nominal mating pairs</option>
+          </select>
           <button id="build-construction" class="primary-button voxelise-button" type="button" disabled>Generate connected construction</button>
           <p id="construction-status" class="voxelise-status" role="status" aria-live="polite">Voxelise a mesh first.</p>
           <div id="construction-summary" class="voxelise-summary" hidden>
@@ -196,6 +203,6 @@
     <span class="footer-id">BF / MESH-01</span>
   </footer>
 
-  <script type="module" src="./assets/inspector.js?v=20261115-alternatives1"></script>
+  <script type="module" src="./assets/inspector.js?v=20261115-objectives1"></script>
 </body>
 </html>
