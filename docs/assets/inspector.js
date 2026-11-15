@@ -6,6 +6,7 @@ let OBJLoader;
 import { BRICK_GRID_PITCH_MM, PLATE_GRID_PITCH_MM, GridSpec, TargetGrid } from "./target-grid.js?v=featuregrid7";
 import { matchFeaturePatterns, matchTargetFeatures } from "./feature-matcher.js?v=featurematch8";
 import { constructionPreviewTransform } from "./construction-preview.js";
+import { scoreSurfaceFit } from "./surface-fit.js?v=surfacefit1";
 import { transformPartPreviewPositions } from "./part-preview.js?v=featurepreview1";
 import { orientationMatrixToYUp } from "./mesh-orientation.js?v=upaxis1";
 
@@ -689,6 +690,65 @@ function validImportedFeatureProfile(profile) {
 }
 
 
+function collectSurfaceTrianglePositions() {
+  const triangleCount = activeMeshes.reduce((sum, mesh) => {
+    const geometry = mesh.geometry;
+    return sum + (geometry.index ? geometry.index.count : geometry.attributes.position.count) / 3;
+  }, 0);
+  if (!triangleCount || triangleCount > 100000) {
+    throw new Error("Surface scoring requires between 1 and 100,000 target triangles.");
+  }
+  const positions = new Float32Array(triangleCount * 9);
+  const point = new THREE.Vector3();
+  let offset = 0;
+  for (const mesh of activeMeshes) {
+    mesh.updateMatrixWorld(true);
+    const geometry = mesh.geometry;
+    const attribute = geometry.attributes.position;
+    const indices = geometry.index;
+    const indexAt = (index) => indices ? indices.getX(index) : index;
+    const indexCount = indices ? indices.count : attribute.count;
+    for (let index = 0; index < indexCount; index += 3) {
+      for (let corner = 0; corner < 3; corner += 1) {
+        point.fromBufferAttribute(attribute, indexAt(index + corner)).applyMatrix4(mesh.matrixWorld);
+        positions[offset++] = point.x;
+        positions[offset++] = point.y;
+        positions[offset++] = point.z;
+      }
+    }
+  }
+  return positions;
+}
+
+function scoreCandidateSurface(profile, pattern, statusNode) {
+  if (!pattern?.placement_resolved || !profile?.preview_geometry_included
+      || !Array.isArray(profile.mesh_positions_mm)) {
+    statusNode.textContent = "Surface scoring needs a resolved placement and measured part triangle geometry.";
+    return;
+  }
+  statusNode.textContent = "Measuring candidate surface against the source mesh…";
+  try {
+    const candidatePositions = transformPartPreviewPositions(
+      profile.mesh_positions_mm,
+      pattern.rotation_matrix_3x3,
+      pattern.translation_mm,
+      currentModelCenter,
+    );
+    const targetPositions = collectSurfaceTrianglePositions();
+    const report = scoreSurfaceFit(candidatePositions, targetPositions);
+    statusNode.textContent = "Surface alignment: " + report.status.replaceAll("_", " ")
+      + " · " + Math.round(report.within_tolerance_fraction * 100) + "% of samples within "
+      + report.tolerance_mm.toFixed(1) + " mm"
+      + " · mean " + report.mean_distance_mm.toFixed(2) + " mm"
+      + " · 95th percentile " + report.percentile_95_distance_mm.toFixed(2) + " mm"
+      + " · score " + Math.round(report.score * 100) + "/100. One-way geometric proximity only; not a fit or buildability certificate.";
+    statusNode.dataset.state = report.status;
+  } catch (error) {
+    statusNode.textContent = error instanceof Error ? error.message : "Surface scoring failed.";
+    statusNode.dataset.state = "error";
+  }
+}
+
 function renderFeaturePatterns() {
   if (!featurePatternStatus || !featurePatternList) return;
   featurePatternList.replaceChildren();
@@ -747,12 +807,23 @@ function renderFeaturePatterns() {
     preview.disabled = !canPreview;
     preview.textContent = canPreview ? 'Preview in 3D' : '3D preview unavailable';
     if (canPreview) preview.addEventListener('click', () => renderCandidatePreview(profile, pattern));
+    const surfaceFit = document.createElement('button');
+    surfaceFit.type = 'button';
+    surfaceFit.className = 'feature-preview-button';
+    surfaceFit.disabled = !canPreview;
+    surfaceFit.textContent = canPreview ? 'Score surface alignment' : 'Surface scoring unavailable';
+    const surfaceFitResult = document.createElement('small');
+    surfaceFitResult.textContent = canPreview
+      ? 'Compare measured part triangles with the source mesh surface.'
+      : 'A resolved placement and lightweight part geometry are required.';
+    if (canPreview) surfaceFit.addEventListener('click', () =>
+      scoreCandidateSurface(profile, pattern, surfaceFitResult));
     const inspect = document.createElement('a');
     inspect.href = './parts.html?part=' + encodeURIComponent(pattern.part_id);
     inspect.target = '_blank';
     inspect.rel = 'noopener noreferrer';
     inspect.textContent = 'Open part in Part Explorer';
-    item.append(heading, detail, assignment, placement, preview, inspect);
+    item.append(heading, detail, assignment, placement, preview, surfaceFit, surfaceFitResult, inspect);
     featurePatternList.append(item);
   });
 }
