@@ -46,12 +46,12 @@ try {
     const voxelStatus = await page.locator("#voxelise-status").innerText();
     const constructionStatus = await page.locator("#construction-status").innerText();
     const buildEnabled = await page.locator("#build-construction").isEnabled();
+    const featureStatus = await page.locator("#voxel-feature-status").innerText().catch(() => "");
+    console.log(JSON.stringify({ fixture: fixture.file, voxelStatus, featureStatus, constructionStatus }));
     assert.match(voxelStatus, /Voxelisation complete/i, fixture.file + ": voxelisation did not complete. " + voxelStatus);
     assert.doesNotMatch(constructionStatus, /Construction blocked/i,
       fixture.file + ": " + constructionStatus + " | " + voxelStatus + " | " + featureStatus);
     assert.equal(buildEnabled, true, fixture.file + ": construction button remained disabled. " + constructionStatus);
-    const featureStatus = await page.locator("#voxel-feature-status").innerText().catch(() => "");
-    console.log(JSON.stringify({ fixture: fixture.file, voxelStatus, featureStatus, constructionStatus }));
     await page.locator("#build-construction").click();
     await page.waitForFunction(() => {
       const status = document.querySelector("#construction-status");
