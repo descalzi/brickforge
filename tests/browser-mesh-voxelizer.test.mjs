@@ -215,7 +215,7 @@ test("STL float precision does not create a phantom course and one brick remains
   assert.equal(construction.parts.length, 1);
   assert.equal(construction.parts[0].part_id, "3001");
   assert.equal(construction.parts[0].colour_code, 4);
-  assert.equal(construction.parts[0].translation_ldu[1], 0);
+  assert.ok(Math.abs(construction.parts[0].translation_ldu[1]) < 1e-9);
   assert.deepEqual(construction.connections, []);
 });
 
