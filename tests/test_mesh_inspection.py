@@ -18,7 +18,8 @@ def test_inspect_mesh_reports_dimensions_in_millimetres(tmp_path) -> None:
     assert report.is_volume
     assert report.connected_component_count == 1
     assert report.validation_status == "closed_solid_checks_passed"
-    assert any("Self-intersections are not assessed" in warning for warning in report.warnings)
+    assert report.self_intersection_status == "none_detected"
+    assert report.self_intersecting_triangle_pair_count == 0
 
 
 def test_inspect_mesh_converts_centimetres_to_millimetres(tmp_path) -> None:
@@ -70,3 +71,21 @@ def test_inspect_mesh_requires_explicit_supported_units(tmp_path) -> None:
         assert "units must be one of" in str(exc)
     else:
         raise AssertionError("Unsupported units should raise ValueError")
+
+
+
+def test_inspect_mesh_detects_intersecting_closed_components(tmp_path) -> None:
+    first = trimesh.creation.box(extents=(10, 10, 10))
+    second = trimesh.creation.box(extents=(10, 10, 10))
+    second.apply_translation((4, 0, 0))
+    mesh = trimesh.util.concatenate((first, second))
+    path = tmp_path / "overlapping_components.stl"
+    mesh.export(path)
+
+    report = inspect_mesh(path, units="mm")
+
+    assert report.is_watertight
+    assert report.self_intersection_status == "intersections_detected"
+    assert report.self_intersecting_triangle_pair_count > 0
+    assert report.validation_status == "needs_review"
+    assert any("intersecting non-adjacent triangle pair" in warning for warning in report.warnings)
