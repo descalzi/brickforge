@@ -1096,7 +1096,7 @@ function displayConstruction(result) {
     + (preservedOpeningCount
       ? ' ' + preservedOpeningCount + ' opening(s) are represented by conservative grid-cell clearances, which may be larger than the source holes.'
       : '')
-    + (construction.search?.candidate_search_limited
+    + (result.search?.candidate_search_limited
       ? ' The course-layout search used bounded interlocking samples, so this is not guaranteed to be the minimum-part solution.'
       : '')
     + ' Review the target and assembly previews and the stated nominal limitations before treating it as buildable.';
