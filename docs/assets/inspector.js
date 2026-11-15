@@ -779,9 +779,10 @@ function refineCandidateSurfacePlacement(profile, pattern, statusNode) {
       statusNode.dataset.state = "unchanged";
       return;
     }
-    pattern.surface_refinement_offset_mm = report.offset_mm;
-    pattern.translation_mm = pattern.opening_match_translation_mm.map((value, axis) =>
-      value + report.offset_mm[axis]);
+    const currentTranslation = [...pattern.translation_mm];
+    pattern.translation_mm = currentTranslation.map((value, axis) => value + report.offset_mm[axis]);
+    pattern.surface_refinement_offset_mm = pattern.translation_mm.map((value, axis) =>
+      value - pattern.opening_match_translation_mm[axis]);
     renderCandidatePreview(profile, pattern);
     statusNode.textContent = "Surface alignment improved by " + report.offset_mm.map((value) => value.toFixed(1)).join(", ")
       + " mm · mean distance " + report.baseline.mean_distance_mm.toFixed(2) + " → "
