@@ -12,11 +12,11 @@ import hashlib
 import json
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import numpy as np
 import trimesh
-from scipy import ndimage
+from scipy import ndimage  # type: ignore[import-untyped]
 
 from brickforge.assembly.model import Assembly
 from brickforge.parts.ldraw_mesh import assembly_to_mesh
@@ -138,7 +138,7 @@ def solidify_surface_mesh(
         solid_bounds_mm=tuple(
             tuple(float(v) for v in row) for row in np.asarray(solid.bounds)
         ),  # type: ignore[arg-type]
-        voxel_dimensions=tuple(int(v) for v in matrix.shape),
+        voxel_dimensions=cast(tuple[int, int, int], tuple(int(v) for v in matrix.shape)),
         occupied_voxels=int(np.count_nonzero(matrix)),
         component_count=int(component_count),
         handle_count=int(handle_count),
