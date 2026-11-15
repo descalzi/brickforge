@@ -68,7 +68,7 @@ This roadmap is intentionally milestone-based. Each milestone should produce a d
 - [x] Define the versioned browser target-grid data model with explicit physical pitch, origin, classification and layer extraction.
 - [x] Add a bounded browser voxeliser for closed meshes, including unit conversion, BVH-accelerated occupancy sampling and triangle-cell boundary detection.
 - [x] Add explicit source X/Y/Z up-axis alignment into the canonical Y-up construction frame without changing scale.
-- [ ] Define a scale-aware, orientation-aware target-shape representation for the browser product.
+- [x] Define a scale-aware, orientation-aware target-shape representation for the browser product using physical grid pitch/origin and explicit source-axis alignment into the canonical construction frame.
 - [x] Integrate browser voxelisation into the mesh inspector and expose per-course occupancy previews.
 - [x] Convert imported triangle meshes into a bounded 3D occupancy field at the standard stud/course resolution.
 - [ ] Add robust mesh validation and explicit handling for open, non-watertight, degenerate and self-intersecting surfaces.
