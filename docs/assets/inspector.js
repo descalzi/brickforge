@@ -9,6 +9,7 @@ import { constructionPreviewTransform } from "./construction-preview.js";
 import { refineSurfaceFitPose, scoreSurfaceFit } from "./surface-fit.js?v=surfacefit6";
 import { transformPartPreviewPositions } from "./part-preview.js?v=featurepreview1";
 import { matchNominalConnectionInterfaces } from "./specialised-part-matcher.js?v=specialised1";
+import { estimateBomCost, validatePriceCatalogue } from "./cost-estimator.js?v=costing1";
 import { orientationMatrixToYUp } from "./mesh-orientation.js?v=upaxis1";
 
 const MAX_FILE_BYTES = 100 * 1024 * 1024;
@@ -59,6 +60,9 @@ const constructionDownloadLDraw = document.querySelector('#construction-download
 const constructionDownloadGraph = document.querySelector('#construction-download-graph');
 const constructionDownloadBom = document.querySelector('#construction-download-bom');
 const constructionDownloadValidation = document.querySelector('#construction-download-validation');
+const constructionPriceInput = document.querySelector('#construction-price-input');
+const constructionCostStatus = document.querySelector('#construction-cost-status');
+const constructionCostList = document.querySelector('#construction-cost-list');
 
 const output = {
   x: document.querySelector('#dimension-x'),
@@ -89,6 +93,7 @@ let voxelWorker;
 let constructionWorker = null;
 let activeConstruction;
 let activeConstructionAlternatives = [];
+let activePriceCatalogue = null;
 let activeTargetGrid;
 let activeObliqueFeatures = [];
 let activeVoxelGroup;
@@ -1271,6 +1276,58 @@ function downloadConstructionFile(filename, contents, mediaType) {
   window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
+function renderConstructionCostEstimates() {
+  if (!constructionCostStatus || !constructionCostList) return;
+  constructionCostList.replaceChildren();
+  if (!activePriceCatalogue) {
+    constructionCostStatus.textContent = "Import a dated, source-attributed price catalogue to compare actual part costs.";
+    return;
+  }
+  const alternatives = activeConstructionAlternatives.length
+    ? activeConstructionAlternatives : activeConstruction ? [activeConstruction] : [];
+  if (!alternatives.length) {
+    constructionCostStatus.textContent = "Price catalogue loaded. Generate a connected construction to estimate its BOM.";
+    return;
+  }
+  const estimates = alternatives.map((alternative, index) => ({
+    alternative,
+    index,
+    estimate: estimateBomCost(alternative.bom, activePriceCatalogue),
+  }));
+  estimates.forEach(({ alternative, index, estimate }) => {
+    const item = document.createElement("li");
+    const total = estimate.estimated_total === null
+      ? "known subtotal " + activePriceCatalogue.currency + " " + estimate.known_subtotal.toFixed(2)
+      : "estimated total " + activePriceCatalogue.currency + " " + estimate.estimated_total.toFixed(2);
+    item.textContent = "Option " + (index + 1) + " · " + total
+      + " · " + Math.round(estimate.coverage_fraction * 100) + "% of parts priced"
+      + (estimate.missing.length
+        ? " · missing prices: " + estimate.missing.map((entry) => entry.part_id + " × " + entry.quantity).join(", ")
+        : " · complete BOM price coverage");
+    constructionCostList.append(item);
+  });
+  constructionCostStatus.textContent = "Source: " + activePriceCatalogue.source
+    + " · " + activePriceCatalogue.currency + " · prices dated " + activePriceCatalogue.as_of
+    + ". Shipping, taxes, stock availability and seller basket effects are excluded.";
+}
+
+async function loadConstructionPriceCatalogue(file) {
+  if (!file) return;
+  try {
+    if (file.size > 2 * 1024 * 1024) throw new Error("Price catalogue exceeds the 2 MB import limit.");
+    const catalogue = JSON.parse(await file.text());
+    if (!validatePriceCatalogue(catalogue)) {
+      throw new Error("Price file needs schema_version 1, a three-letter currency, source, as_of date and source-attributed part prices.");
+    }
+    activePriceCatalogue = catalogue;
+    renderConstructionCostEstimates();
+  } catch (error) {
+    activePriceCatalogue = null;
+    constructionCostStatus.textContent = error instanceof Error ? error.message : "Price catalogue could not be loaded.";
+    constructionCostStatus.dataset.state = "error";
+  }
+}
+
 function displayConstruction(result) {
   if (Array.isArray(result.alternatives)) activeConstructionAlternatives = result.alternatives;
   activeConstruction = result;
@@ -1294,6 +1351,7 @@ function displayConstruction(result) {
     });
   }
   renderConstructionPreview(result);
+  renderConstructionCostEstimates();
   constructionPartCount.textContent = result.parts.length.toLocaleString() + ' parts';
   const boundedSearch = result.search.budget_reached || result.search.candidate_search_limited;
   constructionDetails.textContent = result.connections.length.toLocaleString() + ' candidate connections · '
@@ -1706,6 +1764,7 @@ constructionDownloadBom.addEventListener('click', () => {
     'application/json;charset=utf-8',
   );
 });
+constructionPriceInput.addEventListener('change', () => loadConstructionPriceCatalogue(constructionPriceInput.files?.[0]));
 constructionDownloadValidation.addEventListener('click', () => {
   if (activeConstruction?.validation_report) downloadConstructionFile(
     activeConstruction.model_name + '.validation.json',
