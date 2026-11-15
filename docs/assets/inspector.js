@@ -10,7 +10,7 @@ import { refineSurfaceFitPose, scoreSurfaceFit } from "./surface-fit.js?v=surfac
 import { transformPartPreviewPositions } from "./part-preview.js?v=featurepreview1";
 import { matchNominalConnectionInterfaces, validateSpecialisedSurfaceCandidate } from "./specialised-part-matcher.js?v=specialised3";
 import { estimateBomCost, validatePriceCatalogue } from "./cost-estimator.js?v=costing1";
-import { loadConstructionLDrawSurface } from "./ldraw-surface-loader.js?v=ldrawsurface1";
+import { loadConstructionLDrawSurface } from "./ldraw-surface-loader.js?v=ldrawsurface2";
 import { orientationMatrixToYUp } from "./mesh-orientation.js?v=upaxis1";
 
 const MAX_FILE_BYTES = 100 * 1024 * 1024;
