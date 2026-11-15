@@ -163,7 +163,7 @@
             <button id="construction-preview-toggle" class="tool-button" type="button" disabled>Hide generated construction</button>
             <div class="construction-cost-panel">
               <strong>Whole-alternative surface fidelity</strong>
-              <p class="control-note">Alternatives are compared against the source mesh using exposed simplified part-body envelopes. This is a comparative geometric proxy, not detailed LDraw surface reconstruction or a buildability check.</p>
+              <p class="control-note">Alternatives are compared against the source mesh using sampled detailed LDraw part surfaces where available, with a clearly labelled simplified-envelope fallback. This is a comparative geometric proxy, not a buildability check.</p>
               <p id="construction-fidelity-status" role="status" aria-live="polite">Generate alternatives to compare their target-surface coverage.</p>
               <ul id="construction-fidelity-list"></ul>
             </div>
@@ -224,6 +224,6 @@
     <span class="footer-id">BF / MESH-01</span>
   </footer>
 
-  <script type="module" src="./assets/inspector.js?v=20261115-m5ext7"></script>
+  <script type="module" src="./assets/inspector.js?v=20261115-m5ext8"></script>
 </body>
 </html>
