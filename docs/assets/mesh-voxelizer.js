@@ -419,7 +419,7 @@ export function voxelizeMesh({
   if (topology.handle_count > 0) {
     onProgress({ phase: "features", completed: 0, total: 1 });
     const analysed = analyzeMeshFeaturesExtended(triangles, boundsMin, boundsMax);
-    features = analysed.filter((feature) => feature.axis !== "oblique");
+    features = analysed.filter((feature) => feature.axis !== "oblique" && feature.sample_support >= 3);
     obliqueFeatures = analysed.filter((feature) => feature.axis === "oblique");
     onProgress({ phase: "features", completed: 1, total: 1 });
   }
