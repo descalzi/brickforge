@@ -134,14 +134,7 @@ function nearestDistance(point, index, maxDistanceSquared) {
   return Math.sqrt(minimum);
 }
 
-/**
- * Compare a placed candidate part's actual triangle surface against the target mesh surface.
- * This is a geometric proximity score only: it does not test containment, collisions, clutch,
- * stability, assembly access, or whether the candidate belongs in the final connected model.
- */
-export function scoreSurfaceFit(candidatePositions, targetPositions, options = {}) {
-  validateTrianglePositions(candidatePositions, "Candidate geometry", MAX_CANDIDATE_TRIANGLES);
-  validateTrianglePositions(targetPositions, "Target geometry", MAX_TARGET_TRIANGLES);
+function surfaceFitOptions(options) {
   const tolerance = options.toleranceMm ?? DEFAULT_TOLERANCE_MM;
   const maxDistance = options.maxDistanceMm ?? DEFAULT_MAX_DISTANCE_MM;
   const cellSize = options.cellSizeMm ?? DEFAULT_CELL_SIZE_MM;
@@ -149,8 +142,10 @@ export function scoreSurfaceFit(candidatePositions, targetPositions, options = {
       || tolerance <= 0 || maxDistance < tolerance || cellSize <= 0) {
     throw new RangeError("Surface-fit tolerances and cell size must be positive finite values; max distance must be at least the tolerance.");
   }
+  return { tolerance, maxDistance, cellSize };
+}
 
-  const index = buildTriangleIndex(targetPositions, cellSize);
+function scoreCandidateAgainstIndex(candidatePositions, targetTriangleCount, index, tolerance, maxDistance) {
   const samples = [];
   for (let offset = 0; offset < candidatePositions.length; offset += 9) {
     sampleTriangle([
@@ -172,7 +167,7 @@ export function scoreSurfaceFit(candidatePositions, targetPositions, options = {
     method: "candidate-surface-to-target-surface-nearest-triangle-distance",
     sample_count: distances.length,
     candidate_triangle_count: candidatePositions.length / 9,
-    target_triangle_count: targetPositions.length / 9,
+    target_triangle_count: targetTriangleCount,
     tolerance_mm: tolerance,
     search_distance_cap_mm: maxDistance,
     mean_distance_mm: meanDistanceMm,
@@ -187,6 +182,74 @@ export function scoreSurfaceFit(candidatePositions, targetPositions, options = {
       "Only candidate surface samples are measured against the nearest target surface; reverse coverage is not measured.",
       "Distances are capped at the configured search distance.",
       "A geometric surface match does not establish material containment, collision-free placement, physical connection, stability or assembly accessibility.",
+    ],
+  };
+}
+
+/**
+ * Compare a placed candidate part's actual triangle surface against the target mesh surface.
+ * This is a geometric proximity score only; it does not test containment, collisions, clutch,
+ * stability, assembly access, or whether the candidate belongs in the final connected model.
+ */
+export function scoreSurfaceFit(candidatePositions, targetPositions, options = {}) {
+  validateTrianglePositions(candidatePositions, "Candidate geometry", MAX_CANDIDATE_TRIANGLES);
+  validateTrianglePositions(targetPositions, "Target geometry", MAX_TARGET_TRIANGLES);
+  const { tolerance, maxDistance, cellSize } = surfaceFitOptions(options);
+  const index = buildTriangleIndex(targetPositions, cellSize);
+  return scoreCandidateAgainstIndex(candidatePositions, targetPositions.length / 9, index, tolerance, maxDistance);
+}
+
+/**
+ * Refine a feature-derived candidate placement using a bounded seven-position translation search.
+ * Opening alignment is only the starting point: a better surface score can shift measured openings,
+ * so callers must disclose the returned offset and keep the original placement recoverable.
+ */
+export function refineSurfaceFitTranslation(candidatePositions, targetPositions, options = {}) {
+  validateTrianglePositions(candidatePositions, "Candidate geometry", MAX_CANDIDATE_TRIANGLES);
+  validateTrianglePositions(targetPositions, "Target geometry", MAX_TARGET_TRIANGLES);
+  const { tolerance, maxDistance, cellSize } = surfaceFitOptions(options);
+  const radius = options.radiusMm ?? 1;
+  const step = options.stepMm ?? radius;
+  if (![radius, step].every(Number.isFinite) || radius <= 0 || radius > 3 || step <= 0 || step > radius) {
+    throw new RangeError("Translation refinement radius must be 0-3 mm and step must be positive and no larger than the radius.");
+  }
+  const index = buildTriangleIndex(targetPositions, cellSize);
+  const targetTriangleCount = targetPositions.length / 9;
+  const baseline = scoreCandidateAgainstIndex(candidatePositions, targetTriangleCount, index, tolerance, maxDistance);
+  const offsets = [
+    [0, 0, 0],
+    [radius, 0, 0], [-radius, 0, 0],
+    [0, radius, 0], [0, -radius, 0],
+    [0, 0, radius], [0, 0, -radius],
+  ].filter((offset) => offset.every((value) => value === 0 || Math.abs(value) === radius || Math.abs(value) === step));
+  let best = baseline;
+  let bestOffset = [0, 0, 0];
+  for (const offset of offsets.slice(1)) {
+    const translated = new Float32Array(candidatePositions.length);
+    for (let index = 0; index < candidatePositions.length; index += 3) {
+      translated[index] = candidatePositions[index] + offset[0];
+      translated[index + 1] = candidatePositions[index + 1] + offset[1];
+      translated[index + 2] = candidatePositions[index + 2] + offset[2];
+    }
+    const score = scoreCandidateAgainstIndex(translated, targetTriangleCount, index, tolerance, maxDistance);
+    if (score.score > best.score + 1e-12
+        || (Math.abs(score.score - best.score) <= 1e-12 && score.mean_distance_mm < best.mean_distance_mm - 1e-9)) {
+      best = score;
+      bestOffset = offset;
+    }
+  }
+  return {
+    schema_version: 1,
+    method: "bounded-seven-position-translation-refinement",
+    offset_mm: bestOffset,
+    baseline,
+    best,
+    improved: best.score > baseline.score + 1e-12,
+    evaluations: 7,
+    limitations: [
+      "Only the initial translation and six axis-aligned offsets are evaluated; rotation and scale are unchanged.",
+      "Improving surface proximity can worsen the opening-pattern alignment used to estimate the original placement.",
+      "This local heuristic does not prove containment, collision-free placement, connection compatibility or physical buildability.",
     ],
   };
 }
