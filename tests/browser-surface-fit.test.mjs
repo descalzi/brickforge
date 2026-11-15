@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { scoreSurfaceFit } from "../docs/assets/surface-fit.js";
+import { refineSurfaceFitTranslation, scoreSurfaceFit } from "../docs/assets/surface-fit.js";
 
 const triangle = (z) => [0, 0, z, 10, 0, z, 0, 10, z];
 
@@ -40,4 +40,26 @@ test("surface fit exposes its one-way coverage and physical-buildability limitat
   assert.equal(result.method, "candidate-surface-to-target-surface-nearest-triangle-distance");
   assert.ok(result.limitations.some((entry) => entry.includes("reverse coverage")));
   assert.ok(result.limitations.some((entry) => entry.includes("physical connection")));
+});
+
+test("surface refinement finds a bounded translation that improves alignment", () => {
+  const candidate = [0, 0, 2, 10, 0, 2, 0, 10, 2];
+  const target = [0, 0, 0, 10, 0, 0, 0, 10, 0];
+  const result = refineSurfaceFitTranslation(candidate, target, { radiusMm: 2 });
+  assert.equal(result.method, "bounded-seven-position-translation-refinement");
+  assert.deepEqual(result.offset_mm, [0, 0, -2]);
+  assert.equal(result.improved, true);
+  assert.ok(result.best.mean_distance_mm < result.baseline.mean_distance_mm);
+  assert.equal(result.evaluations, 7);
+});
+
+test("surface refinement preserves the original placement when no candidate improves", () => {
+  const triangle = [0, 0, 0, 10, 0, 0, 0, 10, 0];
+  const result = refineSurfaceFitTranslation(triangle, triangle);
+  assert.deepEqual(result.offset_mm, [0, 0, 0]);
+  assert.equal(result.improved, false);
+});
+
+test("surface refinement enforces a small bounded search radius", () => {
+  assert.throws(() => refineSurfaceFitTranslation(triangle(0), triangle(0), { radiusMm: 4 }), /no larger than 3 mm/);
 });
