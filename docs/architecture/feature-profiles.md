@@ -38,7 +38,7 @@ The Inspector compares measured target openings with these nominal interfaces an
 
 ## Mesh input diagnostics
 
-The Python geometry inspection report now records watertightness, winding consistency, positive-volume status, connected-component count, Euler characteristic, degenerate and duplicate face counts, and a machine-readable validation status. Open/non-manifold geometry, duplicate or degenerate faces, and disconnected shells are called out explicitly. This is an ingestion diagnostic, not a self-intersection test: the report always states that triangle self-intersections are not assessed. A mesh passing the closed-solid checks must therefore not be interpreted as proven intersection-free.
+The Python geometry inspection report now records watertightness, winding consistency, positive-volume status, connected-component count, Euler characteristic, degenerate and duplicate face counts, and a machine-readable validation status. It also performs a bounded sweep-and-prune triangle-pair scan with separating-axis tests. Intersections are reported, and a candidate-pair budget hit is explicitly not assessed. Pairs sharing a vertex are skipped to avoid normal adjacent-face contacts, so a clear scan is not a formal proof against every possible self-contact.
 
 
 ## Complete construction alternatives, cost and mesh intersections
