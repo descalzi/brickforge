@@ -165,6 +165,126 @@
         "construction envelope"
       ],
       "description": "A deliberately blocky car-like shape with integrated wheel volumes. It is a geometry challenge rather than a detailed vehicle model."
+    },
+    {
+      "id": "thin-wall-panel",
+      "file": "thin-wall-panel.stl",
+      "title": "Thin-wall panel",
+      "category": "Structural detail",
+      "dimensions_mm": [
+        48,
+        2,
+        20
+      ],
+      "expected": {
+        "through_tunnels": 0
+      },
+      "tests": [
+        "thin feature preservation",
+        "minimum wall thickness",
+        "voxel resolution sensitivity"
+      ],
+      "description": "A long, narrow 2 mm-thick wall with reinforcing returns. Challenges thin-feature preservation and grid resolution."
+    },
+    {
+      "id": "arched-bridge",
+      "file": "arched-bridge.stl",
+      "title": "Arched bridge",
+      "category": "Structural detail",
+      "dimensions_mm": [
+        36,
+        18,
+        18
+      ],
+      "expected": {
+        "through_tunnels": 1
+      },
+      "tests": [
+        "arch aperture detection",
+        "overhang and underside coverage",
+        "concave silhouette"
+      ],
+      "description": "A solid bridge-like form with a semicircular arch passing through its depth."
+    },
+    {
+      "id": "cantilever-overhang",
+      "file": "cantilever-overhang.stl",
+      "title": "Cantilever overhang",
+      "category": "Structural detail",
+      "dimensions_mm": [
+        32,
+        20,
+        20
+      ],
+      "expected": {
+        "through_tunnels": 0
+      },
+      "tests": [
+        "overhang detection",
+        "unsupported geometry",
+        "course-by-course support"
+      ],
+      "description": "A stepped base supports an upper beam that projects beyond the base, leaving a clear underside."
+    },
+    {
+      "id": "hollow-sphere",
+      "file": "hollow-sphere.stl",
+      "title": "Hollow sphere",
+      "category": "Organic / hollow",
+      "dimensions_mm": [
+        26,
+        26,
+        26
+      ],
+      "expected": {
+        "through_tunnels": 0
+      },
+      "tests": [
+        "enclosed cavity handling",
+        "curved surface fidelity",
+        "thin shell voxelisation"
+      ],
+      "description": "A closed spherical shell with an internal void, useful for distinguishing an enclosed cavity from an open tunnel."
+    },
+    {
+      "id": "intersecting-solids",
+      "file": "intersecting-solids.stl",
+      "title": "Intersecting solids",
+      "category": "Mesh integrity",
+      "dimensions_mm": [
+        30,
+        18,
+        18
+      ],
+      "expected": {
+        "through_tunnels": 0
+      },
+      "tests": [
+        "overlapping component union",
+        "self-intersection diagnostics",
+        "watertight repair behaviour"
+      ],
+      "description": "Two rectangular volumes overlap and are fused into one solid, testing compound geometry and overlap handling."
+    },
+    {
+      "id": "organic-lobed",
+      "file": "organic-lobed.stl",
+      "title": "Organic lobed form",
+      "category": "Organic / compound",
+      "dimensions_mm": [
+        34,
+        20,
+        22
+      ],
+      "expected": {
+        "through_tunnels": 0
+      },
+      "tests": [
+        "irregular occupancy",
+        "surface fidelity",
+        "non-rectangular construction envelope"
+      ],
+      "description": "A fused multi-lobed solid with rounded contours, a step beyond simple block geometry."
     }
   ],
   "limitations": [
