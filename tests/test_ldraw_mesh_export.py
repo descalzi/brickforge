@@ -108,3 +108,8 @@ def test_authored_ldraw_brick_can_export_a_watertight_reference(tmp_path: Path) 
     assert imported.bounds[1] - imported.bounds[0] == pytest.approx(
         (32.0, 11.2, 16.0), abs=1.6
     )
+    target_grid = voxelize_mesh(
+        imported, units="mm", pitch_mm=(4.0, 5.6, 4.0)
+    )
+    assert target_grid.spec.cell_count > 0
+    assert int(np.count_nonzero(target_grid.classification)) > 0
