@@ -468,8 +468,9 @@ export function voxelizeMesh({
 
   const selfIntersections = diagnoseTriangleIntersections(triangles, { maxCandidatePairs: 500000 });
 
-  const origin = boundsMin.map((value, axis) =>
-    Math.floor(value / pitchMm[axis]) * pitchMm[axis]);
+  // The STL's absolute translation is arbitrary. Anchor the target grid to
+  // its own lower bounds so tiny offsets cannot add an entire stud row.
+  const origin = [...boundsMin];
   const dimensions = boundsMin.map((value, axis) =>
     Math.max(1, Math.ceil((boundsMax[axis] - origin[axis]) / pitchMm[axis] - 1e-12)));
   const cellCount = dimensions[0] * dimensions[1] * dimensions[2];
