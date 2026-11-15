@@ -185,6 +185,40 @@ test("browser voxeliser supports custom anisotropic pitch", () => {
   assert.deepEqual(grid.pitch_mm, [12, 14.4, 12]);
 });
 
+test("STL float precision does not create a phantom course and one brick remains one part", () => {
+  // This is the float32-sized envelope measured from the authored 3001
+  // golden STL: 9.6 mm body plus 1.6 mm studs, with a tiny boundary overshoot.
+  const mesh = boxMesh([32, 11.200000405311584, 16]);
+  const result = voxelizeMesh({ ...mesh, units: "mm" });
+  assert.deepEqual(result.dimensions, [4, 1, 2]);
+
+  const grid = new TargetGrid({
+    spec: new GridSpec({
+      dimensions: result.dimensions,
+      origin_mm: result.origin_mm,
+      pitch_mm: result.pitch_mm,
+    }),
+    classification: result.classification,
+    surface_coverage: result.surface_coverage,
+    source_units: result.source_units,
+    source_bounds_mm: result.source_bounds_mm,
+    warnings: result.warnings,
+    topology: result.topology,
+    features: result.features,
+    feature_keepouts: result.feature_keepouts,
+  });
+  const construction = buildLayeredFootprintBlock(
+    [grid.layer_footprint(0)],
+    connectionCatalogue,
+    { courseType: "brick", colourCodes: [4] },
+  );
+  assert.equal(construction.parts.length, 1);
+  assert.equal(construction.parts[0].part_id, "3001");
+  assert.equal(construction.parts[0].colour_code, 4);
+  assert.equal(construction.parts[0].translation_ldu[1], 0);
+  assert.deepEqual(construction.connections, []);
+});
+
 test("browser voxeliser retains a sub-grid thin feature through triangle-cell intersection", () => {
   const mesh = boxMesh([0.5, 0.5, 0.5], [4, 4.8, 4]);
   const grid = voxelizeMesh({ ...mesh, units: "mm" });
