@@ -1,0 +1,213 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://descalzi.github.io/brickforge/schemas/design-intent-v1.schema.json",
+  "title": "BrickForge design-intent contract v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "fixture_id",
+    "intent"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "fixture_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "intent": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "required_features": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/requiredFeature"
+          }
+        },
+        "forbidden_features": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/forbiddenFeature"
+          }
+        },
+        "relationships": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/relationship"
+          }
+        }
+      }
+    },
+    "part_preferences": {
+      "type": "object",
+      "properties": {
+        "roles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/partRole"
+          }
+        }
+      }
+    },
+    "construction_constraints": {
+      "type": "object",
+      "properties": {
+        "require_connected": {
+          "type": "boolean"
+        },
+        "require_no_collisions": {
+          "type": "boolean"
+        },
+        "require_topology_preserved": {
+          "type": "boolean"
+        }
+      }
+    },
+    "diagnostic_metrics": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "$defs": {
+    "requiredFeature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "feature_type",
+        "count"
+      ],
+      "properties": {
+        "feature_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "forbiddenFeature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "feature_type"
+      ],
+      "properties": {
+        "feature_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "max_count": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 0
+        }
+      }
+    },
+    "relationship": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "feature_types"
+          ],
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "type": {
+              "const": "same_group"
+            },
+            "feature_types": {
+              "type": "array",
+              "minItems": 2,
+              "items": {
+                "type": "string"
+              }
+            },
+            "min_shared_groups": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "feature_types",
+            "min_mm"
+          ],
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "type": {
+              "const": "minimum_separation"
+            },
+            "feature_types": {
+              "type": "array",
+              "minItems": 2,
+              "items": {
+                "type": "string"
+              }
+            },
+            "min_mm": {
+              "type": "number",
+              "minimum": 0
+            },
+            "max_mm": {
+              "type": "number",
+              "minimum": 0
+            }
+          }
+        }
+      ]
+    },
+    "partRole": {
+      "type": "object",
+      "required": [
+        "role"
+      ],
+      "properties": {
+        "role": {
+          "type": "string",
+          "minLength": 1
+        },
+        "min_count": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 1
+        },
+        "preferred_families": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "preferred_part_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "require_preferred_family": {
+          "type": "boolean",
+          "default": false
+        },
+        "require_preferred_part": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    }
+  }
+}
