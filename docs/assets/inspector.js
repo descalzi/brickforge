@@ -8,6 +8,7 @@ import { matchFeaturePatterns, matchTargetFeatures } from "./feature-matcher.js?
 import { constructionPreviewTransform } from "./construction-preview.js";
 import { refineSurfaceFitPose, scoreSurfaceFit } from "./surface-fit.js?v=surfacefit6";
 import { transformPartPreviewPositions } from "./part-preview.js?v=featurepreview1";
+import { matchNominalConnectionInterfaces } from "./specialised-part-matcher.js?v=specialised1";
 import { orientationMatrixToYUp } from "./mesh-orientation.js?v=upaxis1";
 
 const MAX_FILE_BYTES = 100 * 1024 * 1024;
@@ -39,6 +40,7 @@ const featureOverlayToggle = document.querySelector('#feature-overlay-toggle');
 const featureProfileInput = document.querySelector('#feature-profile-input');
 const featureMatchStatus = document.querySelector('#feature-match-status');
 const featureMatchList = document.querySelector('#feature-match-list');
+const featureInterfaceList = document.querySelector('#feature-interface-list');
 const featurePatternStatus = document.querySelector('#feature-pattern-status');
 const featurePatternList = document.querySelector('#feature-pattern-list');
 const candidatePreviewToggle = document.querySelector('#candidate-preview-toggle');
@@ -985,8 +987,27 @@ function renderFeatureMatches() {
   });
   featureMatchStatus.textContent = totalMatches
     ? totalMatches + ' geometric candidate match(es) found across ' + importedPartFeatureProfiles.length
-      + ' imported part profile(s). These are not verified fits or buildability results.'
+      + ' imported part profile(s), including ' + activeObliqueFeatures.length
+      + ' oblique target section candidate(s). These are not verified fits or buildability results.'
     : 'No compatible opening profiles found in the imported set. The target features remain unresolved.';
+  if (featureInterfaceList) {
+    featureInterfaceList.replaceChildren();
+    const interfaceMatches = matchNominalConnectionInterfaces(targetFeatures, importedPartFeatureProfiles);
+    interfaceMatches.forEach((match) => {
+      const item = document.createElement('li');
+      item.textContent = match.part_id + ' · ' + match.interface_type
+        + ' · target Ø ' + match.target_diameter_mm.toFixed(2) + ' mm'
+        + ' / nominal Ø ' + match.nominal_diameter_mm.toFixed(2) + ' mm'
+        + ' · source ' + match.source_file
+        + ' · ' + match.note;
+      featureInterfaceList.append(item);
+    });
+    if (!interfaceMatches.length) {
+      const item = document.createElement('li');
+      item.textContent = 'No source-verified nominal interface dimensions match the measured round openings in the imported profiles.';
+      featureInterfaceList.append(item);
+    }
+  }
   renderFeaturePatterns();
 }
 
