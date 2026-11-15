@@ -430,3 +430,50 @@ test("feature analysis does not group constant-spacing parallel openings as a br
   const features = classifyBranchingFeatureGroups([track("left", 0), track("right", 6)]);
   assert.ok(features.every((feature) => feature.branching_group_id === undefined));
 });
+
+
+async function readAsciiStlMesh(filename) {
+  const source = await readFile(new URL("../docs/fixtures/" + filename, import.meta.url), "utf8");
+  const vertices = [];
+  const matches = source.matchAll(/vertex\\s+([-+0-9.eE]+)\\s+([-+0-9.eE]+)\\s+([-+0-9.eE]+)/g);
+  for (const match of matches) vertices.push(Number(match[1]), Number(match[2]), Number(match[3]));
+  assert.ok(vertices.length >= 9, filename + " must contain STL facets");
+  return { vertices: new Float64Array(vertices),
+    indices: new Uint32Array(Array.from({ length: vertices.length / 3 }, (_, index) => index)) };
+}
+
+test("LEGO-scale centimetre beam fixtures preserve real through-holes into brick construction", async () => {
+  const cases = [
+    ["block-through-hole.stl", 1],
+    ["block-two-hole-pattern.stl", 2],
+    ["block-three-hole-pattern.stl", 3],
+  ];
+  for (const [filename, expectedHoles] of cases) {
+    const source = await readAsciiStlMesh(filename);
+    const vertices = new Float64Array(source.vertices.length);
+    for (let index = 0; index < source.vertices.length; index += 3) {
+      const x = source.vertices[index], y = source.vertices[index + 1], z = source.vertices[index + 2];
+      vertices[index] = x; vertices[index + 1] = z; vertices[index + 2] = -y;
+    }
+    const result = voxelizeMesh({ vertices, indices: source.indices, units: "cm", pitchMm: [8, 9.6, 8] });
+    assert.deepEqual(result.dimensions, [6, 2, 2], filename + " must align to a 6 × 2 × 2 stud envelope");
+    assert.equal(result.topology.handle_count, expectedHoles, filename + " topological hole count");
+    assert.equal(result.features.length, expectedHoles, filename + " detected opening count");
+    assert.ok(result.features.every((feature) => feature.axis === "z"), filename + " bores must be horizontal");
+    assert.equal(result.feature_keepouts.length, expectedHoles, filename + " clearance count");
+    assert.ok(result.feature_keepouts.every((keepout) => keepout.preserved && keepout.cell_count > 0), filename + " grid clearance");
+    const grid = new TargetGrid({
+      spec: new GridSpec({ dimensions: result.dimensions, origin_mm: result.origin_mm, pitch_mm: result.pitch_mm }),
+      classification: result.classification, surface_coverage: result.surface_coverage,
+      source_units: result.source_units, source_bounds_mm: result.source_bounds_mm,
+      warnings: result.warnings, topology: result.topology, features: result.features,
+      feature_keepouts: result.feature_keepouts,
+    });
+    const footprints = Array.from({ length: grid.spec.dimensions[1] }, (_, course) => grid.layer_footprint(course));
+    assert.ok(footprints.every((footprint) => footprint.length > 0), filename + " must retain both courses");
+    const construction = buildLayeredFootprintBlock(footprints, connectionCatalogue, { maxParts: 200, courseType: "brick" });
+    assert.ok(construction.parts.length > 0, filename + " must produce LEGO brick parts");
+    assert.ok(construction.connections.length > 0, filename + " must connect the courses");
+    assert.equal(construction.validation_report.overall_status, "nominal_checks_passed", filename);
+  }
+});
