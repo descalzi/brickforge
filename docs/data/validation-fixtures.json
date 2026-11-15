@@ -1,0 +1,175 @@
+{
+  "schema_version": 1,
+  "title": "BrickForge validation fixture library",
+  "units": "mm",
+  "generation": "Deterministic 1 mm voxel boundary meshes, exported as ASCII STL. The fixtures are intentionally synthetic and dimensioned in millimetres.",
+  "fixtures": [
+    {
+      "id": "block-solid",
+      "file": "block-solid.stl",
+      "title": "Solid block",
+      "category": "Baseline",
+      "dimensions_mm": [
+        30,
+        20,
+        12
+      ],
+      "expected": {
+        "through_tunnels": 0,
+        "blind_pockets": 0
+      },
+      "tests": [
+        "STL parsing",
+        "bounding dimensions",
+        "watertight occupancy baseline"
+      ],
+      "description": "A plain rectangular solid used to establish a clean baseline for mesh ingestion, dimensions and occupancy."
+    },
+    {
+      "id": "block-through-hole",
+      "file": "block-through-hole.stl",
+      "title": "Single through-hole",
+      "category": "Openings",
+      "dimensions_mm": [
+        36,
+        24,
+        12
+      ],
+      "expected": {
+        "through_tunnels": 1,
+        "blind_pockets": 0
+      },
+      "tests": [
+        "topological tunnel count",
+        "axis-aligned opening detection",
+        "grid clearance mapping"
+      ],
+      "description": "A cylindrical opening passes completely through the thickness of the block."
+    },
+    {
+      "id": "block-three-hole-pattern",
+      "file": "block-three-hole-pattern.stl",
+      "title": "Three-hole pattern",
+      "category": "Openings",
+      "dimensions_mm": [
+        40,
+        24,
+        12
+      ],
+      "expected": {
+        "through_tunnels": 3,
+        "blind_pockets": 0
+      },
+      "tests": [
+        "multiple opening detection",
+        "feature separation",
+        "repeated interface matching"
+      ],
+      "description": "Three equal through-holes on a straight pitch, useful for checking repeated feature localisation."
+    },
+    {
+      "id": "block-blind-pocket",
+      "file": "block-blind-pocket.stl",
+      "title": "Blind pocket",
+      "category": "Openings",
+      "dimensions_mm": [
+        30,
+        20,
+        12
+      ],
+      "expected": {
+        "through_tunnels": 0,
+        "blind_pockets": 1
+      },
+      "tests": [
+        "partial-span feature classification",
+        "blind/through distinction"
+      ],
+      "description": "A cylindrical pocket opens on one face but stops inside the solid."
+    },
+    {
+      "id": "block-oblique-bore",
+      "file": "block-oblique-bore.stl",
+      "title": "Oblique bore",
+      "category": "Advanced openings",
+      "dimensions_mm": [
+        36,
+        24,
+        18
+      ],
+      "expected": {
+        "oblique_features": 1
+      },
+      "tests": [
+        "oblique section sampling",
+        "arbitrary-axis feature matching"
+      ],
+      "description": "A diagonal cylindrical bore crosses the block at an angle."
+    },
+    {
+      "id": "block-curved-tunnel",
+      "file": "block-curved-tunnel.stl",
+      "title": "Curved tunnel",
+      "category": "Advanced openings",
+      "dimensions_mm": [
+        40,
+        24,
+        18
+      ],
+      "expected": {
+        "curved_tunnel_candidates": 1
+      },
+      "tests": [
+        "centreline deviation",
+        "curved feature candidate classification"
+      ],
+      "description": "A smoothly bending tunnel passes through the block. It is deliberately more difficult than a straight cylindrical opening."
+    },
+    {
+      "id": "block-branching-tunnel",
+      "file": "block-branching-tunnel.stl",
+      "title": "Branching tunnel",
+      "category": "Advanced openings",
+      "dimensions_mm": [
+        40,
+        24,
+        18
+      ],
+      "expected": {
+        "branching_tunnel_candidates": 1
+      },
+      "tests": [
+        "multiple contour grouping",
+        "branching candidate analysis",
+        "topology limitations"
+      ],
+      "description": "Two intersecting bores form a T-shaped internal passage."
+    },
+    {
+      "id": "car-simple",
+      "file": "car-simple.stl",
+      "title": "Simple car silhouette",
+      "category": "Organic / compound",
+      "dimensions_mm": [
+        50,
+        14,
+        17
+      ],
+      "expected": {
+        "through_tunnels": 0
+      },
+      "tests": [
+        "non-rectangular occupancy",
+        "multi-volume silhouette",
+        "surface fidelity",
+        "construction envelope"
+      ],
+      "description": "A deliberately blocky car-like shape with integrated wheel volumes. It is a geometry challenge rather than a detailed vehicle model."
+    }
+  ],
+  "limitations": [
+    "These are voxel-derived benchmark meshes, not CAD-grade analytic surfaces. Their 1 mm surface quantisation is intentional and should be considered when comparing fine dimensions.",
+    "Expected feature counts describe design intent. Current sampled algorithms may report candidates rather than exact topology; tests should record both expected intent and observed result.",
+    "The car fixture is a simple silhouette, not a mechanically detailed or physically functional vehicle."
+  ]
+}
