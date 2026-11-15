@@ -1359,7 +1359,14 @@ function constructionEnvelopeSurfacePositions(result) {
     }
   });
   if (!positions.length) throw new Error("No exposed construction envelope faces were available for comparison.");
-  return new Float32Array(positions);
+  const triangleCount = positions.length / 9;
+  const stride = Math.max(1, Math.ceil(triangleCount / 4000));
+  if (stride === 1) return new Float32Array(positions);
+  const sampled = [];
+  for (let triangle = 0; triangle < triangleCount; triangle += stride) {
+    sampled.push(...positions.slice(triangle * 9, triangle * 9 + 9));
+  }
+  return new Float32Array(sampled);
 }
 
 async function compareConstructionAlternativeSurfaces() {
