@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from math import ceil, floor, isfinite
+from math import ceil, isfinite
 from typing import cast
 
 import numpy as np
@@ -71,13 +71,10 @@ def voxelize_mesh(
     scaled_mesh = mesh.copy()
     scaled_mesh.vertices = vertices * scale
     bounds = np.asarray(scaled_mesh.bounds, dtype=np.float64)
-    origin = np.array(
-        [
-            floor(bounds[0, axis] / pitch_mm[axis]) * pitch_mm[axis]
-            for axis in range(3)
-        ],
-        dtype=np.float64,
-    )
+    # The mesh's absolute world translation is arbitrary. Anchor the grid to
+    # its own lower bounds instead of flooring to global stud multiples; this
+    # prevents a harmless sub-millimetre offset from adding a whole stud row.
+    origin = bounds[0].copy()
     dimensions = tuple(
         max(
             1,
