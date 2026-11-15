@@ -145,7 +145,7 @@ def export_assembly_stl(
     path.parent.mkdir(parents=True, exist_ok=True)
     mesh = assembly_to_mesh(assembly, library)
     raw_winding_consistent = bool(mesh.is_winding_consistent)
-    trimesh.repair.fix_normals(mesh, multibody=True)
+    winding_conflicts = _repair_face_winding(mesh)
     payload = mesh.export(file_type="stl")
     if not isinstance(payload, bytes):
         raise TypeError("Trimesh did not return binary STL data")
@@ -171,6 +171,7 @@ def export_assembly_stl(
         "is_watertight": bool(mesh.is_watertight),
         "raw_is_winding_consistent": raw_winding_consistent,
         "winding_repair_attempted": True,
+        "winding_repair_conflict_count": winding_conflicts,
         "is_winding_consistent": bool(mesh.is_winding_consistent),
         "shell_policy": "part shells concatenated; no boolean union performed",
         "limitations": [
