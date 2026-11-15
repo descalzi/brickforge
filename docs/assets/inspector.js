@@ -1452,6 +1452,7 @@ async function loadConstructionPriceCatalogue(file) {
 function displayConstruction(result) {
   if (Array.isArray(result.alternatives)) activeConstructionAlternatives = result.alternatives;
   activeConstruction = result;
+  compareConstructionAlternativeSurfaces();
   constructionAlternatives.replaceChildren();
   if (activeConstructionAlternatives.length > 1) {
     const heading = document.createElement('strong');
@@ -1472,7 +1473,6 @@ function displayConstruction(result) {
       constructionAlternatives.append(option);
     });
   }
-  compareConstructionAlternativeSurfaces();
   renderConstructionPreview(result);
   renderConstructionCostEstimates();
   constructionPartCount.textContent = result.parts.length.toLocaleString() + ' parts';
