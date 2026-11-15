@@ -76,6 +76,63 @@ def assembly_to_mesh(
     return mesh
 
 
+def _repair_face_winding(mesh: trimesh.Trimesh) -> int:
+    """Orient adjacent triangles consistently without optional NetworkX.
+
+    Returns the number of contradictory adjacency constraints. Non-orientable
+    or non-manifold conflicts remain visible to the caller and are not hidden.
+    """
+    faces = np.asarray(mesh.faces, dtype=np.int64).copy()
+    adjacency: list[list[tuple[int, int]]] = [[] for _ in range(len(faces))]
+    shared_edges = np.asarray(mesh.face_adjacency_edges, dtype=np.int64)
+    adjacent_faces = np.asarray(mesh.face_adjacency, dtype=np.int64)
+
+    def edge_direction(face: np.ndarray, edge: np.ndarray) -> tuple[int, int]:
+        left, right = int(edge[0]), int(edge[1])
+        for index in range(3):
+            start = int(face[index])
+            end = int(face[(index + 1) % 3])
+            if (start == left and end == right) or (start == right and end == left):
+                return start, end
+        raise ValueError("Face adjacency references an edge absent from its triangle.")
+
+    for pair, edge in zip(adjacent_faces, shared_edges, strict=True):
+        first, second = int(pair[0]), int(pair[1])
+        direction_a = edge_direction(faces[first], edge)
+        direction_b = edge_direction(faces[second], edge)
+        toggle = int(direction_a == direction_b)
+        adjacency[first].append((second, toggle))
+        adjacency[second].append((first, toggle))
+
+    flips: list[int | None] = [None] * len(faces)
+    conflicts = 0
+    for root in range(len(faces)):
+        if flips[root] is not None:
+            continue
+        flips[root] = 0
+        pending = [root]
+        while pending:
+            current = pending.pop()
+            current_flip = flips[current]
+            assert current_flip is not None
+            for neighbour, toggle in adjacency[current]:
+                expected = current_flip ^ toggle
+                if flips[neighbour] is None:
+                    flips[neighbour] = expected
+                    pending.append(neighbour)
+                elif flips[neighbour] != expected:
+                    conflicts += 1
+
+    flip_indices = np.fromiter(
+        (index for index, value in enumerate(flips) if value == 1),
+        dtype=np.int64,
+    )
+    if len(flip_indices):
+        faces[flip_indices] = faces[flip_indices][:, [0, 2, 1]]
+        mesh.faces = faces
+    return conflicts
+
+
 def export_assembly_stl(
     assembly: Assembly,
     library: LDrawLibrary,
