@@ -74,6 +74,10 @@ print(json.dumps({
     "source_parts": 1,
     "reconstructed_parts": len(reconstructed.parts),
     "reconstructed_bom": reconstructed.bom_dict(),
+    "reconstructed_placements": [
+        {"part_id": part.part_id, "translation_ldu": list(part.translation_ldu), "matrix": list(part.matrix)}
+        for part in reconstructed.parts
+    ],
     "comparison_pitch_mm": 2.0,
     "source_dimensions_mm": source_dimensions.tolist(),
     "reconstructed_dimensions_mm": reconstructed_dimensions.tolist(),
