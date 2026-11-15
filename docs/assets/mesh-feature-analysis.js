@@ -347,14 +347,25 @@ export function analyzeMeshFeatures(triangles, boundsMin, boundsMax) {
       features.push(summarizeCluster(cluster, features.length + 1, boundsMin, boundsMax));
     }
   }
-  // Mark possible branches only when separate section tracks approach one another
-  // in shared slices and are clearly farther apart elsewhere.
+  classifyBranchingFeatureGroups(features);
+  return features.sort((left, right) =>
+    left.axis_index - right.axis_index
+    || left.center_mm[0] - right.center_mm[0]
+    || left.center_mm[1] - right.center_mm[1]
+    || left.center_mm[2] - right.center_mm[2])
+    .map((feature, index) => ({ ...feature, id: feature.axis + "-" + (index + 1) }));
+}
+
+
+export function classifyBranchingFeatureGroups(features) {
+  if (!Array.isArray(features)) throw new TypeError("features must be an array");
   let branchIndex = 0;
   for (let first = 0; first < features.length; first += 1) {
     for (let second = first + 1; second < features.length; second += 1) {
       const left = features[first];
       const right = features[second];
-      if (left.axis !== right.axis) continue;
+      if (left.axis !== right.axis || !Array.isArray(left.centreline_samples)
+          || !Array.isArray(right.centreline_samples)) continue;
       const rightSamples = new Map(right.centreline_samples.map((sample) => [sample.sample_index, sample.centre_2d_mm]));
       const distances = left.centreline_samples
         .filter((sample) => rightSamples.has(sample.sample_index))
@@ -373,14 +384,8 @@ export function analyzeMeshFeatures(triangles, boundsMin, boundsMax) {
       }
     }
   }
-  return features.sort((left, right) =>
-    left.axis_index - right.axis_index
-    || left.center_mm[0] - right.center_mm[0]
-    || left.center_mm[1] - right.center_mm[1]
-    || left.center_mm[2] - right.center_mm[2])
-    .map((feature, index) => ({ ...feature, id: feature.axis + "-" + (index + 1) }));
+  return features;
 }
-
 
 function normalise3(vector) {
   const length = Math.hypot(...vector);
