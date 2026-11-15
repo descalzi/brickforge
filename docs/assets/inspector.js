@@ -88,6 +88,7 @@ let constructionWorker = null;
 let activeConstruction;
 let activeConstructionAlternatives = [];
 let activeTargetGrid;
+let activeObliqueFeatures = [];
 let activeVoxelGroup;
 let activeFeatureGroup;
 let activeConstructionGroup;
@@ -528,6 +529,7 @@ function resetVoxelisation() {
   removeCandidatePreview();
   removeConstructionPreview();
   activeTargetGrid = null;
+  activeObliqueFeatures = [];
   if (voxelFeatureStatus) { voxelFeatureStatus.hidden = true; voxelFeatureStatus.textContent = ''; }
   if (voxelFeatureList) voxelFeatureList.replaceChildren();
   voxeliseButton.disabled = !activeModel;
@@ -799,7 +801,8 @@ function refineCandidateSurfacePlacement(profile, pattern, statusNode) {
 function renderFeaturePatterns() {
   if (!featurePatternStatus || !featurePatternList) return;
   featurePatternList.replaceChildren();
-  if (!activeTargetGrid || activeTargetGrid.features.length < 2 || activeTargetGrid.features.length > 10) {
+  const targetFeatures = activeTargetGrid ? [...activeTargetGrid.features, ...activeObliqueFeatures] : [];
+  if (!activeTargetGrid || targetFeatures.length < 2 || targetFeatures.length > 10) {
     featurePatternStatus.textContent = 'Whole-pattern matching needs between 2 and 10 detected target openings.';
     return;
   }
@@ -807,7 +810,7 @@ function renderFeaturePatterns() {
     featurePatternStatus.textContent = 'Import part feature profiles to compare complete opening layouts.';
     return;
   }
-  const patterns = matchFeaturePatterns(activeTargetGrid.features, importedPartFeatureProfiles, {
+  const patterns = matchFeaturePatterns(targetFeatures, importedPartFeatureProfiles, {
     limit: 5,
     maxSearchStates: 5000,
     targetBoundsMm: activeTargetGrid.source_bounds_mm,
@@ -901,7 +904,8 @@ function renderFeaturePatterns() {
 function renderFeatureMatches() {
   if (!featureMatchStatus || !featureMatchList) return;
   featureMatchList.replaceChildren();
-  if (!activeTargetGrid || !activeTargetGrid.features.length) {
+  const targetFeatures = activeTargetGrid ? [...activeTargetGrid.features, ...activeObliqueFeatures] : [];
+  if (!activeTargetGrid || !targetFeatures.length) {
     featureMatchStatus.textContent = importedPartFeatureProfiles.length
       ? importedPartFeatureProfiles.length + ' part profile(s) loaded. Voxelise a target mesh with detected openings to compare them.'
       : 'Export measured part profiles from the Part Explorer, then import them here to compare against target openings.';
@@ -913,13 +917,14 @@ function renderFeatureMatches() {
     renderFeaturePatterns();
     return;
   }
-  const comparisons = matchTargetFeatures(activeTargetGrid.features, importedPartFeatureProfiles);
+  const comparisons = matchTargetFeatures(targetFeatures, importedPartFeatureProfiles);
   let totalMatches = 0;
   comparisons.forEach((comparison, index) => {
     const item = document.createElement('li');
     const heading = document.createElement('strong');
     const matches = document.createElement('div');
-    heading.textContent = 'Target feature ' + (index + 1);
+    heading.textContent = 'Target feature ' + (index + 1)
+      + (targetFeatures[index].axis === 'oblique' ? ' · oblique section' : '');
     if (!comparison.matches.length) {
       const none = document.createElement('span');
       none.textContent = 'No measured profile within the current dimensional tolerances.';
@@ -1131,6 +1136,7 @@ function runVoxelisation() {
         origin_mm: result.origin_mm,
         pitch_mm: result.pitch_mm,
       });
+      activeObliqueFeatures = result.oblique_features || [];
       activeTargetGrid = new TargetGrid({
         spec,
         classification: result.classification,
