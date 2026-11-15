@@ -2071,6 +2071,12 @@ async function loadFixtureFromQuery() {
     'block-curved-tunnel.stl',
     'block-branching-tunnel.stl',
     'car-simple.stl',
+    'thin-wall-panel.stl',
+    'arched-bridge.stl',
+    'cantilever-overhang.stl',
+    'hollow-sphere.stl',
+    'intersecting-solids.stl',
+    'organic-lobed.stl',
   ]);
   if (!fixture || !allowedFixtures.has(fixture)) return;
   try {
