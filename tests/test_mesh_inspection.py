@@ -32,8 +32,8 @@ def test_inspect_mesh_converts_centimetres_to_millimetres(tmp_path) -> None:
 
 
 def test_inspect_mesh_reports_open_surface_without_claiming_solid_validation(tmp_path) -> None:
-    mesh = trimesh.creation.box()
-    mesh.update_faces(mesh.faces[:-2])
+    box = trimesh.creation.box()
+    mesh = trimesh.Trimesh(vertices=box.vertices.copy(), faces=box.faces[:-2], process=False)
     path = tmp_path / "open.stl"
     mesh.export(path)
 
