@@ -84,6 +84,7 @@ This roadmap is intentionally milestone-based. Each milestone should produce a d
 - [ ] Build a curated, source-verified feature-profile catalogue for useful specialised parts; distinguish measured openings from nominal connection interfaces.
 - [ ] Improve matching with one-to-one feature assignment, explicit part rotations, surrounding-envelope checks and validated connection interfaces; keep unmatched features as construction constraints.
 - [ ] Improve feature analysis for oblique, curved, branching and blind openings; match measured features to compatible parts or explicit preservation constraints.
+- [x] Add a first bounded surface-alignment scorer for placed candidate-part triangle geometry, with spatially indexed nearest-target-triangle distances and explicit one-way coverage limitations.
 - [ ] Add surface-aware candidate placement for slopes, curves and specialised elements.
 - [ ] Combine coarse volumetric and surface-fitting strategies.
 - [ ] Add objective metrics and configurable optimisation profiles.
