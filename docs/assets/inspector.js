@@ -49,6 +49,7 @@ const constructionStatus = document.querySelector('#construction-status');
 const constructionSummary = document.querySelector('#construction-summary');
 const constructionPartCount = document.querySelector('#construction-part-count');
 const constructionDetails = document.querySelector('#construction-details');
+const constructionAlternatives = document.querySelector('#construction-alternatives');
 const constructionCourseList = document.querySelector('#construction-course-list');
 const constructionPreviewToggle = document.querySelector('#construction-preview-toggle');
 const constructionDownloadLDraw = document.querySelector('#construction-download-ldraw');
@@ -84,6 +85,7 @@ let pendingFile;
 let voxelWorker;
 let constructionWorker = null;
 let activeConstruction;
+let activeConstructionAlternatives = [];
 let activeTargetGrid;
 let activeVoxelGroup;
 let activeFeatureGroup;
@@ -510,6 +512,8 @@ function resetVoxelisation() {
     constructionWorker = null;
   }
   activeConstruction = null;
+  activeConstructionAlternatives = [];
+  constructionAlternatives.replaceChildren();
   buildConstructionButton.disabled = true;
   constructionStatus.textContent = 'Voxelise a mesh first.';
   constructionStatus.dataset.state = 'idle';
@@ -1143,7 +1147,25 @@ function downloadConstructionFile(filename, contents, mediaType) {
 }
 
 function displayConstruction(result) {
+  if (Array.isArray(result.alternatives)) activeConstructionAlternatives = result.alternatives;
   activeConstruction = result;
+  constructionAlternatives.replaceChildren();
+  if (activeConstructionAlternatives.length > 1) {
+    const heading = document.createElement('strong');
+    heading.textContent = 'Connected construction alternatives';
+    constructionAlternatives.append(heading);
+    activeConstructionAlternatives.forEach((alternative, index) => {
+      const option = document.createElement('button');
+      option.type = 'button';
+      option.className = 'tool-button';
+      option.setAttribute('aria-pressed', String(alternative.model_name === result.model_name));
+      option.textContent = 'Option ' + (index + 1) + ' · ' + alternative.parts.length + ' parts · '
+        + alternative.course_part_counts.join(' / ') + ' per course';
+      if (alternative.model_name === result.model_name) option.disabled = true;
+      option.addEventListener('click', () => displayConstruction(alternative));
+      constructionAlternatives.append(option);
+    });
+  }
   renderConstructionPreview(result);
   constructionPartCount.textContent = result.parts.length.toLocaleString() + ' parts';
   const boundedSearch = result.search.budget_reached || result.search.candidate_search_limited;
