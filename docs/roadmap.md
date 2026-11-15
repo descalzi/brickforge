@@ -144,7 +144,16 @@ These extensions are engineering aids, not physical certification. Oblique analy
 
 The synthetic STL corpus remains useful for isolated algorithm checks, but it does not establish that the generated LEGO assembly preserves the source object's shape. The next validation layer is defined in [golden-model round-trip benchmarks](architecture/golden-roundtrip.md): author reference assemblies first, derive their meshes from resolved LDraw part geometry, send those meshes through the ordinary import pipeline, and compare the reconstructed result with the original assembly. The comparison must include surface and volumetric fidelity, required negative spaces/topology, scale, part inventory and nominal construction validity. A connected graph alone is not an acceptable pass. Ordinary LEGO elements are the default; Technic is optional.
 
-The first golden-model implementation should cover single-part calibration, simple interlocked assemblies and at least one ordinary-brick negative-space model before progressing to car, aircraft and animal examples. The exporter must use actual resolved LDraw geometry, include a sidecar manifest because STL has no units, and disclose separate touching shells rather than silently substituting proxy geometry. Physical stability and clutch strength remain separate, unproven properties.
+Initial implementation status:
+- [x] Define the golden-model round-trip benchmark and acceptance policy.
+- [x] Export a canonical assembly as STL using resolved LDraw triangles/quads and the assembly graph transforms.
+- [x] Write a sidecar with explicit units, coordinate frame, source assembly hash, STL hash, bounds, BOM and mesh diagnostics.
+- [x] Add a source-3001 calibration test for actual resolved geometry and expected physical dimensions.
+- [ ] Resolve inconsistent winding in source part surfaces and produce a watertight, correctly composed model mesh.
+- [ ] Add multi-part authored LEGO models and pass their generated STL through the normal browser import/construction pipeline.
+- [ ] Compare reconstructed output against reference shape, topology, dimensions and inventory.
+
+The initial exporter deliberately concatenates part shells and does not boolean-union them. The first 3001 calibration test found inconsistent winding in the resolved source geometry; the sidecar reports this rather than claiming the STL is ready for solid voxelisation. The next exporter step must address shell orientation and union/assembly composition before the first multi-part golden model can be treated as a valid voxeliser input. The first golden models should cover single-part calibration, simple interlocked assemblies and at least one ordinary-brick negative-space model before progressing to car, aircraft and animal examples. Physical stability and clutch strength remain separate, unproven properties.
 
 ### Synthetic STL validation corpus — 2026-11-15
 
