@@ -742,11 +742,12 @@ function scoreCandidateSurface(profile, pattern, statusNode) {
     const targetPositions = collectSurfaceTrianglePositions();
     const report = scoreSurfaceFit(candidatePositions, targetPositions);
     statusNode.textContent = "Surface alignment: " + report.status.replaceAll("_", " ")
-      + " · " + Math.round(report.within_tolerance_fraction * 100) + "% of samples within "
-      + report.tolerance_mm.toFixed(1) + " mm"
-      + " · mean " + report.mean_distance_mm.toFixed(2) + " mm"
-      + " · 95th percentile " + report.percentile_95_distance_mm.toFixed(2) + " mm"
-      + " · score " + Math.round(report.score * 100) + "/100. One-way geometric proximity only; not a fit or buildability certificate.";
+      + " · candidate coverage " + Math.round(report.candidate_to_target.within_tolerance_fraction * 100) + "%"
+      + " · target coverage " + Math.round(report.target_to_candidate.within_tolerance_fraction * 100) + "%"
+      + " within " + report.tolerance_mm.toFixed(1) + " mm"
+      + " · symmetric mean " + report.symmetric_mean_distance_mm.toFixed(2) + " mm"
+      + " · symmetric 95th percentile " + report.symmetric_95th_percentile_distance_mm.toFixed(2) + " mm"
+      + " · score " + Math.round(report.score * 100) + "/100. Bidirectional sampled surface proximity only; not a fit or buildability certificate.";
     statusNode.dataset.state = report.status;
   } catch (error) {
     statusNode.textContent = error instanceof Error ? error.message : "Surface scoring failed.";
