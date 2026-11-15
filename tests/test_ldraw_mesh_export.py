@@ -10,6 +10,7 @@ from brickforge.assembly.model import PlacedPart, build_assembly
 from brickforge.parts.connections import load_connection_profiles
 from brickforge.parts.ldraw_mesh import assembly_to_mesh, export_assembly_stl
 from brickforge.parts.ldraw_resolver import LDrawLibrary
+from brickforge.geometry import voxelize_mesh
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE_LIBRARY = ROOT / "tests" / "fixtures" / "ldraw" / "brick-3001"
@@ -58,3 +59,8 @@ def test_golden_stl_export_writes_units_provenance_and_reference_bom(tmp_path: P
     assert sidecar == manifest
     imported = trimesh.load(destination, force="mesh", process=False)
     assert imported.bounds[1] - imported.bounds[0] == pytest.approx((32.0, 11.2, 16.0))
+    assert imported.is_watertight
+    assert imported.is_winding_consistent
+    grid = voxelize_mesh(imported, units="mm", pitch_mm=(4.0, 4.8, 4.0))
+    assert grid.spec.dimensions == (8, 3, 4)
+    assert grid.occupied_cell_count > 0
