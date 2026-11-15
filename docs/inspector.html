@@ -91,6 +91,20 @@
             <button id="reset-view" class="tool-button" type="button" disabled>Reset view</button>
           </div>
         </div>
+        <nav id="pipeline-stage-nav" class="pipeline-stage-nav" aria-label="Construction pipeline stages">
+          <button class="pipeline-stage-button is-active" type="button" data-view-stage="source" aria-current="step" disabled>
+            <span class="pipeline-stage-number">01</span><span class="pipeline-stage-name">STL source</span>
+          </button>
+          <span class="pipeline-stage-arrow" aria-hidden="true">›</span>
+          <button class="pipeline-stage-button" type="button" data-view-stage="occupancy" disabled>
+            <span class="pipeline-stage-number">02</span><span class="pipeline-stage-name">Occupancy</span>
+          </button>
+          <span class="pipeline-stage-arrow" aria-hidden="true">›</span>
+          <button class="pipeline-stage-button" type="button" data-view-stage="construction" disabled>
+            <span class="pipeline-stage-number">03</span><span class="pipeline-stage-name">LEGO build</span>
+          </button>
+        </nav>
+        <p id="pipeline-stage-caption" class="pipeline-stage-caption" aria-live="polite">Original uploaded mesh</p>
       </div>
 
       <aside class="inspector-controls" aria-label="Mesh input and measurements">
