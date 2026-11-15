@@ -1161,6 +1161,8 @@ function displayConstruction(result) {
       option.className = 'tool-button';
       option.setAttribute('aria-pressed', String(alternative.model_name === result.model_name));
       option.textContent = 'Option ' + (index + 1) + ' · ' + alternative.parts.length + ' parts · '
+        + alternative.optimization_metrics.unique_part_types + ' part types · '
+        + Math.round(alternative.optimization_score * 100) + '/100 · '
         + alternative.course_part_counts.join(' / ') + ' per course';
       if (alternative.model_name === result.model_name) option.disabled = true;
       option.addEventListener('click', () => displayConstruction(alternative));
@@ -1172,6 +1174,7 @@ function displayConstruction(result) {
   const boundedSearch = result.search.budget_reached || result.search.candidate_search_limited;
   constructionDetails.textContent = result.connections.length.toLocaleString() + ' candidate connections · '
     + result.total_mating_pairs.toLocaleString() + ' nominal mating pairs'
+    + ' · ' + result.optimization_profile + ' objective ' + Math.round(result.optimization_score * 100) + '/100'
     + (boundedSearch ? ' · bounded search; not guaranteed minimum' : '');
   constructionCourseList.replaceChildren();
   result.course_part_counts.forEach((count, index) => {
