@@ -209,9 +209,8 @@ export function refineSurfaceFitTranslation(candidatePositions, targetPositions,
   validateTrianglePositions(targetPositions, "Target geometry", MAX_TARGET_TRIANGLES);
   const { tolerance, maxDistance, cellSize } = surfaceFitOptions(options);
   const radius = options.radiusMm ?? 1;
-  const step = options.stepMm ?? radius;
-  if (![radius, step].every(Number.isFinite) || radius <= 0 || radius > 3 || step <= 0 || step > radius) {
-    throw new RangeError("Translation refinement radius must be 0-3 mm and step must be positive and no larger than the radius.");
+  if (!Number.isFinite(radius) || radius <= 0 || radius > 3) {
+    throw new RangeError("Translation refinement radius must be greater than 0 and no larger than 3 mm.");
   }
   const index = buildTriangleIndex(targetPositions, cellSize);
   const targetTriangleCount = targetPositions.length / 9;
@@ -221,7 +220,7 @@ export function refineSurfaceFitTranslation(candidatePositions, targetPositions,
     [radius, 0, 0], [-radius, 0, 0],
     [0, radius, 0], [0, -radius, 0],
     [0, 0, radius], [0, 0, -radius],
-  ].filter((offset) => offset.every((value) => value === 0 || Math.abs(value) === radius || Math.abs(value) === step));
+  ];
   let best = baseline;
   let bestOffset = [0, 0, 0];
   for (const offset of offsets.slice(1)) {
