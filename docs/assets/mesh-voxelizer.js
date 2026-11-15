@@ -1,5 +1,6 @@
 import { BRICK_GRID_PITCH_MM, CellClass } from "./target-grid.js?v=featuregrid7";
 import { analyzeMeshFeaturesExtended } from "./mesh-feature-analysis.js?v=featuremeasure5";
+import { diagnoseTriangleIntersections } from "./mesh-intersections.js?v=meshintersections1";
 
 const UNIT_TO_MM = Object.freeze({ mm: 1, cm: 10, m: 1000, in: 25.4 });
 const SAMPLE_OFFSETS = Object.freeze([0.25, 0.5, 0.75]);
@@ -401,6 +402,8 @@ export function voxelizeMesh({
     }
   }
 
+  const selfIntersections = diagnoseTriangleIntersections(triangles, { maxCandidatePairs: 500000 });
+
   const origin = boundsMin.map((value, axis) =>
     Math.floor(value / pitchMm[axis]) * pitchMm[axis]);
   const dimensions = boundsMin.map((value, axis) =>
@@ -494,12 +497,17 @@ export function voxelizeMesh({
       ...(obliqueFeatures.length ? ["Located " + obliqueFeatures.length + " additional oblique opening candidate(s); these are sampled section hypotheses and are not used for conservative grid-cell clearance mapping."] : []),
       "Browser voxelisation uses 3x3x3 interior sampling and triangle-box SAT for boundary-cell detection. Interior coverage remains a sampling approximation; exact surface-cell overlap is tested geometrically.",
       "The source must be a closed, consistently wound mesh; open-surface shell mode is not supported.",
-      "Triangle self-intersections are not detected. Watertight topology does not prove that separate surfaces do not cross or overlap.",
+      ...(selfIntersections.status === "intersections_detected"
+        ? ["Detected " + selfIntersections.intersection_pair_count + " intersecting non-adjacent triangle pair(s); construction should be reviewed."]
+        : selfIntersections.status === "not_assessed_pair_limit"
+          ? ["Triangle intersection scan reached its 500,000 candidate-pair limit; the mesh is not certified intersection-free."]
+          : []),
     ],
     triangle_count: faceCount,
     input_triangle_count: inputFaceCount,
     removed_degenerate_triangle_count: cleaned.removed,
     topology,
+    self_intersections: selfIntersections,
     features,
     oblique_features: obliqueFeatures,
     feature_keepouts: featureKeepouts,
