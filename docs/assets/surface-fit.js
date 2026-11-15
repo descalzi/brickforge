@@ -216,25 +216,26 @@ export function scoreSurfaceFit(candidatePositions, targetPositions, options = {
   const symmetricMean = (
     candidateToTarget.mean_distance_mm + targetToCandidate.mean_distance_mm
   ) / 2;
-  const score = Math.sqrt(candidateToTarget.score * targetToCandidate.score);
-  const status = candidateToTarget.within_tolerance_fraction >= 0.95
-      && targetToCandidate.within_tolerance_fraction >= 0.95
-      && symmetric95 <= tolerance * 1.5
-    ? "close_surface_alignment"
-    : symmetricCoverage >= 0.5 ? "partial_surface_alignment" : "poor_surface_alignment";
+  // The candidate is one part and the target is often an entire object. Therefore
+  // whole-target reverse coverage is useful context, but must not penalise a valid
+  // local part-to-object match.
+  const score = candidateToTarget.score;
+  const status = candidateToTarget.status;
   return {
     ...candidateToTarget,
-    method: "bidirectional-surface-distance",
+    method: "candidate-to-target-with-global-reverse-context",
     candidate_to_target: candidateToTarget,
     target_to_candidate: targetToCandidate,
-    symmetric_mean_distance_mm: symmetricMean,
-    symmetric_rms_distance_mm: symmetricRms,
-    symmetric_95th_percentile_distance_mm: symmetric95,
-    symmetric_within_tolerance_fraction: symmetricCoverage,
+    global_bidirectional_mean_distance_mm: symmetricMean,
+    global_bidirectional_rms_distance_mm: symmetricRms,
+    global_bidirectional_95th_percentile_distance_mm: symmetric95,
+    global_bidirectional_within_tolerance_fraction: symmetricCoverage,
+    global_bidirectional_score: Math.sqrt(candidateToTarget.score * targetToCandidate.score),
     score,
     status,
     limitations: [
       "Both directions sample triangle vertices and centroids; this is a discrete surface approximation, not an exact Hausdorff distance.",
+      "The reverse direction compares the entire target mesh with one candidate part and is contextual only; it is not used to score part-to-object fit.",
       "Distances are capped at the configured search distance.",
       "A geometric surface match does not establish material containment, collision-free placement, physical connection, stability or assembly accessibility.",
     ],
