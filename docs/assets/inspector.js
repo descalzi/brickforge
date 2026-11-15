@@ -31,6 +31,9 @@ const upAxisSelect = document.querySelector('#up-axis');
 const courseHeightSelect = document.querySelector('#course-height');
 const wireframeButton = document.querySelector('#wireframe-toggle');
 const resetButton = document.querySelector('#reset-view');
+const stageNavigation = document.querySelector('#pipeline-stage-nav');
+const stageCaption = document.querySelector('#pipeline-stage-caption');
+const stageButtons = [...document.querySelectorAll('[data-view-stage]')];
 const voxeliseButton = document.querySelector('#voxelise-button');
 const voxeliseStatus = document.querySelector('#voxelise-status');
 const voxeliseSummary = document.querySelector('#voxelise-summary');
@@ -110,7 +113,69 @@ let voxelOverlayVisible = true;
 let featureOverlayVisible = true;
 let importedPartFeatureProfiles = [];
 let constructionPreviewVisible = true;
+let activeViewStage = 'source';
 const ghostedMaterialStates = new Map();
+
+const VIEW_STAGE_COPY = {
+  source: 'Original uploaded STL / OBJ mesh',
+  occupancy: 'LEGO-grid occupancy — no source mesh overlay',
+  construction: 'Generated LEGO parts — final construction only',
+};
+
+function setViewStage(stage) {
+  const available = {
+    source: Boolean(activeModel),
+    occupancy: Boolean(activeTargetGrid && activeVoxelGroup),
+    construction: Boolean(activeConstructionGroup),
+  };
+  if (!available[stage]) return;
+  activeViewStage = stage;
+  if (activeModel) activeModel.visible = stage === 'source';
+  if (activeVoxelGroup) activeVoxelGroup.visible = stage === 'occupancy';
+  if (activeFeatureGroup) activeFeatureGroup.visible = false;
+  if (activeCandidateGroup) activeCandidateGroup.visible = false;
+  if (activeConstructionGroup) activeConstructionGroup.visible = stage === 'construction';
+  setSourceMeshGhosted(false);
+  stageButtons.forEach((button) => {
+    const selected = button.dataset.viewStage === stage;
+    button.classList.toggle('is-active', selected);
+    button.disabled = !available[button.dataset.viewStage];
+    if (selected) button.setAttribute('aria-current', 'step');
+    else button.removeAttribute('aria-current');
+  });
+  stageCaption.textContent = VIEW_STAGE_COPY[stage];
+  if (stage === 'construction') {
+    constructionPreviewVisible = true;
+    constructionPreviewToggle.textContent = 'Hide generated construction';
+  }
+  if (stage === 'occupancy') {
+    voxelOverlayVisible = true;
+    voxelOverlayToggle.textContent = 'Hide voxel overlay';
+  }
+}
+
+function refreshViewStages() {
+  stageButtons.forEach((button) => {
+    button.disabled = !({
+      source: Boolean(activeModel),
+      occupancy: Boolean(activeTargetGrid && activeVoxelGroup),
+      construction: Boolean(activeConstructionGroup),
+    })[button.dataset.viewStage];
+  });
+  if (!({
+    source: Boolean(activeModel),
+    occupancy: Boolean(activeTargetGrid && activeVoxelGroup),
+    construction: Boolean(activeConstructionGroup),
+  })[activeViewStage]) {
+    const fallback = activeConstructionGroup ? 'construction'
+      : activeTargetGrid && activeVoxelGroup ? 'occupancy' : 'source';
+    if ((fallback === 'source' && activeModel)
+      || (fallback === 'occupancy' && activeTargetGrid)
+      || (fallback === 'construction' && activeConstructionGroup)) setViewStage(fallback);
+  } else {
+    setViewStage(activeViewStage);
+  }
+}
 
 function setMessage(text, kind = 'info') {
   message.textContent = text;
@@ -444,6 +509,7 @@ function removeConstructionPreview() {
   }
   activeConstructionGroup = null;
   setSourceMeshGhosted(false);
+  refreshViewStages();
   constructionPreviewToggle.disabled = true;
   constructionPreviewToggle.textContent = 'Show generated construction';
 }
@@ -513,6 +579,8 @@ function renderConstructionPreview(result) {
   constructionPreviewToggle.disabled = false;
   constructionPreviewToggle.textContent = 'Hide generated construction';
   group.visible = true;
+  refreshViewStages();
+  setViewStage('construction');
 }
 
 
@@ -542,6 +610,8 @@ function resetVoxelisation() {
   removeConstructionPreview();
   activeTargetGrid = null;
   activeObliqueFeatures = [];
+  activeViewStage = activeModel ? 'source' : 'source';
+  refreshViewStages();
   activeSelfIntersectionReport = null;
   surfaceComparisonSequence += 1;
   if (voxelFeatureStatus) { voxelFeatureStatus.hidden = true; voxelFeatureStatus.textContent = ''; }
@@ -1221,6 +1291,8 @@ function runVoxelisation() {
       voxelOverlayVisible = true;
       renderVoxelOverlay(activeTargetGrid);
       renderFeatureOverlay(activeTargetGrid);
+      refreshViewStages();
+      setViewStage('occupancy');
       displayVoxelSummary(activeTargetGrid, result.triangle_count);
       const preservedFeatureCount = activeTargetGrid.feature_keepouts.filter((item) => item.preserved).length;
       const keepoutsComplete = activeTargetGrid.features.length > 0
@@ -1844,6 +1916,8 @@ function prepareModel(object, unitFactor, sourceUnit) {
   activeModel = object;
   activeMeshes = stats.meshes;
   scene.add(activeModel);
+  activeViewStage = 'source';
+  refreshViewStages();
   replaceReferenceHelpers(Math.max(size.x, size.y, size.z), size.y);
   fitCamera(size);
   currentBounds = size;
@@ -1970,6 +2044,11 @@ wireframeButton.addEventListener('click', () => {
   });
   wireframeButton.textContent = wireframeEnabled ? 'Hide wireframe' : 'Show wireframe';
   wireframeButton.setAttribute('aria-pressed', String(wireframeEnabled));
+});
+
+stageNavigation.addEventListener('click', (event) => {
+  const button = event.target.closest('[data-view-stage]');
+  if (button && !button.disabled) setViewStage(button.dataset.viewStage);
 });
 
 resetButton.addEventListener('click', () => {
