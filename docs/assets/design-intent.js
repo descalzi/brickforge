@@ -98,6 +98,7 @@ function evaluateRelationship(relation, reconstruction) {
   const second = groups[1];
   const distances = [];
   for (const a of first) for (const b of second) {
+    if (a === b || (a.id && b.id && a.id === b.id)) continue;
     const value = distance(a.center_mm, b.center_mm);
     if (value !== null) distances.push(value);
   }
