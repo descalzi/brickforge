@@ -35,6 +35,12 @@ try {
     page.on("console", message => { if (message.type() === "error") consoleErrors.push(message.text()); });
     await page.goto("http://127.0.0.1:4173/inspector.html?fixture=" + fixture.file, { waitUntil: "networkidle" });
     await page.locator("#voxelise-button").waitFor({ state: "visible" });
+    assert.equal(await page.locator('[data-view-stage="source"]').isEnabled(), true,
+      fixture.file + ": source stage was not enabled after loading.");
+    assert.equal(await page.locator('[data-view-stage="occupancy"]').isEnabled(), false,
+      fixture.file + ": occupancy stage enabled before voxelisation.");
+    assert.equal(await page.locator('[data-view-stage="source"]').getAttribute("aria-current"), "step",
+      fixture.file + ": source mesh should be the initial exclusive view.");
     await page.waitForFunction(() => {
       const button = document.querySelector("#voxelise-button");
       return button && !button.disabled;
@@ -45,6 +51,10 @@ try {
       return status && ["complete","warning","error"].includes(status.dataset.state);
     }, null, { timeout: 180000 });
     const voxelStatus = await page.locator("#voxelise-status").innerText();
+    assert.equal(await page.locator('[data-view-stage="occupancy"]').isEnabled(), true,
+      fixture.file + ": occupancy stage was not enabled after voxelisation.");
+    assert.equal(await page.locator('[data-view-stage="occupancy"]').getAttribute("aria-current"), "step",
+      fixture.file + ": voxelisation should replace the STL with occupancy.");
     const constructionStatus = await page.locator("#construction-status").innerText();
     const buildEnabled = await page.locator("#build-construction").isEnabled();
     const featureStatus = await page.locator("#voxel-feature-status").innerText().catch(() => "");
@@ -68,6 +78,17 @@ try {
     }, null, { timeout: 180000 });
     const resultStatus = await page.locator("#construction-status").innerText();
     assert.match(resultStatus, /Connected construction generated/i, fixture.file + ": " + resultStatus);
+    assert.equal(await page.locator('[data-view-stage="construction"]').getAttribute("aria-current"), "step",
+      fixture.file + ": final LEGO construction should replace occupancy.");
+    await page.locator('[data-view-stage="source"]').click();
+    assert.equal(await page.locator('[data-view-stage="source"]').getAttribute("aria-current"), "step",
+      fixture.file + ": source stage could not be revisited.");
+    await page.locator('[data-view-stage="occupancy"]').click();
+    assert.equal(await page.locator('[data-view-stage="occupancy"]').getAttribute("aria-current"), "step",
+      fixture.file + ": occupancy stage could not be revisited.");
+    await page.locator('[data-view-stage="construction"]').click();
+    assert.equal(await page.locator('[data-view-stage="construction"]').getAttribute("aria-current"), "step",
+      fixture.file + ": final construction stage could not be revisited.");
     assert.doesNotMatch(resultStatus, /Construction blocked|failed/i, fixture.file + ": " + resultStatus);
     if (fixture.file === "block-two-hole-pattern.stl") {
       const [graphDownload] = await Promise.all([
