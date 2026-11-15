@@ -296,6 +296,25 @@ test("layered construction accepts a mesh-derived course larger than 64 cells", 
 });
 
 
+test("browser layered engine returns ranked connected alternatives with complete exports", () => {
+  const footprint = [];
+  for (let z = 0; z < 4; z += 1) {
+    for (let x = 0; x < 4; x += 1) footprint.push([x, z]);
+  }
+  const result = buildLayeredFootprintBlock([footprint, footprint], catalogue, { maxAlternatives: 3 });
+  assert.ok(result.alternatives.length >= 1);
+  assert.ok(result.alternatives.length <= 3);
+  assert.equal(result.alternatives[0].model_name, result.model_name);
+  for (let index = 0; index < result.alternatives.length; index += 1) {
+    const alternative = result.alternatives[index];
+    assert.equal(alternative.alternative_rank, index + 1);
+    assert.equal(alternative.assembly_graph.parts.length, alternative.parts.length);
+    assert.ok(alternative.ldraw.includes("0 FILE " + alternative.model_name));
+    assert.equal(alternative.validation_report.checks.find((check) => check.id === "graph_connectivity").status, "passed");
+  }
+  assert.throws(() => buildLayeredFootprintBlock([footprint, footprint], catalogue, { maxAlternatives: 6 }), /maxAlternatives/);
+});
+
 test("browser layered engine builds interlocking plate-height courses", () => {
   const footprint = [];
   for (let z = 0; z < 4; z += 1) {
