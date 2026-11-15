@@ -3,8 +3,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import pytest
 import numpy as np
+import pytest
 import trimesh
 
 from brickforge.assembly.model import PlacedPart, build_assembly
