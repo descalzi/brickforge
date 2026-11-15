@@ -17,7 +17,7 @@ def test_validation_fixture_catalogue_matches_published_stl_files() -> None:
     """Every catalogue entry resolves to a parseable, closed STL mesh."""
     catalogue = json.loads(CATALOGUE.read_text(encoding="utf-8"))
     assert catalogue["schema_version"] == 1
-    assert catalogue["units"] == "mm"
+    assert catalogue["units"] == "mixed"
     fixtures = catalogue["fixtures"]
     assert len(fixtures) >= 8
     assert len({fixture["id"] for fixture in fixtures}) == len(fixtures)
@@ -32,7 +32,9 @@ def test_validation_fixture_catalogue_matches_published_stl_files() -> None:
         assert mesh.is_watertight, fixture["id"]
         assert mesh.is_winding_consistent, fixture["id"]
         assert mesh.is_volume, fixture["id"]
-        assert np.allclose(mesh.extents, fixture["dimensions_mm"], atol=1e-6), fixture["id"]
+        expected_dimensions = fixture.get("dimensions_cm", fixture.get("dimensions_mm"))
+        assert expected_dimensions is not None, fixture["id"]
+        assert np.allclose(mesh.extents, expected_dimensions, atol=1e-6), fixture["id"]
 
 
 def test_simple_fixture_topology_is_known() -> None:
@@ -40,6 +42,7 @@ def test_simple_fixture_topology_is_known() -> None:
     expected_euler = {
         "block-solid.stl": 2,
         "block-through-hole.stl": 0,
+        "block-two-hole-pattern.stl": -2,
         "block-three-hole-pattern.stl": -4,
         "block-blind-pocket.stl": 2,
     }
@@ -56,6 +59,7 @@ def test_fixture_corpus_covers_the_required_challenge_families() -> None:
     assert {
         "block-solid",
         "block-through-hole",
+        "block-two-hole-pattern",
         "block-three-hole-pattern",
         "block-blind-pocket",
         "block-oblique-bore",
