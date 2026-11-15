@@ -49,9 +49,9 @@ export function parseLDrawSurfaceText(content, source = "unknown.dat") {
   return { source, records };
 }
 
-async function fetchFile(path) {
+async function fetchFile(path, fetcher = fetch) {
   if (!fileCache.has(path)) {
-    const request = fetch(RAW_BASE + path, {
+    const request = fetcher(RAW_BASE + path, {
       method: "GET",
       mode: "cors",
       credentials: "omit",
@@ -72,9 +72,9 @@ async function fetchFile(path) {
   return fileCache.get(path);
 }
 
-async function getDocument(path) {
+async function getDocument(path, fetcher = fetch) {
   if (!documentCache.has(path)) {
-    const pending = fetchFile(path).then((text) => parseLDrawSurfaceText(text, path))
+    const pending = fetchFile(path, fetcher).then((text) => parseLDrawSurfaceText(text, path))
       .catch((error) => {
         documentCache.delete(path);
         throw error;
@@ -84,11 +84,11 @@ async function getDocument(path) {
   return documentCache.get(path);
 }
 
-async function resolveDocument(filename, parentPath) {
+async function resolveDocument(filename, parentPath, fetcher = fetch) {
   let lastError;
   for (const candidate of ldrawReferenceCandidates(filename, parentPath)) {
     try {
-      return await getDocument(candidate);
+      return await getDocument(candidate, fetcher);
     } catch (error) {
       lastError = error;
       if (error.status !== 404) throw error;
@@ -117,7 +117,7 @@ function applyMatrix(matrix, point) {
   ];
 }
 
-async function expandDocument(document, matrix, translation, ancestors, depth, output) {
+async function expandDocument(document, matrix, translation, ancestors, depth, output, fetcher = fetch) {
   if (depth > MAX_REFERENCE_DEPTH) {
     throw new Error("Maximum LDraw reference depth exceeded at " + document.source);
   }
@@ -126,11 +126,11 @@ async function expandDocument(document, matrix, translation, ancestors, depth, o
   output.source_files.add(document.source);
   for (const record of document.records) {
     if (record.type === 1) {
-      const child = await resolveDocument(record.filename, document.source);
+      const child = await resolveDocument(record.filename, document.source, fetcher);
       const childMatrix = multiplyMatrix(matrix, record.matrix);
       const transformedPosition = applyMatrix(matrix, record.position);
       const childTranslation = transformedPosition.map((value, axis) => value + translation[axis]);
-      await expandDocument(child, childMatrix, childTranslation, ancestors, depth + 1, output);
+      await expandDocument(child, childMatrix, childTranslation, ancestors, depth + 1, output, fetcher);
       continue;
     }
     const faces = record.type === 3
@@ -154,14 +154,14 @@ async function expandDocument(document, matrix, translation, ancestors, depth, o
   ancestors.delete(document.source);
 }
 
-export async function loadLDrawPartSurface(partId) {
+export async function loadLDrawPartSurface(partId, { fetcher = fetch } = {}) {
   const id = String(partId).trim().toLowerCase();
   if (!/^[a-z0-9_-]+$/.test(id)) throw new TypeError("Invalid LDraw part ID.");
   if (!partGeometryCache.has(id)) {
     const pending = (async () => {
-      const root = await getDocument("parts/" + id + ".dat");
+      const root = await getDocument("parts/" + id + ".dat", fetcher);
       const output = { positions: [], source_files: new Set() };
-      await expandDocument(root, [1, 0, 0, 0, 1, 0, 0, 0, 1], [0, 0, 0], new Set(), 0, output);
+      await expandDocument(root, [1, 0, 0, 0, 1, 0, 0, 0, 1], [0, 0, 0], new Set(), 0, output, fetcher);
       if (!output.positions.length) throw new Error("No triangle surfaces found for LDraw part " + id);
       const minimum = [Infinity, Infinity, Infinity];
       const maximum = [-Infinity, -Infinity, -Infinity];
