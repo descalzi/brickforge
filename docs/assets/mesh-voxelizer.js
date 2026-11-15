@@ -301,6 +301,70 @@ function cellIntersectsSurface(root, boxMin, boxMax, budget) {
 }
 
 
+function mergeAxisAlignedObliqueOpeningCandidates(candidates, expectedCount) {
+  if (!Array.isArray(candidates) || !candidates.length || expectedCount < 1) return [];
+  const groups = [];
+  for (const candidate of candidates) {
+    const minimumExtent = Math.min(candidate.width_mm || 0, candidate.length_mm || 0);
+    const tolerance = Math.max(2.5, minimumExtent * 0.35);
+    let nearest = null;
+    let nearestDistance = Infinity;
+    for (const group of groups) {
+      const centre = group.reduce((sum, feature) => sum.map((value, axis) =>
+        value + feature.center_mm[axis] / group.length), [0, 0, 0]);
+      const distance = Math.hypot(...centre.map((value, axis) => value - candidate.center_mm[axis]));
+      if (distance <= tolerance && distance < nearestDistance) {
+        nearest = group;
+        nearestDistance = distance;
+      }
+    }
+    if (nearest) nearest.push(candidate);
+    else groups.push([candidate]);
+  }
+  if (groups.length !== expectedCount || groups.some((group) => group.length < 2)) return [];
+
+  const axisNames = ["x", "y", "z"];
+  const merged = [];
+  for (const [index, group] of groups.entries()) {
+    const reference = group[0].axis_vector_world;
+    if (!Array.isArray(reference) || reference.length !== 3) return [];
+    const vector = [0, 0, 0];
+    for (const feature of group) {
+      const candidateAxis = feature.axis_vector_world;
+      if (!Array.isArray(candidateAxis) || candidateAxis.length !== 3) return [];
+      const dot = reference.reduce((sum, value, axis) => sum + value * candidateAxis[axis], 0);
+      const sign = dot < -1e-8 ? -1 : 1;
+      for (let axis = 0; axis < 3; axis += 1) vector[axis] += candidateAxis[axis] * sign;
+    }
+    const magnitude = Math.hypot(...vector);
+    if (magnitude < 1e-6) return [];
+    const direction = vector.map((value) => value / magnitude);
+    const axisIndex = direction.reduce((best, value, axis) =>
+      Math.abs(value) > Math.abs(direction[best]) ? axis : best, 0);
+    if (Math.abs(direction[axisIndex]) < 0.9) return [];
+
+    const centre = [0, 1, 2].map((axis) =>
+      group.reduce((sum, feature) => sum + feature.center_mm[axis], 0) / group.length);
+    const bounds = [
+      [0, 1, 2].map((axis) => Math.min(...group.map((feature) => feature.bounds_mm[0][axis]))),
+      [0, 1, 2].map((axis) => Math.max(...group.map((feature) => feature.bounds_mm[1][axis]))),
+    ];
+    merged.push({
+      ...group[0],
+      id: "oblique-consensus-" + (index + 1),
+      axis: axisNames[axisIndex],
+      axis_index: axisIndex,
+      axis_vector_world: direction,
+      center_mm: centre,
+      bounds_mm: bounds,
+      sample_support: Math.min(...group.map((feature) => feature.sample_support)),
+      analysis_method: "axis_aligned_oblique_consensus",
+      consensus_candidate_count: group.length,
+    });
+  }
+  return merged;
+}
+
 function preserveSubGridOpenings({ features, dimensions, origin, pitch, classification, coverage }) {
   const [width, height, depth] = dimensions;
   const keepouts = [];
@@ -418,6 +482,7 @@ export function voxelizeMesh({
   let obliqueFeatures = [];
   let featureAnalysisDiagnostics = { principal_candidates: [], oblique_candidate_count: 0 };
   let topologyMatchedTwoSliceMapping = false;
+  let topologyMatchedObliqueMapping = false;
   if (topology.handle_count > 0) {
     onProgress({ phase: "features", completed: 0, total: 1 });
     const analysed = analyzeMeshFeaturesExtended(triangles, boundsMin, boundsMax);
@@ -447,6 +512,12 @@ export function voxelizeMesh({
           && twoSliceCandidates.every((feature) => feature.sample_support >= 2)) {
         features = twoSliceCandidates;
         topologyMatchedTwoSliceMapping = true;
+      } else {
+        const obliqueConsensus = mergeAxisAlignedObliqueOpeningCandidates(obliqueFeatures, topology.handle_count);
+        if (obliqueConsensus.length === topology.handle_count) {
+          features = obliqueConsensus;
+          topologyMatchedObliqueMapping = true;
+        }
       }
     }
     onProgress({ phase: "features", completed: 1, total: 1 });
@@ -522,6 +593,8 @@ export function voxelizeMesh({
       ...(features.length ? ["Located " + features.length + " cross-section opening feature(s); dimensions are approximate and based on sampled mesh slices."] : []),
       ...(topologyMatchedTwoSliceMapping
         ? ["Used two-slice opening candidates because their count exactly matches the independently detected topological tunnel count; clearance mapping remains conservative and should be visually reviewed."] : []),
+      ...(topologyMatchedObliqueMapping
+        ? ["Combined independent oblique section candidates into axis-aligned opening estimates; the number of grouped openings matches the topological tunnel count. Inspect the conservative clearances carefully."] : []),
       ...(preservedFeatureCount ? ["Mapped " + preservedFeatureCount + " sub-grid opening(s) to conservative grid-cell clearance tunnels; the represented openings may be larger than the source geometry."] : []),
       ...(topology.handle_count && !features.length && !obliqueFeatures.length
         ? ["Tunnel topology was detected, but individual openings could not be localised reliably by principal or sampled oblique slice analysis."] : []),
@@ -550,6 +623,7 @@ export function voxelizeMesh({
     feature_analysis_diagnostics: {
       ...featureAnalysisDiagnostics,
       topology_matched_two_slice_mapping: topologyMatchedTwoSliceMapping,
+      topology_matched_oblique_mapping: topologyMatchedObliqueMapping,
     },
     feature_keepouts: featureKeepouts,
     ray_triangle_tests: rayBudget.tests,
