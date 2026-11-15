@@ -458,7 +458,7 @@ test("LEGO-scale centimetre beam fixtures preserve real through-holes into brick
     const result = voxelizeMesh({ vertices, indices: source.indices, units: "cm", pitchMm: [8, 9.6, 8] });
     assert.deepEqual(result.dimensions, [6, 2, 2], filename + " must align to a 6 × 2 × 2 stud envelope");
     assert.equal(result.topology.handle_count, expectedHoles, filename + " topological hole count");
-    assert.equal(result.features.length, expectedHoles, filename + " detected opening count");
+    assert.equal(result.features.length, expectedHoles, filename + " detected opening count: " + JSON.stringify(result.features.map(({id,axis,center_mm,bounds_mm,extent_class,span_fraction,sample_support}) => ({id,axis,center_mm,bounds_mm,extent_class,span_fraction,sample_support}))));
     assert.ok(result.features.every((feature) => feature.axis === "z"), filename + " bores must be horizontal");
     assert.equal(result.feature_keepouts.length, expectedHoles, filename + " clearance count");
     assert.ok(result.feature_keepouts.every((keepout) => keepout.preserved && keepout.cell_count > 0), filename + " grid clearance");
