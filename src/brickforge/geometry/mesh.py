@@ -82,7 +82,8 @@ def inspect_mesh(path: str | Path, *, units: str) -> MeshReport:
     double_areas = np.linalg.norm(cross, axis=1)
     diagonal = float(np.linalg.norm(dimensions))
     area_epsilon = max(1e-12, diagonal * diagonal * 1e-12)
-    degenerate_count = int(np.count_nonzero(~np.isfinite(double_areas) | (double_areas <= area_epsilon)))
+    degenerate_mask = ~np.isfinite(double_areas) | (double_areas <= area_epsilon)
+    degenerate_count = int(np.count_nonzero(degenerate_mask))
     canonical_faces = np.sort(faces, axis=1)
     duplicate_count = int(len(canonical_faces) - len(np.unique(canonical_faces, axis=0)))
 
@@ -97,9 +98,13 @@ def inspect_mesh(path: str | Path, *, units: str) -> MeshReport:
 
     warnings: list[str] = []
     if not watertight:
-        warnings.append("Mesh is open or has non-manifold edges; solid voxelisation is not supported.")
+        warnings.append(
+            "Mesh is open or has non-manifold edges; solid voxelisation is not supported."
+        )
     if not winding_consistent:
-        warnings.append("Face winding is inconsistent; inside/outside classification is unreliable.")
+        warnings.append(
+            "Face winding is inconsistent; inside/outside classification is unreliable."
+        )
     if degenerate_count:
         warnings.append(f"Mesh contains {degenerate_count} degenerate triangle(s).")
     if duplicate_count:
@@ -116,7 +121,10 @@ def inspect_mesh(path: str | Path, *, units: str) -> MeshReport:
         "do not prove that triangle surfaces do not intersect."
     )
 
-    ready = watertight and winding_consistent and is_volume and not degenerate_count and not duplicate_count
+    ready = (
+        watertight and winding_consistent and is_volume
+        and not degenerate_count and not duplicate_count
+    )
     return MeshReport(
         source=str(source),
         vertex_count=len(vertices),
