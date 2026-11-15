@@ -35,10 +35,14 @@ test("surface fit validates geometry and bounded options", () => {
   assert.throws(() => scoreSurfaceFit(triangle(0), triangle(0), { maxDistanceMm: 1, toleranceMm: 2 }), /max distance/);
 });
 
-test("surface fit exposes its one-way coverage and physical-buildability limitations", () => {
+test("surface fit measures both directions and discloses physical-buildability limitations", () => {
   const result = scoreSurfaceFit(triangle(0), triangle(0));
-  assert.equal(result.method, "candidate-surface-to-target-surface-nearest-triangle-distance");
-  assert.ok(result.limitations.some((entry) => entry.includes("reverse coverage")));
+  assert.equal(result.method, "bidirectional-surface-distance");
+  assert.equal(result.candidate_to_target.within_tolerance_fraction, 1);
+  assert.equal(result.target_to_candidate.within_tolerance_fraction, 1);
+  assert.equal(result.symmetric_within_tolerance_fraction, 1);
+  assert.ok(result.symmetric_rms_distance_mm < 1e-12);
+  assert.ok(result.limitations.some((entry) => entry.includes("Hausdorff distance")));
   assert.ok(result.limitations.some((entry) => entry.includes("physical connection")));
 });
 
@@ -62,4 +66,15 @@ test("surface refinement preserves the original placement when no candidate impr
 
 test("surface refinement enforces a small bounded search radius", () => {
   assert.throws(() => refineSurfaceFitTranslation(triangle(0), triangle(0), { radiusMm: 4 }), /no larger than 3 mm/);
+});
+
+
+test("bidirectional surface fit penalises a small candidate that only covers a small target patch", () => {
+  const small = [1, 1, 0, 2, 1, 0, 1, 2, 0];
+  const large = [0, 0, 0, 10, 0, 0, 0, 10, 0];
+  const result = scoreSurfaceFit(small, large);
+  assert.equal(result.candidate_to_target.within_tolerance_fraction, 1);
+  assert.ok(result.target_to_candidate.mean_distance_mm > result.candidate_to_target.mean_distance_mm);
+  assert.ok(result.symmetric_mean_distance_mm > result.candidate_to_target.mean_distance_mm);
+  assert.ok(result.score < result.candidate_to_target.score);
 });
