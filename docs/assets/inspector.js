@@ -1162,10 +1162,12 @@ function runVoxelisation() {
         constructionStatus.textContent = 'All detected openings have conservative grid-cell clearance tunnels. These can be larger than the source holes; inspect the target grid and generated construction carefully.';
         constructionStatus.dataset.state = 'ready';
       }
+      const meshWarnings = result.warnings || [];
       voxeliseStatus.textContent = 'Voxelisation complete. ' + result.ray_triangle_tests.toLocaleString()
         + ' scanline tests and ' + result.cell_triangle_tests.toLocaleString()
-        + ' cell-surface intersection tests were completed.';
-      voxeliseStatus.dataset.state = 'complete';
+        + ' cell-surface intersection tests were completed.'
+        + (meshWarnings.length ? ' Review: ' + meshWarnings.join(' ') : '');
+      voxeliseStatus.dataset.state = meshWarnings.length ? 'warning' : 'complete';
       clearActivity();
       setMessage(hasUnmatchedFeatures
         ? 'Target grid generated, but one or more detected openings could not be represented safely.'
