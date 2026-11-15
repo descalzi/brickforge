@@ -7,10 +7,10 @@ import pytest
 import trimesh
 
 from brickforge.assembly.model import PlacedPart, build_assembly
+from brickforge.geometry import voxelize_mesh
 from brickforge.parts.connections import load_connection_profiles
 from brickforge.parts.ldraw_mesh import assembly_to_mesh, export_assembly_stl
 from brickforge.parts.ldraw_resolver import LDrawLibrary
-from brickforge.geometry import voxelize_mesh
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE_LIBRARY = ROOT / "tests" / "fixtures" / "ldraw" / "brick-3001"
