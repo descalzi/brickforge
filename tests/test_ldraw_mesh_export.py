@@ -112,3 +112,17 @@ def test_authored_ldraw_brick_can_export_a_watertight_reference(tmp_path: Path) 
     )
     assert target_grid.spec.cell_count > 0
     assert int(np.count_nonzero(target_grid.classification)) > 0
+
+
+
+def test_solid_reference_preserves_physical_scale_and_origin() -> None:
+    source = trimesh.creation.box(extents=(32.0, 11.2, 16.0))
+    source.apply_translation((13.0, -7.0, 4.0))
+
+    solid, report = solidify_surface_mesh(source, pitch_mm=1.0)
+
+    assert solid.is_watertight
+    assert solid.extents == pytest.approx((32.0, 11.2, 16.0), abs=2.0)
+    assert solid.bounds[0] == pytest.approx(source.bounds[0], abs=1.0)
+    assert solid.bounds[1] == pytest.approx(source.bounds[1], abs=1.0)
+    assert report.solid_bounds_mm[0] == pytest.approx(solid.bounds[0])
