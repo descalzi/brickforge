@@ -16,7 +16,7 @@ const target = {
   id: "opening-z-1",
   axis: "z",
   shape: "round opening",
-  equivalent_diameter_mm: 3.2,
+  equivalent_diameter_mm: 4.8,
   width_mm: 3.2,
 };
 
@@ -38,7 +38,7 @@ test("nominal interface matcher identifies source-derived Technic pin-hole dimen
   }]);
   assert.equal(matches.length, 1);
   assert.equal(matches[0].interface_type, "technic_pin_hole");
-  assert.equal(matches[0].nominal_diameter_mm, 3.2);
+  assert.equal(matches[0].nominal_diameter_mm, 4.8);
   assert.equal(matches[0].status, "nominal_interface_geometry_match");
   assert.equal(matches[0].physical_clutch_verified, false);
   assert.equal(matches[0].source_commit, catalogue.source_library.commit);
