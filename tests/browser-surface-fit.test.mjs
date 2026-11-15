@@ -97,9 +97,9 @@ test("pose refinement improves an oblique surface match with a bounded rotation"
     rotationDegrees: 3,
     radiusMm: 0.5,
   });
-  assert.equal(result.method, "bounded-13-pose-translation-and-rotation-refinement");
+  assert.equal(result.method, "bounded-91-pose-translation-and-rotation-refinement");
   assert.equal(result.improved, true);
-  assert.equal(result.evaluations, 13);
+  assert.equal(result.evaluations, 91);
   assert.ok(result.best.mean_distance_mm < result.baseline.mean_distance_mm);
   assert.ok(result.rotation_delta_matrix_3x3[2][1] > 0);
 });
