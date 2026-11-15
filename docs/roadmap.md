@@ -93,7 +93,7 @@ This roadmap is intentionally milestone-based. Each milestone should produce a d
 - [x] Compare retained alternatives by part count, part-type diversity, nominal mating-pair density and course balance, with the selected objective and metrics included in the validation report.
 - [x] Compare complete alternatives using sampled detailed LDraw part-surface fidelity (with a labelled envelope fallback) and source-attributed BOM prices imported by the user. Missing prices remain explicit and suppress a complete total; shipping, taxes, stock and seller basket effects are excluded.
 
-**Initial exit criteria achieved for the supported test scope:** the engine produces and explains multiple valid connected alternatives for the tested rectangular brick/plate course shapes, with complete exports and regression coverage. Broader specialised-part coverage, full surface-fidelity optimisation, self-intersection handling and real cost/stability analysis remain explicit M5 extensions.
+**Initial exit criteria achieved for the supported test scope:** the engine produces and explains multiple valid connected alternatives for the tested rectangular brick/plate course shapes, with complete exports and regression coverage. Broader specialised-part coverage, continuous full surface-fidelity optimisation, exhaustive self-intersection certification and physical stability/load analysis remain outside the completed M5 extension scope.
 
 ## M6 — Build sequencing and instructions
 
