@@ -1587,6 +1587,13 @@ export function buildLayeredFootprintBlock(layerFootprints, catalogue, config = 
         { id: "physical_stability", status: "not_assessed", summary: "Clutch force, load capacity and physical stability have not been measured or simulated." },
         { id: "assembly_accessibility", status: "not_assessed", summary: "Tool access and the physical order of assembly have not been validated." },
       ],
+      optimization: {
+        profile: artifact.optimization_profile,
+        score: artifact.optimization_score,
+        metrics: artifact.optimization_metrics,
+        ranking_scope: "relative to the returned connected alternatives",
+        note: "The bounded search retains low-part-count candidates before applying the selected objective; scores are comparative heuristics, not physical quality measurements.",
+      },
       limitations: [
         "Connection results use nominal catalogue stud and receiver datums, not measured clutch-force data.",
         "Body collision checks use nominal axis-aligned envelopes and do not inspect detailed part geometry.",
