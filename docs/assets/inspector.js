@@ -6,7 +6,7 @@ let OBJLoader;
 import { BRICK_GRID_PITCH_MM, PLATE_GRID_PITCH_MM, GridSpec, TargetGrid } from "./target-grid.js?v=featuregrid7";
 import { matchFeaturePatterns, matchTargetFeatures } from "./feature-matcher.js?v=featurematch8";
 import { constructionPreviewTransform } from "./construction-preview.js";
-import { refineSurfaceFitTranslation, scoreSurfaceFit } from "./surface-fit.js?v=surfacefit5";
+import { refineSurfaceFitPose, scoreSurfaceFit } from "./surface-fit.js?v=surfacefit6";
 import { transformPartPreviewPositions } from "./part-preview.js?v=featurepreview1";
 import { orientationMatrixToYUp } from "./mesh-orientation.js?v=upaxis1";
 
@@ -767,7 +767,9 @@ function refineCandidateSurfacePlacement(profile, pattern, statusNode) {
   if (!Array.isArray(pattern.opening_match_translation_mm)) {
     pattern.opening_match_translation_mm = [...pattern.translation_mm];
   }
-  statusNode.textContent = "Testing seven small translation adjustments against the source mesh…";
+  if (!Array.isArray(pattern.opening_match_translation_mm)) pattern.opening_match_translation_mm = [...pattern.translation_mm];
+  if (!Array.isArray(pattern.opening_match_rotation_matrix)) pattern.opening_match_rotation_matrix = pattern.rotation_matrix_3x3.map((row) => [...row]);
+  statusNode.textContent = "Testing bounded translation and rotation adjustments against the source mesh…";
   try {
     const candidatePositions = transformPartPreviewPositions(
       profile.mesh_positions_mm,
@@ -775,22 +777,43 @@ function refineCandidateSurfacePlacement(profile, pattern, statusNode) {
       pattern.translation_mm,
       currentModelCenter,
     );
-    const report = refineSurfaceFitTranslation(candidatePositions, collectSurfaceTrianglePositions(), {
+    const report = refineSurfaceFitPose(candidatePositions, collectSurfaceTrianglePositions(), {
       radiusMm: 1,
+      rotationDegrees: 3,
     });
     if (!report.improved) {
       statusNode.textContent = "No better surface alignment was found within ±1 mm. The opening-derived placement was retained.";
       statusNode.dataset.state = "unchanged";
       return;
     }
-    const currentTranslation = [...pattern.translation_mm];
-    pattern.translation_mm = currentTranslation.map((value, axis) => value + report.offset_mm[axis]);
-    pattern.surface_refinement_offset_mm = pattern.translation_mm.map((value, axis) =>
-      value - pattern.opening_match_translation_mm[axis]);
+    const originalRotation = pattern.rotation_matrix_3x3.map((row) => [...row]);
+    const multiply = (left, right) => left.map((row) => right[0].map((_, column) =>
+      row.reduce((sum, value, index) => sum + value * right[index][column], 0)));
+    const apply = (matrix, point) => matrix.map((row) =>
+      row.reduce((sum, value, index) => sum + value * point[index], 0));
+    const localCentre = [0, 0, 0];
+    const meshPositions = profile.mesh_positions_mm;
+    const vertexCount = meshPositions.length / 3;
+    for (let index = 0; index < meshPositions.length; index += 3) {
+      localCentre[0] += meshPositions[index] / vertexCount;
+      localCentre[1] += meshPositions[index + 1] / vertexCount;
+      localCentre[2] += meshPositions[index + 2] / vertexCount;
+    }
+    const worldCentre = apply(originalRotation, localCentre)
+      .map((value, axis) => value + pattern.translation_mm[axis]);
+    const refinedRotation = multiply(report.rotation_delta_matrix_3x3, originalRotation);
+    const refinedCentre = apply(refinedRotation, localCentre);
+    pattern.rotation_matrix_3x3 = refinedRotation;
+    pattern.translation_mm = worldCentre.map((value, axis) =>
+      value - refinedCentre[axis] + report.translation_offset_mm[axis]);
+    pattern.surface_refinement_offset_mm = [...report.translation_offset_mm];
+    pattern.surface_refinement_rotation_matrix_3x3 = report.rotation_delta_matrix_3x3;
     renderCandidatePreview(profile, pattern);
-    statusNode.textContent = "Surface alignment improved by " + report.offset_mm.map((value) => value.toFixed(1)).join(", ")
-      + " mm · mean distance " + report.baseline.mean_distance_mm.toFixed(2) + " → "
-      + report.best.mean_distance_mm.toFixed(2) + " mm. This translation may reduce the original opening-pattern alignment; reset is available.";
+    statusNode.textContent = "Surface pose improved · translation offset "
+      + report.translation_offset_mm.map((value) => value.toFixed(1)).join(", ")
+      + " mm · local rotation " + Math.round(3) + "° max · mean distance "
+      + report.baseline.mean_distance_mm.toFixed(2) + " → "
+      + report.best.mean_distance_mm.toFixed(2) + " mm. Opening alignment may change; reset restores the original pose.";
     statusNode.dataset.state = "refined";
   } catch (error) {
     statusNode.textContent = error instanceof Error ? error.message : "Surface placement refinement failed.";
@@ -875,17 +898,22 @@ function renderFeaturePatterns() {
     refine.type = 'button';
     refine.className = 'feature-preview-button';
     refine.disabled = !canPreview;
-    refine.textContent = 'Refine translation ±1 mm';
+    refine.textContent = 'Refine pose ±1 mm / 3°';
     if (canPreview) refine.addEventListener('click', () =>
       refineCandidateSurfacePlacement(profile, pattern, surfaceFitResult));
     const resetRefinement = document.createElement('button');
     resetRefinement.type = 'button';
     resetRefinement.className = 'feature-preview-button';
-    resetRefinement.disabled = !Array.isArray(pattern.surface_refinement_offset_mm);
+    resetRefinement.disabled = !Array.isArray(pattern.surface_refinement_offset_mm)
+      && !Array.isArray(pattern.surface_refinement_rotation_matrix_3x3);
     resetRefinement.textContent = 'Reset opening alignment';
     resetRefinement.addEventListener('click', () => {
       pattern.translation_mm = [...pattern.opening_match_translation_mm];
+      if (Array.isArray(pattern.opening_match_rotation_matrix)) {
+        pattern.rotation_matrix_3x3 = pattern.opening_match_rotation_matrix.map((row) => [...row]);
+      }
       delete pattern.surface_refinement_offset_mm;
+      delete pattern.surface_refinement_rotation_matrix_3x3;
       renderCandidatePreview(profile, pattern);
       surfaceFitResult.textContent = 'Restored the original opening-pattern placement.';
       surfaceFitResult.dataset.state = 'unchanged';
