@@ -484,11 +484,13 @@ export function voxelizeMesh({
     warnings: [
       ...(cleaned.removed ? ["Removed " + cleaned.removed + " zero-area or duplicate-vertex triangle(s) before topology validation."] : []),
       ...(topology.handle_count ? ["Detected " + topology.handle_count + " topological tunnel/handle feature(s)."] : []),
+      ...(topology.component_count > 1 ? ["Mesh contains " + topology.component_count + " disconnected closed surface components; confirm these are intended separate solids and do not intersect."] : []),
       ...(features.length ? ["Located " + features.length + " cross-section opening feature(s); dimensions are approximate and based on sampled mesh slices."] : []),
       ...(preservedFeatureCount ? ["Mapped " + preservedFeatureCount + " sub-grid opening(s) to conservative grid-cell clearance tunnels; the represented openings may be larger than the source geometry."] : []),
       ...(topology.handle_count && !features.length ? ["Tunnel topology was detected, but individual openings could not be localised reliably by the current orthogonal slice analysis."] : []),
       "Browser voxelisation uses 3x3x3 interior sampling and triangle-box SAT for boundary-cell detection. Interior coverage remains a sampling approximation; exact surface-cell overlap is tested geometrically.",
       "The source must be a closed, consistently wound mesh; open-surface shell mode is not supported.",
+      "Triangle self-intersections are not detected. Watertight topology does not prove that separate surfaces do not cross or overlap.",
     ],
     triangle_count: faceCount,
     input_triangle_count: inputFaceCount,
