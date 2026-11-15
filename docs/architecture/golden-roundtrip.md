@@ -17,16 +17,18 @@ This creates a closed-loop benchmark:
 
 ## What is compared
 
-The benchmark report should keep these dimensions separate:
+The benchmark report keeps these dimensions separate. They are not interchangeable, and a single geometric score must never decide whether a design has been understood.
 
-- **Scale and pose:** dimensions, bounds, orientation and origin after the declared normalisation.
-- **Shape coverage:** bidirectional surface distance and volumetric overlap, with separate precision and recall so missing holes or filled cavities are visible.
-- **Topology:** connected components, tunnels/handles and explicitly authored openings. A topological feature that disappears is a hard failure when the fixture marks it as required.
-- **Part inventory:** exact and family-level part counts, plus colour where relevant.
-- **Construction validity:** graph connectivity, nominal mating interfaces, body collision and unsupported transforms.
+- **Design-intent constraints (primary):** required features and their counts, such as four openings, two side walls, two windows, a door, wheels or a roof. Each fixture declares which features are mandatory, optional or forbidden, and their important relationships.
+- **LEGO interpretation (primary):** whether the selected catalogue elements are appropriate representations of the requested features. A window should normally be represented by a suitable LEGO window element, not silently replaced by a solid wall or an arbitrary collection of ordinary bricks. Dedicated elements are preferred when the catalogue contains a suitable part and the part is compatible with the construction.
+- **Relative arrangement and proportions (primary):** feature positions, spacing, orientation, adjacency and ratios within declared tolerances. For example, two windows should remain on the same wall with approximately the intended separation; a four-hole plate should retain four distinct openings in the intended pattern. Translation and modest dimensional changes are normally immaterial.
+- **Construction validity (hard gate):** graph connectivity, nominal mating interfaces, body collision and supported transforms. This remains a geometric/nominal assessment, not physical certification.
+- **Topology and negative space (hard gate when declared):** required openings, tunnels, cavities and separations must remain represented. Missing a required opening or merging two distinct openings is a failure.
+- **Scale, pose and shape coverage (diagnostic unless explicitly constrained):** dimensions, bounds, bidirectional surface distance and volumetric overlap help explain differences, but exact envelope agreement and a universal IoU threshold are not product acceptance criteria. A valid substitution may change the silhouette or surface.
+- **Part inventory (fixture-dependent):** exact inventory is required for calibration fixtures whose purpose is to test part identity. For general design fixtures, compare suitable part families and feature-role coverage rather than demanding the original part-by-part BOM.
 - **Physical confidence:** always reported separately. Nominal connector alignment is not proof of clutch force, stability, strength or legal building technique.
 
-Metrics must be computed on the complete exported construction, not only on the occupancy grid or feature detector. The original authored model is retained as the reference even when the reconstructed model uses a different valid part arrangement.
+Metrics must be computed on the complete exported construction, not only on the occupancy grid or feature detector. Every golden fixture must declare its semantic constraints and acceptance tolerances before reconstruction. A fixture may pass with dimensional or surface differences when its required design intent, LEGO interpretation and construction constraints are preserved. Conversely, a high geometric score must not hide a missing or incorrectly represented feature.
 
 ## Fixture design
 
@@ -48,12 +50,17 @@ STL has no embedded unit metadata. Every generated STL therefore has a sidecar m
 
 ## Acceptance policy
 
-A golden fixture passes only when all required checks pass. In particular:
+Each golden fixture must define a machine-readable intent contract before it is run. At minimum, the contract records required feature types/counts, feature relationships, preferred LEGO part roles or families, construction constraints and which geometric measurements are merely diagnostic.
+
+A golden fixture passes only when all mandatory intent and construction checks pass. In particular:
 
 - A generated connected assembly is not sufficient.
-- A missing required opening, filled cavity, disconnected component or severe surface mismatch is a failure.
-- A result that is visually close but not nominally connectable is a failure.
-- A result that is nominally connectable but visually wrong is also a failure.
+- Every required feature must be present and recognisable; forbidden features must not be introduced.
+- Required feature counts and relationships (for example, four distinct holes or two windows on one wall) must be preserved within declared tolerances.
+- Where a suitable dedicated LEGO element exists and is compatible, the reconstruction should use that element rather than an inferior generic approximation.
+- Nominally invalid, disconnected or colliding constructions fail even if they look close.
+- Dimensional, surface and volumetric differences are reported, but are hard gates only when a fixture explicitly marks a measurement as design-critical.
+- Exact part inventory is a hard gate only for part-identity calibration fixtures; general design fixtures assess part-role/family suitability and feature coverage.
 - Unknown or unassessed physical properties remain unknown; they must not be promoted to a pass.
 
 Synthetic fixtures remain valuable for parser, topology and algorithm unit tests. Golden models complement them; they do not replace them.
