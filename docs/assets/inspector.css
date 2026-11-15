@@ -443,3 +443,72 @@
   width: 100%;
   margin-top: 2px;
 }
+
+
+/* Mutually exclusive pipeline-stage viewer */
+.pipeline-stage-nav {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 16px 8px;
+  border-top: 1px solid #E3E9ED;
+  background: #F8FAFB;
+}
+.pipeline-stage-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  padding: 9px 13px;
+  border: 1px solid #D5DEE5;
+  border-radius: 8px;
+  background: #FFFFFF;
+  color: #526879;
+  font: inherit;
+  cursor: pointer;
+  transition: border-color .16s ease, background .16s ease, color .16s ease;
+}
+.pipeline-stage-button:disabled {
+  opacity: .42;
+  cursor: not-allowed;
+}
+.pipeline-stage-button:not(:disabled):hover {
+  border-color: #839DB0;
+}
+.pipeline-stage-button.is-active {
+  border-color: #315E78;
+  background: #EAF1F5;
+  color: #183B51;
+}
+.pipeline-stage-number {
+  color: #8A9BA8;
+  font: 500 11px/1 "IBM Plex Mono", monospace;
+}
+.pipeline-stage-button.is-active .pipeline-stage-number {
+  color: #315E78;
+}
+.pipeline-stage-name {
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.pipeline-stage-arrow {
+  align-self: center;
+  color: #A5B2BC;
+  font-size: 20px;
+}
+.pipeline-stage-caption {
+  margin: 0;
+  padding: 0 16px 13px;
+  background: #F8FAFB;
+  color: #6B7D8B;
+  text-align: center;
+  font-size: 11px;
+}
+@media (max-width: 520px) {
+  .pipeline-stage-nav { gap: 4px; padding-inline: 8px; }
+  .pipeline-stage-button { gap: 5px; padding: 8px 7px; }
+  .pipeline-stage-name { font-size: 10px; }
+  .pipeline-stage-arrow { font-size: 16px; }
+}
