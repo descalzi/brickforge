@@ -1526,6 +1526,9 @@ async function loadConstructionPriceCatalogue(file) {
 
 function displayConstruction(result) {
   if (Array.isArray(result.alternatives)) activeConstructionAlternatives = result.alternatives;
+  const selectedAlternative = activeConstructionAlternatives.find((alternative) =>
+    alternative.model_name === result.model_name);
+  if (selectedAlternative) result = selectedAlternative;
   activeConstruction = result;
   compareConstructionAlternativeSurfaces().catch((error) => {
     constructionFidelityStatus.textContent = error instanceof Error ? error.message : 'Surface comparison failed.';
