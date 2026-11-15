@@ -1,4 +1,4 @@
-import { analyzeMeshFeatures } from "./mesh-feature-analysis.js?v=featuremeasure4";
+import { analyzeMeshFeaturesExtended } from "./mesh-feature-analysis.js?v=featuremeasure4";
 
 self.addEventListener("message", (event) => {
   const { trianglePositions, boundsMin, boundsMax } = event.data || {};
@@ -17,7 +17,7 @@ self.addEventListener("message", (event) => {
         c: [trianglePositions[index + 6], trianglePositions[index + 7], trianglePositions[index + 8]],
       });
     }
-    const features = analyzeMeshFeatures(triangles, boundsMin, boundsMax);
+    const features = analyzeMeshFeaturesExtended(triangles, boundsMin, boundsMax);
     self.postMessage({ type: "complete", features });
   } catch (error) {
     self.postMessage({
