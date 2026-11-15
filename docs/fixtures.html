@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#F2F4F6">
+<meta name="description" content="Download synthetic STL benchmark models for testing BrickForge mesh inspection and construction.">
+<title>Validation fixtures — BrickForge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./assets/site.css">
+<link rel="icon" href="./assets/mark.svg" type="image/svg+xml">
+<style>
+.fixture-main{width:min(1120px,calc(100% - 40px));margin:0 auto;padding:54px 0 88px}
+.fixture-intro{max-width:760px;margin-bottom:36px}.fixture-intro h1{font-size:clamp(2.6rem,7vw,5rem);line-height:.98;letter-spacing:-.06em;margin:18px 0}.fixture-intro h1 span{color:#64798a}.fixture-intro p{font-size:1.08rem;line-height:1.65;color:#536575}
+.fixture-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:14px}
+.fixture-card{background:#fff;border:1px solid #dce3e8;border-radius:14px;padding:20px;display:flex;flex-direction:column;min-height:230px}
+.fixture-card .fixture-kind{font:500 .72rem 'IBM Plex Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#b34b22}
+.fixture-card h2{font-size:1.18rem;margin:12px 0 8px}.fixture-card p{color:#586979;line-height:1.5;font-size:.93rem;margin:0 0 12px}
+.fixture-card .fixture-meta{font: .75rem 'IBM Plex Mono',monospace;color:#738391;margin-top:auto;padding:10px 0}
+.fixture-card a{color:#174b69;font-weight:700;text-decoration:none;border-top:1px solid #e5eaee;padding-top:12px}
+.fixture-card a:hover{text-decoration:underline}
+.fixture-notes{margin-top:34px;padding:22px;border:1px solid #dce3e8;border-radius:14px;background:#f8fafb;color:#526575;line-height:1.6}
+.fixture-notes h2{color:#172d3d;margin-top:0}
+@media(max-width:600px){.fixture-main{width:calc(100% - 28px);padding-top:32px}}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+<a class="brand" href="./index.html" aria-label="BrickForge home"><img src="./assets/mark.svg" width="34" height="34" alt=""><span>brickforge</span></a>
+<nav class="main-nav" aria-label="Main navigation"><a href="./index.html#method">The method</a><a href="./inspector.html">Mesh inspector</a><a href="./builder.html">Block builder</a><a href="./parts.html">Part explorer</a><a href="./fixtures.html" aria-current="page">Test fixtures</a></nav>
+</header>
+<main id="main" class="fixture-main">
+<a class="back-link" href="./inspector.html">Back to mesh inspector</a>
+<section class="fixture-intro">
+<p class="eyebrow">BRICKFORGE / BENCHMARK LIBRARY</p>
+<h1>Test the difficult shapes.<br><span>Not just the easy ones.</span></h1>
+<p>A growing set of synthetic STL models for repeatable mesh-ingestion, opening-detection, voxelisation, surface-fitting and construction tests. Download a model, then load it into the <a href="./inspector.html">Mesh Inspector</a>.</p>
+</section>
+<section class="fixture-grid" aria-label="STL validation fixtures">
+<article class="fixture-card"><span class="fixture-kind">Baseline</span><h2>Solid block</h2><p>A plain rectangular solid used to establish a clean baseline for mesh ingestion, dimensions and occupancy.</p><div class="fixture-meta">30 × 20 × 12 mm · STL parsing / bounding dimensions</div><a href="./fixtures/block-solid.stl" download>Download STL →</a></article>
+<article class="fixture-card"><span class="fixture-kind">Openings</span><h2>Single through-hole</h2><p>A cylindrical opening passes completely through the thickness of the block.</p><div class="fixture-meta">36 × 24 × 12 mm · topological tunnel count / axis-aligned opening detection</div><a href="./fixtures/block-through-hole.stl" download>Download STL →</a></article>
+<article class="fixture-card"><span class="fixture-kind">Openings</span><h2>Three-hole pattern</h2><p>Three equal through-holes on a straight pitch, useful for checking repeated feature localisation.</p><div class="fixture-meta">40 × 24 × 12 mm · multiple opening detection / feature separation</div><a href="./fixtures/block-three-hole-pattern.stl" download>Download STL →</a></article>
+<article class="fixture-card"><span class="fixture-kind">Openings</span><h2>Blind pocket</h2><p>A cylindrical pocket opens on one face but stops inside the solid.</p><div class="fixture-meta">30 × 20 × 12 mm · partial-span feature classification / blind/through distinction</div><a href="./fixtures/block-blind-pocket.stl" download>Download STL →</a></article>
+<article class="fixture-card"><span class="fixture-kind">Advanced openings</span><h2>Oblique bore</h2><p>A diagonal cylindrical bore crosses the block at an angle.</p><div class="fixture-meta">36 × 24 × 18 mm · oblique section sampling / arbitrary-axis feature matching</div><a href="./fixtures/block-oblique-bore.stl" download>Download STL →</a></article>
+<article class="fixture-card"><span class="fixture-kind">Advanced openings</span><h2>Curved tunnel</h2><p>A smoothly bending tunnel passes through the block. It is deliberately more difficult than a straight cylindrical opening.</p><div class="fixture-meta">40 × 24 × 18 mm · centreline deviation / curved feature candidate classification</div><a href="./fixtures/block-curved-tunnel.stl" download>Download STL →</a></article>
+<article class="fixture-card"><span class="fixture-kind">Advanced openings</span><h2>Branching tunnel</h2><p>Two intersecting bores form a T-shaped internal passage.</p><div class="fixture-meta">40 × 24 × 18 mm · multiple contour grouping / branching candidate analysis</div><a href="./fixtures/block-branching-tunnel.stl" download>Download STL →</a></article>
+<article class="fixture-card"><span class="fixture-kind">Organic / compound</span><h2>Simple car silhouette</h2><p>A deliberately blocky car-like shape with integrated wheel volumes. It is a geometry challenge rather than a detailed vehicle model.</p><div class="fixture-meta">50 × 14 × 17 mm · non-rectangular occupancy / multi-volume silhouette</div><a href="./fixtures/car-simple.stl" download>Download STL →</a></article>
+</section>
+<section class="fixture-notes"><h2>Using the fixtures</h2><ol><li>Download an STL model using the link above.</li><li>Open the <a href="./inspector.html">Mesh Inspector</a> and select the downloaded file.</li><li>Keep source units set to millimetres unless deliberately testing unit conversion.</li><li>Record the detected openings, warnings, voxel grid and construction result. Compare them with the intended features in the fixture catalogue.</li></ol><p><a href="./data/validation-fixtures.json" download>Download the machine-readable fixture catalogue (JSON)</a>.</p><p>These are deterministic, 1 mm voxel-derived meshes. They are excellent for repeatable regression and workflow tests, but their surfaces are quantised rather than CAD-perfect. The catalogue records intended features, not a promise that every current heuristic will detect them perfectly.</p></section>
+</main>
+<footer class="site-footer"><a class="brand footer-brand" href="./index.html"><img src="./assets/mark.svg" width="28" height="28" alt=""><span>brickforge</span></a><p>Independent project.</p><span class="footer-id">BF / FIXTURES-01</span></footer>
+</body></html>
