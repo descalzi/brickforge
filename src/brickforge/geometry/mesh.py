@@ -31,12 +31,70 @@ class MeshReport:
     euler_characteristic: int
     degenerate_face_count: int
     duplicate_face_count: int
+    self_intersection_status: str
+    self_intersecting_triangle_pair_count: int
+    self_intersection_candidate_pair_count: int
     validation_status: str
     warnings: tuple[str, ...]
 
     def to_dict(self) -> dict[str, object]:
         """Return a JSON-serialisable representation."""
         return asdict(self)
+
+
+def _triangle_pair_intersects(first: np.ndarray, second: np.ndarray, epsilon: float) -> bool:
+    """Separating-axis test, including coplanar separation axes."""
+    first_edges = (first[1] - first[0], first[2] - first[1], first[0] - first[2])
+    second_edges = (second[1] - second[0], second[2] - second[1], second[0] - second[2])
+    first_normal = np.cross(first_edges[0], first_edges[1])
+    second_normal = np.cross(second_edges[0], second_edges[1])
+    axes = [first_normal, second_normal]
+    axes.extend(np.cross(left, right) for left in first_edges for right in second_edges)
+    axes.extend(np.cross(first_normal, edge) for edge in first_edges)
+    axes.extend(np.cross(second_normal, edge) for edge in second_edges)
+    for axis in axes:
+        magnitude = float(np.linalg.norm(axis))
+        if magnitude <= epsilon:
+            continue
+        unit_axis = axis / magnitude
+        first_projection = first @ unit_axis
+        second_projection = second @ unit_axis
+        if (float(first_projection.max()) < float(second_projection.min()) - epsilon
+                or float(second_projection.max()) < float(first_projection.min()) - epsilon):
+            return False
+    return True
+
+
+def _self_intersection_diagnostics(
+    vertices: np.ndarray, faces: np.ndarray, *, max_candidate_pairs: int = 2_000_000
+) -> tuple[str, int, int]:
+    """Sweep-and-prune triangle test with a hard candidate-pair budget."""
+    triangles = vertices[faces]
+    bounds_min = triangles.min(axis=1)
+    bounds_max = triangles.max(axis=1)
+    scale = max(1.0, float(np.linalg.norm(vertices.max(axis=0) - vertices.min(axis=0))))
+    epsilon = scale * 1e-9
+    order = np.argsort(bounds_min[:, 0], kind="stable")
+    intersections = 0
+    candidates = 0
+    for order_index, face_index in enumerate(order):
+        possible = order[order_index + 1:]
+        if not len(possible):
+            break
+        stop = int(np.searchsorted(bounds_min[possible, 0], bounds_max[face_index, 0] + epsilon, side="right"))
+        for other_index in possible[:stop]:
+            if np.intersect1d(faces[face_index], faces[other_index]).size:
+                continue
+            if np.any(bounds_max[face_index, 1:] < bounds_min[other_index, 1:] - epsilon):
+                continue
+            if np.any(bounds_max[other_index, 1:] < bounds_min[face_index, 1:] - epsilon):
+                continue
+            candidates += 1
+            if candidates > max_candidate_pairs:
+                return "not_assessed_pair_limit", intersections, candidates
+            if _triangle_pair_intersects(triangles[face_index], triangles[other_index], epsilon):
+                intersections += 1
+    return ("intersections_detected" if intersections else "none_detected"), intersections, candidates
 
 
 def inspect_mesh(path: str | Path, *, units: str) -> MeshReport:
@@ -114,6 +172,7 @@ def inspect_mesh(path: str | Path, *, units: str) -> MeshReport:
     winding_consistent = bool(mesh.is_winding_consistent)
     is_volume = bool(mesh.is_volume)
     euler_characteristic = int(mesh.euler_number)
+    intersection_status, intersection_pairs, intersection_candidates = _self_intersection_diagnostics(vertices, faces)
 
     warnings: list[str] = []
     if not watertight:
@@ -135,14 +194,15 @@ def inspect_mesh(path: str | Path, *, units: str) -> MeshReport:
         )
     if not is_volume:
         warnings.append("Mesh does not satisfy Trimesh's closed positive-volume solid checks.")
-    warnings.append(
-        "Self-intersections are not assessed. Watertight edges and consistent winding "
-        "do not prove that triangle surfaces do not intersect."
-    )
+    if intersection_status == "intersections_detected":
+        warnings.append(f"Detected {intersection_pairs} intersecting non-adjacent triangle pair(s).")
+    elif intersection_status == "not_assessed_pair_limit":
+        warnings.append("Self-intersection scan reached its candidate-pair limit; mesh is not certified clear.")
 
     ready = (
         watertight and winding_consistent and is_volume
         and not degenerate_count and not duplicate_count
+        and intersection_status == "none_detected"
     )
     return MeshReport(
         source=str(source),
@@ -158,6 +218,9 @@ def inspect_mesh(path: str | Path, *, units: str) -> MeshReport:
         euler_characteristic=euler_characteristic,
         degenerate_face_count=degenerate_count,
         duplicate_face_count=duplicate_count,
+        self_intersection_status=intersection_status,
+        self_intersecting_triangle_pair_count=intersection_pairs,
+        self_intersection_candidate_pair_count=intersection_candidates,
         validation_status="closed_solid_checks_passed" if ready else "needs_review",
         warnings=tuple(warnings),
     )
