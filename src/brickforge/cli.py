@@ -48,7 +48,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         if args.json_path is not None:
             try:
                 args.json_path.parent.mkdir(parents=True, exist_ok=True)
-                args.json_path.write_text(payload + "\\n", encoding="utf-8")
+                args.json_path.write_text(payload + "\n", encoding="utf-8")
             except OSError as exc:
                 print(f"brickforge: could not write report: {exc}", file=sys.stderr)
                 return 1
