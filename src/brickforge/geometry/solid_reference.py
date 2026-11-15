@@ -140,7 +140,8 @@ def solidify_surface_mesh(
     ]
     if not np.allclose(reconciliation_scale, 1.0, rtol=0.0, atol=1e-8):
         warnings.append(
-            "A small axis-wise scale correction removes the marching-cubes half-voxel boundary margin; "
+            "A small axis-wise scale correction removes the marching-cubes "
+            "half-voxel boundary margin; "
             f"factors are {tuple(float(v) for v in reconciliation_scale)}."
         )
     if not topology_preserved:
@@ -178,7 +179,7 @@ def export_assembly_solid_reference_stl(
     library: LDrawLibrary,
     destination: str | Path,
     *,
-    pitch_mm: float = 0.25,
+    pitch_mm: float = 0.5,
     max_voxels: int = 2_000_000,
     expected_handle_count: int | None = None,
 ) -> dict[str, Any]:
