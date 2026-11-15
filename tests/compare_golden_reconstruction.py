@@ -161,6 +161,16 @@ print(json.dumps({
     "golden_model": "two-through-hole",
     "reconstructed_parts": len(two_reconstructed.parts),
     "reconstructed_bom": two_reconstructed.bom_dict(),
+    "reconstructed_placements": [
+        {
+            "instance_id": part.instance_id,
+            "part_id": part.part_id,
+            "colour_code": part.colour_code,
+            "translation_ldu": list(part.translation_ldu),
+            "matrix": list(part.matrix),
+        }
+        for part in two_reconstructed.parts
+    ],
     "source_dimensions_mm": two_source_solid.extents.tolist(),
     "reconstructed_dimensions_mm": two_reconstructed_solid.extents.tolist(),
     "absolute_dimension_error_mm": two_dimensions_error.tolist(),
