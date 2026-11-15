@@ -1429,6 +1429,12 @@ async function compareConstructionAlternativeSurfaces() {
             "This comparison does not validate collision-free placement, connection quality, stability or buildability.",
           ],
         };
+        const surfaceCheck = alternative.validation_report.checks?.find((check) => check.id === "surface_fidelity");
+        if (surfaceCheck) {
+          surfaceCheck.summary = method === "detailed-ldraw-part-surfaces"
+            ? "The Inspector recorded a sampled detailed-LDraw surface-fidelity proxy; exact Hausdorff fidelity, collision-free placement and physical buildability remain not assessed."
+            : "The Inspector recorded a sampled simplified-envelope surface proxy; detailed LDraw surface fidelity and physical buildability remain not assessed.";
+        }
         alternative.validation_report.hybrid_fidelity = {
           volumetric_coverage_fraction: volumetricCoverage,
           surface_fidelity_score: surface.global_bidirectional_score,
