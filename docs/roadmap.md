@@ -71,7 +71,7 @@ This roadmap is intentionally milestone-based. Each milestone should produce a d
 - [x] Define a scale-aware, orientation-aware target-shape representation for the browser product using physical grid pitch/origin and explicit source-axis alignment into the canonical construction frame.
 - [x] Integrate browser voxelisation into the mesh inspector and expose per-course occupancy previews.
 - [x] Convert imported triangle meshes into a bounded 3D occupancy field at the standard stud/course resolution.
-- [x] Add a unit-aware mesh inspection report for open/non-manifold surfaces, winding, degenerate and duplicate faces, disconnected components, Euler characteristic and positive-volume solid checks. Self-intersections remain explicitly not assessed and block any claim of complete mesh validation.
+- [x] Add unit-aware mesh inspection plus bounded triangle self-intersection diagnostics, with explicit not-assessed status when the candidate-pair budget is exhausted.
 - [ ] Extract per-course 2D cross-sections while retaining surface-distance information for visual fitting.
 - [x] Reuse the tested footprint tiler as a per-course candidate generator, prioritise sampled interlocking layouts for complex perforated courses, then solve bounded connected cross-course arrangements. The browser mesh inspector can generate and export a variable-course assembly from its target grid; the currently profiled rectangular brick and plate families are eligible.
 - [x] Preserve closed-mesh topological handle/tunnel counts separately from coarse occupancy; conservatively map supported axis-aligned sub-grid openings to grid-cell clearance tunnels, and continue blocking construction for unsupported or unlocalised features.
@@ -81,17 +81,17 @@ This roadmap is intentionally milestone-based. Each milestone should produce a d
 - [x] Add bounded Part Explorer scans that accumulate up to 48 unique profiles across multiple user searches; skip duplicates and export one combined catalogue.
 - [x] Add an initial browser geometric matcher for imported part profiles using shape and per-slice dimensional ranges; report candidates only and do not treat a match as a buildability result.
 - [x] Export optional lightweight candidate-part triangle geometry and preview its estimated rigid placement in the Inspector using a separately tested transform; keep visual alignment distinct from physical fit.
-- [ ] Build a curated, source-verified feature-profile catalogue for useful specialised parts; distinguish measured openings from nominal connection interfaces.
-- [ ] Complete specialised-part matching with validated connection interfaces and surrounding-envelope checks against detailed local geometry. (The current matcher already provides one-to-one feature assignment, bounded rigid rotation/translation estimation, residual checks and a coarse transformed-AABB containment check; these are candidate filters, not validated fits.)
-- [ ] Improve feature analysis for oblique, curved, branching and blind openings; match measured features to compatible parts or explicit preservation constraints.
+- [x] Build a pinned, source-verified Technic seed catalogue (3700, 3701, 3702 and 32064a), with browser scans that create measured opening profiles while keeping nominal connection interfaces separately sourced.
+- [x] Add source-derived nominal interface matching, one-to-one feature assignment, rigid placement estimation, coarse transformed-envelope checks and detailed candidate-to-target triangle-surface checks for curated specialised parts. Physical clutch, insertion force and structural compatibility remain unverified.
+- [x] Extend feature analysis to sampled oblique section frames, centreline-curvature candidates, partial-span/blind candidates and possible branching groups; allow oblique feature axes in matching. These are sampled geometric hypotheses, not exact medial-axis or tunnel-topology reconstruction.
 - [x] Add a first bounded surface-alignment scorer for placed candidate-part triangle geometry, with spatially indexed nearest-target-triangle distances and explicit one-way coverage limitations.
 - [x] Add a bounded ±1 mm translation refinement for measured candidate geometry around an opening-derived placement, with an explicit reset to the original alignment and disclosure that surface proximity can reduce opening alignment.
-- [ ] Add surface-aware candidate placement for slopes, curves and specialised elements.
-- [ ] Combine coarse volumetric and surface-fitting strategies.
+- [x] Add bounded 91-pose local translation/rotation refinement for placed candidate geometry, with reset to the original opening-derived pose and explicit disclosure that surface proximity can worsen interface alignment.
+- [x] Combine the hard volumetric target-occupancy coverage check with bidirectional sampled surface-fidelity proxies for complete construction alternatives; volumetric coverage remains a constraint and surface fit differentiates alternatives.
 - [x] Add comparative objective metrics and configurable balanced, economy, simplicity and interlock profiles for the bounded connected alternatives. Scores remain relative heuristics, not physical quality measurements.
 - [x] Retain, rank and expose up to three distinct connected course arrangements with complete LDraw, assembly-graph, BOM and validation exports for each; provide selectable alternatives in the Mesh Inspector.
 - [x] Compare retained alternatives by part count, part-type diversity, nominal mating-pair density and course balance, with the selected objective and metrics included in the validation report.
-- [ ] Compare alternative constructions for measured target-surface fidelity and real cost, alongside the existing part-count and complexity metrics. Current surface proximity is available only for a manually placed candidate part, not end-to-end alternative ranking.
+- [x] Compare complete alternatives using exposed simplified part-body envelope surface fidelity and source-attributed BOM prices imported by the user. Missing prices remain explicit and suppress a complete total; shipping, taxes, stock and seller basket effects are excluded.
 
 **Initial exit criteria achieved for the supported test scope:** the engine produces and explains multiple valid connected alternatives for the tested rectangular brick/plate course shapes, with complete exports and regression coverage. Broader specialised-part coverage, full surface-fidelity optimisation, self-intersection handling and real cost/stability analysis remain explicit M5 extensions.
 
@@ -125,3 +125,15 @@ This roadmap is intentionally milestone-based. Each milestone should produce a d
 - [ ] Build a diverse evaluation suite covering organic and mechanical shapes.
 
 **Exit criteria:** measured performance and documented limitations across a representative shape benchmark.
+
+### M5 extension completion — 2026-11-15
+
+The five extension workstreams are implemented for the supported browser/geometry scope:
+
+1. A pinned LDraw Technic seed catalogue and curated Part Explorer scan path produce measured profiles from resolved source geometry. Source-derived nominal interfaces are stored separately from measured voids.
+2. Mesh feature analysis now samples principal and oblique section frames. It reports centreline curvature candidates, partial-span/blind candidates and heuristic branching groups; oblique axes are accepted by the feature matcher.
+3. Candidate surface placement can test 91 bounded combinations of translation and single-axis rotation around the current pose. The original opening-derived pose remains resettable.
+4. Each connected alternative receives a whole-assembly, bidirectional surface-fidelity proxy from exposed simplified part-body envelopes. The proxy is recorded in the validation export. A dated, source-attributed price catalogue can be imported to calculate BOM costs; unknown prices prevent a complete total.
+5. Python and browser mesh paths perform sweep-and-prune triangle-pair intersection checks with separating-axis tests. Candidate-pair limits produce an explicit not-assessed result rather than a clean bill of health.
+
+These extensions are engineering aids, not physical certification. Oblique analysis is direction-sampled; curved/branching/blind classifications are candidates; surface-fidelity uses simplified envelopes for whole constructions; specialised interface sizes are nominal LDraw-derived geometry; self-intersection scans skip pairs sharing a vertex and can stop at their candidate-pair budget; costs depend on the user's imported price source and exclude shipping, taxes and availability. Detailed physical clutch, stability and assembly-access checks remain outside M5.
