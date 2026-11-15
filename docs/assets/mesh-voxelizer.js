@@ -1,5 +1,5 @@
 import { BRICK_GRID_PITCH_MM, CellClass } from "./target-grid.js?v=featuregrid7";
-import { analyzeMeshFeaturesExtended } from "./mesh-feature-analysis.js?v=featuremeasure6";
+import { analyzeMeshFeaturesExtended } from "./mesh-feature-analysis.js?v=featuremeasure7";
 import { diagnoseTriangleIntersections } from "./mesh-intersections.js?v=meshintersections1";
 
 const UNIT_TO_MM = Object.freeze({ mm: 1, cm: 10, m: 1000, in: 25.4 });
