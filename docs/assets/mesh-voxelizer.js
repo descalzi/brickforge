@@ -473,8 +473,16 @@ export function voxelizeMesh({
   const origin = [...boundsMin];
   const dimensions = boundsMin.map((value, axis) => {
     const studCap = axis === 1 ? 1.6 : 0;
+    // STLLoader commonly supplies Float32 coordinates. A nominal LEGO
+    // envelope such as 11.2 mm (9.6 mm body + 1.6 mm studs) can therefore
+    // arrive a few 1e-7 mm above its exact boundary. A 1e-12 epsilon is
+    // ineffective at that precision and can add a whole phantom course.
+    // Scale the tolerance with the coordinate magnitude to cover Float32
+    // quantisation while remaining far below any meaningful model feature.
+    const coordinateMagnitude = Math.max(Math.abs(boundsMin[axis]), Math.abs(boundsMax[axis]), 1);
+    const boundaryToleranceMm = Math.max(1e-5, coordinateMagnitude * 1.5 * 2 ** -23);
     return Math.max(1, Math.ceil(
-      (boundsMax[axis] - origin[axis] - studCap) / pitchMm[axis] - 1e-12,
+      (boundsMax[axis] - origin[axis] - studCap - boundaryToleranceMm) / pitchMm[axis] - 1e-12,
     ));
   });
   const cellCount = dimensions[0] * dimensions[1] * dimensions[2];
