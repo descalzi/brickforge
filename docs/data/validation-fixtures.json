@@ -1,71 +1,83 @@
 {
   "schema_version": 1,
   "title": "BrickForge validation fixture library",
-  "units": "mm",
-  "generation": "Deterministic 1 mm voxel boundary meshes, exported as ASCII STL. The fixtures are intentionally synthetic and dimensioned in millimetres.",
+  "units": "mixed",
+  "generation": "LEGO-scale construction fixtures use centimetre coordinates; advanced geometry fixtures retain millimetre coordinates. Basic beam meshes are deterministic 0.8 mm voxel-boundary surfaces.",
   "fixtures": [
     {
       "id": "block-solid",
       "file": "block-solid.stl",
       "title": "Solid block",
       "category": "Baseline",
-      "dimensions_mm": [
-        30,
-        20,
-        12
-      ],
       "expected": {
         "through_tunnels": 0,
         "blind_pockets": 0
       },
       "tests": [
-        "STL parsing",
-        "bounding dimensions",
-        "watertight occupancy baseline"
+        "centimetre-unit conversion",
+        "LEGO brick-course alignment",
+        "topological tunnel count",
+        "cross-section opening detection",
+        "grid clearance mapping",
+        "brick-course construction"
       ],
-      "description": "A plain rectangular solid used to establish a clean baseline for mesh ingestion, dimensions and occupancy."
+      "description": "A solid 6 × 2 × 2-stud beam blank, dimensioned in centimetres and aligned to brick-course geometry.",
+      "units": "cm",
+      "dimensions_cm": [
+        4.8,
+        1.6,
+        1.92
+      ]
     },
     {
       "id": "block-through-hole",
       "file": "block-through-hole.stl",
       "title": "Single through-hole",
       "category": "Openings",
-      "dimensions_mm": [
-        36,
-        24,
-        12
-      ],
       "expected": {
         "through_tunnels": 1,
         "blind_pockets": 0
       },
       "tests": [
+        "centimetre-unit conversion",
+        "LEGO brick-course alignment",
         "topological tunnel count",
-        "axis-aligned opening detection",
-        "grid clearance mapping"
+        "cross-section opening detection",
+        "grid clearance mapping",
+        "brick-course construction"
       ],
-      "description": "A cylindrical opening passes completely through the thickness of the block."
+      "description": "A 6 × 2 × 2-stud beam with one 4.8 mm Technic-style through-bore, centred in a stud cell and passing across the 16 mm width.",
+      "units": "cm",
+      "dimensions_cm": [
+        4.8,
+        1.6,
+        1.92
+      ]
     },
     {
       "id": "block-three-hole-pattern",
       "file": "block-three-hole-pattern.stl",
       "title": "Three-hole pattern",
       "category": "Openings",
-      "dimensions_mm": [
-        40,
-        24,
-        12
-      ],
       "expected": {
         "through_tunnels": 3,
         "blind_pockets": 0
       },
       "tests": [
-        "multiple opening detection",
-        "feature separation",
-        "repeated interface matching"
+        "centimetre-unit conversion",
+        "LEGO brick-course alignment",
+        "topological tunnel count",
+        "cross-section opening detection",
+        "grid clearance mapping",
+        "brick-course construction"
       ],
-      "description": "Three equal through-holes on a straight pitch, useful for checking repeated feature localisation."
+      "description": "A 6 × 2 × 2-stud beam with three 4.8 mm through-bores at two-stud intervals, aligned to the stud grid.",
+      "units": "cm",
+      "dimensions_cm": [
+        4.8,
+        1.6,
+        1.92
+      ]
     },
     {
       "id": "block-blind-pocket",
@@ -85,7 +97,8 @@
         "partial-span feature classification",
         "blind/through distinction"
       ],
-      "description": "A cylindrical pocket opens on one face but stops inside the solid."
+      "description": "A cylindrical pocket opens on one face but stops inside the solid.",
+      "units": "mm"
     },
     {
       "id": "block-oblique-bore",
@@ -104,7 +117,8 @@
         "oblique section sampling",
         "arbitrary-axis feature matching"
       ],
-      "description": "A diagonal cylindrical bore crosses the block at an angle."
+      "description": "A diagonal cylindrical bore crosses the block at an angle.",
+      "units": "mm"
     },
     {
       "id": "block-curved-tunnel",
@@ -123,7 +137,8 @@
         "centreline deviation",
         "curved feature candidate classification"
       ],
-      "description": "A smoothly bending tunnel passes through the block. It is deliberately more difficult than a straight cylindrical opening."
+      "description": "A smoothly bending tunnel passes through the block. It is deliberately more difficult than a straight cylindrical opening.",
+      "units": "mm"
     },
     {
       "id": "block-branching-tunnel",
@@ -143,7 +158,8 @@
         "branching candidate analysis",
         "topology limitations"
       ],
-      "description": "Two intersecting bores form a T-shaped internal passage."
+      "description": "Two intersecting bores form a T-shaped internal passage.",
+      "units": "mm"
     },
     {
       "id": "car-simple",
@@ -164,7 +180,8 @@
         "surface fidelity",
         "construction envelope"
       ],
-      "description": "A deliberately blocky car-like shape with integrated wheel volumes. It is a geometry challenge rather than a detailed vehicle model."
+      "description": "A deliberately blocky car-like shape with integrated wheel volumes. It is a geometry challenge rather than a detailed vehicle model.",
+      "units": "mm"
     },
     {
       "id": "thin-wall-panel",
@@ -184,7 +201,8 @@
         "minimum wall thickness",
         "voxel resolution sensitivity"
       ],
-      "description": "A long, narrow 2 mm-thick wall with reinforcing returns. Challenges thin-feature preservation and grid resolution."
+      "description": "A long, narrow 2 mm-thick wall with reinforcing returns. Challenges thin-feature preservation and grid resolution.",
+      "units": "mm"
     },
     {
       "id": "arched-bridge",
@@ -204,7 +222,8 @@
         "overhang and underside coverage",
         "concave silhouette"
       ],
-      "description": "A solid bridge-like form with a semicircular arch passing through its depth."
+      "description": "A solid bridge-like form with a semicircular arch passing through its depth.",
+      "units": "mm"
     },
     {
       "id": "cantilever-overhang",
@@ -224,7 +243,8 @@
         "unsupported geometry",
         "course-by-course support"
       ],
-      "description": "A stepped base supports an upper beam that projects beyond the base, leaving a clear underside."
+      "description": "A stepped base supports an upper beam that projects beyond the base, leaving a clear underside.",
+      "units": "mm"
     },
     {
       "id": "hollow-sphere",
@@ -244,7 +264,8 @@
         "curved surface fidelity",
         "thin shell voxelisation"
       ],
-      "description": "A closed spherical shell with an internal void, useful for distinguishing an enclosed cavity from an open tunnel."
+      "description": "A closed spherical shell with an internal void, useful for distinguishing an enclosed cavity from an open tunnel.",
+      "units": "mm"
     },
     {
       "id": "intersecting-solids",
@@ -264,7 +285,8 @@
         "self-intersection diagnostics",
         "watertight repair behaviour"
       ],
-      "description": "Two rectangular volumes overlap and are fused into one solid, testing compound geometry and overlap handling."
+      "description": "Two rectangular volumes overlap and are fused into one solid, testing compound geometry and overlap handling.",
+      "units": "mm"
     },
     {
       "id": "organic-lobed",
@@ -284,12 +306,38 @@
         "surface fidelity",
         "non-rectangular construction envelope"
       ],
-      "description": "A fused multi-lobed solid with rounded contours, a step beyond simple block geometry."
+      "description": "A fused multi-lobed solid with rounded contours, a step beyond simple block geometry.",
+      "units": "mm"
+    },
+    {
+      "id": "block-two-hole-pattern",
+      "file": "block-two-hole-pattern.stl",
+      "title": "Two-hole Technic beam",
+      "category": "LEGO-scale openings",
+      "units": "cm",
+      "dimensions_cm": [
+        4.8,
+        1.6,
+        1.92
+      ],
+      "expected": {
+        "through_tunnels": 2,
+        "blind_pockets": 0
+      },
+      "tests": [
+        "centimetre-unit conversion",
+        "LEGO brick-course alignment",
+        "two-opening separation",
+        "grid clearance mapping",
+        "brick-course construction"
+      ],
+      "description": "A 6 × 2 × 2-stud beam with two 4.8 mm through-bores at two-stud spacing, aligned to the stud grid."
     }
   ],
   "limitations": [
     "These are voxel-derived benchmark meshes, not CAD-grade analytic surfaces. Their 1 mm surface quantisation is intentional and should be considered when comparing fine dimensions.",
     "Expected feature counts describe design intent. Current sampled algorithms may report candidates rather than exact topology; tests should record both expected intent and observed result.",
-    "The car fixture is a simple silhouette, not a mechanically detailed or physically functional vehicle."
+    "The car fixture is a simple silhouette, not a mechanically detailed or physically functional vehicle.",
+    "The LEGO-scale beam fixtures are 6 × 2 × 2 stud envelopes with 4.8 mm bores; their grid-clearance representation is deliberately conservative and may enlarge the physical opening to whole stud cells."
   ]
 }
