@@ -1285,12 +1285,14 @@ function constructionTargetCellBounds() {
     for (const [x, z] of activeTargetGrid.layer_footprint(course)) cells.push([x, z]);
   }
   if (!cells.length) throw new Error("The target grid contains no occupied cells.");
-  return {
-    minX: Math.min(...cells.map(([x]) => x)),
-    maxX: Math.max(...cells.map(([x]) => x)),
-    minZ: Math.min(...cells.map(([, z]) => z)),
-    maxZ: Math.max(...cells.map(([, z]) => z)),
-  };
+  const bounds = { minX: Infinity, maxX: -Infinity, minZ: Infinity, maxZ: -Infinity };
+  for (const [x, z] of cells) {
+    bounds.minX = Math.min(bounds.minX, x);
+    bounds.maxX = Math.max(bounds.maxX, x);
+    bounds.minZ = Math.min(bounds.minZ, z);
+    bounds.maxZ = Math.max(bounds.maxZ, z);
+  }
+  return bounds;
 }
 
 function constructionEnvelopeSurfacePositions(result) {
@@ -1377,6 +1379,17 @@ function compareConstructionAlternativeSurfaces() {
           method: "exposed-simplified-part-body-envelopes",
         };
       }
+      if (alternative.validation_report) {
+        alternative.validation_report.surface_fidelity_proxy = {
+          status: "measured_simplified_envelope_proxy",
+          ...alternative.surface_fidelity_report,
+          limitations: [
+            "Part bodies are represented by simplified envelopes, not detailed LDraw triangle geometry.",
+            "Surface distances are sampled and are not an exact Hausdorff distance.",
+            "This proxy does not validate collision-free placement, connection quality, stability or buildability.",
+          ],
+        };
+      }
       const report = alternative.surface_fidelity_report;
       const item = document.createElement("li");
       item.textContent = "Option " + (index + 1) + " · envelope fidelity "
@@ -1416,6 +1429,7 @@ function renderConstructionCostEstimates() {
     estimate: estimateBomCost(alternative.bom, activePriceCatalogue),
   }));
   estimates.forEach(({ alternative, index, estimate }) => {
+    if (alternative.validation_report) alternative.validation_report.cost_estimate = estimate;
     const item = document.createElement("li");
     const total = estimate.estimated_total === null
       ? "known subtotal " + activePriceCatalogue.currency + " " + estimate.known_subtotal.toFixed(2)
