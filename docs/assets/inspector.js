@@ -2066,6 +2066,7 @@ async function loadFixtureFromQuery() {
     'block-solid.stl',
     'block-through-hole.stl',
     'block-three-hole-pattern.stl',
+    'block-two-hole-pattern.stl',
     'block-blind-pocket.stl',
     'block-oblique-bore.stl',
     'block-curved-tunnel.stl',
