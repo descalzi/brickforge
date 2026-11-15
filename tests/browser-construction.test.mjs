@@ -302,7 +302,7 @@ test("browser layered engine returns ranked connected alternatives with complete
     for (let x = 0; x < 4; x += 1) footprint.push([x, z]);
   }
   const result = buildLayeredFootprintBlock([footprint, footprint], catalogue, { maxAlternatives: 3 });
-  assert.ok(result.alternatives.length >= 1);
+  assert.ok(result.alternatives.length > 1, "the selected 4x4 test shape should produce multiple connected alternatives");
   assert.ok(result.alternatives.length <= 3);
   assert.equal(result.alternatives[0].model_name, result.model_name);
   for (let index = 0; index < result.alternatives.length; index += 1) {
