@@ -195,8 +195,50 @@ export function scoreSurfaceFit(candidatePositions, targetPositions, options = {
   validateTrianglePositions(candidatePositions, "Candidate geometry", MAX_CANDIDATE_TRIANGLES);
   validateTrianglePositions(targetPositions, "Target geometry", MAX_TARGET_TRIANGLES);
   const { tolerance, maxDistance, cellSize } = surfaceFitOptions(options);
-  const index = buildTriangleIndex(targetPositions, cellSize);
-  return scoreCandidateAgainstIndex(candidatePositions, targetPositions.length / 9, index, tolerance, maxDistance);
+  const targetIndex = buildTriangleIndex(targetPositions, cellSize);
+  const candidateIndex = buildTriangleIndex(candidatePositions, cellSize);
+  const candidateToTarget = scoreCandidateAgainstIndex(
+    candidatePositions, targetPositions.length / 9, targetIndex, tolerance, maxDistance,
+  );
+  const targetToCandidate = scoreCandidateAgainstIndex(
+    targetPositions, candidatePositions.length / 9, candidateIndex, tolerance, maxDistance,
+  );
+  const symmetricCoverage = (
+    candidateToTarget.within_tolerance_fraction + targetToCandidate.within_tolerance_fraction
+  ) / 2;
+  const symmetricRms = Math.sqrt((
+    candidateToTarget.rms_distance_mm ** 2 + targetToCandidate.rms_distance_mm ** 2
+  ) / 2);
+  const symmetric95 = Math.max(
+    candidateToTarget.percentile_95_distance_mm,
+    targetToCandidate.percentile_95_distance_mm,
+  );
+  const symmetricMean = (
+    candidateToTarget.mean_distance_mm + targetToCandidate.mean_distance_mm
+  ) / 2;
+  const score = Math.sqrt(candidateToTarget.score * targetToCandidate.score);
+  const status = candidateToTarget.within_tolerance_fraction >= 0.95
+      && targetToCandidate.within_tolerance_fraction >= 0.95
+      && symmetric95 <= tolerance * 1.5
+    ? "close_surface_alignment"
+    : symmetricCoverage >= 0.5 ? "partial_surface_alignment" : "poor_surface_alignment";
+  return {
+    ...candidateToTarget,
+    method: "bidirectional-surface-distance",
+    candidate_to_target: candidateToTarget,
+    target_to_candidate: targetToCandidate,
+    symmetric_mean_distance_mm: symmetricMean,
+    symmetric_rms_distance_mm: symmetricRms,
+    symmetric_95th_percentile_distance_mm: symmetric95,
+    symmetric_within_tolerance_fraction: symmetricCoverage,
+    score,
+    status,
+    limitations: [
+      "Both directions sample triangle vertices and centroids; this is a discrete surface approximation, not an exact Hausdorff distance.",
+      "Distances are capped at the configured search distance.",
+      "A geometric surface match does not establish material containment, collision-free placement, physical connection, stability or assembly accessibility.",
+    ],
+  };
 }
 
 /**
