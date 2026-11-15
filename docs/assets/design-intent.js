@@ -1,4 +1,4 @@
-const SUPPORTED_RELATIONSHIPS = new Set(["same_group", "minimum_separation"]);
+const SUPPORTED_RELATIONSHIPS = new Set(["same_group", "minimum_separation", "distance_ratio"]);
 
 function isRecord(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
@@ -34,6 +34,13 @@ export function validateDesignIntentContract(contract) {
       errors.push("intent.required_features[" + index + "] needs feature_type and a positive integer count.");
     }
   }
+  for (const [index, feature] of (intent.optional_features || []).entries()) {
+    if (!isRecord(feature) || typeof feature.feature_type !== "string"
+        || !feature.feature_type.trim() || (feature.target_count !== undefined
+          && (!Number.isInteger(feature.target_count) || feature.target_count < 0))) {
+      errors.push("intent.optional_features[" + index + "] needs feature_type and an optional non-negative target_count.");
+    }
+  }
   for (const [index, feature] of (intent.forbidden_features || []).entries()) {
     if (!isRecord(feature) || typeof feature.feature_type !== "string"
         || !feature.feature_type.trim() || (feature.max_count !== undefined
@@ -50,6 +57,20 @@ export function validateDesignIntentContract(contract) {
     if (relation?.type === "minimum_separation"
         && (!finite(relation.min_mm) || relation.min_mm < 0)) {
       errors.push("intent.relationships[" + index + "].min_mm must be non-negative.");
+    }
+    if (relation?.type === "distance_ratio"
+        && (relation.feature_types?.length !== 4 || !finite(relation.min_ratio)
+          || relation.min_ratio <= 0 || (relation.max_ratio !== undefined
+            && (!finite(relation.max_ratio) || relation.max_ratio < relation.min_ratio)))) {
+      errors.push("intent.relationships[" + index + "] needs four feature types and a valid positive ratio range.");
+    }
+    if (relation?.type === "minimum_separation" && relation.max_mm !== undefined
+        && (!finite(relation.max_mm) || relation.max_mm < relation.min_mm)) {
+      errors.push("intent.relationships[" + index + "].max_mm must be at least min_mm.");
+    }
+    if (relation?.type === "same_group" && relation.min_shared_groups !== undefined
+        && (!Number.isInteger(relation.min_shared_groups) || relation.min_shared_groups < 1)) {
+      errors.push("intent.relationships[" + index + "].min_shared_groups must be a positive integer.");
     }
   }
   if (contract.part_preferences !== undefined && !isRecord(contract.part_preferences)) {
@@ -92,6 +113,24 @@ function evaluateRelationship(relation, reconstruction) {
       message: shared.length >= required
         ? "Required feature types share a construction group."
         : "Required feature types were not found together in enough construction groups.",
+    };
+  }
+  if (relation.type === "distance_ratio") {
+    const [a, b, c, d] = groups.map((items) => items[0]);
+    const numerator = a && b ? distance(a.center_mm, b.center_mm) : null;
+    const denominator = c && d ? distance(c.center_mm, d.center_mm) : null;
+    const ratio = numerator !== null && denominator !== null && denominator > 0
+      ? numerator / denominator : null;
+    const passed = ratio !== null && ratio >= relation.min_ratio
+      && (relation.max_ratio === undefined || ratio <= relation.max_ratio);
+    return {
+      id: relation.id || "distance_ratio",
+      status: passed ? "passed" : "failed",
+      observed_ratio: ratio,
+      minimum_ratio: relation.min_ratio,
+      maximum_ratio: relation.max_ratio ?? null,
+      message: passed ? "Relative feature spacing is within the declared ratio."
+        : "Relative feature spacing is missing or outside the declared ratio.",
     };
   }
   const first = groups[0];
@@ -145,6 +184,21 @@ export function evaluateDesignIntent(contract, reconstruction) {
       + " feature(s), found " + observed + ".");
   }
 
+  const optionalCoverage = [];
+  for (const optional of contract.intent.optional_features || []) {
+    const observed = featureInstances({ features }, optional.feature_type).length;
+    const target = optional.target_count ?? 1;
+    const coverage = target === 0 ? 1 : Math.min(observed, target) / target;
+    optionalCoverage.push(coverage);
+    checks.push({
+      id: "optional:" + optional.feature_type,
+      status: "informational",
+      target,
+      observed,
+      coverage,
+    });
+  }
+
   for (const forbidden of contract.intent.forbidden_features || []) {
     const observed = featureInstances({ features }, forbidden.feature_type).length;
     const maximum = forbidden.max_count ?? 0;
@@ -165,6 +219,7 @@ export function evaluateDesignIntent(contract, reconstruction) {
     if (result.status !== "passed") failures.push(result.message);
   }
 
+  const roleSuitability = [];
   for (const preference of contract.part_preferences?.roles || []) {
     const matching = parts.filter((part) => part.roles?.includes(preference.role)
       || part.role === preference.role);
@@ -178,10 +233,12 @@ export function evaluateDesignIntent(contract, reconstruction) {
     });
     if (!rolePassed) failures.push("Required LEGO part role " + preference.role
       + " is represented " + matching.length + " time(s); expected at least " + minimum + ".");
+    let preferredCount = 0;
     if (rolePassed && Array.isArray(preference.preferred_families)
         && preference.preferred_families.length) {
       const suitable = matching.filter((part) =>
         preference.preferred_families.includes(part.family));
+      preferredCount = Math.max(preferredCount, suitable.length);
       if (suitable.length < minimum) {
         const message = "No sufficient preferred-family coverage for role " + preference.role + ".";
         if (preference.require_preferred_family) failures.push(message);
@@ -192,6 +249,7 @@ export function evaluateDesignIntent(contract, reconstruction) {
         && preference.preferred_part_ids.length) {
       const suitable = matching.filter((part) =>
         preference.preferred_part_ids.includes(String(part.part_id)));
+      preferredCount = Math.max(preferredCount, suitable.length);
       if (suitable.length < minimum) {
         const message = "Dedicated preferred LEGO elements are not used for role "
           + preference.role + ".";
@@ -199,6 +257,7 @@ export function evaluateDesignIntent(contract, reconstruction) {
         else warnings.push(message);
       }
     }
+    roleSuitability.push(matching.length ? Math.min(1, preferredCount / minimum) : 0);
   }
 
   const constraints = contract.construction_constraints || {};
@@ -220,6 +279,13 @@ export function evaluateDesignIntent(contract, reconstruction) {
       + " was not passed (status: " + (source?.status || "not_assessed") + ").");
   }
 
+  const requiredChecks = checks.filter((check) => check.id.startsWith("required:"));
+  const requiredExpected = requiredChecks.reduce((sum, check) => sum + check.expected, 0);
+  const requiredObserved = requiredChecks.reduce((sum, check) =>
+    sum + Math.min(check.expected, check.observed), 0);
+  const relationshipChecks = checks.filter((check) =>
+    check.id === "same_group" || check.id === "minimum_separation"
+      || check.id === "distance_ratio" || contract.intent.relationships?.some((item) => item.id === check.id));
   const diagnosticMetrics = reconstruction.diagnostics || {};
   return {
     schema_version: 1,
@@ -229,6 +295,15 @@ export function evaluateDesignIntent(contract, reconstruction) {
     checks,
     failures,
     warnings,
+    scores: {
+      required_feature_coverage: requiredExpected ? requiredObserved / requiredExpected : 1,
+      optional_feature_coverage: optionalCoverage.length
+        ? optionalCoverage.reduce((sum, value) => sum + value, 0) / optionalCoverage.length : null,
+      relationship_coverage: relationshipChecks.length
+        ? relationshipChecks.filter((check) => check.status === "passed").length / relationshipChecks.length : null,
+      part_role_suitability: roleSuitability.length
+        ? roleSuitability.reduce((sum, value) => sum + value, 0) / roleSuitability.length : null,
+    },
     diagnostics: diagnosticMetrics,
     limitations: [
       "Semantic feature recognition is only as reliable as the supplied feature annotations.",
