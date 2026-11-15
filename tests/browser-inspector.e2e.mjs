@@ -107,6 +107,11 @@ try {
     const resultStatus = await page.locator("#construction-status").innerText();
     assert.match(resultStatus, /Connected construction generated/i,
       "authored 3001 STL did not generate a construction: " + resultStatus);
+    const [graphDownload] = await Promise.all([
+      page.waitForEvent("download"),
+      page.locator("#construction-download-graph").click(),
+    ]);
+    await graphDownload.saveAs(path.resolve(root, "../tests/artifacts/golden-single-3001-reconstruction.assembly.json"));
     assert.equal(consoleErrors.length, 0, "authored 3001 browser errors: " + consoleErrors.join(" | "));
     console.log(JSON.stringify({ goldenModel: "single-3001", voxelStatus, constructionStatus: resultStatus }));
     await page.close();
