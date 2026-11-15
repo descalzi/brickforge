@@ -71,7 +71,7 @@ This roadmap is intentionally milestone-based. Each milestone should produce a d
 - [x] Define a scale-aware, orientation-aware target-shape representation for the browser product using physical grid pitch/origin and explicit source-axis alignment into the canonical construction frame.
 - [x] Integrate browser voxelisation into the mesh inspector and expose per-course occupancy previews.
 - [x] Convert imported triangle meshes into a bounded 3D occupancy field at the standard stud/course resolution.
-- [ ] Add robust mesh validation and explicit handling for open, non-watertight, degenerate and self-intersecting surfaces.
+- [x] Add a unit-aware mesh inspection report for open/non-manifold surfaces, winding, degenerate and duplicate faces, disconnected components, Euler characteristic and positive-volume solid checks. Self-intersections remain explicitly not assessed and block any claim of complete mesh validation.
 - [ ] Extract per-course 2D cross-sections while retaining surface-distance information for visual fitting.
 - [x] Reuse the tested footprint tiler as a per-course candidate generator, prioritise sampled interlocking layouts for complex perforated courses, then solve bounded connected cross-course arrangements. The browser mesh inspector can generate and export a variable-course assembly from its target grid; the currently profiled rectangular brick and plate families are eligible.
 - [x] Preserve closed-mesh topological handle/tunnel counts separately from coarse occupancy; conservatively map supported axis-aligned sub-grid openings to grid-cell clearance tunnels, and continue blocking construction for unsupported or unlocalised features.
@@ -82,7 +82,7 @@ This roadmap is intentionally milestone-based. Each milestone should produce a d
 - [x] Add an initial browser geometric matcher for imported part profiles using shape and per-slice dimensional ranges; report candidates only and do not treat a match as a buildability result.
 - [x] Export optional lightweight candidate-part triangle geometry and preview its estimated rigid placement in the Inspector using a separately tested transform; keep visual alignment distinct from physical fit.
 - [ ] Build a curated, source-verified feature-profile catalogue for useful specialised parts; distinguish measured openings from nominal connection interfaces.
-- [ ] Improve matching with one-to-one feature assignment, explicit part rotations, surrounding-envelope checks and validated connection interfaces; keep unmatched features as construction constraints.
+- [ ] Complete specialised-part matching with validated connection interfaces and surrounding-envelope checks against detailed local geometry. (The current matcher already provides one-to-one feature assignment, bounded rigid rotation/translation estimation, residual checks and a coarse transformed-AABB containment check; these are candidate filters, not validated fits.)
 - [ ] Improve feature analysis for oblique, curved, branching and blind openings; match measured features to compatible parts or explicit preservation constraints.
 - [x] Add a first bounded surface-alignment scorer for placed candidate-part triangle geometry, with spatially indexed nearest-target-triangle distances and explicit one-way coverage limitations.
 - [x] Add a bounded ±1 mm translation refinement for measured candidate geometry around an opening-derived placement, with an explicit reset to the original alignment and disclosure that surface proximity can reduce opening alignment.
@@ -91,7 +91,7 @@ This roadmap is intentionally milestone-based. Each milestone should produce a d
 - [x] Add comparative objective metrics and configurable balanced, economy, simplicity and interlock profiles for the bounded connected alternatives. Scores remain relative heuristics, not physical quality measurements.
 - [x] Retain, rank and expose up to three distinct connected course arrangements with complete LDraw, assembly-graph, BOM and validation exports for each; provide selectable alternatives in the Mesh Inspector.
 - [x] Compare retained alternatives by part count, part-type diversity, nominal mating-pair density and course balance, with the selected objective and metrics included in the validation report.
-- [ ] Compare alternative constructions for fidelity, part count, cost, and complexity.
+- [ ] Compare alternative constructions for measured target-surface fidelity and real cost, alongside the existing part-count and complexity metrics. Current surface proximity is available only for a manually placed candidate part, not end-to-end alternative ranking.
 
 **Initial exit criteria achieved for the supported test scope:** the engine produces and explains multiple valid connected alternatives for the tested rectangular brick/plate course shapes, with complete exports and regression coverage. Broader specialised-part coverage, full surface-fidelity optimisation, self-intersection handling and real cost/stability analysis remain explicit M5 extensions.
 
