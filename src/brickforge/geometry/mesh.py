@@ -87,10 +87,29 @@ def inspect_mesh(path: str | Path, *, units: str) -> MeshReport:
     canonical_faces = np.sort(faces, axis=1)
     duplicate_count = int(len(canonical_faces) - len(np.unique(canonical_faces, axis=0)))
 
-    # Trimesh's topology routines operate on the welded vertex representation.
+    # Count face-connected components directly; avoid Trimesh's optional NetworkX
+    # dependency so inspection remains available in the minimal package install.
+    parents = list(range(len(vertices)))
+
+    def find(index: int) -> int:
+        while parents[index] != index:
+            parents[index] = parents[parents[index]]
+            index = parents[index]
+        return index
+
+    def union(left: int, right: int) -> None:
+        left_root = find(left)
+        right_root = find(right)
+        if left_root != right_root:
+            parents[right_root] = left_root
+
+    for face in faces:
+        union(int(face[0]), int(face[1]))
+        union(int(face[1]), int(face[2]))
+    component_count = len({find(int(index)) for index in np.unique(faces)})
+
+    # Topology properties are evaluated on the welded, unit-scaled geometry.
     mesh.vertices = vertices
-    components = mesh.split(only_watertight=False)
-    component_count = len(components)
     watertight = bool(mesh.is_watertight)
     winding_consistent = bool(mesh.is_winding_consistent)
     is_volume = bool(mesh.is_volume)
