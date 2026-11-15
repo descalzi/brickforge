@@ -431,6 +431,14 @@ export function voxelizeMesh({
         center_mm: feature.center_mm,
       })),
       oblique_candidate_count: obliqueFeatures.length,
+      oblique_candidates: obliqueFeatures.map((feature) => ({
+        axis_vector_world: feature.axis_vector_world,
+        sample_support: feature.sample_support,
+        shape: feature.shape,
+        center_mm: feature.center_mm,
+        width_mm: feature.width_mm,
+        length_mm: feature.length_mm,
+      })),
     };
     features = principalCandidates.filter((feature) => feature.sample_support >= 3);
     if (features.length !== topology.handle_count) {
@@ -521,7 +529,9 @@ export function voxelizeMesh({
         ? ["Principal-axis section candidates were rejected by the three-slice support threshold: "
           + featureAnalysisDiagnostics.principal_candidates.map((feature) =>
             feature.axis + " (" + feature.sample_support + " slices)").join(", ") + "."] : []),
-      ...(obliqueFeatures.length ? ["Located " + obliqueFeatures.length + " additional oblique opening candidate(s); these are sampled section hypotheses and are not used for conservative grid-cell clearance mapping."] : []),
+      ...(obliqueFeatures.length ? ["Located " + obliqueFeatures.length + " additional oblique opening candidate(s); these are sampled section hypotheses and are not used for conservative grid-cell clearance mapping."
+        + (features.length ? "" : " Candidate centres (mm): " + obliqueFeatures.map((feature) =>
+          feature.center_mm.map((value) => value.toFixed(1)).join(",") + " [" + feature.axis_vector_world.map((value) => value.toFixed(2)).join(",") + "]").join("; "))] : []),
       "Browser voxelisation uses 3x3x3 interior sampling and triangle-box SAT for boundary-cell detection. Interior coverage remains a sampling approximation; exact surface-cell overlap is tested geometrically.",
       "The source must be a closed, consistently wound mesh; open-surface shell mode is not supported.",
       ...(selfIntersections.status === "intersections_detected"
