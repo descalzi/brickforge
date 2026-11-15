@@ -1502,7 +1502,18 @@ export function buildLayeredFootprintBlock(layerFootprints, catalogue, config = 
 
   const pitch = baseProfile.stud_pitch_ldu;
   const bodyHeight = baseProfile.body_height_ldu;
+  const optimizationProfile = config.optimizationProfile ?? "balanced";
+  const optimizationWeights = {
+    balanced: { parts: 0.4, variety: 0.25, interlock: 0.2, courseBalance: 0.15 },
+    economy: { parts: 0.7, variety: 0.1, interlock: 0.1, courseBalance: 0.1 },
+    simplicity: { parts: 0.25, variety: 0.6, interlock: 0.05, courseBalance: 0.1 },
+    interlock: { parts: 0.2, variety: 0.1, interlock: 0.55, courseBalance: 0.15 },
+  };
+  if (!Object.hasOwn(optimizationWeights, optimizationProfile)) {
+    throw new RangeError("optimizationProfile must be balanced, economy, simplicity or interlock.");
+  }
   const search = {
+    optimization_profile: optimizationProfile,
     sequence_checks: checks, sequence_search_nodes: visitedNodes, budget_reached: budgetReached,
     candidate_tilings_per_course: layerCandidates.map((items) => items.length),
     candidate_search_limited: searchLimited, valid_alternative_count: candidates.length,
@@ -1512,6 +1523,54 @@ export function buildLayeredFootprintBlock(layerFootprints, catalogue, config = 
     profiles, width, depth, pitch, bodyHeight, colourCodes, positionToleranceLdu,
     collisionToleranceLdu, maxParts, courseType,
   }, index));
+  const minimumPartCount = Math.min(...artifacts.map((artifact) => artifact.parts.length));
+  const minimumTypeCount = Math.min(...artifacts.map((artifact) => new Set(artifact.parts.map((part) => part.part_id)).size));
+  const maximumMatingDensity = Math.max(...artifacts.map((artifact) =>
+    artifact.total_mating_pairs / Math.max(1, artifact.parts.length)));
+  for (const artifact of artifacts) {
+    const typeMix = new Map();
+    for (const part of artifact.parts) typeMix.set(part.part_id, (typeMix.get(part.part_id) || 0) + 1);
+    const courseMean = artifact.course_part_counts.reduce((sum, count) => sum + count, 0) / artifact.course_part_counts.length;
+    const courseSpread = Math.max(...artifact.course_part_counts) - Math.min(...artifact.course_part_counts);
+    const courseBalanceScore = 1 / (1 + courseSpread / Math.max(1, courseMean));
+    const averageMatingPairsPerPart = artifact.total_mating_pairs / Math.max(1, artifact.parts.length);
+    const metrics = {
+      part_count: artifact.parts.length,
+      unique_part_types: typeMix.size,
+      part_type_mix: [...typeMix.entries()].sort((a, b) => compareText(a[0], b[0]))
+        .map(([part_id, quantity]) => ({ part_id, quantity })),
+      connection_count: artifact.connections.length,
+      total_mating_pairs: artifact.total_mating_pairs,
+      average_mating_pairs_per_part: averageMatingPairsPerPart,
+      course_part_counts: artifact.course_part_counts,
+      course_part_count_spread: courseSpread,
+      part_efficiency: minimumPartCount / artifact.parts.length,
+      type_simplicity: minimumTypeCount / typeMix.size,
+      interlock_density: maximumMatingDensity > 0 ? averageMatingPairsPerPart / maximumMatingDensity : 1,
+      course_balance: courseBalanceScore,
+    };
+    const weights = optimizationWeights[optimizationProfile];
+    artifact.optimization_metrics = metrics;
+    artifact.optimization_score = (
+      metrics.part_efficiency * weights.parts
+      + metrics.type_simplicity * weights.variety
+      + metrics.interlock_density * weights.interlock
+      + metrics.course_balance * weights.courseBalance
+    );
+    artifact.optimization_profile = optimizationProfile;
+  }
+  artifacts.sort((a, b) => b.optimization_score - a.optimization_score
+    || a.parts.length - b.parts.length
+    || a.optimization_metrics.unique_part_types - b.optimization_metrics.unique_part_types);
+  const baseModelName = courseType + "-layered-" + width + "x" + depth + "-" + layerFootprints.length + "courses";
+  artifacts.forEach((artifact, index) => {
+    const modelName = index === 0 ? baseModelName : baseModelName + "-alternative-" + (index + 1);
+    artifact.alternative_rank = index + 1;
+    artifact.model_name = modelName;
+    artifact.assembly_graph.model_name = modelName;
+    artifact.bom.model_name = modelName;
+    artifact.ldraw = exportLDraw({ model_name: modelName, parts: artifact.parts });
+  });
   const alternatives = artifacts.map((artifact, index) => ({
     ...artifact, alternative_rank: index + 1, search,
     validation_report: {
