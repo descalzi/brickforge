@@ -326,4 +326,15 @@ test("Z-up mesh openings flow through target grid into a connected layered const
   assert.ok(construction.connections.length > 0);
   assert.ok(construction.parts.every((part) => ["3020", "3021", "3022", "3023", "3024", "3034", "3460", "3623", "3666", "3710", "3795", "3832"].includes(part.part_id)));
   assert.equal(construction.search.candidate_search_limited, true);
+  assert.equal(construction.validation_report.schema_version, 1);
+  assert.equal(construction.validation_report.overall_status, "nominal_checks_passed");
+  const checks = new Map(construction.validation_report.checks.map((check) => [check.id, check]));
+  for (const id of ["target_coverage", "body_overlap", "connection_alignment", "graph_connectivity"]) {
+    assert.equal(checks.get(id).status, "passed", id + " must pass");
+  }
+  assert.equal(checks.get("search_optimality").status, "limited");
+  for (const id of ["surface_fidelity", "physical_stability", "assembly_accessibility"]) {
+    assert.equal(checks.get(id).status, "not_assessed", id + " must remain explicit");
+  }
+  assert.ok(construction.validation_report.limitations.length >= 4);
 });
