@@ -1,5 +1,5 @@
 import { BRICK_GRID_PITCH_MM, CellClass } from "./target-grid.js?v=featuregrid7";
-import { analyzeMeshFeatures } from "./mesh-feature-analysis.js?v=featuremeasure4";
+import { analyzeMeshFeaturesExtended } from "./mesh-feature-analysis.js?v=featuremeasure5";
 
 const UNIT_TO_MM = Object.freeze({ mm: 1, cm: 10, m: 1000, in: 25.4 });
 const SAMPLE_OFFSETS = Object.freeze([0.25, 0.5, 0.75]);
@@ -412,9 +412,12 @@ export function voxelizeMesh({
   }
 
   let features = [];
+  let obliqueFeatures = [];
   if (topology.handle_count > 0) {
     onProgress({ phase: "features", completed: 0, total: 1 });
-    features = analyzeMeshFeatures(triangles, boundsMin, boundsMax);
+    const analysed = analyzeMeshFeaturesExtended(triangles, boundsMin, boundsMax);
+    features = analysed.filter((feature) => feature.axis !== "oblique");
+    obliqueFeatures = analysed.filter((feature) => feature.axis === "oblique");
     onProgress({ phase: "features", completed: 1, total: 1 });
   }
 
@@ -487,7 +490,8 @@ export function voxelizeMesh({
       ...(topology.component_count > 1 ? ["Mesh contains " + topology.component_count + " disconnected closed surface components; confirm these are intended separate solids and do not intersect."] : []),
       ...(features.length ? ["Located " + features.length + " cross-section opening feature(s); dimensions are approximate and based on sampled mesh slices."] : []),
       ...(preservedFeatureCount ? ["Mapped " + preservedFeatureCount + " sub-grid opening(s) to conservative grid-cell clearance tunnels; the represented openings may be larger than the source geometry."] : []),
-      ...(topology.handle_count && !features.length ? ["Tunnel topology was detected, but individual openings could not be localised reliably by the current orthogonal slice analysis."] : []),
+      ...(topology.handle_count && !features.length && !obliqueFeatures.length ? ["Tunnel topology was detected, but individual openings could not be localised reliably by principal or sampled oblique slice analysis."] : []),
+      ...(obliqueFeatures.length ? ["Located " + obliqueFeatures.length + " additional oblique opening candidate(s); these are sampled section hypotheses and are not used for conservative grid-cell clearance mapping."] : []),
       "Browser voxelisation uses 3x3x3 interior sampling and triangle-box SAT for boundary-cell detection. Interior coverage remains a sampling approximation; exact surface-cell overlap is tested geometrically.",
       "The source must be a closed, consistently wound mesh; open-surface shell mode is not supported.",
       "Triangle self-intersections are not detected. Watertight topology does not prove that separate surfaces do not cross or overlap.",
@@ -497,6 +501,7 @@ export function voxelizeMesh({
     removed_degenerate_triangle_count: cleaned.removed,
     topology,
     features,
+    oblique_features: obliqueFeatures,
     feature_keepouts: featureKeepouts,
     ray_triangle_tests: rayBudget.tests,
     cell_triangle_tests: cellBudget.tests,
