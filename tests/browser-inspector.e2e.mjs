@@ -73,6 +73,44 @@ try {
     console.log(JSON.stringify({ fixture: fixture.file, expectedTunnels: fixture.tunnels, voxelStatus, featureStatus, constructionStatus: resultStatus }));
     await page.close();
   }
+
+  // Closed-loop golden model: an actual 3001 LDraw assembly is exported to a
+  // voxel-derived STL in CI, then uploaded to the real Inspector as a user file.
+  {
+    const page = await browser.newPage();
+    const consoleErrors = [];
+    page.on("pageerror", error => consoleErrors.push(error.message));
+    page.on("console", message => { if (message.type() === "error") consoleErrors.push(message.text()); });
+    await page.goto("http://127.0.0.1:4173/inspector.html", { waitUntil: "networkidle" });
+    const goldenStl = path.resolve(root, "../tests/artifacts/golden-single-3001-solid.stl");
+    await page.locator("#file-input").setInputFiles(goldenStl);
+    await page.waitForFunction(() => {
+      const button = document.querySelector("#voxelise-button");
+      return button && !button.disabled;
+    }, null, { timeout: 60000 });
+    await page.locator("#voxelise-button").click();
+    await page.waitForFunction(() => {
+      const status = document.querySelector("#voxelise-status");
+      return status && ["complete","warning","error"].includes(status.dataset.state);
+    }, null, { timeout: 180000 });
+    const voxelStatus = await page.locator("#voxelise-status").innerText();
+    assert.match(voxelStatus, /Voxelisation complete/i, "authored 3001 STL failed Inspector voxelisation: " + voxelStatus);
+    const constructionStatus = await page.locator("#construction-status").innerText();
+    assert.doesNotMatch(constructionStatus, /Construction blocked/i, "authored 3001 STL was blocked: " + constructionStatus);
+    assert.equal(await page.locator("#build-construction").isEnabled(), true,
+      "authored 3001 STL did not enable construction: " + constructionStatus);
+    await page.locator("#build-construction").click();
+    await page.waitForFunction(() => {
+      const status = document.querySelector("#construction-status");
+      return status && status.dataset.state !== "working";
+    }, null, { timeout: 180000 });
+    const resultStatus = await page.locator("#construction-status").innerText();
+    assert.match(resultStatus, /Connected construction generated/i,
+      "authored 3001 STL did not generate a construction: " + resultStatus);
+    assert.equal(consoleErrors.length, 0, "authored 3001 browser errors: " + consoleErrors.join(" | "));
+    console.log(JSON.stringify({ goldenModel: "single-3001", voxelStatus, constructionStatus: resultStatus }));
+    await page.close();
+  }
 } catch (error) {
   failures.push(error);
 } finally {
