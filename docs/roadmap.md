@@ -188,3 +188,15 @@ Python is retained only for offline reference work that provides independent val
 - [ ] Audit Python modules and classify each as golden-reference, catalogue/audit, test-only, or duplicate engine.
 - [ ] Remove unused Python runtime/CLI/API surface without weakening independent golden validation.
 - [ ] Keep browser end-to-end and Node regression suites as the primary product acceptance gates.
+
+
+#### Initial Python scope audit
+
+The current Python tree separates into these provisional groups; removal is deliberately staged so the independent benchmark is not lost:
+
+- **Retain for offline reference work:** `src/brickforge/geometry/solid_reference.py`, `src/brickforge/parts/ldraw_geometry.py`, `ldraw_resolver.py`, `ldraw_mesh.py`, the minimal assembly/connection model needed to author golden assemblies, and `tests/generate_golden_browser_fixture.py` / `tests/compare_golden_reconstruction.py`.
+- **Retain for catalogue maintenance:** `scripts/build_ldraw_catalogue.py`, `scripts/fetch_ldraw_library.py`, `scripts/validate_ldraw_library.py` and the corresponding source/audit tests. These prepare static data; they do not run in the deployed site.
+- **Candidates to retire after dependency checks:** the Python mesh inspection/grid/voxelisation path, duplicate Python construction strategies, CLI entry point, demos and optional API dependencies. These overlap with the browser product and are not justified as production code.
+- **Do not delete blindly:** first confirm no retained golden-reference or catalogue task imports a candidate module, then migrate or replace only the necessary test coverage. Keep the browser Node and Chromium suites as the product gates.
+
+This is a scope audit, not a claim that the Python duplicate implementation has already been removed.
