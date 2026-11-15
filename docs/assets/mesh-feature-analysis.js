@@ -209,6 +209,32 @@ function clusterOpening(clusters, candidate, axis, sampleIndex) {
   nearest.lastSampleIndex = sampleIndex;
 }
 
+export function classifyCentrelinePath(samples, minimumWidthMm) {
+  if (!Array.isArray(samples) || samples.length < 2
+      || !Number.isFinite(minimumWidthMm) || minimumWidthMm <= 0) {
+    return { centreline_deviation_mm: 0, path_class: "insufficient_samples" };
+  }
+  const ordered = [...samples].sort((left, right) => left.plane - right.plane);
+  const first = ordered[0];
+  const last = ordered[ordered.length - 1];
+  const axialSpan = Math.max(1e-9, last.plane - first.plane);
+  let deviation = 0;
+  for (const sample of ordered) {
+    const fraction = (sample.plane - first.plane) / axialSpan;
+    const expected = first.centroid.map((value, axis) =>
+      value + (last.centroid[axis] - value) * fraction);
+    deviation = Math.max(deviation, Math.hypot(
+      sample.centroid[0] - expected[0],
+      sample.centroid[1] - expected[1],
+    ));
+  }
+  return {
+    centreline_deviation_mm: deviation,
+    path_class: deviation > Math.max(0.5, minimumWidthMm * 0.12)
+      ? "curved_candidate" : "straight_candidate",
+  };
+}
+
 function summarizeCluster(cluster, featureIndex, boundsMin, boundsMax) {
   const samples = cluster.samples;
   const mean = (selector, axis = null) => samples.reduce((sum, sample) =>
@@ -252,19 +278,9 @@ function summarizeCluster(cluster, featureIndex, boundsMin, boundsMax) {
     ? "round opening"
     : aspectRatio >= 1.55 ? "elongated slot/opening" : "irregular opening";
   const orderedSamples = [...samples].sort((left, right) => left.plane - right.plane);
-  const firstCentre = orderedSamples[0].centroid;
-  const lastCentre = orderedSamples[orderedSamples.length - 1].centroid;
-  let centrelineDeviation = 0;
-  orderedSamples.forEach((sample, index) => {
-    const fraction = orderedSamples.length > 1 ? index / (orderedSamples.length - 1) : 0;
-    const expected = firstCentre.map((value, dimension) =>
-      value + (lastCentre[dimension] - value) * fraction);
-    centrelineDeviation = Math.max(centrelineDeviation,
-      Math.hypot(sample.centroid[0] - expected[0], sample.centroid[1] - expected[1]));
-  });
+  const centreline = classifyCentrelinePath(orderedSamples, Math.min(extent[0], extent[1]));
   const observedSpan = maximum[axis] - minimum[axis];
   const spanFraction = axisSpan > 1e-8 ? observedSpan / axisSpan : 0;
-  const curvedThreshold = Math.max(0.5, Math.min(extent[0], extent[1]) * 0.12);
   return {
     id: AXIS_NAMES[axis] + "-" + featureIndex,
     axis: AXIS_NAMES[axis],
@@ -275,8 +291,8 @@ function summarizeCluster(cluster, featureIndex, boundsMin, boundsMax) {
     observed_span_mm: observedSpan,
     span_fraction: Math.min(1, spanFraction),
     extent_class: spanFraction < 0.72 ? "partial_or_blind_candidate" : "through_candidate",
-    centreline_deviation_mm: centrelineDeviation,
-    path_class: centrelineDeviation > curvedThreshold ? "curved_candidate" : "straight_candidate",
+    centreline_deviation_mm: centreline.centreline_deviation_mm,
+    path_class: centreline.path_class,
     centreline_samples: orderedSamples.map((sample) => ({
       sample_index: sample.sample_index,
       axial_position_mm: sample.plane,
