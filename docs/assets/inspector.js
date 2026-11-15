@@ -50,6 +50,7 @@ const constructionSummary = document.querySelector('#construction-summary');
 const constructionPartCount = document.querySelector('#construction-part-count');
 const constructionDetails = document.querySelector('#construction-details');
 const constructionAlternatives = document.querySelector('#construction-alternatives');
+const constructionOptimizationProfile = document.querySelector('#construction-optimization-profile');
 const constructionCourseList = document.querySelector('#construction-course-list');
 const constructionPreviewToggle = document.querySelector('#construction-preview-toggle');
 const constructionDownloadLDraw = document.querySelector('#construction-download-ldraw');
@@ -1298,7 +1299,7 @@ function runLayeredConstruction() {
   });
   const courseType = Math.abs(activeTargetGrid.spec.pitch_mm[1] - PLATE_GRID_PITCH_MM[1]) < 1e-6
     ? "plate" : "brick";
-  worker.postMessage({ layerFootprints, config: { maxParts: 200, courseType } });
+  worker.postMessage({ layerFootprints, config: { maxParts: 200, courseType, optimizationProfile: constructionOptimizationProfile.value } });
 }
 
 function disposeHelper(helper) {
