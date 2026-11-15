@@ -200,3 +200,14 @@ The current Python tree separates into these provisional groups; removal is deli
 - **Do not delete blindly:** first confirm no retained golden-reference or catalogue task imports a candidate module, then migrate or replace only the necessary test coverage. Keep the browser Node and Chromium suites as the product gates.
 
 This is a scope audit, not a claim that the Python duplicate implementation has already been removed.
+
+
+### Topology-safe mesh reconstruction boundary — 2026-11-15
+
+- [x] Apply Float32-aware boundary tolerance to all three voxel-grid dimensions. This prevents STL coordinate quantisation at exact stud-grid boundaries from creating phantom rows/columns (for example, a 6 × 2 × 2-stud source must remain a 6 × 2 × 2 grid).
+- [x] Keep single-course constructions valid; a one-brick authored golden model must reconstruct as one 3001 rather than an artificial two-course stack.
+- [x] Refuse multi-hole footprints when the current rectangular-part search cannot find a connected arrangement. Do not emit a connected graph that fills required through-openings.
+- [ ] Implement feature-aware specialised-part placement so hole-bearing parts can cover a target region while preserving their internal openings; include explicit part-opening-to-target-feature matching and verify the final authored assembly topology.
+- [ ] Re-enable positive two-hole and three-hole round-trip acceptance only after the browser engine produces a final assembly that independently retains the declared tunnel count.
+
+The safe refusal is an interim correctness boundary, not completion of multi-hole construction. The published two-hole and three-hole fixtures currently detect and map their openings, but their true 6 × 2 × 2 footprints cannot be interlocked by the current rectangular standard-brick strategy. Dedicated or rotated hole-bearing elements and their connection constraints are needed.
