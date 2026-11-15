@@ -89,6 +89,7 @@ This roadmap is intentionally milestone-based. Each milestone should produce a d
 - [ ] Add surface-aware candidate placement for slopes, curves and specialised elements.
 - [ ] Combine coarse volumetric and surface-fitting strategies.
 - [x] Add comparative objective metrics and configurable balanced, economy, simplicity and interlock profiles for the bounded connected alternatives. Scores remain relative heuristics, not physical quality measurements.
+- [x] Retain, rank and expose up to three distinct connected course arrangements with complete LDraw, assembly-graph, BOM and validation exports for each; provide selectable alternatives in the Mesh Inspector.
 - [ ] Compare alternative constructions for fidelity, part count, cost, and complexity.
 
 **Exit criteria:** the engine can produce and explain multiple valid alternatives for selected test shapes.
