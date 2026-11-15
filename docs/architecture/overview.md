@@ -96,9 +96,9 @@ The internal representation should be an **assembly graph**:
 
 Candidate algorithms may include voxel/occupancy methods for coarse structure, surface fitting for appearance, and constraint-based placement for specialised geometry. These are complementary strategies, not mutually exclusive product modes.
 
-The typed reference graph is in `src/brickforge/assembly/`. It stores unique part instances and rigid LDraw transforms, derives graph edges from the nominal stud/receiver matcher, and exports LDraw plus a colour-aware BOM from the same graph. A constrained rectangular placement strategy lives in `src/brickforge/construction/`.
+The browser JavaScript engine is the sole authoritative product implementation: it owns generated assembly graphs, construction, validation, preview and exports. Python modules under `src/brickforge/` are retained only where they support offline golden-reference generation/comparison or pinned catalogue audits; their duplicate assembly and construction pathways are not a parallel product engine and should not receive new product features.
 
-The public [Block builder](https://descalzi.github.io/brickforge/builder.html) runs the corresponding browser-native engine in `docs/assets/construction-engine.js`. It reads the published profile catalogue, places parts, checks candidate connections and nominal body bounds, renders a local 3D preview and creates downloadable outputs on the visitor's device. Node tests compare its assembly graph, BOM and LDraw output with the committed Python-generated fixture. No construction server is needed. Automatic placement against arbitrary input meshes remains future work. See [assembly graph v1](assembly-graph.md).
+The public [Block builder](https://descalzi.github.io/brickforge/builder.html) runs the browser-native engine in `docs/assets/construction-engine.js`. It reads the published profile catalogue, places parts, checks candidate connections and nominal body bounds, renders a local 3D preview and creates downloadable outputs on the visitor's device. Node tests are the primary regression suite; independent offline Python reference checks may be used for golden geometry and catalogue audits, but Python is not a runtime dependency or a second production engine. No construction server is needed. Automatic placement against arbitrary input meshes remains future work. See [assembly graph v1](assembly-graph.md) and [ADR 0002](../decisions/0002-browser-first-engine-python-reference-tools.md).
 
 ### 4.5 Validation
 
@@ -146,7 +146,7 @@ The engine should define one documented world coordinate convention and explicit
 
 ## 6. Initial service boundaries
 
-Keep geometry and construction libraries independent of web frameworks, databases and LLM providers. The default product runtime is the visitor's browser, served as static assets by GitHub Pages or Cloudflare Pages. Python library and command-line entry points are engineering/reference tools, not user prerequisites. Add remote processing only if measured client-side limits later justify it.
+Keep browser geometry and construction libraries independent of web frameworks, databases and LLM providers. The product runtime is the visitor's browser, served as static assets by GitHub Pages or Cloudflare Pages. Python is restricted to offline golden-reference tooling and catalogue audits; its CLI/API and duplicate construction paths are legacy and are not product entry points. Add remote processing only if measured client-side limits later justify it.
 
 ## 7. Open technical questions
 
