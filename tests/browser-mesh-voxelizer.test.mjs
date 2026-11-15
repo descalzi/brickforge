@@ -194,7 +194,7 @@ test("browser voxeliser retains a sub-grid thin feature through triangle-cell in
 
 test("browser voxeliser does not fill a clear gap between disconnected solids", () => {
   const left = boxMesh([4, 9.6, 8], [4, 4.8, 4]);
-  const right = boxMesh([4, 9.6, 8], [36, 4.8, 4]);
+  const right = boxMesh([4, 9.6, 8], [40, 4.8, 4]);
   const vertices = new Float64Array([...left.vertices, ...right.vertices]);
   const indices = new Uint32Array([
     ...left.indices,
