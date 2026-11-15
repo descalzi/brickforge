@@ -435,7 +435,7 @@ test("feature analysis does not group constant-spacing parallel openings as a br
 async function readAsciiStlMesh(filename) {
   const source = await readFile(new URL("../docs/fixtures/" + filename, import.meta.url), "utf8");
   const vertices = [];
-  const matches = source.matchAll(/vertex\\s+([-+0-9.eE]+)\\s+([-+0-9.eE]+)\\s+([-+0-9.eE]+)/g);
+  const matches = source.matchAll(/vertex\s+([-+0-9.eE]+)\s+([-+0-9.eE]+)\s+([-+0-9.eE]+)/g);
   for (const match of matches) vertices.push(Number(match[1]), Number(match[2]), Number(match[3]));
   assert.ok(vertices.length >= 9, filename + " must contain STL facets");
   return { vertices: new Float64Array(vertices),
