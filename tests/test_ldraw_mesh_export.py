@@ -28,8 +28,7 @@ def test_resolved_ldraw_mesh_uses_real_part_geometry_and_expected_scale() -> Non
     assert isinstance(mesh, trimesh.Trimesh)
     assert len(mesh.faces) > 100
     assert mesh.bounds[1] - mesh.bounds[0] == pytest.approx((32.0, 11.2, 16.0))
-    # Source LDraw geometry is preserved as authored; inconsistent winding is
-    # reported rather than silently repaired or presented as a watertight union.
+    assert not mesh.is_winding_consistent  # Raw source winding is inconsistent.
 
 
 def test_golden_stl_export_writes_units_provenance_and_reference_bom(tmp_path: Path) -> None:
@@ -49,7 +48,10 @@ def test_golden_stl_export_writes_units_provenance_and_reference_bom(tmp_path: P
     assert manifest["source_part_count"] == 1
     assert manifest["source_bom"]["total_parts"] == 1
     assert manifest["triangle_count"] > 100
-    assert manifest["is_winding_consistent"] is False
+    assert manifest["raw_is_winding_consistent"] is False
+    assert manifest["winding_repair_attempted"] is True
+    assert manifest["winding_repair_conflict_count"] == 0
+    assert manifest["is_winding_consistent"] is True
     assert manifest["shell_policy"] == "part shells concatenated; no boolean union performed"
 
     sidecar = json.loads(destination.with_suffix(".stl.json").read_text(encoding="utf-8"))
