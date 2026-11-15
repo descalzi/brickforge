@@ -344,7 +344,15 @@ export function analyzeMeshFeatures(triangles, boundsMin, boundsMax) {
   const features = [];
   for (const cluster of clusters) {
     if (cluster.samples.length >= MIN_FEATURE_SLICES) {
-      features.push(summarizeCluster(cluster, features.length + 1, boundsMin, boundsMax));
+      const feature = summarizeCluster(cluster, features.length + 1, boundsMin, boundsMax);
+      const otherAxes = [0, 1, 2].filter((value) => value !== cluster.axis);
+      const sectionArea = (boundsMax[otherAxes[0]] - boundsMin[otherAxes[0]])
+        * (boundsMax[otherAxes[1]] - boundsMin[otherAxes[1]]);
+      const envelopeArea = feature.width_mm * feature.length_mm;
+      // A contour spanning almost the complete section is the exterior shell,
+      // not a useful internal opening. Reject it before it becomes a clearance.
+      if (sectionArea > 0 && envelopeArea / sectionArea >= 0.9) continue;
+      features.push(feature);
     }
   }
   classifyBranchingFeatureGroups(features);
