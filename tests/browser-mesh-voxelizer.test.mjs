@@ -198,6 +198,9 @@ test("browser voxeliser does not fill a clear gap between disconnected solids", 
     [CellClass.EXTERIOR, CellClass.EXTERIOR, CellClass.EXTERIOR],
   );
   assert.equal(grid.classification[4], CellClass.BOUNDARY);
+  assert.equal(grid.topology.component_count, 2);
+  assert.ok(grid.warnings.some((warning) => warning.includes("2 disconnected closed surface components")));
+  assert.ok(grid.warnings.some((warning) => warning.includes("self-intersections are not detected")));
 });
 
 test("browser voxeliser removes zero-area facets but rejects open, non-finite and oversized inputs", () => {
