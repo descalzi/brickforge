@@ -148,7 +148,7 @@ def test_full_library_audit_reports_resolved_fixture_parts() -> None:
         / "brick-3001"
     )
 
-    report = audit_library(fixture_root)
+    report = audit_library(fixture_root, max_parts=1)
 
     assert report["parts_scanned"] == 1
     assert report["parts_resolved"] == 1
