@@ -37,7 +37,7 @@ placements = [
 reconstructed = build_assembly(
     placements, PROFILES, model_name="browser-reconstructed-golden-3001"
 )
-available_reference_parts = {"3001", "3002", "3003", "3004", "3622"}
+available_reference_parts = {"3001", "3002", "3003", "3004", "3009", "3010", "3622"}
 unsupported = sorted({part.part_id for part in reconstructed.parts} - available_reference_parts)
 if unsupported:
     raise AssertionError(f"The golden fixture library lacks part geometry for: {unsupported}")
