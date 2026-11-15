@@ -151,7 +151,10 @@ function renderPartFeatureResults(features) {
         + feature.maximum_length_mm.toFixed(2) + ' mm';
     position.textContent = 'Axis ' + feature.axis.toUpperCase()
       + ' · ' + feature.sample_support + ' slices · centre '
-      + feature.center_mm.map((value) => value.toFixed(2)).join(', ') + ' mm';
+      + feature.center_mm.map((value) => value.toFixed(2)).join(', ') + ' mm'
+      + (feature.path_class ? ' · ' + feature.path_class.replaceAll('_', ' ') : '')
+      + (feature.extent_class ? ' · ' + feature.extent_class.replaceAll('_', ' ') : '')
+      + (feature.branching_group_id ? ' · branching group ' + feature.branching_group_id : '');
     item.append(heading, detail, position);
     partFeatureList.append(item);
   });
@@ -198,7 +201,7 @@ function analyseSelectedPartFeatures() {
     renderPartFeatureResults(activePartFeatures);
     partFeatureStatus.textContent = activePartFeatures.length
       ? 'Located ' + activePartFeatures.length + ' nested opening feature(s). Measurements are geometric candidates, not proof of physical compatibility.'
-      : 'No stable nested opening contours were found in the sampled principal-axis sections.';
+      : 'No stable nested opening contours were found in the sampled principal and oblique section planes.';
     partFeatureStatus.dataset.state = activePartFeatures.length ? 'complete' : 'warning';
     partFeatureDownloadButton.disabled = false;
     setState('PART LOADED', 'loaded');
@@ -371,7 +374,7 @@ async function scanLikelyOpeningParts() {
             ? { source_verified_catalogue_entry: curatedSpecialisedCatalogue.profiles.find((source) => source.part_id === entry.part_id), source_library_commit: curatedSpecialisedCatalogue.source_library.commit }
             : {}),
           limitations: [
-            'Measurements are based on rendered LDraw surface triangles and sampled principal/oblique section planes; curved and branching paths are approximated.',
+            'Measurements are based on rendered LDraw surface triangles and sampled principal/oblique section planes; curved paths are classified from centreline deviation, while branching and blind/partial labels remain candidates.',
             'Nominal connection interfaces are kept separate from measured opening geometry.',
             'A geometric opening match does not prove physical clutch, structural stability or legal part combinations.',
           ],
