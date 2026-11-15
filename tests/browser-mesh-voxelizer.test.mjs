@@ -5,7 +5,7 @@ import test from "node:test";
 import { PLATE_GRID_PITCH_MM, CellClass, GridSpec, TargetGrid } from "../docs/assets/target-grid.js";
 import { buildLayeredFootprintBlock } from "../docs/assets/construction-engine.js";
 import { voxelizeMesh } from "../docs/assets/mesh-voxelizer.js";
-import { analyzeMeshFeatures, analyzeMeshFeaturesExtended, classifyCentrelinePath } from "../docs/assets/mesh-feature-analysis.js";
+import { analyzeMeshFeatures, analyzeMeshFeaturesExtended, classifyBranchingFeatureGroups, classifyCentrelinePath } from "../docs/assets/mesh-feature-analysis.js";
 
 const connectionCatalogue = JSON.parse(
   await readFile(new URL("../data/connection-profiles/basic-bricks.json", import.meta.url), "utf8"),
@@ -401,4 +401,32 @@ test("feature analysis classifies curved centrelines and partial-span openings",
   const partial = perforatedPlateTriangles({ totalHeight: 12, plateThickness: 6, addBoss: false, addWalls: true });
   const partialFeatures = analyzeMeshFeatures(partial.triangles, partial.boundsMin, partial.boundsMax);
   assert.ok(partialFeatures.some((feature) => feature.extent_class === "partial_or_blind_candidate"));
+});
+
+
+test("feature analysis labels converging section tracks as a possible branch", () => {
+  const track = (id, centres) => ({
+    id, axis: "y", width_mm: 4, path_class: "straight_candidate",
+    centreline_samples: centres.map((x, sample_index) => ({
+      sample_index, centre_2d_mm: [x, 0],
+    })),
+  });
+  const features = classifyBranchingFeatureGroups([
+    track("left", [0, 1, 2, 3, 4]),
+    track("right", [10, 7, 5, 3.2, 4]),
+  ]);
+  assert.equal(features[0].branching_group_id, "branch-1");
+  assert.equal(features[1].branching_group_id, "branch-1");
+  assert.ok(features.every((feature) => feature.path_class === "branching_candidate"));
+});
+
+test("feature analysis does not group constant-spacing parallel openings as a branch", () => {
+  const track = (id, offset) => ({
+    id, axis: "y", width_mm: 4, path_class: "straight_candidate",
+    centreline_samples: [0, 1, 2, 3].map((sample_index) => ({
+      sample_index, centre_2d_mm: [offset, 0],
+    })),
+  });
+  const features = classifyBranchingFeatureGroups([track("left", 0), track("right", 6)]);
+  assert.ok(features.every((feature) => feature.branching_group_id === undefined));
 });
