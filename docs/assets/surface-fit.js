@@ -348,18 +348,22 @@ export function refineSurfaceFitPose(candidatePositions, targetPositions, option
   let best = baseline;
   let bestRotation = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
   let bestOffset = [0, 0, 0];
-  const candidates = [];
+  const offsets = [[0, 0, 0]];
   for (let axis = 0; axis < 3; axis += 1) {
-    const positive = [0, 0, 0];
-    const negative = [0, 0, 0];
-    positive[axis] = radius;
-    negative[axis] = -radius;
-    candidates.push({ rotation: null, offset: positive });
-    candidates.push({ rotation: null, offset: negative });
+    for (const magnitude of [radius / 2, radius]) {
+      const positive = [0, 0, 0];
+      const negative = [0, 0, 0];
+      positive[axis] = magnitude;
+      negative[axis] = -magnitude;
+      offsets.push(positive, negative);
+    }
   }
+  const candidates = offsets.slice(1).map((offset) => ({ rotation: null, offset }));
   for (let axis = 0; axis < 3; axis += 1) {
-    candidates.push({ rotation: axisRotation(axis, angleDegrees * Math.PI / 180), offset: [0, 0, 0] });
-    candidates.push({ rotation: axisRotation(axis, -angleDegrees * Math.PI / 180), offset: [0, 0, 0] });
+    for (const angle of [angleDegrees, -angleDegrees]) {
+      const rotation = axisRotation(axis, angle * Math.PI / 180);
+      offsets.forEach((offset) => candidates.push({ rotation, offset }));
+    }
   }
   for (const candidate of candidates) {
     let positions = candidatePositions;
@@ -387,7 +391,7 @@ export function refineSurfaceFitPose(candidatePositions, targetPositions, option
   }
   return {
     schema_version: 1,
-    method: "bounded-13-pose-translation-and-rotation-refinement",
+    method: "bounded-91-pose-translation-and-rotation-refinement",
     rotation_delta_matrix_3x3: bestRotation,
     translation_offset_mm: bestOffset,
     baseline,
@@ -395,7 +399,7 @@ export function refineSurfaceFitPose(candidatePositions, targetPositions, option
     improved: best.score > baseline.score + 1e-12,
     evaluations: candidates.length + 1,
     limitations: [
-      "Only six axis translations and six single-axis rotations are tested; this is not a continuous six-degree-of-freedom optimiser.",
+      "A bounded discrete search tests axis translations at half/full radius and single-axis rotations at plus/minus the configured angle, with translation offsets combined with each rotation; this is not a continuous six-degree-of-freedom optimiser.",
       "Rotation is applied around the candidate surface centroid.",
       "Improving surface proximity can worsen opening alignment, containment, connections or buildability; the opening-derived pose must remain recoverable.",
     ],
