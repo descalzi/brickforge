@@ -257,7 +257,10 @@ export function evaluateDesignIntent(contract, reconstruction) {
         else warnings.push(message);
       }
     }
-    roleSuitability.push(matching.length ? Math.min(1, preferredCount / minimum) : 0);
+    const hasPreference = (preference.preferred_families?.length || 0) > 0
+      || (preference.preferred_part_ids?.length || 0) > 0;
+    roleSuitability.push(!matching.length ? 0
+      : hasPreference ? Math.min(1, preferredCount / minimum) : 1);
   }
 
   const constraints = contract.construction_constraints || {};
