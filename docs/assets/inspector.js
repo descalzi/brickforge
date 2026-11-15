@@ -2082,6 +2082,13 @@ async function loadFixtureFromQuery() {
   if (!fixture || !allowedFixtures.has(fixture)) return;
   try {
     setMessage('Loading the selected validation fixture…', 'info');
+    const catalogueResponse = await fetch('./data/validation-fixtures.json');
+    if (!catalogueResponse.ok) throw new Error('Fixture catalogue request failed: ' + catalogueResponse.status);
+    const catalogue = await catalogueResponse.json();
+    const metadata = catalogue.fixtures?.find((item) => item.file === fixture);
+    unitsSelect.value = metadata?.units || 'mm';
+    upAxisSelect.value = metadata?.up_axis || 'z';
+    courseHeightSelect.value = metadata?.preferred_course || 'brick';
     const response = await fetch('./fixtures/' + fixture);
     if (!response.ok) throw new Error('Fixture request failed: ' + response.status);
     const blob = await response.blob();
