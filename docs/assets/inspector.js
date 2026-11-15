@@ -1163,7 +1163,7 @@ function runVoxelisation() {
   voxeliseStatus.dataset.state = 'working';
   setMessage('Voxelising locally. The 3D viewer remains interactive while the worker processes the mesh.');
   try {
-    voxelWorker = new Worker(new URL('./mesh-voxelizer-worker.js?v=featurekeepout6', import.meta.url), { type: 'module' });
+    voxelWorker = new Worker(new URL('./mesh-voxelizer-worker.js?v=featurekeepout7', import.meta.url), { type: 'module' });
   } catch (error) {
     voxeliseButton.disabled = false;
     voxeliseStatus.textContent = error instanceof Error ? error.message : 'Could not start the voxelisation worker.';
