@@ -149,11 +149,13 @@ Initial implementation status:
 - [x] Export a canonical assembly as STL using resolved LDraw triangles/quads and the assembly graph transforms.
 - [x] Write a sidecar with explicit units, coordinate frame, source assembly hash, STL hash, bounds, BOM and mesh diagnostics.
 - [x] Add a source-3001 calibration test for actual resolved geometry and expected physical dimensions.
-- [ ] Resolve inconsistent winding in source part surfaces and produce a watertight, correctly composed model mesh.
+- [x] Repair inconsistent adjacent-face winding without optional graph dependencies and record raw/repaired mesh diagnostics.
+- [x] Re-import the generated single-part STL and pass it through the Python voxeliser at a finer-than-brick pitch.
+- [ ] Boolean-union or robustly compose touching multi-part shells into a watertight model mesh.
 - [ ] Add multi-part authored LEGO models and pass their generated STL through the normal browser import/construction pipeline.
 - [ ] Compare reconstructed output against reference shape, topology, dimensions and inventory.
 
-The initial exporter deliberately concatenates part shells and does not boolean-union them. The first 3001 calibration test found inconsistent winding in the resolved source geometry; the sidecar reports this rather than claiming the STL is ready for solid voxelisation. The next exporter step must address shell orientation and union/assembly composition before the first multi-part golden model can be treated as a valid voxeliser input. The first golden models should cover single-part calibration, simple interlocked assemblies and at least one ordinary-brick negative-space model before progressing to car, aircraft and animal examples. Physical stability and clutch strength remain separate, unproven properties.
+The initial exporter deliberately concatenates part shells and does not boolean-union them. The 3001 calibration test found inconsistent raw winding; a dependency-free adjacency traversal now repairs it, and the single-part STL passes back through the Python voxeliser. The next exporter step is robust multi-part shell composition before multi-part golden models can be treated as valid voxeliser inputs. The first golden models should cover single-part calibration, simple interlocked assemblies and at least one ordinary-brick negative-space model before progressing to car, aircraft and animal examples. Physical stability and clutch strength remain separate, unproven properties.
 
 ### Synthetic STL validation corpus — 2026-11-15
 
