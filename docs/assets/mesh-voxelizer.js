@@ -480,9 +480,7 @@ export function voxelizeMesh({
     // Scale the tolerance with the coordinate magnitude to cover Float32
     // quantisation while remaining far below any meaningful model feature.
     const coordinateMagnitude = Math.max(Math.abs(boundsMin[axis]), Math.abs(boundsMax[axis]), 1);
-    const boundaryToleranceMm = studCap > 0
-      ? Math.max(1e-5, coordinateMagnitude * 1.5 * 2 ** -23)
-      : 0;
+    const boundaryToleranceMm = Math.max(1e-5, coordinateMagnitude * 1.5 * 2 ** -23);
     return Math.max(1, Math.ceil(
       (boundsMax[axis] - origin[axis] - studCap - boundaryToleranceMm) / pitchMm[axis] - 1e-12,
     ));
