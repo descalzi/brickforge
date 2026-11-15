@@ -307,3 +307,105 @@ export function analyzeMeshFeatures(triangles, boundsMin, boundsMax) {
     || left.center_mm[2] - right.center_mm[2])
     .map((feature, index) => ({ ...feature, id: feature.axis + "-" + (index + 1) }));
 }
+
+
+function normalise3(vector) {
+  const length = Math.hypot(...vector);
+  return length > 1e-9 ? vector.map((value) => value / length) : null;
+}
+
+function dot3(left, right) {
+  return left[0] * right[0] + left[1] * right[1] + left[2] * right[2];
+}
+
+function cross3(left, right) {
+  return [
+    left[1] * right[2] - left[2] * right[1],
+    left[2] * right[0] - left[0] * right[2],
+    left[0] * right[1] - left[1] * right[0],
+  ];
+}
+
+function transformObliqueFeature(feature, basis, frameId) {
+  const [u, v, normal] = basis;
+  const localToWorld = (point) => [
+    u[0] * point[0] + v[0] * point[1] + normal[0] * point[2],
+    u[1] * point[0] + v[1] * point[1] + normal[1] * point[2],
+    u[2] * point[0] + v[2] * point[1] + normal[2] * point[2],
+  ];
+  const localBounds = feature.bounds_mm;
+  const corners = [];
+  for (const x of [localBounds[0][0], localBounds[1][0]]) {
+    for (const y of [localBounds[0][1], localBounds[1][1]]) {
+      for (const z of [localBounds[0][2], localBounds[1][2]]) corners.push(localToWorld([x, y, z]));
+    }
+  }
+  return {
+    ...feature,
+    id: "oblique-" + frameId + "-" + feature.id,
+    axis: "oblique",
+    axis_index: -1,
+    axis_vector_world: normal,
+    center_mm: localToWorld(feature.center_mm),
+    bounds_mm: [
+      [0, 1, 2].map((axis) => Math.min(...corners.map((point) => point[axis]))),
+      [0, 1, 2].map((axis) => Math.max(...corners.map((point) => point[axis]))),
+    ],
+    analysis_method: "oblique_cross_section",
+    analysis_frame_id: frameId,
+  };
+}
+
+/**
+ * Analyse principal and selected oblique cross-section directions. Curved axes are
+ * approximated by multiple local section directions; this is not a medial-axis solver.
+ */
+export function analyzeMeshFeaturesExtended(triangles, boundsMin, boundsMax, {
+  obliqueDirections = [
+    [1, 1, 0], [1, -1, 0], [1, 0, 1], [1, 0, -1],
+    [0, 1, 1], [0, 1, -1], [1, 1, 1], [1, -1, 1],
+  ],
+  maxObliqueDirections = 8,
+} = {}) {
+  const principal = analyzeMeshFeatures(triangles, boundsMin, boundsMax);
+  if (!Array.isArray(triangles) || !triangles.length) return principal;
+  if (!Number.isSafeInteger(maxObliqueDirections) || maxObliqueDirections < 0 || maxObliqueDirections > 16) {
+    throw new RangeError("maxObliqueDirections must be an integer from 0 to 16");
+  }
+  const diagonal = Math.hypot(...boundsMax.map((value, axis) => value - boundsMin[axis]));
+  const dedupeDistance = Math.max(1, diagonal * 0.025);
+  const results = [...principal];
+  const frames = obliqueDirections.slice(0, maxObliqueDirections);
+  frames.forEach((direction, frameIndex) => {
+    const normal = normalise3(direction);
+    if (!normal) return;
+    const reference = Math.abs(normal[1]) < 0.85 ? [0, 1, 0] : [1, 0, 0];
+    const u = normalise3(cross3(reference, normal));
+    if (!u) return;
+    const v = normalise3(cross3(normal, u));
+    const basis = [u, v, normal];
+    const localTriangles = triangles.map((triangle) => ({
+      a: [dot3(triangle.a, u), dot3(triangle.a, v), dot3(triangle.a, normal)],
+      b: [dot3(triangle.b, u), dot3(triangle.b, v), dot3(triangle.b, normal)],
+      c: [dot3(triangle.c, u), dot3(triangle.c, v), dot3(triangle.c, normal)],
+    }));
+    const localPoints = localTriangles.flatMap((triangle) => [triangle.a, triangle.b, triangle.c]);
+    const localMin = [0, 1, 2].map((axis) => Math.min(...localPoints.map((point) => point[axis])));
+    const localMax = [0, 1, 2].map((axis) => Math.max(...localPoints.map((point) => point[axis])));
+    const oblique = analyzeMeshFeatures(localTriangles, localMin, localMax)
+      .filter((feature) => feature.axis === "z")
+      .map((feature) => transformObliqueFeature(feature, basis, frameIndex + 1));
+    for (const feature of oblique) {
+      const duplicate = results.some((existing) => {
+        const axis = existing.axis_vector_world || (
+          existing.axis === "x" ? [1, 0, 0] : existing.axis === "y" ? [0, 1, 0] : [0, 0, 1]
+        );
+        const parallel = Math.abs(dot3(axis, feature.axis_vector_world)) >= 0.96;
+        const close = Math.hypot(...existing.center_mm.map((value, index) => value - feature.center_mm[index])) <= dedupeDistance;
+        return parallel && close && Math.abs(existing.area_mm2 - feature.area_mm2) <= Math.max(1, feature.area_mm2 * 0.25);
+      });
+      if (!duplicate) results.push(feature);
+    }
+  });
+  return results.map((feature, index) => ({ ...feature, id: feature.id || "feature-" + (index + 1) }));
+}
