@@ -38,6 +38,26 @@
           "items": {
             "$ref": "#/$defs/relationship"
           }
+        },
+        "optional_features": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "feature_type"
+            ],
+            "properties": {
+              "feature_type": {
+                "type": "string",
+                "minLength": 1
+              },
+              "target_count": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
         }
       }
     },
@@ -167,6 +187,38 @@
             "max_mm": {
               "type": "number",
               "minimum": 0
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "feature_types",
+            "min_ratio"
+          ],
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "type": {
+              "const": "distance_ratio"
+            },
+            "feature_types": {
+              "type": "array",
+              "minItems": 4,
+              "maxItems": 4,
+              "items": {
+                "type": "string"
+              }
+            },
+            "min_ratio": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "max_ratio": {
+              "type": "number",
+              "exclusiveMinimum": 0
             }
           }
         }
