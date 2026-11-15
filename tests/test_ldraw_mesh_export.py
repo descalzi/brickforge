@@ -43,6 +43,7 @@ def test_golden_stl_export_writes_units_provenance_and_reference_bom(tmp_path: P
     assert destination.is_file()
     assert destination.stat().st_size > 84
     assert manifest["units"] == "mm"
+    assert len(manifest["mesh_sha256"]) == 64
     assert manifest["coordinate_system"] == "LDraw"
     assert manifest["source_part_count"] == 1
     assert manifest["source_bom"]["total_parts"] == 1
