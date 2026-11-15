@@ -160,6 +160,15 @@ test("browser voxeliser classifies an aligned solid and interior core", () => {
   assert.equal(grid.classification.reduce((n, value) => n + (value !== CellClass.EXTERIOR ? 1 : 0), 0), 27);
 });
 
+test("browser voxeliser grid phase is invariant to global mesh translation", () => {
+  const mesh = boxMesh([24, 28.8, 24], [5.3, -3.7, 1.1]);
+  const grid = voxelizeMesh({ ...mesh, units: "mm" });
+  assert.deepEqual(grid.dimensions, [3, 3, 3]);
+  assert.ok(Math.abs(grid.origin_mm[0] - (-6.7)) < 1e-9);
+  assert.ok(Math.abs(grid.origin_mm[1] - (-18.1)) < 1e-9);
+  assert.ok(Math.abs(grid.origin_mm[2] - (-10.9)) < 1e-9);
+});
+
 test("browser voxeliser converts declared centimetres into millimetres", () => {
   const mesh = boxMesh([2.4, 2.88, 2.4]);
   const grid = voxelizeMesh({ ...mesh, units: "cm" });
