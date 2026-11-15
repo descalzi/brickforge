@@ -368,7 +368,7 @@ async function scanLikelyOpeningParts() {
           analysis_method: 'Nineteen sampled principal-axis and bounded oblique cross-sections; nested contours clustered across slices',
           features,
           ...(curatedSpecialisedCatalogue?.profiles.find((source) => source.part_id === entry.part_id)
-            ? { source_verified_catalogue_entry: curatedSpecialisedCatalogue.profiles.find((source) => source.part_id === entry.part_id) }
+            ? { source_verified_catalogue_entry: curatedSpecialisedCatalogue.profiles.find((source) => source.part_id === entry.part_id), source_library_commit: curatedSpecialisedCatalogue.source_library.commit }
             : {}),
           limitations: [
             'Measurements are based on rendered LDraw surface triangles and sampled principal/oblique section planes; curved and branching paths are approximated.',
