@@ -1375,8 +1375,12 @@ function compareConstructionAlternativeSurfaces() {
       if (!alternative.surface_fidelity_report) {
         const candidatePositions = constructionEnvelopeSurfacePositions(alternative);
         const report = scoreSurfaceFit(candidatePositions, targetPositions);
+        const volumeCheck = alternative.validation_report?.checks?.find((check) => check.id === "target_coverage");
+        const volumetricCoverage = volumeCheck?.status === "passed" ? 1 : 0;
         alternative.surface_fidelity_report = {
           score: report.global_bidirectional_score,
+          volumetric_coverage_fraction: volumetricCoverage,
+          hybrid_fidelity_score: 0.25 * volumetricCoverage + 0.75 * report.global_bidirectional_score,
           candidate_coverage: report.candidate_to_target.within_tolerance_fraction,
           target_coverage: report.target_to_candidate.within_tolerance_fraction,
           mean_distance_mm: report.global_bidirectional_mean_distance_mm,
@@ -1397,8 +1401,18 @@ function compareConstructionAlternativeSurfaces() {
         };
       }
       const report = alternative.surface_fidelity_report;
+      if (alternative.validation_report) {
+        alternative.validation_report.hybrid_fidelity = {
+          volumetric_coverage_fraction: report.volumetric_coverage_fraction,
+          surface_fidelity_score: report.score,
+          combined_score: report.hybrid_fidelity_score,
+          weighting: { volumetric_coverage: 0.25, surface_fidelity: 0.75 },
+          note: "Volumetric target coverage is a hard constraint; the simplified envelope surface proxy differentiates alternatives.",
+        };
+      }
       const item = document.createElement("li");
-      item.textContent = "Option " + (index + 1) + " · envelope fidelity "
+      item.textContent = "Option " + (index + 1) + " · hybrid fidelity "
+        + Math.round(report.hybrid_fidelity_score * 100) + "/100 · envelope surface "
         + Math.round(report.score * 100) + "/100"
         + " · candidate coverage " + Math.round(report.candidate_coverage * 100) + "%"
         + " · target coverage " + Math.round(report.target_coverage * 100) + "%"
@@ -1486,7 +1500,7 @@ function displayConstruction(result) {
       option.textContent = 'Option ' + (index + 1) + ' · ' + alternative.parts.length + ' parts · '
         + alternative.optimization_metrics.unique_part_types + ' part types · '
         + Math.round(alternative.optimization_score * 100) + '/100'
-        + (alternative.surface_fidelity_report ? ' · surface ' + Math.round(alternative.surface_fidelity_report.score * 100) + '/100' : '')
+        + (alternative.surface_fidelity_report ? ' · surface ' + Math.round(alternative.surface_fidelity_report.hybrid_fidelity_score * 100) + '/100' : '')
         + ' · ' + alternative.course_part_counts.join(' / ') + ' per course';
       if (alternative.model_name === result.model_name) option.disabled = true;
       option.addEventListener('click', () => displayConstruction(alternative));
