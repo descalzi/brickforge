@@ -1751,7 +1751,7 @@ function runLayeredConstruction() {
   setMessage('Searching for a connected arrangement across all occupied courses. The viewer remains interactive.');
   try {
     constructionWorker = new Worker(
-      new URL('./layered-construction-worker.js?v=objectives2', import.meta.url),
+      new URL('./layered-construction-worker.js?v=objectives3', import.meta.url),
       { type: 'module' },
     );
   } catch (error) {
