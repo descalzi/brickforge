@@ -93,6 +93,7 @@ def export_assembly_stl(
     manifest: dict[str, Any] = {
         "schema_version": 1,
         "mesh_file": path.name,
+        "mesh_sha256": hashlib.sha256(payload).hexdigest(),
         "mesh_format": "STL",
         "units": "mm",
         "coordinate_system": "LDraw",
