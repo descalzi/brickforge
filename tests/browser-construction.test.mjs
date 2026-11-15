@@ -309,7 +309,7 @@ test("browser layered engine returns ranked connected alternatives with complete
     const alternative = result.alternatives[index];
     assert.equal(alternative.alternative_rank, index + 1);
     assert.equal(alternative.assembly_graph.parts.length, alternative.parts.length);
-    assert.ok(alternative.ldraw.includes("0 FILE " + alternative.model_name));
+    assert.ok(alternative.ldraw.startsWith("0 " + alternative.model_name + "\n"));
     assert.equal(alternative.validation_report.checks.find((check) => check.id === "graph_connectivity").status, "passed");
   }
   assert.throws(() => buildLayeredFootprintBlock([footprint, footprint], catalogue, { maxAlternatives: 6 }), /maxAlternatives/);
