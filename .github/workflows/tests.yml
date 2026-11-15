@@ -26,12 +26,18 @@ jobs:
         uses: actions/setup-node@v7
         with:
           node-version: "24"
+      - name: Install Chromium end-to-end test browser
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
       - name: Check mesh inspector JavaScript syntax
         run: node --check docs/assets/inspector.js && node --check docs/assets/feature-matcher.js && node --check docs/assets/construction-preview.js && node --check docs/assets/target-grid.js && node --check docs/assets/mesh-voxelizer.js && node --check docs/assets/mesh-voxelizer-worker.js && node --check docs/assets/layered-construction-worker.js
       - name: Check LDraw part explorer JavaScript syntax
         run: node --check docs/assets/parts.js && node --check docs/assets/part-feature-worker.js && node --check docs/assets/catalogue-utils.js
       - name: Check browser construction engine syntax
         run: node --check docs/assets/construction-engine.js && node --check docs/assets/builder.js && node --check docs/assets/footprint-worker.js && node --check docs/assets/camera-utils.js
+      - name: Test Inspector end-to-end in Chromium
+        run: node tests/browser-inspector.e2e.mjs
       - name: Test browser construction, irregular footprints and camera helpers
         run: node --test tests/browser-construction.test.mjs tests/browser-footprint-corpus.test.mjs tests/browser-camera.test.mjs tests/browser-catalogue.test.mjs tests/browser-target-grid.test.mjs tests/browser-mesh-voxelizer.test.mjs tests/browser-feature-matcher.test.mjs tests/browser-construction-preview.test.mjs tests/browser-surface-fit.test.mjs
       - name: Lint geometry, connection and assembly implementation and tests
