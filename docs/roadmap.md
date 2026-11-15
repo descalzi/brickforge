@@ -58,7 +58,7 @@ This roadmap is intentionally milestone-based. Each milestone should produce a d
 - [x] Detect overlap between nominal transformed part-body envelopes (coarse axis-aligned bounds).
 - [x] Match nominal connection-profile features and record candidate graph edges.
 - [x] Detect disconnected part instances and unsupported transforms/profiles.
-- [ ] Produce a machine-readable validation report with explicit check status and limitations.
+- [x] Produce a machine-readable validation report with explicit check status and limitations.
 - [x] Add negative tests for intentionally overlapping and disconnected assemblies.
 
 **Exit criteria:** layered validation reports reliably distinguish geometric checks, candidate connection alignments, and physical/stability heuristics. The current implementation is only the first geometric/connectivity layer.
