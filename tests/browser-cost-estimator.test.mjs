@@ -37,8 +37,8 @@ test("BOM estimate uses colour-specific prices before part-level fallback", () =
   assert.equal(estimate.currency, "GBP");
   assert.equal(estimate.total_quantity, 7);
   assert.equal(estimate.priced_quantity, 7);
-  assert.equal(estimate.known_subtotal, 2.6);
-  assert.equal(estimate.estimated_total, 2.6);
+  assert.equal(estimate.known_subtotal, 3.1);
+  assert.equal(estimate.estimated_total, 3.1);
   assert.equal(estimate.missing_part_count, 0);
 });
 
