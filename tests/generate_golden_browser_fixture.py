@@ -18,7 +18,7 @@ ASSEMBLY = build_assembly(
 )
 DESTINATION = ROOT / "tests" / "artifacts" / "golden-single-3001-solid.stl"
 manifest = export_assembly_solid_reference_stl(
-    ASSEMBLY, LIBRARY, DESTINATION, pitch_mm=0.25
+    ASSEMBLY, LIBRARY, DESTINATION, pitch_mm=0.5
 )
 print(
     f"Generated {DESTINATION} ({manifest['solid_reference']['occupied_voxels']} "
