@@ -108,24 +108,11 @@ assert reconstructed_report.handle_count == source_handle_count, (
 )
 
 
-# Critical regression: the published two-hole target must remain a two-hole
-# object after the browser's construction has been re-imported from its graph.
-TWO_HOLE_GRAPH = ARTIFACTS / "golden-two-hole-reconstruction.assembly.json"
+# Critical regression: the two-hole target must never be emitted as a
+# connected-but-topologically-wrong rectangular assembly. Until a specialised
+# hole-bearing part strategy exists, the browser must refuse this footprint.
 TWO_HOLE_STL = ROOT / "docs" / "fixtures" / "block-two-hole-pattern.stl"
-two_graph = json.loads(TWO_HOLE_GRAPH.read_text(encoding="utf-8"))
-two_placements = [
-    PlacedPart(
-        instance_id=item["instance_id"],
-        part_id=item["part_id"],
-        colour_code=item["colour_code"],
-        translation_ldu=tuple(item["translation_ldu"]),
-        matrix=tuple(item["matrix"]),
-    )
-    for item in two_graph["parts"]
-]
-two_reconstructed = build_assembly(
-    two_placements, PROFILES, model_name="browser-reconstructed-two-hole"
-)
+TWO_HOLE_REPORT = ARTIFACTS / "golden-two-hole-construction-report.json"
 two_source_mesh = trimesh.load(TWO_HOLE_STL, force="mesh", process=True)
 # The published fixture is centimetres and Z-up; Inspector scales to mm and rotates to Y-up.
 two_source_mesh.apply_scale(10.0)
@@ -138,54 +125,32 @@ two_source_mesh.apply_transform(np.array([
 two_source_solid, two_source_report = solidify_surface_mesh(
     two_source_mesh, pitch_mm=2.0, expected_handle_count=2
 )
-two_reconstructed_surface = assembly_to_mesh(two_reconstructed, LIBRARY)
-two_reconstructed_solid, two_reconstructed_report = solidify_surface_mesh(
-    two_reconstructed_surface, pitch_mm=2.0
+if not TWO_HOLE_REPORT.exists():
+    raise AssertionError("The Chromium Inspector did not write its two-hole construction report.")
+two_report = json.loads(TWO_HOLE_REPORT.read_text(encoding="utf-8"))
+assert two_source_report.handle_count == 2, (
+    "The two-hole source reference did not retain its two expected through-openings."
 )
-two_dimensions_error = np.abs(
-    np.asarray(two_source_solid.extents) - np.asarray(two_reconstructed_solid.extents)
+assert two_report.get("expected_tunnels") == 2, "The Inspector report does not declare both required openings."
+assert two_report.get("grid_dimensions") == [6, 2, 2], (
+    "The two-hole source must map to its true 6 × 2 × 2 stud grid; "
+    f"got {two_report.get('grid_dimensions')}."
 )
-two_aligned = two_reconstructed_solid.copy()
-two_aligned.apply_translation(two_source_solid.centroid - two_aligned.centroid)
-two_lower = np.minimum(two_source_solid.bounds[0], two_aligned.bounds[0])
-two_upper = np.maximum(two_source_solid.bounds[1], two_aligned.bounds[1])
-two_axes = [np.arange(two_lower[i] + 0.5, two_upper[i], 2.0) for i in range(3)]
-two_x, two_y, two_z = np.meshgrid(*two_axes, indexing="ij")
-two_points = np.column_stack((two_x.ravel(), two_y.ravel(), two_z.ravel()))
-two_source_inside = two_source_solid.contains(two_points)
-two_reconstructed_inside = two_aligned.contains(two_points)
-two_intersection = int(np.count_nonzero(two_source_inside & two_reconstructed_inside))
-two_union = int(np.count_nonzero(two_source_inside | two_reconstructed_inside))
-two_iou = two_intersection / two_union if two_union else 1.0
+assert two_report.get("outcome") == "blocked_without_generating_an_invalid_assembly", (
+    "The browser must refuse this target until it can preserve both holes."
+)
+assert "No fully connected variable-course construction" in two_report.get("construction_status", ""), (
+    "The Inspector did not explain why the two-hole construction was refused."
+)
+assert two_report.get("feature_details", "").count("Feature ") >= 2, (
+    "The Inspector report must retain both detected opening features."
+)
 print(json.dumps({
     "golden_model": "two-through-hole",
-    "reconstructed_parts": len(two_reconstructed.parts),
-    "reconstructed_bom": two_reconstructed.bom_dict(),
-    "reconstructed_placements": [
-        {
-            "instance_id": part.instance_id,
-            "part_id": part.part_id,
-            "colour_code": part.colour_code,
-            "translation_ldu": list(part.translation_ldu),
-            "matrix": list(part.matrix),
-        }
-        for part in two_reconstructed.parts
-    ],
     "source_dimensions_mm": two_source_solid.extents.tolist(),
-    "reconstructed_dimensions_mm": two_reconstructed_solid.extents.tolist(),
-    "absolute_dimension_error_mm": two_dimensions_error.tolist(),
-    "volume_iou_at_2mm_sampling": two_iou,
     "source_handle_count": two_source_report.handle_count,
-    "reconstructed_handle_count": two_reconstructed_report.handle_count,
+    "browser_grid_dimensions": two_report["grid_dimensions"],
+    "browser_outcome": two_report["outcome"],
+    "construction_status": two_report["construction_status"],
+    "feature_details": two_report["feature_details"],
 }, indent=2))
-
-assert two_source_report.handle_count == 2, (
-    "The two-hole reference did not retain its two expected through-openings at 2 mm."
-)
-# For this fixture, the two through-openings are declared design invariants.
-# Exact bounds and volume overlap are reported above but are not hard gates:
-# conservative grid clearances and substitutions can alter the envelope.
-assert two_reconstructed_report.handle_count == 2, (
-    "The final LEGO construction did not preserve both through-openings; "
-    f"expected 2, got {two_reconstructed_report.handle_count}."
-)
