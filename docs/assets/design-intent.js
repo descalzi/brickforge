@@ -22,7 +22,7 @@ export function validateDesignIntentContract(contract) {
   }
   if (!isRecord(contract.intent)) errors.push("intent must be an object.");
   const intent = contract.intent || {};
-  for (const key of ["required_features", "forbidden_features", "relationships"]) {
+  for (const key of ["required_features", "optional_features", "forbidden_features", "relationships"]) {
     if (intent[key] !== undefined && !Array.isArray(intent[key])) {
       errors.push("intent." + key + " must be an array.");
     }
