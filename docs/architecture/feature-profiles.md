@@ -31,3 +31,8 @@ The browser Inspector can import one or more exported profiles or a combined cat
 ## Next step
 
 Build a curated set of source-verified profiles for useful specialised parts, then improve matching with one-to-one feature assignment, explicit rotations, surrounding-envelope checks and verified connection interfaces. A match must remain a geometric candidate until its placement and buildability have been independently validated.
+
+
+## Mesh input diagnostics
+
+The Python geometry inspection report now records watertightness, winding consistency, positive-volume status, connected-component count, Euler characteristic, degenerate and duplicate face counts, and a machine-readable validation status. Open/non-manifold geometry, duplicate or degenerate faces, and disconnected shells are called out explicitly. This is an ingestion diagnostic, not a self-intersection test: the report always states that triangle self-intersections are not assessed. A mesh passing the closed-solid checks must therefore not be interpreted as proven intersection-free.
