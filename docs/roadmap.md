@@ -144,13 +144,22 @@ These extensions are engineering aids, not physical certification. Oblique analy
 
 Golden reconstruction acceptance is based on the concept requested, not exact STL reproduction. The authored STL is a geometric reference; the authored intent contract is the acceptance specification. Required features (counts, types and relationships), suitable LEGO part roles, relative proportions and valid construction are primary. Exact bounds, surface distance and volume IoU are diagnostics unless a fixture explicitly marks them as design-critical. Exact part inventory is appropriate for calibration fixtures, but general models should permit different valid LEGO arrangements and substitutions. Dedicated elements such as windows, doors and wheels should be selected when suitable catalogue parts exist, rather than approximated with generic bricks by default.
 
-Next implementation steps:
-- [ ] Define a versioned machine-readable design-intent contract for golden fixtures and future natural-language briefs.
-- [ ] Represent required/optional/forbidden features, counts, relative placement and proportion tolerances.
-- [ ] Map feature roles to preferred and acceptable LEGO part families, including dedicated elements.
-- [ ] Score semantic feature coverage and part-role suitability separately from geometric similarity.
-- [ ] Add authored examples for a perforated plate with side walls and a house with two windows.
-- [ ] Keep geometric metrics as diagnostics and apply hard thresholds only to explicitly constrained properties.
+Initial implementation:
+- [x] Define a versioned machine-readable contract and JSON Schema in `schemas/design-intent-v1.schema.json`.
+- [x] Represent required, optional and forbidden features with explicit counts.
+- [x] Represent feature relationships through shared construction groups and minimum separations; add a relative distance-ratio relationship for proportion constraints.
+- [x] Map semantic roles to preferred LEGO part families and preferred dedicated part IDs, with explicit opt-in hard requirements.
+- [x] Evaluate required-feature coverage, optional-feature coverage, relationship coverage and part-role suitability as separate scores.
+- [x] Keep geometric diagnostics separate from semantic pass/fail decisions.
+- [x] Add authored contract examples for a four-hole plate with two side walls and a house with two windows and a door.
+- [x] Add Node regression tests and run them in CI.
+
+Remaining integration work:
+- [ ] Connect Inspector feature-analysis output to the contract evaluator so real reconstructed models are assessed automatically.
+- [ ] Add stable feature identity, parent/group assignment and relative-position measurements to the reconstruction result.
+- [ ] Feed part-role and family metadata into candidate ranking so dedicated LEGO elements are selected before generic approximations when compatible.
+- [ ] Make natural-language design briefs compile into the same contract rather than creating a separate evaluation path.
+- [ ] Add end-to-end golden fixtures whose acceptance is driven by these contracts, including positive two-hole and three-hole LEGO reconstructions.
 
 ### Golden-model round-trip validation — new priority
 
