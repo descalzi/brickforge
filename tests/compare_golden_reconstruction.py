@@ -131,7 +131,9 @@ two_report = json.loads(TWO_HOLE_REPORT.read_text(encoding="utf-8"))
 assert two_source_report.handle_count == 2, (
     "The two-hole source reference did not retain its two expected through-openings."
 )
-assert two_report.get("expected_tunnels") == 2, "The Inspector report does not declare both required openings."
+assert two_report.get("expected_tunnels") == 2, (
+    "The Inspector report does not declare both required openings."
+)
 assert two_report.get("grid_dimensions") == [6, 2, 2], (
     "The two-hole source must map to its true 6 × 2 × 2 stud grid; "
     f"got {two_report.get('grid_dimensions')}."
@@ -139,7 +141,10 @@ assert two_report.get("grid_dimensions") == [6, 2, 2], (
 assert two_report.get("outcome") == "blocked_without_generating_an_invalid_assembly", (
     "The browser must refuse this target until it can preserve both holes."
 )
-assert "No fully connected variable-course construction" in two_report.get("construction_status", ""), (
+assert (
+    "No fully connected variable-course construction"
+    in two_report.get("construction_status", "")
+), (
     "The Inspector did not explain why the two-hole construction was refused."
 )
 assert two_report.get("feature_details", "").count("Feature ") >= 2, (
