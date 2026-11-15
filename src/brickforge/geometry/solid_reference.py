@@ -97,6 +97,10 @@ def solidify_surface_mesh(
         raise ValueError("voxelised surface exceeds the configured voxel limit")
     filled = surface.fill()
     solid = filled.marching_cubes
+    # Trimesh's VoxelGrid.marching_cubes returns vertices in voxel-index
+    # coordinates; explicitly apply the grid transform to restore millimetres
+    # and the original world-space origin.
+    solid.apply_transform(filled.transform)
     solid.remove_unreferenced_vertices()
     solid.merge_vertices()
     if not solid.is_watertight or not solid.is_winding_consistent or not solid.is_volume:
