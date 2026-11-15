@@ -1525,6 +1525,65 @@ export function buildLayeredFootprintBlock(layerFootprints, catalogue, config = 
       candidate_tilings_per_course: layerCandidates.map((candidates) => candidates.length),
       candidate_search_limited: searchLimited,
     },
+    validation_report: {
+      schema_version: 1,
+      overall_status: "nominal_checks_passed",
+      checks: [
+        {
+          id: "target_coverage",
+          status: "passed",
+          summary: "Every occupied target cell is represented by exactly one selected part footprint.",
+        },
+        {
+          id: "body_overlap",
+          status: "passed",
+          summary: "No pair of nominal part body envelopes overlaps beyond the configured tolerance.",
+        },
+        {
+          id: "connection_alignment",
+          status: "passed",
+          summary: connections.length.toLocaleString() + " connected part pairs contain nominal stud-to-receiver alignment matches (" 
+            + connections.reduce((sum, connection) => sum + connection.mating_pairs.length, 0).toLocaleString()
+            + " mating pairs).",
+        },
+        {
+          id: "graph_connectivity",
+          status: "passed",
+          summary: "All generated part instances belong to one connected nominal connection graph.",
+        },
+        {
+          id: "search_optimality",
+          status: budgetReached || searchLimited ? "limited" : "passed",
+          summary: budgetReached || searchLimited
+            ? "Candidate or sequence search was bounded; the selected result is connected but is not guaranteed to use the fewest parts."
+            : "All candidate course layouts within the configured search were evaluated.",
+        },
+        {
+          id: "surface_fidelity",
+          status: "not_assessed",
+          summary: "The generated part envelopes have not been compared against source-mesh surface distance.",
+        },
+        {
+          id: "physical_stability",
+          status: "not_assessed",
+          summary: "Clutch force, load capacity and physical stability have not been measured or simulated.",
+        },
+        {
+          id: "assembly_accessibility",
+          status: "not_assessed",
+          summary: "Tool access and the physical order of assembly have not been validated.",
+        },
+      ],
+      limitations: [
+        "Connection results use nominal catalogue stud and receiver datums, not measured clutch-force data.",
+        "Body collision checks use nominal axis-aligned envelopes and do not inspect detailed part geometry.",
+        "A connected graph does not by itself prove that the construction is physically stable or practically assemblable.",
+        "The preview uses simplified part body envelopes and does not measure source-surface fidelity.",
+        ...(budgetReached || searchLimited
+          ? ["The bounded search does not guarantee a minimum-part construction."]
+          : []),
+      ],
+    },
   };
 }
 
