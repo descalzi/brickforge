@@ -114,6 +114,16 @@ try {
     const resultStatus = await page.locator("#construction-status").innerText();
     assert.match(resultStatus, /Connected construction generated/i,
       "authored 3001 STL did not generate a construction: " + resultStatus);
+    const goldenSummary = await page.evaluate(() => ({
+      dimensions_mm: activeConstruction.dimensions_mm,
+      course_part_counts: activeConstruction.course_part_counts,
+      parts: activeConstruction.parts.map(part => ({
+        part_id: part.part_id,
+        translation_ldu: part.translation_ldu,
+        matrix: part.matrix,
+      })),
+    }));
+    console.log(JSON.stringify({ goldenModel: "single-3001-reconstruction", summary: goldenSummary }));
     const [graphDownload] = await Promise.all([
       page.waitForEvent("download"),
       page.locator("#construction-download-graph").click(),
