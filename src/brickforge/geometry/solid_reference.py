@@ -39,6 +39,7 @@ class SolidReferenceReport:
     is_watertight: bool
     is_winding_consistent: bool
     is_volume: bool
+    bounds_reconciliation_scale: tuple[float, float, float]
     expected_handle_count: int | None
     required_topology_preserved: bool
     warnings: tuple[str, ...]
@@ -51,7 +52,7 @@ class SolidReferenceReport:
 def solidify_surface_mesh(
     mesh: trimesh.Trimesh,
     *,
-    pitch_mm: float = 0.8,
+    pitch_mm: float = 0.25,
     max_voxels: int = 2_000_000,
     expected_handle_count: int | None = None,
 ) -> tuple[trimesh.Trimesh, SolidReferenceReport]:
@@ -103,6 +104,17 @@ def solidify_surface_mesh(
     solid.apply_transform(filled.transform)
     solid.remove_unreferenced_vertices()
     solid.merge_vertices()
+    # Marching cubes encloses the outermost voxel centres with a half-cell
+    # margin. Reconcile that known rasterisation margin back to the measured
+    # source bounds so a brick whose edge lies on a stud-grid boundary does
+    # not spuriously acquire an extra stud row when re-imported.
+    source_extents = source_bounds[1] - source_bounds[0]
+    voxel_extents = np.asarray(solid.extents, dtype=np.float64)
+    if np.any(voxel_extents <= 0):
+        raise ValueError("voxel-derived reference has a zero-size axis")
+    reconciliation_scale = source_extents / voxel_extents
+    solid.apply_scale(reconciliation_scale)
+    solid.apply_translation(source_bounds.mean(axis=0) - solid.bounds.mean(axis=0))
     if not solid.is_watertight or not solid.is_winding_consistent or not solid.is_volume:
         raise ValueError(
             "voxel-derived reference failed closed-solid validation; "
@@ -146,6 +158,7 @@ def solidify_surface_mesh(
         is_watertight=bool(solid.is_watertight),
         is_winding_consistent=bool(solid.is_winding_consistent),
         is_volume=bool(solid.is_volume),
+        bounds_reconciliation_scale=tuple(float(v) for v in reconciliation_scale),  # type: ignore[arg-type]
         expected_handle_count=expected_handle_count,
         required_topology_preserved=topology_preserved,
         warnings=tuple(warnings),
@@ -158,7 +171,7 @@ def export_assembly_solid_reference_stl(
     library: LDrawLibrary,
     destination: str | Path,
     *,
-    pitch_mm: float = 0.8,
+    pitch_mm: float = 0.25,
     max_voxels: int = 2_000_000,
     expected_handle_count: int | None = None,
 ) -> dict[str, Any]:
