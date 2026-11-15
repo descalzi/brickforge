@@ -57,7 +57,7 @@ def test_golden_stl_export_writes_units_provenance_and_reference_bom(tmp_path: P
 
     sidecar = json.loads(destination.with_suffix(".stl.json").read_text(encoding="utf-8"))
     assert sidecar == manifest
-    imported = trimesh.load(destination, force="mesh", process=False)
+    imported = trimesh.load(destination, force="mesh", process=True)
     assert imported.bounds[1] - imported.bounds[0] == pytest.approx((32.0, 11.2, 16.0))
     assert imported.is_watertight
     assert imported.is_winding_consistent
