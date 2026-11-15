@@ -161,6 +161,15 @@
             <ul id="construction-course-list"></ul>
             <p class="construction-preview-note">Preview uses simplified part body envelopes, not detailed part geometry.</p>
             <button id="construction-preview-toggle" class="tool-button" type="button" disabled>Hide generated construction</button>
+            <div class="construction-cost-panel">
+              <strong>Real parts cost estimate</strong>
+              <label for="construction-price-input">Import a sourced marketplace or supplier price catalogue</label>
+              <input id="construction-price-input" type="file" accept=".json,application/json">
+              <p class="control-note">BrickForge does not invent prices. Import a dated price file with currency and source attribution; missing prices remain visible and prevent a complete total.</p>
+              <a href="./data/price-catalogue-template.json" download>Price catalogue JSON template</a>
+              <p id="construction-cost-status" role="status" aria-live="polite">Import a price catalogue to estimate all connected alternatives.</p>
+              <ul id="construction-cost-list"></ul>
+            </div>
             <div class="construction-downloads">
               <button id="construction-download-ldraw" class="tool-button" type="button" disabled>Download LDraw</button>
               <button id="construction-download-graph" class="tool-button" type="button" disabled>Download assembly graph</button>
@@ -209,6 +218,6 @@
     <span class="footer-id">BF / MESH-01</span>
   </footer>
 
-  <script type="module" src="./assets/inspector.js?v=20261115-m5ext2"></script>
+  <script type="module" src="./assets/inspector.js?v=20261115-m5ext3"></script>
 </body>
 </html>
