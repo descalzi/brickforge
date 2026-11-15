@@ -17,6 +17,7 @@ from brickforge.geometry.grid import (
     Vector3,
 )
 
+STUD_PROTRUSION_MM = 1.6
 _UNIT_TO_MM = {"mm": 1.0, "cm": 10.0, "m": 1000.0}
 _SAMPLE_OFFSETS = np.array(
     [
@@ -80,7 +81,10 @@ def voxelize_mesh(
             1,
             int(
                 ceil(
-                    (bounds[1, axis] - origin[axis]) / pitch_mm[axis] - 1e-12
+                    (
+                        bounds[1, axis] - origin[axis]
+                        - (STUD_PROTRUSION_MM if axis == 1 else 0.0)
+                    ) / pitch_mm[axis] - 1e-12
                 )
             ),
         )
@@ -147,5 +151,6 @@ def voxelize_mesh(
         warnings=(
             "Occupancy uses a 3x3x3 point-sampling approximation; thin features "
             "and exact triangle-cell intersections may be missed.",
+            "Up to 1.6 mm of top stud protrusion is represented within the final course.",
         ),
     )
