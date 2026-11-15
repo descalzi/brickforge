@@ -140,6 +140,18 @@ These extensions are engineering aids, not physical certification. Oblique analy
 
 
 
+### Semantic design-intent validation — priority clarification, 2026-11-15
+
+Golden reconstruction acceptance is based on the concept requested, not exact STL reproduction. The authored STL is a geometric reference; the authored intent contract is the acceptance specification. Required features (counts, types and relationships), suitable LEGO part roles, relative proportions and valid construction are primary. Exact bounds, surface distance and volume IoU are diagnostics unless a fixture explicitly marks them as design-critical. Exact part inventory is appropriate for calibration fixtures, but general models should permit different valid LEGO arrangements and substitutions. Dedicated elements such as windows, doors and wheels should be selected when suitable catalogue parts exist, rather than approximated with generic bricks by default.
+
+Next implementation steps:
+- [ ] Define a versioned machine-readable design-intent contract for golden fixtures and future natural-language briefs.
+- [ ] Represent required/optional/forbidden features, counts, relative placement and proportion tolerances.
+- [ ] Map feature roles to preferred and acceptable LEGO part families, including dedicated elements.
+- [ ] Score semantic feature coverage and part-role suitability separately from geometric similarity.
+- [ ] Add authored examples for a perforated plate with side walls and a house with two windows.
+- [ ] Keep geometric metrics as diagnostics and apply hard thresholds only to explicitly constrained properties.
+
 ### Golden-model round-trip validation — new priority
 
 The synthetic STL corpus remains useful for isolated algorithm checks, but it does not establish that the generated LEGO assembly preserves the source object's shape. The next validation layer is defined in [golden-model round-trip benchmarks](architecture/golden-roundtrip.md): author reference assemblies first, derive their meshes from resolved LDraw part geometry, send those meshes through the ordinary import pipeline, and compare the reconstructed result with the original assembly. The comparison must include surface and volumetric fidelity, required negative spaces/topology, scale, part inventory and nominal construction validity. A connected graph alone is not an acceptable pass. Ordinary LEGO elements are the default; Technic is optional.
