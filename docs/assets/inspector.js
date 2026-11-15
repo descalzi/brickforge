@@ -10,6 +10,7 @@ import { refineSurfaceFitPose, scoreSurfaceFit } from "./surface-fit.js?v=surfac
 import { transformPartPreviewPositions } from "./part-preview.js?v=featurepreview1";
 import { matchNominalConnectionInterfaces, validateSpecialisedSurfaceCandidate } from "./specialised-part-matcher.js?v=specialised3";
 import { estimateBomCost, validatePriceCatalogue } from "./cost-estimator.js?v=costing1";
+import { loadConstructionLDrawSurface } from "./ldraw-surface-loader.js?v=ldrawsurface1";
 import { orientationMatrixToYUp } from "./mesh-orientation.js?v=upaxis1";
 
 const MAX_FILE_BYTES = 100 * 1024 * 1024;
@@ -96,6 +97,7 @@ let constructionWorker = null;
 let activeConstruction;
 let activeConstructionAlternatives = [];
 let activePriceCatalogue = null;
+let surfaceComparisonSequence = 0;
 let activeTargetGrid;
 let activeObliqueFeatures = [];
 let activeVoxelGroup;
@@ -539,6 +541,7 @@ function resetVoxelisation() {
   removeConstructionPreview();
   activeTargetGrid = null;
   activeObliqueFeatures = [];
+  surfaceComparisonSequence += 1;
   if (voxelFeatureStatus) { voxelFeatureStatus.hidden = true; voxelFeatureStatus.textContent = ''; }
   if (voxelFeatureList) voxelFeatureList.replaceChildren();
   voxeliseButton.disabled = !activeModel;
@@ -1359,8 +1362,9 @@ function constructionEnvelopeSurfacePositions(result) {
   return new Float32Array(positions);
 }
 
-function compareConstructionAlternativeSurfaces() {
+async function compareConstructionAlternativeSurfaces() {
   if (!constructionFidelityStatus || !constructionFidelityList) return;
+  const sequence = ++surfaceComparisonSequence;
   constructionFidelityList.replaceChildren();
   const alternatives = activeConstructionAlternatives.length
     ? activeConstructionAlternatives : activeConstruction ? [activeConstruction] : [];
@@ -1368,57 +1372,82 @@ function compareConstructionAlternativeSurfaces() {
     constructionFidelityStatus.textContent = "Generate alternatives to compare their target-surface fidelity.";
     return;
   }
-  constructionFidelityStatus.textContent = "Comparing exposed part-body envelope surfaces with the source mesh…";
+  constructionFidelityStatus.textContent = "Loading pinned LDraw part geometry and comparing detailed assembly surfaces…";
   const targetPositions = collectSurfaceTrianglePositions();
-  alternatives.forEach((alternative, index) => {
+  for (let index = 0; index < alternatives.length; index += 1) {
+    if (sequence !== surfaceComparisonSequence) return;
+    const alternative = alternatives[index];
     try {
-      if (!alternative.surface_fidelity_report) {
-        const candidatePositions = constructionEnvelopeSurfacePositions(alternative);
-        const report = scoreSurfaceFit(candidatePositions, targetPositions);
-        const volumeCheck = alternative.validation_report?.checks?.find((check) => check.id === "target_coverage");
-        const volumetricCoverage = volumeCheck?.status === "passed" ? 1 : 0;
-        alternative.surface_fidelity_report = {
-          score: report.global_bidirectional_score,
-          volumetric_coverage_fraction: volumetricCoverage,
-          hybrid_fidelity_score: 0.25 * volumetricCoverage + 0.75 * report.global_bidirectional_score,
-          candidate_coverage: report.candidate_to_target.within_tolerance_fraction,
-          target_coverage: report.target_to_candidate.within_tolerance_fraction,
-          mean_distance_mm: report.global_bidirectional_mean_distance_mm,
-          percentile_95_distance_mm: report.global_bidirectional_95th_percentile_distance_mm,
-          candidate_triangle_count: candidatePositions.length / 9,
-          method: "exposed-simplified-part-body-envelopes",
-        };
+      let candidatePositions;
+      let method;
+      let sourceTriangleCount = 0;
+      let sampleStride = 1;
+      try {
+        const detailed = await loadConstructionLDrawSurface(
+          alternative,
+          activeTargetGrid.spec,
+          constructionTargetCellBounds(),
+          currentModelCenter,
+          constructionPreviewTransform,
+        );
+        candidatePositions = detailed.positions;
+        method = detailed.method;
+        sourceTriangleCount = detailed.source_triangle_count;
+        sampleStride = detailed.sample_stride;
+      } catch (detailError) {
+        candidatePositions = constructionEnvelopeSurfacePositions(alternative);
+        method = "exposed-simplified-part-body-envelopes-fallback";
+        sourceTriangleCount = candidatePositions.length / 9;
+        constructionFidelityStatus.textContent = "Detailed LDraw geometry unavailable for at least one alternative; using the labelled envelope fallback.";
       }
+      const surface = scoreSurfaceFit(candidatePositions, targetPositions);
+      const volumeCheck = alternative.validation_report?.checks?.find((check) => check.id === "target_coverage");
+      const volumetricCoverage = volumeCheck?.status === "passed" ? 1 : 0;
+      alternative.surface_fidelity_report = {
+        score: surface.global_bidirectional_score,
+        volumetric_coverage_fraction: volumetricCoverage,
+        hybrid_fidelity_score: 0.25 * volumetricCoverage + 0.75 * surface.global_bidirectional_score,
+        candidate_coverage: surface.candidate_to_target.within_tolerance_fraction,
+        target_coverage: surface.target_to_candidate.within_tolerance_fraction,
+        mean_distance_mm: surface.global_bidirectional_mean_distance_mm,
+        percentile_95_distance_mm: surface.global_bidirectional_95th_percentile_distance_mm,
+        candidate_triangle_count: candidatePositions.length / 9,
+        source_triangle_count: sourceTriangleCount,
+        sample_stride: sampleStride,
+        method,
+      };
       if (alternative.validation_report) {
+        const detailed = method === "detailed-ldraw-part-surfaces";
         alternative.validation_report.surface_fidelity_proxy = {
-          status: "measured_simplified_envelope_proxy",
+          status: detailed ? "measured_detailed_ldraw_surface" : "measured_simplified_envelope_proxy",
           ...alternative.surface_fidelity_report,
           limitations: [
-            "Part bodies are represented by simplified envelopes, not detailed LDraw triangle geometry.",
+            detailed
+              ? "Detailed LDraw part surfaces are sampled to a bounded triangle budget and internal faces are culled using part-body envelopes."
+              : "Part bodies are represented by simplified envelopes because detailed LDraw source geometry could not be loaded.",
             "Surface distances are sampled and are not an exact Hausdorff distance.",
-            "This proxy does not validate collision-free placement, connection quality, stability or buildability.",
+            "This comparison does not validate collision-free placement, connection quality, stability or buildability.",
           ],
         };
-      }
-      const report = alternative.surface_fidelity_report;
-      if (alternative.validation_report) {
         alternative.validation_report.hybrid_fidelity = {
-          volumetric_coverage_fraction: report.volumetric_coverage_fraction,
-          surface_fidelity_score: report.score,
-          combined_score: report.hybrid_fidelity_score,
+          volumetric_coverage_fraction: volumetricCoverage,
+          surface_fidelity_score: surface.global_bidirectional_score,
+          combined_score: alternative.surface_fidelity_report.hybrid_fidelity_score,
           weighting: { volumetric_coverage: 0.25, surface_fidelity: 0.75 },
-          note: "Volumetric target coverage is a hard constraint; the simplified envelope surface proxy differentiates alternatives.",
+          note: "Volumetric target coverage is a hard constraint; detailed LDraw surface fit or the labelled envelope fallback differentiates alternatives.",
         };
       }
+      if (sequence !== surfaceComparisonSequence) return;
       const item = document.createElement("li");
       item.textContent = "Option " + (index + 1) + " · hybrid fidelity "
-        + Math.round(report.hybrid_fidelity_score * 100) + "/100 · envelope surface "
-        + Math.round(report.score * 100) + "/100"
-        + " · candidate coverage " + Math.round(report.candidate_coverage * 100) + "%"
-        + " · target coverage " + Math.round(report.target_coverage * 100) + "%"
-        + " · mean distance " + report.mean_distance_mm.toFixed(2) + " mm"
-        + " · 95th percentile " + report.percentile_95_distance_mm.toFixed(2) + " mm"
-        + " · " + report.candidate_triangle_count.toLocaleString() + " exposed envelope triangles";
+        + Math.round(alternative.surface_fidelity_report.hybrid_fidelity_score * 100) + "/100"
+        + " · surface score " + Math.round(surface.global_bidirectional_score * 100) + "/100"
+        + " · candidate coverage " + Math.round(surface.candidate_to_target.within_tolerance_fraction * 100) + "%"
+        + " · target coverage " + Math.round(surface.target_to_candidate.within_tolerance_fraction * 100) + "%"
+        + " · mean distance " + surface.global_bidirectional_mean_distance_mm.toFixed(2) + " mm"
+        + " · 95th percentile " + surface.global_bidirectional_95th_percentile_distance_mm.toFixed(2) + " mm"
+        + " · " + (candidatePositions.length / 9).toLocaleString() + " sampled triangles"
+        + " · " + (method === "detailed-ldraw-part-surfaces" ? "detailed LDraw geometry" : "simplified envelope fallback");
       constructionFidelityList.append(item);
     } catch (error) {
       const item = document.createElement("li");
@@ -1426,9 +1455,21 @@ function compareConstructionAlternativeSurfaces() {
         + (error instanceof Error ? error.message : "geometry comparison failed");
       constructionFidelityList.append(item);
     }
+  }
+  if (sequence !== surfaceComparisonSequence) return;
+  constructionFidelityStatus.textContent = "Detailed LDraw part surfaces are used when available, with a clearly labelled envelope fallback. Bidirectional sampled distances are a comparative proxy, not an exact Hausdorff distance or physical fit certificate.";
+  const buttons = constructionAlternatives.querySelectorAll("button");
+  buttons.forEach((button, index) => {
+    const alternative = alternatives[index];
+    if (!alternative?.surface_fidelity_report) return;
+    button.textContent = "Option " + (index + 1) + " · " + alternative.parts.length + " parts · "
+      + alternative.optimization_metrics.unique_part_types + " part types · "
+      + Math.round(alternative.optimization_score * 100) + "/100"
+      + " · hybrid " + Math.round(alternative.surface_fidelity_report.hybrid_fidelity_score * 100) + "/100"
+      + " · " + alternative.course_part_counts.join(" / ") + " per course";
   });
-  constructionFidelityStatus.textContent = "Higher scores indicate closer sampled coverage in both directions. Simplified body envelopes are used instead of detailed LDraw part meshes; this is a comparative proxy, not an exact Hausdorff distance or physical fit test.";
 }
+
 
 function renderConstructionCostEstimates() {
   if (!constructionCostStatus || !constructionCostList) return;
@@ -1486,7 +1527,10 @@ async function loadConstructionPriceCatalogue(file) {
 function displayConstruction(result) {
   if (Array.isArray(result.alternatives)) activeConstructionAlternatives = result.alternatives;
   activeConstruction = result;
-  compareConstructionAlternativeSurfaces();
+  compareConstructionAlternativeSurfaces().catch((error) => {
+    constructionFidelityStatus.textContent = error instanceof Error ? error.message : 'Surface comparison failed.';
+    constructionFidelityStatus.dataset.state = 'error';
+  });
   constructionAlternatives.replaceChildren();
   if (activeConstructionAlternatives.length > 1) {
     const heading = document.createElement('strong');
