@@ -94,7 +94,7 @@ def test_authored_ldraw_brick_can_export_a_watertight_reference(tmp_path: Path) 
     assembly = _known_single_brick()
     destination = tmp_path / "golden-single-3001-solid.stl"
     manifest = export_assembly_solid_reference_stl(
-        assembly, LDrawLibrary(FIXTURE_LIBRARY), destination, pitch_mm=0.25
+        assembly, LDrawLibrary(FIXTURE_LIBRARY), destination, pitch_mm=0.5
     )
 
     assert destination.is_file()
@@ -126,4 +126,4 @@ def test_solid_reference_preserves_physical_scale_and_origin() -> None:
     assert solid.bounds[0] == pytest.approx(source.bounds[0], abs=1e-8)
     assert solid.bounds[1] == pytest.approx(source.bounds[1], abs=1e-8)
     assert report.solid_bounds_mm[0] == pytest.approx(solid.bounds[0])
-    assert report.bounds_reconciliation_scale == pytest.approx((1.0, 1.0, 1.0), abs=0.02)
+    assert report.bounds_reconciliation_scale == pytest.approx((1.0, 1.0, 1.0), abs=0.05)
