@@ -25,7 +25,8 @@ test("surface fit uses triangle surfaces rather than only target vertices", () =
   const candidate = [2, 2, 1, 4, 2, 1, 2, 4, 1];
   const target = [0, 0, 0, 10, 0, 0, 0, 10, 0];
   const result = scoreSurfaceFit(candidate, target);
-  assert.ok(result.mean_distance_mm < 1.01);
+  assert.ok(result.candidate_to_target.mean_distance_mm < 1.01);
+  assert.ok(result.symmetric_mean_distance_mm >= result.candidate_to_target.mean_distance_mm);
 });
 
 test("surface fit validates geometry and bounded options", () => {
