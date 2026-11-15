@@ -14,6 +14,7 @@ const contract = {
       { feature_type: "window", count: 2 },
       { feature_type: "door", count: 1 },
     ],
+    optional_features: [{ feature_type: "chimney", target_count: 1 }],
     forbidden_features: [{ feature_type: "missing_wall", max_count: 0 }],
     relationships: [
       { id: "windows-on-same-wall", type: "same_group", feature_types: ["window", "door"] },
@@ -68,6 +69,8 @@ test("design intent passes required features, relationships and construction gat
   assert.equal(report.failures.length, 0);
   assert.equal(report.warnings.length, 0);
   assert.equal(report.diagnostics.volume_iou, 0.71);
+  assert.equal(report.scores.required_feature_coverage, 1);
+  assert.equal(report.scores.optional_feature_coverage, 0);
 });
 
 test("missing a required window is a hard semantic failure", () => {
