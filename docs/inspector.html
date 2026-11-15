@@ -162,6 +162,12 @@
             <p class="construction-preview-note">Preview uses simplified part body envelopes, not detailed part geometry.</p>
             <button id="construction-preview-toggle" class="tool-button" type="button" disabled>Hide generated construction</button>
             <div class="construction-cost-panel">
+              <strong>Whole-alternative surface fidelity</strong>
+              <p class="control-note">Alternatives are compared against the source mesh using exposed simplified part-body envelopes. This is a comparative geometric proxy, not detailed LDraw surface reconstruction or a buildability check.</p>
+              <p id="construction-fidelity-status" role="status" aria-live="polite">Generate alternatives to compare their target-surface coverage.</p>
+              <ul id="construction-fidelity-list"></ul>
+            </div>
+            <div class="construction-cost-panel">
               <strong>Real parts cost estimate</strong>
               <label for="construction-price-input">Import a sourced marketplace or supplier price catalogue</label>
               <input id="construction-price-input" type="file" accept=".json,application/json">
@@ -218,6 +224,6 @@
     <span class="footer-id">BF / MESH-01</span>
   </footer>
 
-  <script type="module" src="./assets/inspector.js?v=20261115-m5ext3"></script>
+  <script type="module" src="./assets/inspector.js?v=20261115-m5ext4"></script>
 </body>
 </html>
