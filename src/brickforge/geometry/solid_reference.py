@@ -138,6 +138,11 @@ def solidify_surface_mesh(
         "Exterior-connected cavities are preserved; enclosed cavities are filled.",
         "The report does not certify LEGO clutch strength, stability or buildability.",
     ]
+    if not np.allclose(reconciliation_scale, 1.0, rtol=0.0, atol=1e-8):
+        warnings.append(
+            "A small axis-wise scale correction removes the marching-cubes half-voxel boundary margin; "
+            f"factors are {tuple(float(v) for v in reconciliation_scale)}."
+        )
     if not topology_preserved:
         warnings.append(
             f"Expected {expected_handle_count} through-opening handle(s), "
@@ -158,7 +163,9 @@ def solidify_surface_mesh(
         is_watertight=bool(solid.is_watertight),
         is_winding_consistent=bool(solid.is_winding_consistent),
         is_volume=bool(solid.is_volume),
-        bounds_reconciliation_scale=tuple(float(v) for v in reconciliation_scale),  # type: ignore[arg-type]
+        bounds_reconciliation_scale=cast(
+            tuple[float, float, float], tuple(float(v) for v in reconciliation_scale)
+        ),
         expected_handle_count=expected_handle_count,
         required_topology_preserved=topology_preserved,
         warnings=tuple(warnings),
