@@ -1329,8 +1329,8 @@ function compareLayeredSequences(a, b) {
 }
 
 export function buildLayeredFootprintBlock(layerFootprints, catalogue, config = {}) {
-  if (!Array.isArray(layerFootprints) || layerFootprints.length < 2) {
-    throw new TypeError("layerFootprints must contain at least two bottom-to-top courses.");
+  if (!Array.isArray(layerFootprints) || layerFootprints.length < 1) {
+    throw new TypeError("layerFootprints must contain at least one bottom-to-top course.");
   }
   if (!catalogue || catalogue.schema_version !== 1 || !Array.isArray(catalogue.profiles)) {
     throw new TypeError("The connection profile catalogue is missing or unsupported.");
