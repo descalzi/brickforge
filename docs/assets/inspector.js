@@ -53,6 +53,7 @@ const constructionPreviewToggle = document.querySelector('#construction-preview-
 const constructionDownloadLDraw = document.querySelector('#construction-download-ldraw');
 const constructionDownloadGraph = document.querySelector('#construction-download-graph');
 const constructionDownloadBom = document.querySelector('#construction-download-bom');
+const constructionDownloadValidation = document.querySelector('#construction-download-validation');
 
 const output = {
   x: document.querySelector('#dimension-x'),
@@ -515,6 +516,7 @@ function resetVoxelisation() {
   constructionDownloadLDraw.disabled = true;
   constructionDownloadGraph.disabled = true;
   constructionDownloadBom.disabled = true;
+  constructionDownloadValidation.disabled = true;
   removeVoxelOverlay();
   removeFeatureOverlay();
   removeCandidatePreview();
@@ -1091,6 +1093,7 @@ function displayConstruction(result) {
   constructionDownloadLDraw.disabled = false;
   constructionDownloadGraph.disabled = false;
   constructionDownloadBom.disabled = false;
+  constructionDownloadValidation.disabled = !result.validation_report;
   const preservedOpeningCount = activeTargetGrid.feature_keepouts.filter((item) => item.preserved).length;
   constructionStatus.textContent = 'Connected construction generated.'
     + (preservedOpeningCount
@@ -1479,6 +1482,13 @@ constructionDownloadBom.addEventListener('click', () => {
   if (activeConstruction) downloadConstructionFile(
     activeConstruction.model_name + '.bom.json',
     JSON.stringify(activeConstruction.bom, null, 2),
+    'application/json;charset=utf-8',
+  );
+});
+constructionDownloadValidation.addEventListener('click', () => {
+  if (activeConstruction?.validation_report) downloadConstructionFile(
+    activeConstruction.model_name + '.validation.json',
+    JSON.stringify(activeConstruction.validation_report, null, 2),
     'application/json;charset=utf-8',
   );
 });
