@@ -219,6 +219,12 @@ test("STL float precision does not create a phantom course and one brick remains
   assert.deepEqual(construction.connections, []);
 });
 
+test("STL float precision does not add phantom horizontal stud rows", () => {
+  const mesh = boxMesh([48.000000405311584, 19.2, 16.000000405311584]);
+  const result = voxelizeMesh({ ...mesh, units: "mm" });
+  assert.deepEqual(result.dimensions, [6, 2, 2]);
+});
+
 test("browser voxeliser retains a sub-grid thin feature through triangle-cell intersection", () => {
   const mesh = boxMesh([0.5, 0.5, 0.5], [4, 4.8, 4]);
   const grid = voxelizeMesh({ ...mesh, units: "mm" });
