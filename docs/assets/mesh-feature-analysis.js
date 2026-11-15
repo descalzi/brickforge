@@ -384,14 +384,21 @@ export function analyzeMeshFeaturesExtended(triangles, boundsMin, boundsMax, {
     if (!u) return;
     const v = normalise3(cross3(normal, u));
     const basis = [u, v, normal];
+    const localMin = [Infinity, Infinity, Infinity];
+    const localMax = [-Infinity, -Infinity, -Infinity];
+    const project = (point) => {
+      const local = [dot3(point, u), dot3(point, v), dot3(point, normal)];
+      for (let axis = 0; axis < 3; axis += 1) {
+        localMin[axis] = Math.min(localMin[axis], local[axis]);
+        localMax[axis] = Math.max(localMax[axis], local[axis]);
+      }
+      return local;
+    };
     const localTriangles = triangles.map((triangle) => ({
-      a: [dot3(triangle.a, u), dot3(triangle.a, v), dot3(triangle.a, normal)],
-      b: [dot3(triangle.b, u), dot3(triangle.b, v), dot3(triangle.b, normal)],
-      c: [dot3(triangle.c, u), dot3(triangle.c, v), dot3(triangle.c, normal)],
+      a: project(triangle.a),
+      b: project(triangle.b),
+      c: project(triangle.c),
     }));
-    const localPoints = localTriangles.flatMap((triangle) => [triangle.a, triangle.b, triangle.c]);
-    const localMin = [0, 1, 2].map((axis) => Math.min(...localPoints.map((point) => point[axis])));
-    const localMax = [0, 1, 2].map((axis) => Math.max(...localPoints.map((point) => point[axis])));
     const oblique = analyzeMeshFeatures(localTriangles, localMin, localMax)
       .filter((feature) => feature.axis === "z")
       .map((feature) => transformObliqueFeature(feature, basis, frameIndex + 1));
