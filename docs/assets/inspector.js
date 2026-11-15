@@ -4,7 +4,7 @@ let STLLoader;
 let OBJLoader;
 
 import { BRICK_GRID_PITCH_MM, PLATE_GRID_PITCH_MM, GridSpec, TargetGrid } from "./target-grid.js?v=featuregrid7";
-import { matchFeaturePatterns, matchTargetFeatures } from "./feature-matcher.js?v=featurematch8";
+import { matchFeaturePatterns, matchTargetFeatures } from "./feature-matcher.js?v=featurematch9";
 import { constructionPreviewTransform } from "./construction-preview.js";
 import { refineSurfaceFitPose, scoreSurfaceFit } from "./surface-fit.js?v=surfacefit6";
 import { transformPartPreviewPositions } from "./part-preview.js?v=featurepreview1";
@@ -678,7 +678,9 @@ function validImportedFeatureProfile(profile) {
     && profile.features.every((feature) => feature
       && typeof feature.id === 'string'
       && ['round opening', 'elongated slot/opening', 'irregular opening'].includes(feature.shape)
-      && ['x', 'y', 'z'].includes(feature.axis)
+      && (['x', 'y', 'z'].includes(feature.axis)
+        || (feature.axis === 'oblique' && Array.isArray(feature.axis_vector_world)
+          && feature.axis_vector_world.length === 3 && feature.axis_vector_world.every(Number.isFinite)))
       && Number.isFinite(feature.width_mm) && feature.width_mm > 0
       && Number.isFinite(feature.length_mm) && feature.length_mm > 0
       && Number.isFinite(feature.circularity)
@@ -1143,7 +1145,7 @@ function runVoxelisation() {
   voxeliseStatus.dataset.state = 'working';
   setMessage('Voxelising locally. The 3D viewer remains interactive while the worker processes the mesh.');
   try {
-    voxelWorker = new Worker(new URL('./mesh-voxelizer-worker.js?v=featurekeepout4', import.meta.url), { type: 'module' });
+    voxelWorker = new Worker(new URL('./mesh-voxelizer-worker.js?v=featurekeepout5', import.meta.url), { type: 'module' });
   } catch (error) {
     voxeliseButton.disabled = false;
     voxeliseStatus.textContent = error instanceof Error ? error.message : 'Could not start the voxelisation worker.';
