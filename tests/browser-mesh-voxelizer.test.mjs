@@ -5,7 +5,7 @@ import test from "node:test";
 import { PLATE_GRID_PITCH_MM, CellClass, GridSpec, TargetGrid } from "../docs/assets/target-grid.js";
 import { buildLayeredFootprintBlock } from "../docs/assets/construction-engine.js";
 import { voxelizeMesh } from "../docs/assets/mesh-voxelizer.js";
-import { analyzeMeshFeatures } from "../docs/assets/mesh-feature-analysis.js";
+import { analyzeMeshFeatures, analyzeMeshFeaturesExtended } from "../docs/assets/mesh-feature-analysis.js";
 
 const connectionCatalogue = JSON.parse(
   await readFile(new URL("../data/connection-profiles/basic-bricks.json", import.meta.url), "utf8"),
@@ -340,4 +340,39 @@ test("Z-up mesh openings flow through target grid into a connected layered const
     assert.equal(checks.get(id).status, "not_assessed", id + " must remain explicit");
   }
   assert.ok(construction.validation_report.limitations.length >= 4);
+});
+
+
+test("extended mesh analysis finds an oblique tunnel and reports its world axis", () => {
+  const source = torusMesh(4, 1, 20, 10);
+  const angle = Math.PI / 6;
+  const triangles = [];
+  const boundsMin = [Infinity, Infinity, Infinity];
+  const boundsMax = [-Infinity, -Infinity, -Infinity];
+  const rotate = (point) => [
+    point[0],
+    point[1] * Math.cos(angle) - point[2] * Math.sin(angle),
+    point[1] * Math.sin(angle) + point[2] * Math.cos(angle),
+  ];
+  for (let index = 0; index < source.indices.length; index += 3) {
+    const points = [0, 1, 2].map((offset) => {
+      const vertex = source.indices[index + offset] * 3;
+      return rotate([source.vertices[vertex], source.vertices[vertex + 1], source.vertices[vertex + 2]]);
+    });
+    for (const point of points) {
+      for (let axis = 0; axis < 3; axis += 1) {
+        boundsMin[axis] = Math.min(boundsMin[axis], point[axis]);
+        boundsMax[axis] = Math.max(boundsMax[axis], point[axis]);
+      }
+    }
+    triangles.push({ a: points[0], b: points[1], c: points[2] });
+  }
+  const features = analyzeMeshFeaturesExtended(triangles, boundsMin, boundsMax, {
+    obliqueDirections: [[0, -0.5, 0.8660254038]],
+    maxObliqueDirections: 1,
+  });
+  const oblique = features.filter((feature) => feature.axis === "oblique");
+  assert.ok(oblique.length > 0);
+  assert.ok(oblique.some((feature) => Math.abs(feature.axis_vector_world[1] + 0.5) < 0.02));
+  assert.ok(oblique.every((feature) => feature.analysis_method === "oblique_cross_section"));
 });
