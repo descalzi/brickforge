@@ -6,7 +6,7 @@ let OBJLoader;
 import { BRICK_GRID_PITCH_MM, PLATE_GRID_PITCH_MM, GridSpec, TargetGrid } from "./target-grid.js?v=featuregrid7";
 import { matchFeaturePatterns, matchTargetFeatures } from "./feature-matcher.js?v=featurematch8";
 import { constructionPreviewTransform } from "./construction-preview.js";
-import { scoreSurfaceFit } from "./surface-fit.js?v=surfacefit1";
+import { scoreSurfaceFit } from "./surface-fit.js?v=surfacefit2";
 import { transformPartPreviewPositions } from "./part-preview.js?v=featurepreview1";
 import { orientationMatrixToYUp } from "./mesh-orientation.js?v=upaxis1";
 
