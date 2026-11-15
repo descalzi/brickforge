@@ -151,12 +151,14 @@ Initial implementation status:
 - [x] Add a source-3001 calibration test for actual resolved geometry and expected physical dimensions.
 - [x] Repair inconsistent adjacent-face winding without optional graph dependencies and record raw/repaired mesh diagnostics.
 - [x] Re-import the generated single-part STL and verify the voxeliser correctly blocks its non-watertight LDraw display surface.
-- [ ] Generate an explicit watertight solid reference from an authored assembly without closing intended openings or substituting undocumented proxy geometry.
+- [x] Generate an explicit, resolution-declared watertight solid reference from an authored assembly using triangle voxelisation, exterior flood-fill and marching cubes; report limitations and optionally hard-fail if required handles are lost.
+- [x] Pass a generated single-part 3001 STL through the real browser Inspector voxelisation and construction flow in headless Chromium CI.
+- [x] Verify that a two-through-opening solid reference retains both handles at the declared 1 mm pitch.
 - [ ] Boolean-union or robustly compose touching multi-part shells into a watertight model mesh.
 - [ ] Add multi-part authored LEGO models and pass their generated STL through the normal browser import/construction pipeline.
 - [ ] Compare reconstructed output against reference shape, topology, dimensions and inventory.
 
-The initial exporter deliberately concatenates part shells and does not boolean-union them. The 3001 calibration test found inconsistent raw winding; a dependency-free adjacency traversal now repairs it, but the re-imported LDraw display mesh remains non-watertight and is correctly blocked by the voxeliser. The next step is a separate, documented solid-reference generator that preserves intended negative spaces, followed by multi-part shell composition. The first golden models should cover single-part calibration, simple interlocked assemblies and at least one ordinary-brick negative-space model before progressing to car, aircraft and animal examples. Physical stability and clutch strength remain separate, unproven properties.
+The initial exporter deliberately concatenates part shells and does not boolean-union them. The 3001 calibration test found inconsistent raw winding; a dependency-free adjacency traversal now repairs it, but the re-imported LDraw display mesh remains non-watertight and is correctly blocked by the voxeliser. A documented voxel-derived solid-reference generator now exists. It preserves exterior-connected openings only when the declared pitch resolves them; expected handle counts can be supplied as a hard acceptance gate. A real authored 3001 STL now passes through the headless Chromium Inspector and construction flow. This establishes the first closed-loop baseline, not yet multi-part composition or two-hole LEGO reconstruction. The first golden models should cover single-part calibration, simple interlocked assemblies and at least one ordinary-brick negative-space model before progressing to car, aircraft and animal examples. Physical stability and clutch strength remain separate, unproven properties.
 
 ### Synthetic STL validation corpus — 2026-11-15
 
