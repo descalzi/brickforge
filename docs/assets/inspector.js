@@ -843,7 +843,7 @@ function renderFeaturePatterns() {
         + '° · translation ' + pattern.translation_mm.map((value) => value.toFixed(1)).join(', ') + ' mm'
       : 'Opening layout matched, but the rigid placement is not reliable: feature centres may be collinear, spacing residual may be too high, or opening axes may not align.';
     const profile = importedPartFeatureProfiles.find((candidate) => candidate.part_id === pattern.part_id);
-    if (!Array.isArray(pattern.opening_match_translation_mm)) {
+    if (Array.isArray(pattern.translation_mm) && !Array.isArray(pattern.opening_match_translation_mm)) {
       pattern.opening_match_translation_mm = [...pattern.translation_mm];
     }
     const preview = document.createElement('button');
