@@ -90,9 +90,10 @@ This roadmap is intentionally milestone-based. Each milestone should produce a d
 - [ ] Combine coarse volumetric and surface-fitting strategies.
 - [x] Add comparative objective metrics and configurable balanced, economy, simplicity and interlock profiles for the bounded connected alternatives. Scores remain relative heuristics, not physical quality measurements.
 - [x] Retain, rank and expose up to three distinct connected course arrangements with complete LDraw, assembly-graph, BOM and validation exports for each; provide selectable alternatives in the Mesh Inspector.
+- [x] Compare retained alternatives by part count, part-type diversity, nominal mating-pair density and course balance, with the selected objective and metrics included in the validation report.
 - [ ] Compare alternative constructions for fidelity, part count, cost, and complexity.
 
-**Exit criteria:** the engine can produce and explain multiple valid alternatives for selected test shapes.
+**Initial exit criteria achieved for the supported test scope:** the engine produces and explains multiple valid connected alternatives for the tested rectangular brick/plate course shapes, with complete exports and regression coverage. Broader specialised-part coverage, full surface-fidelity optimisation, self-intersection handling and real cost/stability analysis remain explicit M5 extensions.
 
 ## M6 — Build sequencing and instructions
 
