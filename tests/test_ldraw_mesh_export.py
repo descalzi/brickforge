@@ -119,7 +119,7 @@ def test_solid_reference_preserves_physical_scale_and_origin() -> None:
     source = trimesh.creation.box(extents=(32.0, 11.2, 16.0))
     source.apply_translation((13.0, -7.0, 4.0))
 
-    solid, report = solidify_surface_mesh(source, pitch_mm=1.0)
+    solid, report = solidify_surface_mesh(source, pitch_mm=0.25)
 
     assert solid.is_watertight
     assert solid.extents == pytest.approx((32.0, 11.2, 16.0), abs=1e-8)
