@@ -32,6 +32,12 @@
             ],
             "min_mm": 4
           }
+        ],
+        "optional_features": [
+          {
+            "feature_type": "decorative_tile",
+            "target_count": 2
+          }
         ]
       },
       "part_preferences": {
@@ -103,6 +109,12 @@
               "window",
               "door"
             ]
+          }
+        ],
+        "optional_features": [
+          {
+            "feature_type": "chimney",
+            "target_count": 1
           }
         ]
       },
