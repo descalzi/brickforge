@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { refineSurfaceFitTranslation, scoreSurfaceFit } from "../docs/assets/surface-fit.js";
+import { refineSurfaceFitPose, refineSurfaceFitTranslation, scoreSurfaceFit } from "../docs/assets/surface-fit.js";
 
 const triangle = (z) => [0, 0, z, 10, 0, z, 0, 10, z];
 
@@ -80,4 +80,31 @@ test("bidirectional surface fit penalises a small candidate that only covers a s
   assert.ok(result.global_bidirectional_mean_distance_mm > result.candidate_to_target.mean_distance_mm);
   assert.equal(result.score, result.candidate_to_target.score);
   assert.ok(result.global_bidirectional_score < result.score);
+});
+
+
+test("pose refinement improves an oblique surface match with a bounded rotation", () => {
+  const candidate = triangle(0);
+  const angle = 3 * Math.PI / 180;
+  const target = [
+    0, 0, 0,
+    10, 0, 0,
+    0, 10 * Math.cos(angle), 10 * Math.sin(angle),
+  ];
+  const result = refineSurfaceFitPose(candidate, target, {
+    toleranceMm: 0.25,
+    maxDistanceMm: 5,
+    rotationDegrees: 3,
+    radiusMm: 0.5,
+  });
+  assert.equal(result.method, "bounded-13-pose-translation-and-rotation-refinement");
+  assert.equal(result.improved, true);
+  assert.equal(result.evaluations, 13);
+  assert.ok(result.best.mean_distance_mm < result.baseline.mean_distance_mm);
+  assert.ok(result.rotation_delta_matrix_3x3[2][1] > 0);
+});
+
+test("pose refinement enforces bounded rotation and translation limits", () => {
+  assert.throws(() => refineSurfaceFitPose(triangle(0), triangle(0), { rotationDegrees: 9 }), /0–8 degrees/);
+  assert.throws(() => refineSurfaceFitPose(triangle(0), triangle(0), { radiusMm: 4 }), /0–3 mm/);
 });
