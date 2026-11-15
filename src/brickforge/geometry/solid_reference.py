@@ -52,7 +52,7 @@ class SolidReferenceReport:
 def solidify_surface_mesh(
     mesh: trimesh.Trimesh,
     *,
-    pitch_mm: float = 0.25,
+    pitch_mm: float = 0.5,
     max_voxels: int = 2_000_000,
     expected_handle_count: int | None = None,
 ) -> tuple[trimesh.Trimesh, SolidReferenceReport]:
