@@ -295,3 +295,109 @@ export function refineSurfaceFitTranslation(candidatePositions, targetPositions,
     ],
   };
 }
+
+
+function multiplyRotation3(left, right) {
+  return left.map((row) => right[0].map((_, column) =>
+    row.reduce((sum, value, index) => sum + value * right[index][column], 0)));
+}
+
+function axisRotation(axis, angle) {
+  const cosine = Math.cos(angle);
+  const sine = Math.sin(angle);
+  if (axis === 0) return [[1, 0, 0], [0, cosine, -sine], [0, sine, cosine]];
+  if (axis === 1) return [[cosine, 0, sine], [0, 1, 0], [-sine, 0, cosine]];
+  return [[cosine, -sine, 0], [sine, cosine, 0], [0, 0, 1]];
+}
+
+function rotatePositionsAroundCentre(positions, rotation) {
+  const centre = [0, 0, 0];
+  const count = positions.length / 3;
+  for (let index = 0; index < positions.length; index += 3) {
+    centre[0] += positions[index] / count;
+    centre[1] += positions[index + 1] / count;
+    centre[2] += positions[index + 2] / count;
+  }
+  const rotated = new Float32Array(positions.length);
+  for (let index = 0; index < positions.length; index += 3) {
+    const relative = [positions[index] - centre[0], positions[index + 1] - centre[1], positions[index + 2] - centre[2]];
+    for (let row = 0; row < 3; row += 1) {
+      rotated[index + row] = centre[row] + rotation[row].reduce((sum, value, column) => sum + value * relative[column], 0);
+    }
+  }
+  return { positions: rotated, centre };
+}
+
+/**
+ * Refine a measured part pose against target triangles using a bounded local
+ * translation and rotation search. Opening-derived placement remains recoverable.
+ */
+export function refineSurfaceFitPose(candidatePositions, targetPositions, options = {}) {
+  validateTrianglePositions(candidatePositions, "Candidate geometry", MAX_CANDIDATE_TRIANGLES);
+  validateTrianglePositions(targetPositions, "Target geometry", MAX_TARGET_TRIANGLES);
+  const { tolerance, maxDistance, cellSize } = surfaceFitOptions(options);
+  const radius = options.radiusMm ?? 1;
+  const angleDegrees = options.rotationDegrees ?? 3;
+  if (!Number.isFinite(radius) || radius <= 0 || radius > 3
+      || !Number.isFinite(angleDegrees) || angleDegrees <= 0 || angleDegrees > 8) {
+    throw new RangeError("Pose refinement requires translation radius 0–3 mm and rotation 0–8 degrees.");
+  }
+  const index = buildTriangleIndex(targetPositions, cellSize);
+  const targetTriangleCount = targetPositions.length / 9;
+  const baseline = scoreCandidateAgainstIndex(candidatePositions, targetTriangleCount, index, tolerance, maxDistance);
+  let best = baseline;
+  let bestRotation = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
+  let bestOffset = [0, 0, 0];
+  const candidates = [];
+  for (let axis = 0; axis < 3; axis += 1) {
+    const positive = [0, 0, 0];
+    const negative = [0, 0, 0];
+    positive[axis] = radius;
+    negative[axis] = -radius;
+    candidates.push({ rotation: null, offset: positive });
+    candidates.push({ rotation: null, offset: negative });
+  }
+  for (let axis = 0; axis < 3; axis += 1) {
+    candidates.push({ rotation: axisRotation(axis, angleDegrees * Math.PI / 180), offset: [0, 0, 0] });
+    candidates.push({ rotation: axisRotation(axis, -angleDegrees * Math.PI / 180), offset: [0, 0, 0] });
+  }
+  for (const candidate of candidates) {
+    let positions = candidatePositions;
+    let rotation = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
+    if (candidate.rotation) {
+      const transformed = rotatePositionsAroundCentre(candidatePositions, candidate.rotation);
+      positions = transformed.positions;
+      rotation = candidate.rotation;
+    }
+    if (candidate.offset.some((value) => value !== 0)) {
+      positions = new Float32Array(positions);
+      for (let index = 0; index < positions.length; index += 3) {
+        positions[index] += candidate.offset[0];
+        positions[index + 1] += candidate.offset[1];
+        positions[index + 2] += candidate.offset[2];
+      }
+    }
+    const score = scoreCandidateAgainstIndex(positions, targetTriangleCount, index, tolerance, maxDistance);
+    if (score.score > best.score + 1e-12
+        || (Math.abs(score.score - best.score) <= 1e-12 && score.mean_distance_mm < best.mean_distance_mm - 1e-9)) {
+      best = score;
+      bestRotation = rotation;
+      bestOffset = candidate.offset;
+    }
+  }
+  return {
+    schema_version: 1,
+    method: "bounded-13-pose-translation-and-rotation-refinement",
+    rotation_delta_matrix_3x3: bestRotation,
+    translation_offset_mm: bestOffset,
+    baseline,
+    best,
+    improved: best.score > baseline.score + 1e-12,
+    evaluations: candidates.length + 1,
+    limitations: [
+      "Only six axis translations and six single-axis rotations are tested; this is not a continuous six-degree-of-freedom optimiser.",
+      "Rotation is applied around the candidate surface centroid.",
+      "Improving surface proximity can worsen opening alignment, containment, connections or buildability; the opening-derived pose must remain recoverable.",
+    ],
+  };
+}
