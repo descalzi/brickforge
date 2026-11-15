@@ -85,6 +85,7 @@ This roadmap is intentionally milestone-based. Each milestone should produce a d
 - [ ] Improve matching with one-to-one feature assignment, explicit part rotations, surrounding-envelope checks and validated connection interfaces; keep unmatched features as construction constraints.
 - [ ] Improve feature analysis for oblique, curved, branching and blind openings; match measured features to compatible parts or explicit preservation constraints.
 - [x] Add a first bounded surface-alignment scorer for placed candidate-part triangle geometry, with spatially indexed nearest-target-triangle distances and explicit one-way coverage limitations.
+- [x] Add a bounded ±1 mm translation refinement for measured candidate geometry around an opening-derived placement, with an explicit reset to the original alignment and disclosure that surface proximity can reduce opening alignment.
 - [ ] Add surface-aware candidate placement for slopes, curves and specialised elements.
 - [ ] Combine coarse volumetric and surface-fitting strategies.
 - [x] Add comparative objective metrics and configurable balanced, economy, simplicity and interlock profiles for the bounded connected alternatives. Scores remain relative heuristics, not physical quality measurements.
