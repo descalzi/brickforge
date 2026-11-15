@@ -113,7 +113,8 @@ two_reconstructed = build_assembly(
     two_placements, PROFILES, model_name="browser-reconstructed-two-hole"
 )
 two_source_mesh = trimesh.load(TWO_HOLE_STL, force="mesh", process=True)
-# The published fixture is Z-up; Inspector rotates it to the canonical Y-up frame.
+# The published fixture is centimetres and Z-up; Inspector scales to mm and rotates to Y-up.
+two_source_mesh.apply_scale(10.0)
 two_source_mesh.apply_transform(np.array([
     [1.0, 0.0, 0.0, 0.0],
     [0.0, 0.0, 1.0, 0.0],
