@@ -94,3 +94,20 @@ def test_voxelize_mesh_retains_thin_feature_between_outer_sample_points() -> Non
     assert grid.spec.dimensions == (1, 1, 1)
     assert grid.classification[0, 0, 0] == CellClass.BOUNDARY
     assert grid.surface_coverage[0, 0, 0] > 0.0
+
+
+
+def test_voxelize_mesh_grid_is_invariant_to_global_translation() -> None:
+    aligned = make_grid_aligned_box()
+    translated = make_grid_aligned_box()
+    translated.apply_translation((5.3, -3.7, 1.1))
+
+    aligned_grid = voxelize_mesh(aligned, units="mm")
+    translated_grid = voxelize_mesh(translated, units="mm")
+
+    assert translated_grid.spec.dimensions == aligned_grid.spec.dimensions
+    assert translated_grid.classification.shape == aligned_grid.classification.shape
+    assert np.array_equal(translated_grid.classification, aligned_grid.classification)
+    assert translated_grid.spec.origin_mm == pytest.approx(
+        tuple(float(value) for value in translated.bounds[0])
+    )
