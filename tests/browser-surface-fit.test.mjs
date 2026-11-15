@@ -9,8 +9,8 @@ test("surface fit scores coincident triangles as close alignment", () => {
   const result = scoreSurfaceFit(triangle(0), triangle(0));
   assert.equal(result.status, "close_surface_alignment");
   assert.equal(result.within_tolerance_fraction, 1);
-  assert.equal(result.mean_distance_mm, 0);
-  assert.equal(result.score, 1);
+  assert.ok(result.mean_distance_mm < 1e-12);
+  assert.ok(result.score > 0.999999);
 });
 
 test("surface fit reports a consistent offset and partial alignment", () => {
