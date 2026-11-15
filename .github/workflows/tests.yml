@@ -26,6 +26,8 @@ jobs:
         uses: actions/setup-node@v7
         with:
           node-version: "24"
+      - name: Generate authored LEGO solid-reference STL for browser round-trip
+        run: python tests/generate_golden_browser_fixture.py
       - name: Install Chromium end-to-end test browser
         run: |
           npm install --no-save playwright@1.55.0
