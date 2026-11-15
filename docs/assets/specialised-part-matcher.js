@@ -93,13 +93,16 @@ export function validateSpecialisedSurfaceCandidate(profile, transformedPartPosi
   if (!profile?.source_verified_catalogue_entry || !Array.isArray(profile.mesh_positions_mm)) {
     throw new TypeError("A source-verified part profile with detailed triangle geometry is required.");
   }
-  const report = scoreSurfaceFit(transformedPartPositions, targetPositions, options);
+  const report = options.precomputedReport
+    || scoreSurfaceFit(transformedPartPositions, targetPositions, options);
   return {
     part_id: profile.part_id,
     source_file: profile.source_verified_catalogue_entry.source_file,
     nominal_interface_status: "source_metadata_available",
     surface_status: report.status,
     surface_score: report.score,
+    global_bidirectional_score: report.global_bidirectional_score,
+    target_surface_coverage: report.target_to_candidate.within_tolerance_fraction,
     candidate_to_target_mean_distance_mm: report.candidate_to_target.mean_distance_mm,
     candidate_to_target_95th_percentile_distance_mm: report.candidate_to_target.percentile_95_distance_mm,
     candidate_to_target_within_tolerance_fraction: report.candidate_to_target.within_tolerance_fraction,
