@@ -243,6 +243,20 @@ function summarizeCluster(cluster, featureIndex, boundsMin, boundsMax) {
   const shape = circularity >= 0.68 && aspectRatio <= 1.4
     ? "round opening"
     : aspectRatio >= 1.55 ? "elongated slot/opening" : "irregular opening";
+  const orderedSamples = [...samples].sort((left, right) => left.plane - right.plane);
+  const firstCentre = orderedSamples[0].centroid;
+  const lastCentre = orderedSamples[orderedSamples.length - 1].centroid;
+  let centrelineDeviation = 0;
+  orderedSamples.forEach((sample, index) => {
+    const fraction = orderedSamples.length > 1 ? index / (orderedSamples.length - 1) : 0;
+    const expected = firstCentre.map((value, dimension) =>
+      value + (lastCentre[dimension] - value) * fraction);
+    centrelineDeviation = Math.max(centrelineDeviation,
+      Math.hypot(sample.centroid[0] - expected[0], sample.centroid[1] - expected[1]));
+  });
+  const observedSpan = maximum[axis] - minimum[axis];
+  const spanFraction = axisSpan > 1e-8 ? observedSpan / axisSpan : 0;
+  const curvedThreshold = Math.max(0.5, Math.min(extent[0], extent[1]) * 0.12);
   return {
     id: AXIS_NAMES[axis] + "-" + featureIndex,
     axis: AXIS_NAMES[axis],
@@ -250,7 +264,16 @@ function summarizeCluster(cluster, featureIndex, boundsMin, boundsMax) {
     shape,
     center_mm: centre,
     bounds_mm: [minimum, maximum],
-    observed_span_mm: maximum[axis] - minimum[axis],
+    observed_span_mm: observedSpan,
+    span_fraction: Math.min(1, spanFraction),
+    extent_class: spanFraction < 0.72 ? "partial_or_blind_candidate" : "through_candidate",
+    centreline_deviation_mm: centrelineDeviation,
+    path_class: centrelineDeviation > curvedThreshold ? "curved_candidate" : "straight_candidate",
+    centreline_samples: orderedSamples.map((sample) => ({
+      sample_index: sample.sample_index,
+      axial_position_mm: sample.plane,
+      centre_2d_mm: sample.centroid.slice(),
+    })),
     width_mm: Math.min(extent[0], extent[1]),
     length_mm: Math.max(extent[0], extent[1]),
     area_mm2: area,
@@ -300,6 +323,32 @@ export function analyzeMeshFeatures(triangles, boundsMin, boundsMax) {
       features.push(summarizeCluster(cluster, features.length + 1, boundsMin, boundsMax));
     }
   }
+  // Mark possible branches only when separate section tracks approach one another
+  // in shared slices and are clearly farther apart elsewhere.
+  let branchIndex = 0;
+  for (let first = 0; first < features.length; first += 1) {
+    for (let second = first + 1; second < features.length; second += 1) {
+      const left = features[first];
+      const right = features[second];
+      if (left.axis !== right.axis) continue;
+      const rightSamples = new Map(right.centreline_samples.map((sample) => [sample.sample_index, sample.centre_2d_mm]));
+      const distances = left.centreline_samples
+        .filter((sample) => rightSamples.has(sample.sample_index))
+        .map((sample) => Math.hypot(...sample.centre_2d_mm.map((value, dimension) =>
+          value - rightSamples.get(sample.sample_index)[dimension])));
+      if (distances.length < 2) continue;
+      const minimumDistance = Math.min(...distances);
+      const maximumDistance = Math.max(...distances);
+      const mergeThreshold = (left.width_mm + right.width_mm) * 0.65;
+      if (minimumDistance < mergeThreshold && maximumDistance > minimumDistance * 1.6) {
+        branchIndex += 1;
+        left.branching_group_id = "branch-" + branchIndex;
+        right.branching_group_id = "branch-" + branchIndex;
+        left.path_class = "branching_candidate";
+        right.path_class = "branching_candidate";
+      }
+    }
+  }
   return features.sort((left, right) =>
     left.axis_index - right.axis_index
     || left.center_mm[0] - right.center_mm[0]
@@ -347,6 +396,10 @@ function transformObliqueFeature(feature, basis, frameId) {
     axis_index: -1,
     axis_vector_world: normal,
     center_mm: localToWorld(feature.center_mm),
+    centreline_samples: feature.centreline_samples.map((sample) => ({
+      ...sample,
+      centre_world_mm: localToWorld([sample.centre_2d_mm[0], sample.centre_2d_mm[1], sample.axial_position_mm]),
+    })),
     bounds_mm: [
       [0, 1, 2].map((axis) => Math.min(...corners.map((point) => point[axis]))),
       [0, 1, 2].map((axis) => Math.max(...corners.map((point) => point[axis]))),
