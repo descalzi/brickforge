@@ -15,7 +15,7 @@ This roadmap is intentionally milestone-based. Each milestone should produce a d
 
 ## M1 — Geometry ingestion
 
-- [ ] Create Python package and CLI entry point.
+- [x] Create offline Python geometry/reference tooling (not a product runtime; see [ADR 0002](decisions/0002-browser-first-engine-python-reference-tools.md)).
 - [x] Import STL and OBJ meshes.
 - [x] Validate empty, non-watertight, degenerate, and non-finite geometry cases.
 - [x] Report units, dimensions, and mesh statistics.
@@ -39,7 +39,7 @@ This roadmap is intentionally milestone-based. Each milestone should produce a d
 
 ## M3 — First construction demonstrator
 
-- [x] Define a versioned assembly graph schema and typed Python model.
+- [x] Define a versioned assembly graph schema and typed reference model; browser JavaScript is authoritative for product assemblies.
 - [x] Implement a constrained regular-brick placement strategy for rectangular blocks.
 - [x] Generate a simple interlocked 4 x 4-stud, two-course block automatically.
 - [x] Export an LDraw model from the canonical graph.
@@ -47,7 +47,7 @@ This roadmap is intentionally milestone-based. Each milestone should produce a d
 - [x] Produce a basic BOM from the same graph.
 - [x] Port the constrained rectangular strategy to a browser-native engine.
 - [x] Add a static-hosted Builder page with local 3D preview and LDraw/JSON downloads.
-- [x] Compare browser graph, BOM and LDraw exports with the Python reference examples in CI.
+- [x] Compare browser graph, BOM and LDraw exports with fixed reference fixtures in CI; Python is limited to offline oracle/fixture tooling and is not a parallel production engine.
 
 **Current proof of concept:** examples include a manually specified two-brick 2 x 4 stack and a generated 4 x 4-stud block of four 3001 parts, plus tested browser/Python layouts for 12 x 4 x 2, 4 x 8 x 2 and 12 x 8 x 2. The 12 x 8 example uses a two-axis stagger and 1 x 2 perimeter fillers; it has 42 parts, 48 graph edges and 96 nominal feature matches. The browser Builder runs these layouts locally and its output is covered by Node regression tests. See [assembly graph](architecture/assembly-graph.md) and [example files](../examples/).
 
@@ -175,3 +175,16 @@ The initial exporter deliberately concatenates part shells and does not boolean-
 ### Synthetic STL validation corpus — 2026-11-15
 
 An initial public regression corpus is available at [the fixture gallery](../fixtures.html), with its machine-readable catalogue at [validation-fixtures.json](../data/validation-fixtures.json). Eight deterministic 1 mm voxel-derived STL models cover a solid baseline, one and three through-holes, a blind pocket, an oblique bore, curved and branching tunnels, and a simple car-like silhouette. The meshes are intended to be loaded directly in the Mesh Inspector and reused by automated tests. Tests verify that every published STL parses as a closed, consistently wound solid, has the documented dimensions, and that the basic fixtures retain their expected topological tunnel counts. The corpus is an initial foundation for M8's broader evaluation suite, not completion of that milestone; future additions should include finer-resolution curved geometry, intersecting/invalid meshes, thin walls, concavities, overhangs and representative user-supplied shapes.
+
+
+### Browser-first engine boundary — 2026-11-15
+
+The product is fully online: the browser JavaScript engine is the sole production engine for mesh processing, feature analysis, LEGO part selection, construction, validation, optimisation, preview and exports. No Python service or Python runtime is required by the deployed application.
+
+Python is retained only for offline reference work that provides independent value: authored golden-model/reference-mesh generation, independent geometry/topology comparison in CI, and pinned LDraw catalogue audits/data preparation. Do not add product features to Python or maintain feature parity with JavaScript. The Python CLI, demos, API extras and duplicate construction paths are legacy/reference tooling and should be reduced or removed once their remaining tests and reference responsibilities are isolated. See [ADR 0002](decisions/0002-browser-first-engine-python-reference-tools.md).
+
+- [x] Establish browser JavaScript as the sole production engine.
+- [x] Define the limited offline purpose of Python reference tooling.
+- [ ] Audit Python modules and classify each as golden-reference, catalogue/audit, test-only, or duplicate engine.
+- [ ] Remove unused Python runtime/CLI/API surface without weakening independent golden validation.
+- [ ] Keep browser end-to-end and Node regression suites as the primary product acceptance gates.
