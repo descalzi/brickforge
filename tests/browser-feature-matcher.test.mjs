@@ -250,3 +250,28 @@ test("feature pattern matcher refuses a transform when opening axes do not align
   assert.ok(results[0].axis_alignment_rms_deg > 5);
   assert.equal(results[0].rotation_matrix_3x3, null);
 });
+
+
+test("feature pattern matcher accepts oblique feature axes and resolves their rigid orientation", () => {
+  const targetFeatures = [
+    patternHole("target-oblique-1", [0, 0, 0]),
+    patternHole("target-oblique-2", [20, 0, 0]),
+    patternHole("target-oblique-3", [0, 30, 0]),
+  ].map((feature) => ({
+    ...feature,
+    axis: "oblique",
+    axis_vector_world: [0, 1, 0],
+  }));
+  const candidate = {
+    part_id: "oblique-frame",
+    features: [
+      patternHole("local-oblique-1", [0, 0, 0], "x"),
+      patternHole("local-oblique-2", [0, 20, 0], "x"),
+      patternHole("local-oblique-3", [-30, 0, 0], "x"),
+    ].map((feature) => ({ ...feature, axis_vector_world: [1, 0, 0] })),
+  };
+  const results = matchFeaturePatterns(targetFeatures, [candidate]);
+  assert.equal(results.length, 1);
+  assert.equal(results[0].placement_resolved, true);
+  assert.ok(results[0].axis_alignment_rms_deg < 1);
+});
