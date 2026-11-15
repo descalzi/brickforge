@@ -37,9 +37,9 @@
             0,
             1
           ],
-          "nominal_diameter_mm": 3.2,
+          "nominal_diameter_mm": 4.8,
           "source_primitive": "p/peghole.dat",
-          "source_primitive_geometry": "4-4ring3.dat inner radius 4 LDU; diameter 8 LDU",
+          "source_primitive_geometry": "peghole.dat scales 4-4ring3.dat inner radius 3 LDU by 2; resulting inner radius 6 LDU, diameter 12 LDU",
           "source_transform_ldu": [
             0,
             10,
@@ -75,14 +75,15 @@
             0,
             1
           ],
-          "nominal_diameter_mm": 3.2,
+          "nominal_diameter_mm": 4.8,
           "source_primitive": "p/peghole.dat",
           "source_transform_ldu": [
             -20,
             10,
             10
           ],
-          "status": "nominal_geometry_derived"
+          "status": "nominal_geometry_derived",
+          "source_primitive_geometry": "peghole.dat scales 4-4ring3.dat inner radius 3 LDU by 2; resulting inner radius 6 LDU, diameter 12 LDU"
         },
         {
           "interface_id": "pin-hole-2",
@@ -97,14 +98,15 @@
             0,
             1
           ],
-          "nominal_diameter_mm": 3.2,
+          "nominal_diameter_mm": 4.8,
           "source_primitive": "p/peghole.dat",
           "source_transform_ldu": [
             0,
             10,
             10
           ],
-          "status": "nominal_geometry_derived"
+          "status": "nominal_geometry_derived",
+          "source_primitive_geometry": "peghole.dat scales 4-4ring3.dat inner radius 3 LDU by 2; resulting inner radius 6 LDU, diameter 12 LDU"
         },
         {
           "interface_id": "pin-hole-3",
@@ -119,14 +121,15 @@
             0,
             1
           ],
-          "nominal_diameter_mm": 3.2,
+          "nominal_diameter_mm": 4.8,
           "source_primitive": "p/peghole.dat",
           "source_transform_ldu": [
             20,
             10,
             10
           ],
-          "status": "nominal_geometry_derived"
+          "status": "nominal_geometry_derived",
+          "source_primitive_geometry": "peghole.dat scales 4-4ring3.dat inner radius 3 LDU by 2; resulting inner radius 6 LDU, diameter 12 LDU"
         }
       ]
     },
@@ -156,14 +159,15 @@
             0,
             1
           ],
-          "nominal_diameter_mm": 3.2,
+          "nominal_diameter_mm": 4.8,
           "source_primitive": "p/peghole.dat",
           "source_transform_ldu": [
             -60,
             10,
             10
           ],
-          "status": "nominal_geometry_derived"
+          "status": "nominal_geometry_derived",
+          "source_primitive_geometry": "peghole.dat scales 4-4ring3.dat inner radius 3 LDU by 2; resulting inner radius 6 LDU, diameter 12 LDU"
         },
         {
           "interface_id": "pin-hole-2",
@@ -178,14 +182,15 @@
             0,
             1
           ],
-          "nominal_diameter_mm": 3.2,
+          "nominal_diameter_mm": 4.8,
           "source_primitive": "p/peghole.dat",
           "source_transform_ldu": [
             -40,
             10,
             10
           ],
-          "status": "nominal_geometry_derived"
+          "status": "nominal_geometry_derived",
+          "source_primitive_geometry": "peghole.dat scales 4-4ring3.dat inner radius 3 LDU by 2; resulting inner radius 6 LDU, diameter 12 LDU"
         },
         {
           "interface_id": "pin-hole-3",
@@ -200,14 +205,15 @@
             0,
             1
           ],
-          "nominal_diameter_mm": 3.2,
+          "nominal_diameter_mm": 4.8,
           "source_primitive": "p/peghole.dat",
           "source_transform_ldu": [
             -20,
             10,
             10
           ],
-          "status": "nominal_geometry_derived"
+          "status": "nominal_geometry_derived",
+          "source_primitive_geometry": "peghole.dat scales 4-4ring3.dat inner radius 3 LDU by 2; resulting inner radius 6 LDU, diameter 12 LDU"
         },
         {
           "interface_id": "pin-hole-4",
@@ -222,14 +228,15 @@
             0,
             1
           ],
-          "nominal_diameter_mm": 3.2,
+          "nominal_diameter_mm": 4.8,
           "source_primitive": "p/peghole.dat",
           "source_transform_ldu": [
             0,
             10,
             10
           ],
-          "status": "nominal_geometry_derived"
+          "status": "nominal_geometry_derived",
+          "source_primitive_geometry": "peghole.dat scales 4-4ring3.dat inner radius 3 LDU by 2; resulting inner radius 6 LDU, diameter 12 LDU"
         },
         {
           "interface_id": "pin-hole-5",
@@ -244,14 +251,15 @@
             0,
             1
           ],
-          "nominal_diameter_mm": 3.2,
+          "nominal_diameter_mm": 4.8,
           "source_primitive": "p/peghole.dat",
           "source_transform_ldu": [
             20,
             10,
             10
           ],
-          "status": "nominal_geometry_derived"
+          "status": "nominal_geometry_derived",
+          "source_primitive_geometry": "peghole.dat scales 4-4ring3.dat inner radius 3 LDU by 2; resulting inner radius 6 LDU, diameter 12 LDU"
         },
         {
           "interface_id": "pin-hole-6",
@@ -266,14 +274,15 @@
             0,
             1
           ],
-          "nominal_diameter_mm": 3.2,
+          "nominal_diameter_mm": 4.8,
           "source_primitive": "p/peghole.dat",
           "source_transform_ldu": [
             40,
             10,
             10
           ],
-          "status": "nominal_geometry_derived"
+          "status": "nominal_geometry_derived",
+          "source_primitive_geometry": "peghole.dat scales 4-4ring3.dat inner radius 3 LDU by 2; resulting inner radius 6 LDU, diameter 12 LDU"
         },
         {
           "interface_id": "pin-hole-7",
@@ -288,14 +297,15 @@
             0,
             1
           ],
-          "nominal_diameter_mm": 3.2,
+          "nominal_diameter_mm": 4.8,
           "source_primitive": "p/peghole.dat",
           "source_transform_ldu": [
             60,
             10,
             10
           ],
-          "status": "nominal_geometry_derived"
+          "status": "nominal_geometry_derived",
+          "source_primitive_geometry": "peghole.dat scales 4-4ring3.dat inner radius 3 LDU by 2; resulting inner radius 6 LDU, diameter 12 LDU"
         }
       ]
     },
