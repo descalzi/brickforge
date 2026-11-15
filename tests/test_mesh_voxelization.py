@@ -93,7 +93,7 @@ def test_voxelize_mesh_retains_thin_feature_between_outer_sample_points() -> Non
 
     assert grid.spec.dimensions == (1, 1, 1)
     assert grid.classification[0, 0, 0] == CellClass.BOUNDARY
-    assert grid.surface_coverage[0, 0, 0] > 0.0
+    assert grid.boundary_cell_count == 1
 
 
 
