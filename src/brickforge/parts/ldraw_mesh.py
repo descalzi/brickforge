@@ -18,7 +18,10 @@ from brickforge.parts.ldraw_geometry import LDU_TO_MM
 from brickforge.parts.ldraw_resolver import LDrawLibrary
 
 
-def assembly_to_mesh(\n    assembly: Assembly,\n    library: LDrawLibrary,\n    *,\n    repair_winding: bool = True,\n) -> trimesh.Trimesh:
+def assembly_to_mesh(
+    assembly: Assembly,
+    library: LDrawLibrary,
+) -> trimesh.Trimesh:
     """Resolve every placed part and combine its actual LDraw triangles/quads.
 
     Type-2 lines and type-5 conditional lines are intentionally omitted. Quads
@@ -84,6 +87,8 @@ def export_assembly_stl(
         raise ValueError("assembly mesh destination must use the .stl extension")
     path.parent.mkdir(parents=True, exist_ok=True)
     mesh = assembly_to_mesh(assembly, library)
+    raw_winding_consistent = bool(mesh.is_winding_consistent)
+    trimesh.repair.fix_normals(mesh, multibody=True)
     payload = mesh.export(file_type="stl")
     if not isinstance(payload, bytes):
         raise TypeError("Trimesh did not return binary STL data")
@@ -107,6 +112,8 @@ def export_assembly_stl(
         "vertex_count": len(mesh.vertices),
         "triangle_count": len(mesh.faces),
         "is_watertight": bool(mesh.is_watertight),
+        "raw_is_winding_consistent": raw_winding_consistent,
+        "winding_repair_attempted": True,
         "is_winding_consistent": bool(mesh.is_winding_consistent),
         "shell_policy": "part shells concatenated; no boolean union performed",
         "limitations": [
