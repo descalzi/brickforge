@@ -3,6 +3,7 @@ let rawBaseUrl = DEFAULT_RAW_BASE;
 import { decodeCataloguePayload, ldrawReferenceCandidates, searchPartCatalogue } from './catalogue-utils.js';
 
 const LDU_TO_MM = 0.4;
+let curatedSpecialisedCatalogue = null;
 const MAX_REFERENCE_DEPTH = 64;
 
 const viewport = document.querySelector('#parts-viewport');
@@ -29,6 +30,7 @@ const partFeatureBatchDownloadButton = document.querySelector('#part-feature-bat
 const partFeatureBatchStatus = document.querySelector('#part-feature-batch-status');
 const partFeatureBatchQuery = document.querySelector('#part-feature-batch-query');
 const partFeatureBatchList = document.querySelector('#part-feature-batch-list');
+const partFeatureCuratedButton = document.querySelector('#part-feature-curated');
 
 const output = {
   name: document.querySelector('#part-name'),
@@ -163,10 +165,10 @@ function analyseSelectedPartFeatures() {
   partFeatureStatus.textContent = 'Measuring nested contours across the part geometry…';
   partFeatureStatus.dataset.state = 'working';
   setState('ANALYSING PART FEATURES', 'loading');
-  setMessage('Sampling orthogonal cross-sections in a background worker…');
+  setMessage('Sampling principal and oblique cross-sections in a background worker…');
 
   try {
-    partFeatureWorker = new Worker(new URL('./part-feature-worker.js?v=featureprofile5', import.meta.url), { type: 'module' });
+    partFeatureWorker = new Worker(new URL('./part-feature-worker.js?v=featureprofile6', import.meta.url), { type: 'module' });
   } catch (error) {
     partFeatureAnalyseButton.disabled = false;
     partFeatureBatchButton.disabled = partCatalogue.length === 0;
@@ -223,6 +225,10 @@ function analyseSelectedPartFeatures() {
 
 function likelyOpeningPartCandidates(limit = 12, query = 'technic beam') {
   const search = String(query || '').trim() || 'technic';
+  if (search === '@curated' && curatedSpecialisedCatalogue) {
+    const ids = new Set(curatedSpecialisedCatalogue.profiles.map((profile) => profile.part_id));
+    return partCatalogue.filter((entry) => ids.has(entry.part_id)).slice(0, limit);
+  }
   return searchPartCatalogue(partCatalogue, search, limit);
 }
 
@@ -258,7 +264,9 @@ function renderBatchFeatureProfiles(profiles) {
     const heading = document.createElement('strong');
     const detail = document.createElement('span');
     heading.textContent = profile.part_id + ' · ' + profile.description;
-    detail.textContent = profile.features.length + ' measured opening feature(s)';
+    detail.textContent = profile.features.length + ' measured opening feature(s)'
+      + (profile.source_verified_catalogue_entry?.nominal_connection_interfaces?.length
+        ? ' · ' + profile.source_verified_catalogue_entry.nominal_connection_interfaces.length + ' source-derived nominal interface(s)' : '');
     item.append(heading, detail);
     partFeatureBatchList.append(item);
   });
@@ -344,7 +352,6 @@ async function scanLikelyOpeningParts() {
           ? Array.from(positions, (value) => Number(value.toFixed(2)))
           : null;
         const features = await analysePositionsInWorker(positions, bounds);
-        if (!features.length) continue;
         const dimensions = bounds.maximum.map((value, axis) => value - bounds.minimum[axis]);
         activeBatchFeatureProfiles.push({
           schema_version: 3,
@@ -358,12 +365,15 @@ async function scanLikelyOpeningParts() {
           units: 'mm',
           dimensions_mm: dimensions,
           bounds_mm: [bounds.minimum, bounds.maximum],
-          analysis_method: 'Nineteen sampled orthogonal cross-sections; nested contours clustered across slices',
+          analysis_method: 'Nineteen sampled principal-axis and bounded oblique cross-sections; nested contours clustered across slices',
           features,
+          ...(curatedSpecialisedCatalogue?.profiles.find((source) => source.part_id === entry.part_id)
+            ? { source_verified_catalogue_entry: curatedSpecialisedCatalogue.profiles.find((source) => source.part_id === entry.part_id) }
+            : {}),
           limitations: [
-            'Measurements are based on rendered LDraw surface triangles and principal-axis sections only.',
-            'Oblique, curved, branching and blind openings may be missed or approximated.',
-            'A geometric opening match does not prove physical fit or structural stability.',
+            'Measurements are based on rendered LDraw surface triangles and sampled principal/oblique section planes; curved and branching paths are approximated.',
+            'Nominal connection interfaces are kept separate from measured opening geometry.',
+            'A geometric opening match does not prove physical clutch, structural stability or legal part combinations.',
           ],
         });
         renderBatchFeatureProfiles(activeBatchFeatureProfiles);
@@ -392,6 +402,25 @@ async function scanLikelyOpeningParts() {
     setMessage(activeBatchFeatureProfiles.length
       ? 'A local feature catalogue is ready to export and import into the Mesh Inspector.'
       : 'No opening profiles were found in the scanned candidate set.', activeBatchFeatureProfiles.length ? 'success' : 'info');
+  }
+}
+
+async function scanCuratedSpecialisedParts() {
+  if (batchScanRunning) return;
+  partFeatureCuratedButton.disabled = true;
+  try {
+    if (!curatedSpecialisedCatalogue) {
+      const response = await fetch('./data/specialised-technic-part-catalogue.json');
+      if (!response.ok) throw new Error('Could not load the source-verified specialised part catalogue.');
+      curatedSpecialisedCatalogue = await response.json();
+    }
+    partFeatureBatchQuery.value = '@curated';
+    await scanLikelyOpeningParts();
+  } catch (error) {
+    partFeatureBatchStatus.textContent = error instanceof Error ? error.message : 'Curated part scan failed.';
+    partFeatureBatchStatus.dataset.state = 'error';
+  } finally {
+    partFeatureCuratedButton.disabled = false;
   }
 }
 
@@ -450,7 +479,7 @@ function downloadPartFeatureProfile() {
     units: 'mm',
     dimensions_mm: activePartDescriptor.dimensions_mm,
     bounds_mm: [activePartBoundsMin, activePartBoundsMax],
-    analysis_method: 'Nineteen sampled orthogonal cross-sections; nested contours clustered across slices',
+    analysis_method: 'Nineteen sampled principal and oblique cross-sections; nested contours clustered across slices',
     features: activePartFeatures,
     limitations: [
       'Measurements are based on rendered LDraw surface triangles and principal-axis sections only.',
