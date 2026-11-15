@@ -61,8 +61,15 @@ export function diagnoseTriangleIntersections(triangles, { maxCandidatePairs = 5
       keys: new Set(points.map((point) => pointKey(point, 1e-7))),
     };
   });
-  const scale = Math.max(1, ...bounds[0].minimum.map((_, axis) =>
-    Math.max(...bounds.map((entry) => entry.maximum[axis])) - Math.min(...bounds.map((entry) => entry.minimum[axis]))));
+  const globalMinimum = [Infinity, Infinity, Infinity];
+  const globalMaximum = [-Infinity, -Infinity, -Infinity];
+  for (const entry of bounds) {
+    for (let axis = 0; axis < 3; axis += 1) {
+      globalMinimum[axis] = Math.min(globalMinimum[axis], entry.minimum[axis]);
+      globalMaximum[axis] = Math.max(globalMaximum[axis], entry.maximum[axis]);
+    }
+  }
+  const scale = Math.max(1, Math.hypot(...globalMaximum.map((value, axis) => value - globalMinimum[axis])));
   const epsilon = scale * 1e-9;
   const order = bounds.map((_, index) => index)
     .sort((left, right) => bounds[left].minimum[0] - bounds[right].minimum[0]);
