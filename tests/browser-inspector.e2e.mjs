@@ -69,6 +69,13 @@ try {
     const resultStatus = await page.locator("#construction-status").innerText();
     assert.match(resultStatus, /Connected construction generated/i, fixture.file + ": " + resultStatus);
     assert.doesNotMatch(resultStatus, /Construction blocked|failed/i, fixture.file + ": " + resultStatus);
+    if (fixture.file === "block-two-hole-pattern.stl") {
+      const [graphDownload] = await Promise.all([
+        page.waitForEvent("download"),
+        page.locator("#construction-download-graph").click(),
+      ]);
+      await graphDownload.saveAs(path.resolve(root, "../tests/artifacts/golden-two-hole-reconstruction.assembly.json"));
+    }
     assert.equal(consoleErrors.length, 0, fixture.file + ": browser errors: " + consoleErrors.join(" | "));
     console.log(JSON.stringify({ fixture: fixture.file, expectedTunnels: fixture.tunnels, voxelStatus, featureStatus, constructionStatus: resultStatus }));
     await page.close();
