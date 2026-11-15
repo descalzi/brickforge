@@ -1,0 +1,150 @@
+{
+  "schema_version": 1,
+  "description": "Authored semantic requirements for representative BrickForge reconstruction goals. These contracts describe design intent; they are not yet connected to automatic feature extraction.",
+  "contracts": [
+    {
+      "schema_version": 1,
+      "fixture_id": "perforated-plate-four-holes-two-walls",
+      "intent": {
+        "required_features": [
+          {
+            "feature_type": "round_opening",
+            "count": 4
+          },
+          {
+            "feature_type": "side_wall",
+            "count": 2
+          }
+        ],
+        "forbidden_features": [
+          {
+            "feature_type": "merged_opening",
+            "max_count": 0
+          }
+        ],
+        "relationships": [
+          {
+            "id": "holes-remain-distinct",
+            "type": "minimum_separation",
+            "feature_types": [
+              "round_opening",
+              "round_opening"
+            ],
+            "min_mm": 4
+          }
+        ]
+      },
+      "part_preferences": {
+        "roles": [
+          {
+            "role": "perforated_plate",
+            "min_count": 1,
+            "preferred_families": [
+              "plate",
+              "technic"
+            ],
+            "require_preferred_family": false
+          },
+          {
+            "role": "side_wall",
+            "min_count": 2,
+            "preferred_families": [
+              "brick",
+              "panel"
+            ],
+            "require_preferred_family": false
+          }
+        ]
+      },
+      "construction_constraints": {
+        "require_connected": true,
+        "require_no_collisions": true,
+        "require_topology_preserved": true
+      },
+      "diagnostic_metrics": [
+        "relative_proportions",
+        "surface_distance",
+        "volume_iou",
+        "absolute_dimensions"
+      ]
+    },
+    {
+      "schema_version": 1,
+      "fixture_id": "house-two-windows-one-door",
+      "intent": {
+        "required_features": [
+          {
+            "feature_type": "window",
+            "count": 2
+          },
+          {
+            "feature_type": "door",
+            "count": 1
+          },
+          {
+            "feature_type": "roof",
+            "count": 1
+          }
+        ],
+        "forbidden_features": [],
+        "relationships": [
+          {
+            "id": "windows-on-same-wall",
+            "type": "same_group",
+            "feature_types": [
+              "window",
+              "window"
+            ]
+          },
+          {
+            "id": "door-on-window-wall",
+            "type": "same_group",
+            "feature_types": [
+              "window",
+              "door"
+            ]
+          }
+        ]
+      },
+      "part_preferences": {
+        "roles": [
+          {
+            "role": "window",
+            "min_count": 2,
+            "preferred_families": [
+              "window"
+            ],
+            "require_preferred_family": false
+          },
+          {
+            "role": "door",
+            "min_count": 1,
+            "preferred_families": [
+              "door"
+            ],
+            "require_preferred_family": false
+          },
+          {
+            "role": "roof",
+            "min_count": 1,
+            "preferred_families": [
+              "slope",
+              "roof"
+            ],
+            "require_preferred_family": false
+          }
+        ]
+      },
+      "construction_constraints": {
+        "require_connected": true,
+        "require_no_collisions": true,
+        "require_topology_preserved": true
+      },
+      "diagnostic_metrics": [
+        "relative_proportions",
+        "surface_distance",
+        "volume_iou"
+      ]
+    }
+  ]
+}
