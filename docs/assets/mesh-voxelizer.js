@@ -471,8 +471,12 @@ export function voxelizeMesh({
   // The STL's absolute translation is arbitrary. Anchor the target grid to
   // its own lower bounds so tiny offsets cannot add an entire stud row.
   const origin = [...boundsMin];
-  const dimensions = boundsMin.map((value, axis) =>
-    Math.max(1, Math.ceil((boundsMax[axis] - origin[axis]) / pitchMm[axis] - 1e-12)));
+  const dimensions = boundsMin.map((value, axis) => {
+    const studCap = axis === 1 ? 1.6 : 0;
+    return Math.max(1, Math.ceil(
+      (boundsMax[axis] - origin[axis] - studCap) / pitchMm[axis] - 1e-12,
+    ));
+  });
   const cellCount = dimensions[0] * dimensions[1] * dimensions[2];
   if (!Number.isSafeInteger(cellCount) || cellCount > maxCells) {
     throw new RangeError("Target grid requires " + cellCount.toLocaleString()
