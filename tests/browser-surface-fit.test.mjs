@@ -26,7 +26,7 @@ test("surface fit uses triangle surfaces rather than only target vertices", () =
   const target = [0, 0, 0, 10, 0, 0, 0, 10, 0];
   const result = scoreSurfaceFit(candidate, target);
   assert.ok(result.candidate_to_target.mean_distance_mm < 1.01);
-  assert.ok(result.symmetric_mean_distance_mm >= result.candidate_to_target.mean_distance_mm);
+  assert.ok(result.global_bidirectional_mean_distance_mm >= result.candidate_to_target.mean_distance_mm);
 });
 
 test("surface fit validates geometry and bounded options", () => {
@@ -38,11 +38,12 @@ test("surface fit validates geometry and bounded options", () => {
 
 test("surface fit measures both directions and discloses physical-buildability limitations", () => {
   const result = scoreSurfaceFit(triangle(0), triangle(0));
-  assert.equal(result.method, "bidirectional-surface-distance");
+  assert.equal(result.method, "candidate-to-target-with-global-reverse-context");
   assert.equal(result.candidate_to_target.within_tolerance_fraction, 1);
   assert.equal(result.target_to_candidate.within_tolerance_fraction, 1);
-  assert.equal(result.symmetric_within_tolerance_fraction, 1);
-  assert.ok(result.symmetric_rms_distance_mm < 1e-12);
+  assert.equal(result.global_bidirectional_within_tolerance_fraction, 1);
+  assert.ok(result.global_bidirectional_rms_distance_mm < 1e-12);
+  assert.ok(result.limitations.some((entry) => entry.includes("not used to score part-to-object fit")));
   assert.ok(result.limitations.some((entry) => entry.includes("Hausdorff distance")));
   assert.ok(result.limitations.some((entry) => entry.includes("physical connection")));
 });
@@ -76,6 +77,7 @@ test("bidirectional surface fit penalises a small candidate that only covers a s
   const result = scoreSurfaceFit(small, large);
   assert.equal(result.candidate_to_target.within_tolerance_fraction, 1);
   assert.ok(result.target_to_candidate.mean_distance_mm > result.candidate_to_target.mean_distance_mm);
-  assert.ok(result.symmetric_mean_distance_mm > result.candidate_to_target.mean_distance_mm);
-  assert.ok(result.score < result.candidate_to_target.score);
+  assert.ok(result.global_bidirectional_mean_distance_mm > result.candidate_to_target.mean_distance_mm);
+  assert.equal(result.score, result.candidate_to_target.score);
+  assert.ok(result.global_bidirectional_score < result.score);
 });
