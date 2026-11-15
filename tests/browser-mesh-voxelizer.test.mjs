@@ -5,7 +5,7 @@ import test from "node:test";
 import { PLATE_GRID_PITCH_MM, CellClass, GridSpec, TargetGrid } from "../docs/assets/target-grid.js";
 import { buildLayeredFootprintBlock } from "../docs/assets/construction-engine.js";
 import { voxelizeMesh } from "../docs/assets/mesh-voxelizer.js";
-import { analyzeMeshFeatures, analyzeMeshFeaturesExtended } from "../docs/assets/mesh-feature-analysis.js";
+import { analyzeMeshFeatures, analyzeMeshFeaturesExtended, classifyCentrelinePath } from "../docs/assets/mesh-feature-analysis.js";
 
 const connectionCatalogue = JSON.parse(
   await readFile(new URL("../data/connection-profiles/basic-bricks.json", import.meta.url), "utf8"),
@@ -62,49 +62,6 @@ function torusMesh(majorRadius = 4, minorRadius = 1, majorSegments = 16, minorSe
 }
 
 
-
-function curvedHollowTube() {
-  const triangles = [];
-  const ySegments = 20;
-  const radialSegments = 24;
-  const rings = [4, 2];
-  const surfaces = rings.map((radius) => Array.from({ length: ySegments + 1 }, (_, yIndex) =>
-    Array.from({ length: radialSegments }, (_, angleIndex) => {
-      const y = yIndex;
-      const angle = angleIndex * Math.PI * 2 / radialSegments;
-      const centreX = 0.02 * (y - 10) ** 2;
-      return [centreX + radius * Math.cos(angle), y, radius * Math.sin(angle)];
-    })));
-  for (const surface of surfaces) {
-    for (let y = 0; y < ySegments; y += 1) {
-      for (let angle = 0; angle < radialSegments; angle += 1) {
-        const next = (angle + 1) % radialSegments;
-        const a = surface[y][angle];
-        const b = surface[y][next];
-        const c = surface[y + 1][next];
-        const d = surface[y + 1][angle];
-        triangles.push({ a, b, c }, { a, b: c, c: d });
-      }
-    }
-  }
-  for (const y of [0, ySegments]) {
-    const outer = surfaces[0][y];
-    const inner = surfaces[1][y];
-    for (let angle = 0; angle < radialSegments; angle += 1) {
-      const next = (angle + 1) % radialSegments;
-      triangles.push(
-        { a: outer[angle], b: outer[next], c: inner[next] },
-        { a: outer[angle], b: inner[next], c: inner[angle] },
-      );
-    }
-  }
-  const points = triangles.flatMap((triangle) => [triangle.a, triangle.b, triangle.c]);
-  return {
-    triangles,
-    boundsMin: [0, 0, -4],
-    boundsMax: [4, 20, 4],
-  };
-}
 
 function perforatedPlateTriangles({ totalHeight = 6, plateThickness = 6, addBoss = true, addWalls = false, wallThickness = 4 } = {}) {
   const width = 48;
@@ -423,12 +380,23 @@ test("extended mesh analysis finds an oblique tunnel and reports its world axis"
 });
 
 
-test("feature analysis classifies a curved tunnel centreline and partial-span openings", () => {
-  const curved = curvedHollowTube();
-  const curvedFeatures = analyzeMeshFeatures(curved.triangles, curved.boundsMin, curved.boundsMax);
-  assert.ok(curvedFeatures.some((feature) => feature.axis === "y"
-    && feature.path_class === "curved_candidate"
-    && feature.centreline_deviation_mm > 0.5));
+
+
+test("feature analysis classifies curved centrelines and partial-span openings", () => {
+  const curved = classifyCentrelinePath([
+    { plane: 0, centroid: [0, 0] },
+    { plane: 5, centroid: [1.5, 0] },
+    { plane: 10, centroid: [0, 0] },
+  ], 4);
+  assert.equal(curved.path_class, "curved_candidate");
+  assert.ok(curved.centreline_deviation_mm > 0.5);
+
+  const straight = classifyCentrelinePath([
+    { plane: 0, centroid: [0, 0] },
+    { plane: 5, centroid: [1, 0] },
+    { plane: 10, centroid: [2, 0] },
+  ], 4);
+  assert.equal(straight.path_class, "straight_candidate");
 
   const partial = perforatedPlateTriangles({ totalHeight: 12, plateThickness: 6, addBoss: false, addWalls: true });
   const partialFeatures = analyzeMeshFeatures(partial.triangles, partial.boundsMin, partial.boundsMax);
