@@ -21,6 +21,7 @@ const server = http.createServer((request, response) => {
 await new Promise((resolve) => server.listen(4173, "127.0.0.1", resolve));
 const browser = await chromium.launch({ headless: true });
 const fixtures = [
+  { file: "block-solid.stl", tunnels: 0 },
   { file: "block-through-hole.stl", tunnels: 1 },
   { file: "block-two-hole-pattern.stl", tunnels: 2 },
   { file: "block-three-hole-pattern.stl", tunnels: 3 },
@@ -49,6 +50,14 @@ try {
     const featureStatus = await page.locator("#voxel-feature-status").innerText().catch(() => "");
     console.log(JSON.stringify({ fixture: fixture.file, voxelStatus, featureStatus, constructionStatus }));
     assert.match(voxelStatus, /Voxelisation complete/i, fixture.file + ": voxelisation did not complete. " + voxelStatus);
+    if (fixture.tunnels > 0) {
+      assert.match(featureStatus, new RegExp("^" + fixture.tunnels + " topological tunnel\\(s\\) detected; "
+        + fixture.tunnels + " cross-section feature\\(s\\) localised"), fixture.file + ": " + featureStatus);
+      assert.match(featureStatus, new RegExp("; " + fixture.tunnels + " mapped to conservative grid-cell clearance"),
+        fixture.file + ": " + featureStatus);
+    } else {
+      assert.doesNotMatch(voxelStatus, /topological tunnel/i, fixture.file + ": " + voxelStatus);
+    }
     assert.doesNotMatch(constructionStatus, /Construction blocked/i,
       fixture.file + ": " + constructionStatus + " | " + voxelStatus + " | " + featureStatus);
     assert.equal(buildEnabled, true, fixture.file + ": construction button remained disabled. " + constructionStatus);
@@ -58,6 +67,7 @@ try {
       return status && status.dataset.state !== "working";
     }, null, { timeout: 180000 });
     const resultStatus = await page.locator("#construction-status").innerText();
+    assert.match(resultStatus, /Connected construction generated/i, fixture.file + ": " + resultStatus);
     assert.doesNotMatch(resultStatus, /Construction blocked|failed/i, fixture.file + ": " + resultStatus);
     assert.equal(consoleErrors.length, 0, fixture.file + ": browser errors: " + consoleErrors.join(" | "));
     console.log(JSON.stringify({ fixture: fixture.file, expectedTunnels: fixture.tunnels, voxelStatus, featureStatus, constructionStatus: resultStatus }));
