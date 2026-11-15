@@ -2059,4 +2059,33 @@ async function startInspector() {
   }
 }
 
-startInspector();
+async function loadFixtureFromQuery() {
+  const params = new URLSearchParams(window.location.search);
+  const fixture = params.get('fixture');
+  const allowedFixtures = new Set([
+    'block-solid.stl',
+    'block-through-hole.stl',
+    'block-three-hole-pattern.stl',
+    'block-blind-pocket.stl',
+    'block-oblique-bore.stl',
+    'block-curved-tunnel.stl',
+    'block-branching-tunnel.stl',
+    'car-simple.stl',
+  ]);
+  if (!fixture || !allowedFixtures.has(fixture)) return;
+  try {
+    setMessage('Loading the selected validation fixture…', 'info');
+    const response = await fetch('./fixtures/' + fixture);
+    if (!response.ok) throw new Error('Fixture request failed: ' + response.status);
+    const blob = await response.blob();
+    const file = new File([blob], fixture, { type: 'model/stl' });
+    await handleFile(file);
+  } catch (error) {
+    console.error('BrickForge could not load the validation fixture:', error);
+    setMessage('The validation fixture could not be loaded. You can still download it from the fixture gallery and select it manually.', 'error');
+  }
+}
+
+startInspector().then(() => {
+  if (viewerReady) loadFixtureFromQuery();
+});
