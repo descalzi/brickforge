@@ -8,7 +8,7 @@ import { matchFeaturePatterns, matchTargetFeatures } from "./feature-matcher.js?
 import { constructionPreviewTransform } from "./construction-preview.js";
 import { refineSurfaceFitPose, scoreSurfaceFit } from "./surface-fit.js?v=surfacefit6";
 import { transformPartPreviewPositions } from "./part-preview.js?v=featurepreview1";
-import { matchNominalConnectionInterfaces } from "./specialised-part-matcher.js?v=specialised1";
+import { matchNominalConnectionInterfaces, validateSpecialisedSurfaceCandidate } from "./specialised-part-matcher.js?v=specialised2";
 import { estimateBomCost, validatePriceCatalogue } from "./cost-estimator.js?v=costing1";
 import { orientationMatrixToYUp } from "./mesh-orientation.js?v=upaxis1";
 
@@ -754,6 +754,9 @@ function scoreCandidateSurface(profile, pattern, statusNode) {
     );
     const targetPositions = collectSurfaceTrianglePositions();
     const report = scoreSurfaceFit(candidatePositions, targetPositions);
+    const specialisedCheck = profile.source_verified_catalogue_entry
+      ? validateSpecialisedSurfaceCandidate(profile, candidatePositions, targetPositions, { precomputedReport: report })
+      : null;
     statusNode.textContent = "Candidate-to-target alignment: " + report.status.replaceAll("_", " ")
       + " · " + Math.round(report.candidate_to_target.within_tolerance_fraction * 100) + "% of candidate samples within "
       + report.tolerance_mm.toFixed(1) + " mm"
@@ -761,7 +764,10 @@ function scoreCandidateSurface(profile, pattern, statusNode) {
       + " · 95th percentile " + report.candidate_to_target.percentile_95_distance_mm.toFixed(2) + " mm"
       + " · candidate score " + Math.round(report.score * 100) + "/100"
       + " · whole-target reverse coverage " + Math.round(report.target_to_candidate.within_tolerance_fraction * 100)
-      + "% (context only; one part is not expected to cover the whole object). Not a fit or buildability certificate.";
+      + "% (context only; one part is not expected to cover the whole object)."
+      + (specialisedCheck ? " · source-verified part geometry checked; bidirectional proxy "
+        + Math.round(specialisedCheck.global_bidirectional_score * 100) + "/100." : "")
+      + " Not a fit or buildability certificate.";
     statusNode.dataset.state = report.status;
   } catch (error) {
     statusNode.textContent = error instanceof Error ? error.message : "Surface scoring failed.";
