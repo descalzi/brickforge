@@ -234,7 +234,7 @@ function likelyOpeningPartCandidates(limit = 12, query = 'technic beam') {
 
 function analysePositionsInWorker(positions, bounds) {
   return new Promise((resolve, reject) => {
-    const worker = new Worker(new URL('./part-feature-worker.js?v=featureprofile5', import.meta.url), { type: 'module' });
+    const worker = new Worker(new URL('./part-feature-worker.js?v=featureprofile6', import.meta.url), { type: 'module' });
     batchFeatureWorker = worker;
     worker.addEventListener('message', (event) => {
       if (worker !== batchFeatureWorker) return;
