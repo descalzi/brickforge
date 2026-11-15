@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 import {
@@ -57,6 +58,17 @@ const validReconstruction = {
   ] },
   diagnostics: { surface_distance_mm: 2.4, volume_iou: 0.71 },
 };
+
+test("authored plate and house contracts conform to the v1 contract validator", async () => {
+  const source = JSON.parse(await readFile(
+    new URL("../docs/data/design-intent-contracts.json", import.meta.url), "utf8",
+  ));
+  assert.equal(source.schema_version, 1);
+  assert.equal(source.contracts.length, 2);
+  for (const authored of source.contracts) {
+    assert.deepEqual(validateDesignIntentContract(authored), { valid: true, errors: [] });
+  }
+});
 
 test("design-intent contract validates a semantic model specification", () => {
   assert.deepEqual(validateDesignIntentContract(contract), { valid: true, errors: [] });
