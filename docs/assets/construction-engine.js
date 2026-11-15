@@ -1278,6 +1278,56 @@ const MAX_LAYERED_COURSE_CELLS = 256;
  * Coordinates are shared across courses so a tile in one course can only
  * connect to a tile above it where their occupied stud cells overlap.
  */
+function buildLayeredSequenceArtifacts(sequence, context, alternativeIndex) {
+  const { profiles, width, depth, pitch, bodyHeight, colourCodes, positionToleranceLdu,
+    collisionToleranceLdu, maxParts, courseType } = context;
+  const placements = [];
+  for (let layer = 0; layer < sequence.length; layer += 1) {
+    const tiling = sequence[layer];
+    const colour = colourCodes[layer % colourCodes.length];
+    for (let index = 0; index < tiling.length; index += 1) {
+      const tile = tiling[index];
+      const centreX = (tile.x + tile.width / 2 - width / 2) * pitch;
+      const centreZ = (tile.z + tile.depth / 2 - depth / 2) * pitch;
+      placements.push({
+        instance_id: "layer-" + String(layer).padStart(2, "0") + "-part-" + String(index).padStart(3, "0"),
+        part_id: tile.part_id,
+        colour_code: colour,
+        translation_ldu: [Object.is(centreX, -0) ? 0 : centreX, -layer * bodyHeight, Object.is(centreZ, -0) ? 0 : centreZ],
+        matrix: [...(tile.rotated ? ROTATE_Y_90 : IDENTITY_MATRIX)],
+      });
+      if (placements.length > maxParts) throw new RangeError("This browser prototype is limited to " + maxParts + " parts per model.");
+    }
+  }
+  const connections = validatePlacements(placements, profiles, { positionToleranceLdu, collisionToleranceLdu });
+  const baseName = courseType + "-layered-" + width + "x" + depth + "-" + sequence.length + "courses";
+  const modelName = alternativeIndex === 0 ? baseName : baseName + "-alternative-" + (alternativeIndex + 1);
+  const assemblyGraph = { schema_version: 1, coordinate_system: "LDraw", length_unit: "LDU", model_name: modelName, parts: placements, connections };
+  const bom = createBom(placements);
+  bom.model_name = modelName;
+  return {
+    model_name: modelName, parts: placements, connections,
+    total_mating_pairs: connections.reduce((sum, connection) => sum + connection.mating_pairs.length, 0),
+    assembly_graph: assemblyGraph, bom, ldraw: exportLDraw({ model_name: modelName, parts: placements }),
+    dimensions_mm: { width: width * pitch * LDU_TO_MM, depth: depth * pitch * LDU_TO_MM, height: sequence.length * bodyHeight * LDU_TO_MM },
+    course_part_counts: sequence.map((tiling) => tiling.length),
+    profile_dimensions: Object.fromEntries([...new Set(placements.map((part) => part.part_id))].map((partId) => {
+      const profile = profiles.get(partId);
+      return [partId, { footprint_studs_x: profile.footprint_studs_x, footprint_studs_z: profile.footprint_studs_z,
+        body_height_ldu: profile.body_height_ldu, stud_pitch_ldu: profile.stud_pitch_ldu }];
+    })),
+  };
+}
+
+function compareLayeredSequences(a, b) {
+  if (a.partCount !== b.partCount) return a.partCount - b.partCount;
+  for (let layer = 0; layer < a.sequence.length; layer += 1) {
+    const difference = compareTilings(a.sequence[layer], b.sequence[layer]);
+    if (difference) return difference;
+  }
+  return 0;
+}
+
 export function buildLayeredFootprintBlock(layerFootprints, catalogue, config = {}) {
   if (!Array.isArray(layerFootprints) || layerFootprints.length < 2) {
     throw new TypeError("layerFootprints must contain at least two bottom-to-top courses.");
@@ -1394,36 +1444,44 @@ export function buildLayeredFootprintBlock(layerFootprints, catalogue, config = 
     minimumRemaining[layer] = minimumRemaining[layer + 1] + minimumForCourse;
   }
 
+  const maxAlternatives = config.maxAlternatives ?? 3;
+  if (!Number.isInteger(maxAlternatives) || maxAlternatives < 1 || maxAlternatives > 5) {
+    throw new RangeError("maxAlternatives must be an integer from 1 to 5.");
+  }
   let checks = 0;
-  let bestSequence = null;
-  let bestPartCount = Infinity;
   let budgetReached = false;
   const chosen = [];
-
+  const candidates = [];
+  const candidateSignatures = new Set();
   let visitedNodes = 0;
   const maximumSearchNodes = MAX_LAYERED_SEQUENCE_CHECKS * 4;
+  function sequenceSignature(sequence) {
+    return sequence.map((tiling) => tiling.map((tile) =>
+      [tile.part_id, tile.x, tile.z, tile.width, tile.depth, Number(tile.rotated)].join(",")
+    ).join(";")).join("|");
+  }
   function searchSequences(layer, partCount) {
     visitedNodes += 1;
-    if (visitedNodes > maximumSearchNodes) {
-      budgetReached = true;
-      return;
-    }
+    if (visitedNodes > maximumSearchNodes) { budgetReached = true; return; }
     if (layer === layerCandidates.length) {
       checks += 1;
-      if (checks > MAX_LAYERED_SEQUENCE_CHECKS) {
-        budgetReached = true;
-        return;
-      }
-      if (partCount < bestPartCount && footprintTilingSequenceConnects(chosen)) {
-        bestSequence = chosen.slice();
-        bestPartCount = partCount;
+      if (checks > MAX_LAYERED_SEQUENCE_CHECKS) { budgetReached = true; return; }
+      if (!footprintTilingSequenceConnects(chosen)) return;
+      const signature = sequenceSignature(chosen);
+      if (candidateSignatures.has(signature)) return;
+      candidateSignatures.add(signature);
+      candidates.push({ sequence: chosen.slice(), partCount });
+      candidates.sort(compareLayeredSequences);
+      if (candidates.length > maxAlternatives) {
+        const removed = candidates.pop();
+        candidateSignatures.delete(sequenceSignature(removed.sequence));
       }
       return;
     }
-
     for (const tiling of layerCandidates[layer]) {
       const nextCount = partCount + tiling.length;
-      if (nextCount + minimumRemaining[layer + 1] >= bestPartCount) continue;
+      const worstCount = candidates.length === maxAlternatives ? candidates[candidates.length - 1].partCount : Infinity;
+      if (nextCount + minimumRemaining[layer + 1] > worstCount) continue;
       if (layer > 0 && !footprintTilingsOverlap(chosen[layer - 1], tiling)) continue;
       chosen.push(tiling);
       searchSequences(layer + 1, nextCount);
@@ -1431,160 +1489,55 @@ export function buildLayeredFootprintBlock(layerFootprints, catalogue, config = 
       if (budgetReached) return;
     }
   }
-
   searchSequences(0, 0);
-  if (!bestSequence) {
-    const detail = budgetReached || searchLimited
-      ? "within the bounded course-layout search"
-      : "using the available rectangular brick profiles";
-    const courseSummary = layerCandidates.map((candidates, index) =>
-      "course " + (index + 1) + ": " + parsedLayers[index].length + " cell(s), "
-        + candidates.length + " layout candidate(s)").join("; ");
-    const searchSummary = " " + courseSummary + ". Checked " + checks
-      + " complete sequence(s) across " + visitedNodes + " search node(s)"
-      + (budgetReached ? "; sequence budget reached" : "")
-      + (searchLimited ? "; course layouts were sampled or bounded" : "");
-    throw new Error("No fully connected variable-course construction was found " + detail
-      + "; " + searchSummary + ". Try a different course family, target orientation or part catalogue.");
+  if (!candidates.length) {
+    const detail = budgetReached || searchLimited ? "within the bounded course-layout search" : "using the available rectangular brick profiles";
+    const courseSummary = layerCandidates.map((items, index) =>
+      "course " + (index + 1) + ": " + parsedLayers[index].length + " cell(s), " + items.length + " layout candidate(s)").join("; ");
+    const searchSummary = " " + courseSummary + ". Checked " + checks + " complete sequence(s) across " + visitedNodes + " search node(s)"
+      + (budgetReached ? "; sequence budget reached" : "") + (searchLimited ? "; course layouts were sampled or bounded" : "");
+    throw new Error("No fully connected variable-course construction was found " + detail + "; " + searchSummary
+      + ". Try a different course family, target orientation or part catalogue.");
   }
 
   const pitch = baseProfile.stud_pitch_ldu;
   const bodyHeight = baseProfile.body_height_ldu;
-  const placements = [];
-  for (let layer = 0; layer < bestSequence.length; layer += 1) {
-    const tiling = bestSequence[layer];
-    const colour = colourCodes[layer % colourCodes.length];
-    for (let index = 0; index < tiling.length; index += 1) {
-      const tile = tiling[index];
-      const centreX = (tile.x + tile.width / 2 - width / 2) * pitch;
-      const centreZ = (tile.z + tile.depth / 2 - depth / 2) * pitch;
-      placements.push({
-        instance_id: "layer-" + String(layer).padStart(2, "0")
-          + "-part-" + String(index).padStart(3, "0"),
-        part_id: tile.part_id,
-        colour_code: colour,
-        translation_ldu: [
-          Object.is(centreX, -0) ? 0 : centreX,
-          -layer * bodyHeight,
-          Object.is(centreZ, -0) ? 0 : centreZ,
-        ],
-        matrix: [...(tile.rotated ? ROTATE_Y_90 : IDENTITY_MATRIX)],
-      });
-      if (placements.length > maxParts) {
-        throw new RangeError("This browser prototype is limited to " + maxParts + " parts per model.");
-      }
-    }
-  }
-
-  const connections = validatePlacements(placements, profiles, {
-    positionToleranceLdu,
-    collisionToleranceLdu,
-  });
-  const modelName = courseType + "-layered-" + width + "x" + depth + "-" + bestSequence.length + "courses";
-  const assemblyGraph = {
-    schema_version: 1,
-    coordinate_system: "LDraw",
-    length_unit: "LDU",
-    model_name: modelName,
-    parts: placements,
-    connections,
+  const search = {
+    sequence_checks: checks, sequence_search_nodes: visitedNodes, budget_reached: budgetReached,
+    candidate_tilings_per_course: layerCandidates.map((items) => items.length),
+    candidate_search_limited: searchLimited, valid_alternative_count: candidates.length,
+    requested_alternative_count: maxAlternatives,
   };
-  const bom = createBom(placements);
-  bom.model_name = modelName;
-  return {
-    model_name: modelName,
-    parts: placements,
-    connections,
-    total_mating_pairs: connections.reduce(
-      (sum, connection) => sum + connection.mating_pairs.length, 0,
-    ),
-    assembly_graph: assemblyGraph,
-    bom,
-    ldraw: exportLDraw({ model_name: modelName, parts: placements }),
-    dimensions_mm: {
-      width: width * pitch * LDU_TO_MM,
-      depth: depth * pitch * LDU_TO_MM,
-      height: bestSequence.length * bodyHeight * LDU_TO_MM,
-    },
-    course_part_counts: bestSequence.map((tiling) => tiling.length),
-    profile_dimensions: Object.fromEntries(
-      [...new Set(placements.map((part) => part.part_id))].map((partId) => {
-        const profile = profiles.get(partId);
-        return [partId, {
-          footprint_studs_x: profile.footprint_studs_x,
-          footprint_studs_z: profile.footprint_studs_z,
-          body_height_ldu: profile.body_height_ldu,
-          stud_pitch_ldu: profile.stud_pitch_ldu,
-        }];
-      }),
-    ),
-    search: {
-      sequence_checks: checks,
-      sequence_search_nodes: visitedNodes,
-      budget_reached: budgetReached,
-      candidate_tilings_per_course: layerCandidates.map((candidates) => candidates.length),
-      candidate_search_limited: searchLimited,
-    },
+  const artifacts = candidates.map((candidate, index) => buildLayeredSequenceArtifacts(candidate.sequence, {
+    profiles, width, depth, pitch, bodyHeight, colourCodes, positionToleranceLdu,
+    collisionToleranceLdu, maxParts, courseType,
+  }, index));
+  const alternatives = artifacts.map((artifact, index) => ({
+    ...artifact, alternative_rank: index + 1, search,
     validation_report: {
-      schema_version: 1,
-      overall_status: "nominal_checks_passed",
+      schema_version: 1, overall_status: "nominal_checks_passed",
       checks: [
-        {
-          id: "target_coverage",
-          status: "passed",
-          summary: "Every occupied target cell is represented by exactly one selected part footprint.",
-        },
-        {
-          id: "body_overlap",
-          status: "passed",
-          summary: "No pair of nominal part body envelopes overlaps beyond the configured tolerance.",
-        },
-        {
-          id: "connection_alignment",
-          status: "passed",
-          summary: connections.length.toLocaleString() + " connected part pairs contain nominal stud-to-receiver alignment matches (" 
-            + connections.reduce((sum, connection) => sum + connection.mating_pairs.length, 0).toLocaleString()
-            + " mating pairs).",
-        },
-        {
-          id: "graph_connectivity",
-          status: "passed",
-          summary: "All generated part instances belong to one connected nominal connection graph.",
-        },
-        {
-          id: "search_optimality",
-          status: budgetReached || searchLimited ? "limited" : "passed",
-          summary: budgetReached || searchLimited
-            ? "Candidate or sequence search was bounded; the selected result is connected but is not guaranteed to use the fewest parts."
-            : "All candidate course layouts within the configured search were evaluated.",
-        },
-        {
-          id: "surface_fidelity",
-          status: "not_assessed",
-          summary: "The generated part envelopes have not been compared against source-mesh surface distance.",
-        },
-        {
-          id: "physical_stability",
-          status: "not_assessed",
-          summary: "Clutch force, load capacity and physical stability have not been measured or simulated.",
-        },
-        {
-          id: "assembly_accessibility",
-          status: "not_assessed",
-          summary: "Tool access and the physical order of assembly have not been validated.",
-        },
+        { id: "target_coverage", status: "passed", summary: "Every occupied target cell is represented by exactly one selected part footprint." },
+        { id: "body_overlap", status: "passed", summary: "No pair of nominal part body envelopes overlaps beyond the configured tolerance." },
+        { id: "connection_alignment", status: "passed", summary: artifact.connections.length.toLocaleString() + " connected part pairs contain nominal stud-to-receiver alignment matches (" + artifact.total_mating_pairs.toLocaleString() + " mating pairs)." },
+        { id: "graph_connectivity", status: "passed", summary: "All generated part instances belong to one connected nominal connection graph." },
+        { id: "search_optimality", status: budgetReached || searchLimited ? "limited" : "passed",
+          summary: budgetReached || searchLimited ? "Candidate or sequence search was bounded; alternatives are ranked by part count but are not guaranteed to be globally optimal."
+            : "All candidate course layouts within the configured search were evaluated." },
+        { id: "surface_fidelity", status: "not_assessed", summary: "The generated simplified part envelopes have not been compared against source-mesh surface distance." },
+        { id: "physical_stability", status: "not_assessed", summary: "Clutch force, load capacity and physical stability have not been measured or simulated." },
+        { id: "assembly_accessibility", status: "not_assessed", summary: "Tool access and the physical order of assembly have not been validated." },
       ],
       limitations: [
         "Connection results use nominal catalogue stud and receiver datums, not measured clutch-force data.",
         "Body collision checks use nominal axis-aligned envelopes and do not inspect detailed part geometry.",
         "A connected graph does not by itself prove that the construction is physically stable or practically assemblable.",
         "The preview uses simplified part body envelopes and does not measure source-surface fidelity.",
-        ...(budgetReached || searchLimited
-          ? ["The bounded search does not guarantee a minimum-part construction."]
-          : []),
+        ...(budgetReached || searchLimited ? ["The bounded search does not guarantee a minimum-part construction."] : []),
       ],
     },
-  };
+  }));
+  return { ...alternatives[0], alternatives };
 }
 
 export const constructionConstants = Object.freeze({
