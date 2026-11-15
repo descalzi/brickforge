@@ -6,7 +6,7 @@ let OBJLoader;
 import { BRICK_GRID_PITCH_MM, PLATE_GRID_PITCH_MM, GridSpec, TargetGrid } from "./target-grid.js?v=featuregrid7";
 import { matchFeaturePatterns, matchTargetFeatures } from "./feature-matcher.js?v=featurematch8";
 import { constructionPreviewTransform } from "./construction-preview.js";
-import { scoreSurfaceFit } from "./surface-fit.js?v=surfacefit2";
+import { refineSurfaceFitTranslation, scoreSurfaceFit } from "./surface-fit.js?v=surfacefit3";
 import { transformPartPreviewPositions } from "./part-preview.js?v=featurepreview1";
 import { orientationMatrixToYUp } from "./mesh-orientation.js?v=upaxis1";
 
@@ -754,6 +754,45 @@ function scoreCandidateSurface(profile, pattern, statusNode) {
   }
 }
 
+function refineCandidateSurfacePlacement(profile, pattern, statusNode) {
+  if (!pattern?.placement_resolved || !profile?.preview_geometry_included
+      || !Array.isArray(profile.mesh_positions_mm)) {
+    statusNode.textContent = "Surface refinement needs a resolved placement and measured part triangle geometry.";
+    return;
+  }
+  if (!Array.isArray(pattern.opening_match_translation_mm)) {
+    pattern.opening_match_translation_mm = [...pattern.translation_mm];
+  }
+  statusNode.textContent = "Testing seven small translation adjustments against the source mesh…";
+  try {
+    const candidatePositions = transformPartPreviewPositions(
+      profile.mesh_positions_mm,
+      pattern.rotation_matrix_3x3,
+      pattern.translation_mm,
+      currentModelCenter,
+    );
+    const report = refineSurfaceFitTranslation(candidatePositions, collectSurfaceTrianglePositions(), {
+      radiusMm: 1,
+    });
+    if (!report.improved) {
+      statusNode.textContent = "No better surface alignment was found within ±1 mm. The opening-derived placement was retained.";
+      statusNode.dataset.state = "unchanged";
+      return;
+    }
+    pattern.surface_refinement_offset_mm = report.offset_mm;
+    pattern.translation_mm = pattern.opening_match_translation_mm.map((value, axis) =>
+      value + report.offset_mm[axis]);
+    renderCandidatePreview(profile, pattern);
+    statusNode.textContent = "Surface alignment improved by " + report.offset_mm.map((value) => value.toFixed(1)).join(", ")
+      + " mm · mean distance " + report.baseline.mean_distance_mm.toFixed(2) + " → "
+      + report.best.mean_distance_mm.toFixed(2) + " mm. This translation may reduce the original opening-pattern alignment; reset is available.";
+    statusNode.dataset.state = "refined";
+  } catch (error) {
+    statusNode.textContent = error instanceof Error ? error.message : "Surface placement refinement failed.";
+    statusNode.dataset.state = "error";
+  }
+}
+
 function renderFeaturePatterns() {
   if (!featurePatternStatus || !featurePatternList) return;
   featurePatternList.replaceChildren();
@@ -804,6 +843,9 @@ function renderFeaturePatterns() {
         + '° · translation ' + pattern.translation_mm.map((value) => value.toFixed(1)).join(', ') + ' mm'
       : 'Opening layout matched, but the rigid placement is not reliable: feature centres may be collinear, spacing residual may be too high, or opening axes may not align.';
     const profile = importedPartFeatureProfiles.find((candidate) => candidate.part_id === pattern.part_id);
+    if (!Array.isArray(pattern.opening_match_translation_mm)) {
+      pattern.opening_match_translation_mm = [...pattern.translation_mm];
+    }
     const preview = document.createElement('button');
     preview.type = 'button';
     preview.className = 'feature-preview-button';
@@ -823,12 +865,32 @@ function renderFeaturePatterns() {
       : 'A resolved placement and lightweight part geometry are required.';
     if (canPreview) surfaceFit.addEventListener('click', () =>
       scoreCandidateSurface(profile, pattern, surfaceFitResult));
+    const refine = document.createElement('button');
+    refine.type = 'button';
+    refine.className = 'feature-preview-button';
+    refine.disabled = !canPreview;
+    refine.textContent = 'Refine translation ±1 mm';
+    if (canPreview) refine.addEventListener('click', () =>
+      refineCandidateSurfacePlacement(profile, pattern, surfaceFitResult));
+    const resetRefinement = document.createElement('button');
+    resetRefinement.type = 'button';
+    resetRefinement.className = 'feature-preview-button';
+    resetRefinement.disabled = !Array.isArray(pattern.surface_refinement_offset_mm);
+    resetRefinement.textContent = 'Reset opening alignment';
+    resetRefinement.addEventListener('click', () => {
+      pattern.translation_mm = [...pattern.opening_match_translation_mm];
+      delete pattern.surface_refinement_offset_mm;
+      renderCandidatePreview(profile, pattern);
+      surfaceFitResult.textContent = 'Restored the original opening-pattern placement.';
+      surfaceFitResult.dataset.state = 'unchanged';
+      resetRefinement.disabled = true;
+    });
     const inspect = document.createElement('a');
     inspect.href = './parts.html?part=' + encodeURIComponent(pattern.part_id);
     inspect.target = '_blank';
     inspect.rel = 'noopener noreferrer';
     inspect.textContent = 'Open part in Part Explorer';
-    item.append(heading, detail, assignment, placement, preview, surfaceFit, surfaceFitResult, inspect);
+    item.append(heading, detail, assignment, placement, preview, surfaceFit, refine, resetRefinement, surfaceFitResult, inspect);
     featurePatternList.append(item);
   });
 }
