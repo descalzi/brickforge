@@ -68,16 +68,24 @@ function sectionContours(triangles, axis, plane, tolerance) {
     for (const [left, right] of [[0, 1], [1, 2], [2, 0]]) {
       const firstDistance = distances[left];
       const secondDistance = distances[right];
+      const addPoint = (point) => {
+        const projected = [point[otherAxes[0]], point[otherAxes[1]]];
+        if (!intersections.some((existing) =>
+          Math.hypot(existing[0] - projected[0], existing[1] - projected[1]) <= tolerance)) {
+          intersections.push(projected);
+        }
+      };
+      if (Math.abs(firstDistance) <= epsilon) addPoint(vertices[left]);
+      if (Math.abs(secondDistance) <= epsilon) addPoint(vertices[right]);
       const crosses = (firstDistance < -epsilon && secondDistance > epsilon)
         || (firstDistance > epsilon && secondDistance < -epsilon);
-      if (!crosses) continue;
-      const ratio = firstDistance / (firstDistance - secondDistance);
-      const point = [
-        vertices[left][otherAxes[0]] + ratio * (vertices[right][otherAxes[0]] - vertices[left][otherAxes[0]]),
-        vertices[left][otherAxes[1]] + ratio * (vertices[right][otherAxes[1]] - vertices[left][otherAxes[1]]),
-      ];
-      if (!intersections.some((existing) => Math.hypot(existing[0] - point[0], existing[1] - point[1]) <= tolerance)) {
-        intersections.push(point);
+      if (crosses) {
+        const ratio = firstDistance / (firstDistance - secondDistance);
+        addPoint([
+          vertices[left][0] + ratio * (vertices[right][0] - vertices[left][0]),
+          vertices[left][1] + ratio * (vertices[right][1] - vertices[left][1]),
+          vertices[left][2] + ratio * (vertices[right][2] - vertices[left][2]),
+        ]);
       }
     }
     if (intersections.length === 2
