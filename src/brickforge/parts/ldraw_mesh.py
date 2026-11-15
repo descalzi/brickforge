@@ -18,7 +18,7 @@ from brickforge.parts.ldraw_geometry import LDU_TO_MM
 from brickforge.parts.ldraw_resolver import LDrawLibrary
 
 
-def assembly_to_mesh(assembly: Assembly, library: LDrawLibrary) -> trimesh.Trimesh:
+def assembly_to_mesh(\n    assembly: Assembly,\n    library: LDrawLibrary,\n    *,\n    repair_winding: bool = True,\n) -> trimesh.Trimesh:
     """Resolve every placed part and combine its actual LDraw triangles/quads.
 
     Type-2 lines and type-5 conditional lines are intentionally omitted. Quads
