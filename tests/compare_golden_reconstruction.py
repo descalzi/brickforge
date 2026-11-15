@@ -42,14 +42,14 @@ unsupported = sorted({part.part_id for part in reconstructed.parts} - available_
 if unsupported:
     raise AssertionError(f"The golden fixture library lacks part geometry for: {unsupported}")
 
-source = trimesh.load(SOURCE_STL, force="mesh", process=True)
+source_mesh = trimesh.load(SOURCE_STL, force="mesh", process=True)
+if not source_mesh.is_watertight:
+    raise AssertionError("Authored golden STL is not watertight")
+source_solid, source_report = solidify_surface_mesh(source_mesh, pitch_mm=2.0)
 reconstructed_surface = assembly_to_mesh(reconstructed, LIBRARY)
 reconstructed_solid, reconstructed_report = solidify_surface_mesh(
-    reconstructed_surface, pitch_mm=0.8
+    reconstructed_surface, pitch_mm=2.0
 )
-source_solid = source
-if not source_solid.is_watertight:
-    raise AssertionError("Authored golden STL is not watertight")
 
 source_dimensions = np.asarray(source_solid.extents, dtype=np.float64)
 reconstructed_dimensions = np.asarray(reconstructed_solid.extents, dtype=np.float64)
@@ -69,15 +69,12 @@ intersection = int(np.count_nonzero(source_inside & reconstructed_inside))
 union = int(np.count_nonzero(source_inside | reconstructed_inside))
 iou = intersection / union if union else 1.0
 
-source_handle_count = int(
-    json.loads(SOURCE_STL.with_suffix(".stl.json").read_text(encoding="utf-8"))
-    ["solid_reference"]["handle_count"]
-)
+source_handle_count = source_report.handle_count
 print(json.dumps({
     "source_parts": 1,
     "reconstructed_parts": len(reconstructed.parts),
     "reconstructed_bom": reconstructed.bom_dict(),
-    "source_dimensions_mm": source_dimensions.tolist(),
+    "comparison_pitch_mm": 2.0,\n    "source_dimensions_mm": source_dimensions.tolist(),
     "reconstructed_dimensions_mm": reconstructed_dimensions.tolist(),
     "absolute_dimension_error_mm": dimension_error.tolist(),
     "volume_iou_at_2mm_sampling": iou,
