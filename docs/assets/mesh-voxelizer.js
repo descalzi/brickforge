@@ -308,7 +308,7 @@ function preserveSubGridOpenings({ features, dimensions, origin, pitch, classifi
     const axis = feature.axis_index;
     const otherAxes = [0, 1, 2].filter((value) => value !== axis);
     const localSpan = feature.bounds_mm[1][axis] - feature.bounds_mm[0][axis];
-    if (feature.sample_support < 3 || !Number.isFinite(localSpan) || localSpan <= 0) {
+    if (feature.sample_support < 2 || !Number.isFinite(localSpan) || localSpan <= 0) {
       keepouts.push({ feature_id: feature.id, axis: feature.axis, cell_count: 0, preserved: false,
         reason: feature.sample_support < 3
           ? "opening is not consistently present across enough sampled sections"
@@ -417,6 +417,7 @@ export function voxelizeMesh({
   let features = [];
   let obliqueFeatures = [];
   let featureAnalysisDiagnostics = { principal_candidates: [], oblique_candidate_count: 0 };
+  let topologyMatchedTwoSliceMapping = false;
   if (topology.handle_count > 0) {
     onProgress({ phase: "features", completed: 0, total: 1 });
     const analysed = analyzeMeshFeaturesExtended(triangles, boundsMin, boundsMax);
@@ -432,6 +433,14 @@ export function voxelizeMesh({
       oblique_candidate_count: obliqueFeatures.length,
     };
     features = principalCandidates.filter((feature) => feature.sample_support >= 3);
+    if (features.length !== topology.handle_count) {
+      const twoSliceCandidates = principalCandidates.filter((feature) => feature.sample_support >= 2);
+      if (twoSliceCandidates.length === topology.handle_count
+          && twoSliceCandidates.every((feature) => feature.sample_support >= 2)) {
+        features = twoSliceCandidates;
+        topologyMatchedTwoSliceMapping = true;
+      }
+    }
     onProgress({ phase: "features", completed: 1, total: 1 });
   }
 
@@ -503,6 +512,8 @@ export function voxelizeMesh({
       ...(topology.handle_count ? ["Detected " + topology.handle_count + " topological tunnel/handle feature(s)."] : []),
       ...(topology.component_count > 1 ? ["Mesh contains " + topology.component_count + " disconnected closed surface components; confirm these are intended separate solids and do not intersect."] : []),
       ...(features.length ? ["Located " + features.length + " cross-section opening feature(s); dimensions are approximate and based on sampled mesh slices."] : []),
+      ...(topologyMatchedTwoSliceMapping
+        ? ["Used two-slice opening candidates because their count exactly matches the independently detected topological tunnel count; clearance mapping remains conservative and should be visually reviewed."] : []),
       ...(preservedFeatureCount ? ["Mapped " + preservedFeatureCount + " sub-grid opening(s) to conservative grid-cell clearance tunnels; the represented openings may be larger than the source geometry."] : []),
       ...(topology.handle_count && !features.length && !obliqueFeatures.length
         ? ["Tunnel topology was detected, but individual openings could not be localised reliably by principal or sampled oblique slice analysis."] : []),
@@ -526,7 +537,10 @@ export function voxelizeMesh({
     self_intersections: selfIntersections,
     features,
     oblique_features: obliqueFeatures,
-    feature_analysis_diagnostics: featureAnalysisDiagnostics,
+    feature_analysis_diagnostics: {
+      ...featureAnalysisDiagnostics,
+      topology_matched_two_slice_mapping: topologyMatchedTwoSliceMapping,
+    },
     feature_keepouts: featureKeepouts,
     ray_triangle_tests: rayBudget.tests,
     cell_triangle_tests: cellBudget.tests,
