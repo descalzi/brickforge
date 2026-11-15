@@ -1,8 +1,8 @@
-"""Initial mesh inspection utilities.
+"""Unit-aware mesh inspection with bounded triangle self-intersection diagnostics.
 
-This module provides unit-aware input diagnostics before solid voxelisation.
-Self-intersection detection is deliberately reported as not assessed: watertight
-edge incidence and consistent winding do not prove that triangles do not cross.
+The intersection scan uses sweep-and-prune broad-phase bounds and triangle SAT.
+It skips pairs sharing a vertex to avoid ordinary adjacent-face contacts and reports
+when its candidate-pair budget is exhausted; a clear scan is not a formal proof.
 """
 
 from __future__ import annotations
@@ -194,6 +194,10 @@ def inspect_mesh(path: str | Path, *, units: str) -> MeshReport:
         )
     if not is_volume:
         warnings.append("Mesh does not satisfy Trimesh's closed positive-volume solid checks.")
+    warnings.append(
+        "The bounded intersection scan skips triangle pairs sharing a vertex; "
+        "none_detected is not a formal proof against every possible self-contact."
+    )
     if intersection_status == "intersections_detected":
         warnings.append(f"Detected {intersection_pairs} intersecting non-adjacent triangle pair(s).")
     elif intersection_status == "not_assessed_pair_limit":
