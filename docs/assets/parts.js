@@ -1179,6 +1179,7 @@ colourSelect.addEventListener('change', () => {
 });
 partFeatureAnalyseButton.addEventListener('click', analyseSelectedPartFeatures);
 partFeatureBatchButton.addEventListener('click', scanLikelyOpeningParts);
+partFeatureCuratedButton.addEventListener('click', scanCuratedSpecialisedParts);
 partFeatureBatchClearButton.addEventListener('click', clearBatchFeatureProfiles);
 partFeatureBatchCancelButton.addEventListener('click', cancelLikelyOpeningScan);
 partFeatureBatchDownloadButton.addEventListener('click', downloadPartFeatureCatalogue);
@@ -1190,6 +1191,7 @@ resetButton.addEventListener('click', () => {
 async function startPartExplorer() {
   try {
     await loadPartCatalogue();
+    partFeatureCuratedButton.disabled = false;
     renderPartSearchResults(partSearch.value);
     [THREE, { OrbitControls }] = await Promise.all([
       import('three'),
