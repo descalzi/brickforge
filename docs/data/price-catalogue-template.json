@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "currency": "GBP",
+  "source": "Replace with the marketplace or supplier used for this estimate",
+  "as_of": "2026-11-15",
+  "prices": {
+    "3001": {
+      "unit_price": 0.0,
+      "source": "Replace with source name",
+      "as_of": "2026-11-15",
+      "source_url": "https://example.invalid/"
+    },
+    "3001:4": {
+      "unit_price": 0.0,
+      "source": "Replace with colour-specific source",
+      "as_of": "2026-11-15"
+    }
+  }
+}
