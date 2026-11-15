@@ -74,7 +74,7 @@ def test_golden_stl_export_writes_units_provenance_and_reference_bom(tmp_path: P
 
 
 def test_voxel_solid_reference_preserves_two_through_openings() -> None:
-    x, y, z = np.indices((32, 16, 16))
+    _, y, z = np.indices((32, 16, 16))
     occupied = np.ones((32, 16, 16), dtype=bool)
     for centre_z in (5.0, 11.0):
         occupied &= (y - 8.0) ** 2 + (z - centre_z) ** 2 >= 2.6**2
