@@ -58,7 +58,12 @@ try {
     const constructionStatus = await page.locator("#construction-status").innerText();
     const buildEnabled = await page.locator("#build-construction").isEnabled();
     const featureStatus = await page.locator("#voxel-feature-status").innerText().catch(() => "");
-    console.log(JSON.stringify({ fixture: fixture.file, voxelStatus, featureStatus, constructionStatus }));
+    const gridStatus = await page.locator("#voxel-grid-size").innerText().catch(() => "");
+    const courseStatus = await page.locator("#voxel-course-list").innerText().catch(() => "");
+    const featureDetails = await page.locator("#voxel-feature-list").innerText().catch(() => "");
+    console.log(JSON.stringify({
+      fixture: fixture.file, voxelStatus, featureStatus, gridStatus, courseStatus, featureDetails, constructionStatus,
+    }));
     assert.match(voxelStatus, /Voxelisation complete/i, fixture.file + ": voxelisation did not complete. " + voxelStatus);
     if (fixture.tunnels > 0) {
       assert.match(featureStatus, new RegExp("^" + fixture.tunnels + " topological tunnel\\(s\\) detected; "
