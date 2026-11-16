@@ -80,3 +80,19 @@ export function nominalInterfacesForInstances(catalogue,instances){
  }
  return interfaces;
 }
+
+/** Convert semantic part-catalogue interface datums into positioned assembly instances. */
+export function interfacesForPartInstances(catalogue,instances){
+ if(!catalogue||catalogue.schema_version!==1||!Array.isArray(catalogue.parts)||!Array.isArray(instances))throw new TypeError("A version-1 part capability catalogue and instance list are required.");
+ const parts=new Map(catalogue.parts.map(part=>[part.part_id,part]));
+ const interfaces=[];
+ for(const instance of instances){
+  const part=parts.get(instance.part_id);
+  if(!part)continue;
+  for(const iface of part.interfaces||[]){
+   if(!finiteVector(iface.position_mm)||!finiteVector(iface.axis_vector))continue;
+   interfaces.push({...iface,instance_id:instance.instance_id,part_id:instance.part_id});
+  }
+ }
+ return interfaces;
+}
