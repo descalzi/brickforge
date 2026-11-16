@@ -1,0 +1,6452 @@
+{
+  "schema_version": 1,
+  "units": "mm",
+  "parts": [
+    {
+      "part_id": "3001",
+      "description": "Brick 2 x 4",
+      "roles": [
+        "structural",
+        "chassis",
+        "body",
+        "wall",
+        "floor",
+        "base",
+        "platform",
+        "support"
+      ],
+      "capabilities": [
+        "solid_rectangular_volume",
+        "top_studs",
+        "underside_stud_receivers"
+      ],
+      "dimensions_mm": {
+        "width": 32,
+        "depth": 16,
+        "height": 9.600000000000001
+      },
+      "candidate_status": "nominal_connection_profile",
+      "interfaces": [
+        {
+          "interface_id": "top-stud-xm30_zm10",
+          "interface_type": "stud",
+          "position_mm": [
+            -12,
+            0,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm10_zm10",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_zm10",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x30_zm10",
+          "interface_type": "stud",
+          "position_mm": [
+            12,
+            0,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm30_z10",
+          "interface_type": "stud",
+          "position_mm": [
+            -12,
+            0,
+            4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm10_z10",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_z10",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x30_z10",
+          "interface_type": "stud",
+          "position_mm": [
+            12,
+            0,
+            4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm30_zm10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -12,
+            9.600000000000001,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_zm10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            9.600000000000001,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_zm10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            9.600000000000001,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x30_zm10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            12,
+            9.600000000000001,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm30_z10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -12,
+            9.600000000000001,
+            4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_z10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            9.600000000000001,
+            4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_z10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            9.600000000000001,
+            4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x30_z10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            12,
+            9.600000000000001,
+            4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        }
+      ],
+      "source": {
+        "file": "parts/3001.dat",
+        "revision": null,
+        "license": "Licensed under CC BY 4.0 : see CAreadme.txt",
+        "author": "James Jessiman",
+        "library_commit": null
+      }
+    },
+    {
+      "part_id": "3002",
+      "description": "Brick 2 x 3",
+      "roles": [
+        "structural",
+        "chassis",
+        "body",
+        "wall",
+        "floor",
+        "base",
+        "platform",
+        "support"
+      ],
+      "capabilities": [
+        "solid_rectangular_volume",
+        "top_studs",
+        "underside_stud_receivers"
+      ],
+      "dimensions_mm": {
+        "width": 24,
+        "depth": 16,
+        "height": 9.600000000000001
+      },
+      "candidate_status": "nominal_connection_profile",
+      "interfaces": [
+        {
+          "interface_id": "top-stud-xm20_zm10",
+          "interface_type": "stud",
+          "position_mm": [
+            -8,
+            0,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm20_z10",
+          "interface_type": "stud",
+          "position_mm": [
+            -8,
+            0,
+            4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x0_zm10",
+          "interface_type": "stud",
+          "position_mm": [
+            0,
+            0,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x0_z10",
+          "interface_type": "stud",
+          "position_mm": [
+            0,
+            0,
+            4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x20_zm10",
+          "interface_type": "stud",
+          "position_mm": [
+            8,
+            0,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x20_z10",
+          "interface_type": "stud",
+          "position_mm": [
+            8,
+            0,
+            4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm20_zm10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -8,
+            9.600000000000001,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm20_z10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -8,
+            9.600000000000001,
+            4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x0_zm10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            0,
+            9.600000000000001,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x0_z10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            0,
+            9.600000000000001,
+            4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x20_zm10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            8,
+            9.600000000000001,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x20_z10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            8,
+            9.600000000000001,
+            4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        }
+      ],
+      "source": {
+        "file": "parts/3002.dat",
+        "revision": null,
+        "license": "Licensed under CC BY 4.0 : see CAreadme.txt",
+        "author": "James Jessiman",
+        "library_commit": null
+      }
+    },
+    {
+      "part_id": "3003",
+      "description": "Brick 2 x 2",
+      "roles": [
+        "structural",
+        "chassis",
+        "body",
+        "wall",
+        "floor",
+        "base",
+        "platform",
+        "support"
+      ],
+      "capabilities": [
+        "solid_rectangular_volume",
+        "top_studs",
+        "underside_stud_receivers"
+      ],
+      "dimensions_mm": {
+        "width": 16,
+        "depth": 16,
+        "height": 9.600000000000001
+      },
+      "candidate_status": "nominal_connection_profile",
+      "interfaces": [
+        {
+          "interface_id": "top-stud-xm10_zm10",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_zm10",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm10_z10",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_z10",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_zm10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            9.600000000000001,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_zm10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            9.600000000000001,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_z10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            9.600000000000001,
+            4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_z10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            9.600000000000001,
+            4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        }
+      ],
+      "source": {
+        "file": "parts/3003.dat",
+        "revision": null,
+        "license": "Licensed under CC BY 4.0 : see CAreadme.txt",
+        "author": "James Jessiman",
+        "library_commit": null
+      }
+    },
+    {
+      "part_id": "3004",
+      "description": "Brick 1 x 2",
+      "roles": [
+        "structural",
+        "chassis",
+        "body",
+        "wall",
+        "floor",
+        "base",
+        "platform",
+        "support"
+      ],
+      "capabilities": [
+        "solid_rectangular_volume",
+        "top_studs",
+        "underside_stud_receivers"
+      ],
+      "dimensions_mm": {
+        "width": 16,
+        "depth": 8,
+        "height": 9.600000000000001
+      },
+      "candidate_status": "nominal_connection_profile",
+      "interfaces": [
+        {
+          "interface_id": "top-stud-xm10_z0",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            0
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_z0",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            0
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_z0",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            9.600000000000001,
+            0
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_z0",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            9.600000000000001,
+            0
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        }
+      ],
+      "source": {
+        "file": "parts/3004.dat",
+        "revision": null,
+        "license": "Licensed under CC BY 4.0 : see CAreadme.txt",
+        "author": "James Jessiman",
+        "library_commit": null
+      }
+    },
+    {
+      "part_id": "3005",
+      "description": "Brick 1 x 1",
+      "roles": [
+        "structural",
+        "chassis",
+        "body",
+        "wall",
+        "floor",
+        "base",
+        "platform",
+        "support"
+      ],
+      "capabilities": [
+        "solid_rectangular_volume",
+        "top_studs",
+        "underside_stud_receivers"
+      ],
+      "dimensions_mm": {
+        "width": 8,
+        "depth": 8,
+        "height": 9.600000000000001
+      },
+      "candidate_status": "nominal_connection_profile",
+      "interfaces": [
+        {
+          "interface_id": "top-stud-x0_z0",
+          "interface_type": "stud",
+          "position_mm": [
+            0,
+            0,
+            0
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x0_z0",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            0,
+            9.600000000000001,
+            0
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        }
+      ],
+      "source": {
+        "file": "parts/3005.dat",
+        "revision": null,
+        "license": "Licensed under CC BY 4.0 : see CAreadme.txt",
+        "author": "James Jessiman",
+        "library_commit": null
+      }
+    },
+    {
+      "part_id": "3006",
+      "description": "Brick 2 x 10",
+      "roles": [
+        "structural",
+        "chassis",
+        "body",
+        "wall",
+        "floor",
+        "base",
+        "platform",
+        "support"
+      ],
+      "capabilities": [
+        "solid_rectangular_volume",
+        "top_studs",
+        "underside_stud_receivers"
+      ],
+      "dimensions_mm": {
+        "width": 16,
+        "depth": 80,
+        "height": 9.600000000000001
+      },
+      "candidate_status": "nominal_connection_profile",
+      "interfaces": [
+        {
+          "interface_id": "top-stud-xm10_zm90",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            -36
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_zm90",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            -36
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm10_zm70",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            -28
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_zm70",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            -28
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm10_zm50",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            -20
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_zm50",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            -20
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm10_zm30",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            -12
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_zm30",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            -12
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm10_zm10",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_zm10",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm10_z10",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_z10",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm10_z30",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            12
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_z30",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            12
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm10_z50",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            20
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_z50",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            20
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm10_z70",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            28
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_z70",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            28
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm10_z90",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            36
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_z90",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            36
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_zm90",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            9.600000000000001,
+            -36
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_zm90",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            9.600000000000001,
+            -36
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_zm70",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            9.600000000000001,
+            -28
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_zm70",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            9.600000000000001,
+            -28
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_zm50",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            9.600000000000001,
+            -20
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_zm50",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            9.600000000000001,
+            -20
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_zm30",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            9.600000000000001,
+            -12
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_zm30",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            9.600000000000001,
+            -12
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_zm10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            9.600000000000001,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_zm10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            9.600000000000001,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_z10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            9.600000000000001,
+            4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_z10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            9.600000000000001,
+            4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_z30",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            9.600000000000001,
+            12
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_z30",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            9.600000000000001,
+            12
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_z50",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            9.600000000000001,
+            20
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_z50",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            9.600000000000001,
+            20
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_z70",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            9.600000000000001,
+            28
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_z70",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            9.600000000000001,
+            28
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_z90",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            9.600000000000001,
+            36
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_z90",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            9.600000000000001,
+            36
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        }
+      ],
+      "source": {
+        "file": "parts/3006.dat",
+        "revision": null,
+        "license": "Licensed under CC BY 4.0 : see CAreadme.txt",
+        "author": "James Jessiman",
+        "library_commit": null
+      }
+    },
+    {
+      "part_id": "3007",
+      "description": "Brick 2 x 8",
+      "roles": [
+        "structural",
+        "chassis",
+        "body",
+        "wall",
+        "floor",
+        "base",
+        "platform",
+        "support"
+      ],
+      "capabilities": [
+        "solid_rectangular_volume",
+        "top_studs",
+        "underside_stud_receivers"
+      ],
+      "dimensions_mm": {
+        "width": 16,
+        "depth": 64,
+        "height": 9.600000000000001
+      },
+      "candidate_status": "nominal_connection_profile",
+      "interfaces": [
+        {
+          "interface_id": "top-stud-xm10_zm70",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            -28
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_zm70",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            -28
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm10_zm50",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            -20
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_zm50",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            -20
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm10_zm30",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            -12
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_zm30",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            -12
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm10_zm10",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_zm10",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm10_z10",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_z10",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm10_z30",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            12
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_z30",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            12
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm10_z50",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            20
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_z50",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            20
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm10_z70",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            28
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_z70",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            28
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_zm70",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            9.600000000000001,
+            -28
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_zm70",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            9.600000000000001,
+            -28
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_zm50",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            9.600000000000001,
+            -20
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_zm50",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            9.600000000000001,
+            -20
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_zm30",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            9.600000000000001,
+            -12
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_zm30",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            9.600000000000001,
+            -12
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_zm10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            9.600000000000001,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_zm10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            9.600000000000001,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_z10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            9.600000000000001,
+            4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_z10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            9.600000000000001,
+            4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_z30",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            9.600000000000001,
+            12
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_z30",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            9.600000000000001,
+            12
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_z50",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            9.600000000000001,
+            20
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_z50",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            9.600000000000001,
+            20
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_z70",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            9.600000000000001,
+            28
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_z70",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            9.600000000000001,
+            28
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        }
+      ],
+      "source": {
+        "file": "parts/3007.dat",
+        "revision": null,
+        "license": "Licensed under CC BY 4.0 : see CAreadme.txt",
+        "author": "James Jessiman",
+        "library_commit": null
+      }
+    },
+    {
+      "part_id": "3008",
+      "description": "Brick 1 x 8",
+      "roles": [
+        "structural",
+        "chassis",
+        "body",
+        "wall",
+        "floor",
+        "base",
+        "platform",
+        "support"
+      ],
+      "capabilities": [
+        "solid_rectangular_volume",
+        "top_studs",
+        "underside_stud_receivers"
+      ],
+      "dimensions_mm": {
+        "width": 8,
+        "depth": 64,
+        "height": 9.600000000000001
+      },
+      "candidate_status": "nominal_connection_profile",
+      "interfaces": [
+        {
+          "interface_id": "top-stud-x0_zm70",
+          "interface_type": "stud",
+          "position_mm": [
+            0,
+            0,
+            -28
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x0_zm50",
+          "interface_type": "stud",
+          "position_mm": [
+            0,
+            0,
+            -20
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x0_zm30",
+          "interface_type": "stud",
+          "position_mm": [
+            0,
+            0,
+            -12
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x0_zm10",
+          "interface_type": "stud",
+          "position_mm": [
+            0,
+            0,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x0_z10",
+          "interface_type": "stud",
+          "position_mm": [
+            0,
+            0,
+            4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x0_z30",
+          "interface_type": "stud",
+          "position_mm": [
+            0,
+            0,
+            12
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x0_z50",
+          "interface_type": "stud",
+          "position_mm": [
+            0,
+            0,
+            20
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x0_z70",
+          "interface_type": "stud",
+          "position_mm": [
+            0,
+            0,
+            28
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x0_zm70",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            0,
+            9.600000000000001,
+            -28
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x0_zm50",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            0,
+            9.600000000000001,
+            -20
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x0_zm30",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            0,
+            9.600000000000001,
+            -12
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x0_zm10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            0,
+            9.600000000000001,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x0_z10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            0,
+            9.600000000000001,
+            4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x0_z30",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            0,
+            9.600000000000001,
+            12
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x0_z50",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            0,
+            9.600000000000001,
+            20
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x0_z70",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            0,
+            9.600000000000001,
+            28
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        }
+      ],
+      "source": {
+        "file": "parts/3008.dat",
+        "revision": null,
+        "license": "Licensed under CC BY 4.0 : see CAreadme.txt",
+        "author": "James Jessiman",
+        "library_commit": null
+      }
+    },
+    {
+      "part_id": "3009",
+      "description": "Brick 1 x 6",
+      "roles": [
+        "structural",
+        "chassis",
+        "body",
+        "wall",
+        "floor",
+        "base",
+        "platform",
+        "support"
+      ],
+      "capabilities": [
+        "solid_rectangular_volume",
+        "top_studs",
+        "underside_stud_receivers"
+      ],
+      "dimensions_mm": {
+        "width": 48,
+        "depth": 8,
+        "height": 9.600000000000001
+      },
+      "candidate_status": "nominal_connection_profile",
+      "interfaces": [
+        {
+          "interface_id": "top-stud-xm50_z0",
+          "interface_type": "stud",
+          "position_mm": [
+            -20,
+            0,
+            0
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm30_z0",
+          "interface_type": "stud",
+          "position_mm": [
+            -12,
+            0,
+            0
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm10_z0",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            0
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_z0",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            0
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x30_z0",
+          "interface_type": "stud",
+          "position_mm": [
+            12,
+            0,
+            0
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x50_z0",
+          "interface_type": "stud",
+          "position_mm": [
+            20,
+            0,
+            0
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm50_z0",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -20,
+            9.600000000000001,
+            0
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm30_z0",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -12,
+            9.600000000000001,
+            0
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_z0",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            9.600000000000001,
+            0
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_z0",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            9.600000000000001,
+            0
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x30_z0",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            12,
+            9.600000000000001,
+            0
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x50_z0",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            20,
+            9.600000000000001,
+            0
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        }
+      ],
+      "source": {
+        "file": "parts/3009.dat",
+        "revision": null,
+        "license": "Licensed under CC BY 4.0 : see CAreadme.txt",
+        "author": "James Jessiman",
+        "library_commit": null
+      }
+    },
+    {
+      "part_id": "3010",
+      "description": "Brick 1 x 4",
+      "roles": [
+        "structural",
+        "chassis",
+        "body",
+        "wall",
+        "floor",
+        "base",
+        "platform",
+        "support"
+      ],
+      "capabilities": [
+        "solid_rectangular_volume",
+        "top_studs",
+        "underside_stud_receivers"
+      ],
+      "dimensions_mm": {
+        "width": 32,
+        "depth": 8,
+        "height": 9.600000000000001
+      },
+      "candidate_status": "nominal_connection_profile",
+      "interfaces": [
+        {
+          "interface_id": "top-stud-xm30_z0",
+          "interface_type": "stud",
+          "position_mm": [
+            -12,
+            0,
+            0
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm10_z0",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            0
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_z0",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            0
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x30_z0",
+          "interface_type": "stud",
+          "position_mm": [
+            12,
+            0,
+            0
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm30_z0",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -12,
+            9.600000000000001,
+            0
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_z0",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            9.600000000000001,
+            0
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_z0",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            9.600000000000001,
+            0
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x30_z0",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            12,
+            9.600000000000001,
+            0
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        }
+      ],
+      "source": {
+        "file": "parts/3010.dat",
+        "revision": null,
+        "license": "Licensed under CC BY 4.0 : see CAreadme.txt",
+        "author": "James Jessiman",
+        "library_commit": null
+      }
+    },
+    {
+      "part_id": "3020",
+      "description": "Plate 2 x 4",
+      "roles": [
+        "structural",
+        "chassis",
+        "body",
+        "wall",
+        "floor",
+        "base",
+        "platform",
+        "support"
+      ],
+      "capabilities": [
+        "solid_rectangular_volume",
+        "top_studs",
+        "underside_stud_receivers"
+      ],
+      "dimensions_mm": {
+        "width": 32,
+        "depth": 16,
+        "height": 3.2
+      },
+      "candidate_status": "nominal_connection_profile",
+      "interfaces": [
+        {
+          "interface_id": "top-stud-xm30_zm10",
+          "interface_type": "stud",
+          "position_mm": [
+            -12,
+            0,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm10_zm10",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_zm10",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x30_zm10",
+          "interface_type": "stud",
+          "position_mm": [
+            12,
+            0,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm30_z10",
+          "interface_type": "stud",
+          "position_mm": [
+            -12,
+            0,
+            4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm10_z10",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_z10",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x30_z10",
+          "interface_type": "stud",
+          "position_mm": [
+            12,
+            0,
+            4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm30_zm10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -12,
+            3.2,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_zm10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            3.2,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_zm10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            3.2,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x30_zm10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            12,
+            3.2,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm30_z10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -12,
+            3.2,
+            4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_z10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            3.2,
+            4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_z10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            3.2,
+            4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x30_z10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            12,
+            3.2,
+            4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        }
+      ],
+      "source": {
+        "file": "parts/3020.dat",
+        "revision": null,
+        "license": "Licensed under CC BY 4.0 : see CAreadme.txt",
+        "author": "James Jessiman",
+        "library_commit": null
+      }
+    },
+    {
+      "part_id": "3021",
+      "description": "Plate 2 x 3",
+      "roles": [
+        "structural",
+        "chassis",
+        "body",
+        "wall",
+        "floor",
+        "base",
+        "platform",
+        "support"
+      ],
+      "capabilities": [
+        "solid_rectangular_volume",
+        "top_studs",
+        "underside_stud_receivers"
+      ],
+      "dimensions_mm": {
+        "width": 24,
+        "depth": 16,
+        "height": 3.2
+      },
+      "candidate_status": "nominal_connection_profile",
+      "interfaces": [
+        {
+          "interface_id": "top-stud-xm20_zm10",
+          "interface_type": "stud",
+          "position_mm": [
+            -8,
+            0,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x0_zm10",
+          "interface_type": "stud",
+          "position_mm": [
+            0,
+            0,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x20_zm10",
+          "interface_type": "stud",
+          "position_mm": [
+            8,
+            0,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm20_z10",
+          "interface_type": "stud",
+          "position_mm": [
+            -8,
+            0,
+            4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x0_z10",
+          "interface_type": "stud",
+          "position_mm": [
+            0,
+            0,
+            4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x20_z10",
+          "interface_type": "stud",
+          "position_mm": [
+            8,
+            0,
+            4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm20_zm10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -8,
+            3.2,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x0_zm10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            0,
+            3.2,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x20_zm10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            8,
+            3.2,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm20_z10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -8,
+            3.2,
+            4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x0_z10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            0,
+            3.2,
+            4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x20_z10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            8,
+            3.2,
+            4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        }
+      ],
+      "source": {
+        "file": "parts/3021.dat",
+        "revision": null,
+        "license": "Licensed under CC BY 4.0 : see CAreadme.txt",
+        "author": "James Jessiman",
+        "library_commit": null
+      }
+    },
+    {
+      "part_id": "3022",
+      "description": "Plate 2 x 2",
+      "roles": [
+        "structural",
+        "chassis",
+        "body",
+        "wall",
+        "floor",
+        "base",
+        "platform",
+        "support"
+      ],
+      "capabilities": [
+        "solid_rectangular_volume",
+        "top_studs",
+        "underside_stud_receivers"
+      ],
+      "dimensions_mm": {
+        "width": 16,
+        "depth": 16,
+        "height": 3.2
+      },
+      "candidate_status": "nominal_connection_profile",
+      "interfaces": [
+        {
+          "interface_id": "top-stud-xm10_zm10",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm10_z10",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_zm10",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_z10",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_zm10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            3.2,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_z10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            3.2,
+            4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_zm10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            3.2,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_z10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            3.2,
+            4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        }
+      ],
+      "source": {
+        "file": "parts/3022.dat",
+        "revision": null,
+        "license": "Licensed under CC BY 4.0 : see CAreadme.txt",
+        "author": "Unknown (see LDraw source header)",
+        "library_commit": null
+      }
+    },
+    {
+      "part_id": "3023",
+      "description": "Plate 1 x 2",
+      "roles": [
+        "structural",
+        "chassis",
+        "body",
+        "wall",
+        "floor",
+        "base",
+        "platform",
+        "support"
+      ],
+      "capabilities": [
+        "solid_rectangular_volume",
+        "top_studs",
+        "underside_stud_receivers"
+      ],
+      "dimensions_mm": {
+        "width": 16,
+        "depth": 8,
+        "height": 3.2
+      },
+      "candidate_status": "nominal_connection_profile",
+      "interfaces": [
+        {
+          "interface_id": "top-stud-xm10_z0",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            0
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_z0",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            0
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_z0",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            3.2,
+            0
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_z0",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            3.2,
+            0
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        }
+      ],
+      "source": {
+        "file": "parts/3023.dat",
+        "revision": null,
+        "license": "Licensed under CC BY 4.0 : see CAreadme.txt",
+        "author": "Unknown (see LDraw source header)",
+        "library_commit": null
+      }
+    },
+    {
+      "part_id": "3024",
+      "description": "Plate 1 x 1",
+      "roles": [
+        "structural",
+        "chassis",
+        "body",
+        "wall",
+        "floor",
+        "base",
+        "platform",
+        "support"
+      ],
+      "capabilities": [
+        "solid_rectangular_volume",
+        "top_studs",
+        "underside_stud_receivers"
+      ],
+      "dimensions_mm": {
+        "width": 8,
+        "depth": 8,
+        "height": 3.2
+      },
+      "candidate_status": "nominal_connection_profile",
+      "interfaces": [
+        {
+          "interface_id": "top-stud-x0_z0",
+          "interface_type": "stud",
+          "position_mm": [
+            0,
+            0,
+            0
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x0_z0",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            0,
+            3.2,
+            0
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        }
+      ],
+      "source": {
+        "file": "parts/3024.dat",
+        "revision": null,
+        "license": "Licensed under CC BY 4.0 : see CAreadme.txt",
+        "author": "Unknown (see LDraw source header)",
+        "library_commit": null
+      }
+    },
+    {
+      "part_id": "3034",
+      "description": "Plate 2 x 8",
+      "roles": [
+        "structural",
+        "chassis",
+        "body",
+        "wall",
+        "floor",
+        "base",
+        "platform",
+        "support"
+      ],
+      "capabilities": [
+        "solid_rectangular_volume",
+        "top_studs",
+        "underside_stud_receivers"
+      ],
+      "dimensions_mm": {
+        "width": 16,
+        "depth": 64,
+        "height": 3.2
+      },
+      "candidate_status": "nominal_connection_profile",
+      "interfaces": [
+        {
+          "interface_id": "top-stud-xm10_zm70",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            -28
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm10_zm50",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            -20
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm10_zm30",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            -12
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm10_zm10",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm10_z10",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm10_z30",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            12
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm10_z50",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            20
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm10_z70",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            28
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_zm70",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            -28
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_zm50",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            -20
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_zm30",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            -12
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_zm10",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_z10",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_z30",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            12
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_z50",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            20
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_z70",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            28
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_zm70",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            3.2,
+            -28
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_zm50",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            3.2,
+            -20
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_zm30",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            3.2,
+            -12
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_zm10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            3.2,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_z10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            3.2,
+            4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_z30",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            3.2,
+            12
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_z50",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            3.2,
+            20
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_z70",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            3.2,
+            28
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_zm70",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            3.2,
+            -28
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_zm50",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            3.2,
+            -20
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_zm30",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            3.2,
+            -12
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_zm10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            3.2,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_z10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            3.2,
+            4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_z30",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            3.2,
+            12
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_z50",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            3.2,
+            20
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_z70",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            3.2,
+            28
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        }
+      ],
+      "source": {
+        "file": "parts/3034.dat",
+        "revision": null,
+        "license": "Licensed under CC BY 4.0 : see CAreadme.txt",
+        "author": "Unknown (see LDraw source header)",
+        "library_commit": null
+      }
+    },
+    {
+      "part_id": "3460",
+      "description": "Plate 1 x 8",
+      "roles": [
+        "structural",
+        "chassis",
+        "body",
+        "wall",
+        "floor",
+        "base",
+        "platform",
+        "support"
+      ],
+      "capabilities": [
+        "solid_rectangular_volume",
+        "top_studs",
+        "underside_stud_receivers"
+      ],
+      "dimensions_mm": {
+        "width": 8,
+        "depth": 64,
+        "height": 3.2
+      },
+      "candidate_status": "nominal_connection_profile",
+      "interfaces": [
+        {
+          "interface_id": "top-stud-x0_zm70",
+          "interface_type": "stud",
+          "position_mm": [
+            0,
+            0,
+            -28
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x0_zm50",
+          "interface_type": "stud",
+          "position_mm": [
+            0,
+            0,
+            -20
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x0_zm30",
+          "interface_type": "stud",
+          "position_mm": [
+            0,
+            0,
+            -12
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x0_zm10",
+          "interface_type": "stud",
+          "position_mm": [
+            0,
+            0,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x0_z10",
+          "interface_type": "stud",
+          "position_mm": [
+            0,
+            0,
+            4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x0_z30",
+          "interface_type": "stud",
+          "position_mm": [
+            0,
+            0,
+            12
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x0_z50",
+          "interface_type": "stud",
+          "position_mm": [
+            0,
+            0,
+            20
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x0_z70",
+          "interface_type": "stud",
+          "position_mm": [
+            0,
+            0,
+            28
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x0_zm70",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            0,
+            3.2,
+            -28
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x0_zm50",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            0,
+            3.2,
+            -20
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x0_zm30",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            0,
+            3.2,
+            -12
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x0_zm10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            0,
+            3.2,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x0_z10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            0,
+            3.2,
+            4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x0_z30",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            0,
+            3.2,
+            12
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x0_z50",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            0,
+            3.2,
+            20
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x0_z70",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            0,
+            3.2,
+            28
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        }
+      ],
+      "source": {
+        "file": "parts/3460.dat",
+        "revision": null,
+        "license": "Licensed under CC BY 4.0 : see CAreadme.txt",
+        "author": "Unknown (see LDraw source header)",
+        "library_commit": null
+      }
+    },
+    {
+      "part_id": "3622",
+      "description": "Brick 1 x 3",
+      "roles": [
+        "structural",
+        "chassis",
+        "body",
+        "wall",
+        "floor",
+        "base",
+        "platform",
+        "support"
+      ],
+      "capabilities": [
+        "solid_rectangular_volume",
+        "top_studs",
+        "underside_stud_receivers"
+      ],
+      "dimensions_mm": {
+        "width": 24,
+        "depth": 8,
+        "height": 9.600000000000001
+      },
+      "candidate_status": "nominal_connection_profile",
+      "interfaces": [
+        {
+          "interface_id": "top-stud-xm20_z0",
+          "interface_type": "stud",
+          "position_mm": [
+            -8,
+            0,
+            0
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x0_z0",
+          "interface_type": "stud",
+          "position_mm": [
+            0,
+            0,
+            0
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x20_z0",
+          "interface_type": "stud",
+          "position_mm": [
+            8,
+            0,
+            0
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm20_z0",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -8,
+            9.600000000000001,
+            0
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x0_z0",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            0,
+            9.600000000000001,
+            0
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x20_z0",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            8,
+            9.600000000000001,
+            0
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        }
+      ],
+      "source": {
+        "file": "parts/3622.dat",
+        "revision": null,
+        "license": "Licensed under CC BY 4.0 : see CAreadme.txt",
+        "author": "James Jessiman",
+        "library_commit": null
+      }
+    },
+    {
+      "part_id": "3623",
+      "description": "Plate 1 x 3",
+      "roles": [
+        "structural",
+        "chassis",
+        "body",
+        "wall",
+        "floor",
+        "base",
+        "platform",
+        "support"
+      ],
+      "capabilities": [
+        "solid_rectangular_volume",
+        "top_studs",
+        "underside_stud_receivers"
+      ],
+      "dimensions_mm": {
+        "width": 8,
+        "depth": 24,
+        "height": 3.2
+      },
+      "candidate_status": "nominal_connection_profile",
+      "interfaces": [
+        {
+          "interface_id": "top-stud-x0_zm20",
+          "interface_type": "stud",
+          "position_mm": [
+            0,
+            0,
+            -8
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x0_z0",
+          "interface_type": "stud",
+          "position_mm": [
+            0,
+            0,
+            0
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x0_z20",
+          "interface_type": "stud",
+          "position_mm": [
+            0,
+            0,
+            8
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x0_zm20",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            0,
+            3.2,
+            -8
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x0_z0",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            0,
+            3.2,
+            0
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x0_z20",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            0,
+            3.2,
+            8
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        }
+      ],
+      "source": {
+        "file": "parts/3623.dat",
+        "revision": null,
+        "license": "Licensed under CC BY 4.0 : see CAreadme.txt",
+        "author": "Unknown (see LDraw source header)",
+        "library_commit": null
+      }
+    },
+    {
+      "part_id": "3666",
+      "description": "Plate 1 x 6",
+      "roles": [
+        "structural",
+        "chassis",
+        "body",
+        "wall",
+        "floor",
+        "base",
+        "platform",
+        "support"
+      ],
+      "capabilities": [
+        "solid_rectangular_volume",
+        "top_studs",
+        "underside_stud_receivers"
+      ],
+      "dimensions_mm": {
+        "width": 8,
+        "depth": 48,
+        "height": 3.2
+      },
+      "candidate_status": "nominal_connection_profile",
+      "interfaces": [
+        {
+          "interface_id": "top-stud-x0_zm50",
+          "interface_type": "stud",
+          "position_mm": [
+            0,
+            0,
+            -20
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x0_zm30",
+          "interface_type": "stud",
+          "position_mm": [
+            0,
+            0,
+            -12
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x0_zm10",
+          "interface_type": "stud",
+          "position_mm": [
+            0,
+            0,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x0_z10",
+          "interface_type": "stud",
+          "position_mm": [
+            0,
+            0,
+            4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x0_z30",
+          "interface_type": "stud",
+          "position_mm": [
+            0,
+            0,
+            12
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x0_z50",
+          "interface_type": "stud",
+          "position_mm": [
+            0,
+            0,
+            20
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x0_zm50",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            0,
+            3.2,
+            -20
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x0_zm30",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            0,
+            3.2,
+            -12
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x0_zm10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            0,
+            3.2,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x0_z10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            0,
+            3.2,
+            4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x0_z30",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            0,
+            3.2,
+            12
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x0_z50",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            0,
+            3.2,
+            20
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        }
+      ],
+      "source": {
+        "file": "parts/3666.dat",
+        "revision": null,
+        "license": "Licensed under CC BY 4.0 : see CAreadme.txt",
+        "author": "Unknown (see LDraw source header)",
+        "library_commit": null
+      }
+    },
+    {
+      "part_id": "3710",
+      "description": "Plate 1 x 4",
+      "roles": [
+        "structural",
+        "chassis",
+        "body",
+        "wall",
+        "floor",
+        "base",
+        "platform",
+        "support"
+      ],
+      "capabilities": [
+        "solid_rectangular_volume",
+        "top_studs",
+        "underside_stud_receivers"
+      ],
+      "dimensions_mm": {
+        "width": 8,
+        "depth": 32,
+        "height": 3.2
+      },
+      "candidate_status": "nominal_connection_profile",
+      "interfaces": [
+        {
+          "interface_id": "top-stud-x0_zm30",
+          "interface_type": "stud",
+          "position_mm": [
+            0,
+            0,
+            -12
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x0_zm10",
+          "interface_type": "stud",
+          "position_mm": [
+            0,
+            0,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x0_z10",
+          "interface_type": "stud",
+          "position_mm": [
+            0,
+            0,
+            4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x0_z30",
+          "interface_type": "stud",
+          "position_mm": [
+            0,
+            0,
+            12
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x0_zm30",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            0,
+            3.2,
+            -12
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x0_zm10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            0,
+            3.2,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x0_z10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            0,
+            3.2,
+            4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x0_z30",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            0,
+            3.2,
+            12
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        }
+      ],
+      "source": {
+        "file": "parts/3710.dat",
+        "revision": null,
+        "license": "Licensed under CC BY 4.0 : see CAreadme.txt",
+        "author": "Unknown (see LDraw source header)",
+        "library_commit": null
+      }
+    },
+    {
+      "part_id": "3795",
+      "description": "Plate 2 x 6",
+      "roles": [
+        "structural",
+        "chassis",
+        "body",
+        "wall",
+        "floor",
+        "base",
+        "platform",
+        "support"
+      ],
+      "capabilities": [
+        "solid_rectangular_volume",
+        "top_studs",
+        "underside_stud_receivers"
+      ],
+      "dimensions_mm": {
+        "width": 16,
+        "depth": 48,
+        "height": 3.2
+      },
+      "candidate_status": "nominal_connection_profile",
+      "interfaces": [
+        {
+          "interface_id": "top-stud-xm10_zm50",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            -20
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm10_zm30",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            -12
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm10_zm10",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm10_z10",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm10_z30",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            12
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm10_z50",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            20
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_zm50",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            -20
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_zm30",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            -12
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_zm10",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_z10",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_z30",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            12
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_z50",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            20
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_zm50",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            3.2,
+            -20
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_zm30",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            3.2,
+            -12
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_zm10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            3.2,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_z10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            3.2,
+            4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_z30",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            3.2,
+            12
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_z50",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            3.2,
+            20
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_zm50",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            3.2,
+            -20
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_zm30",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            3.2,
+            -12
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_zm10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            3.2,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_z10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            3.2,
+            4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_z30",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            3.2,
+            12
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_z50",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            3.2,
+            20
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        }
+      ],
+      "source": {
+        "file": "parts/3795.dat",
+        "revision": null,
+        "license": "Licensed under CC BY 4.0 : see CAreadme.txt",
+        "author": "Unknown (see LDraw source header)",
+        "library_commit": null
+      }
+    },
+    {
+      "part_id": "3832",
+      "description": "Plate 2 x 10",
+      "roles": [
+        "structural",
+        "chassis",
+        "body",
+        "wall",
+        "floor",
+        "base",
+        "platform",
+        "support"
+      ],
+      "capabilities": [
+        "solid_rectangular_volume",
+        "top_studs",
+        "underside_stud_receivers"
+      ],
+      "dimensions_mm": {
+        "width": 16,
+        "depth": 80,
+        "height": 3.2
+      },
+      "candidate_status": "nominal_connection_profile",
+      "interfaces": [
+        {
+          "interface_id": "top-stud-xm10_zm90",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            -36
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm10_zm70",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            -28
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm10_zm50",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            -20
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm10_zm30",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            -12
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm10_zm10",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm10_z10",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm10_z30",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            12
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm10_z50",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            20
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm10_z70",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            28
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-xm10_z90",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            36
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_zm90",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            -36
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_zm70",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            -28
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_zm50",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            -20
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_zm30",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            -12
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_zm10",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_z10",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_z30",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            12
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_z50",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            20
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_z70",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            28
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "top-stud-x10_z90",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            36
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_zm90",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            3.2,
+            -36
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_zm70",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            3.2,
+            -28
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_zm50",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            3.2,
+            -20
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_zm30",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            3.2,
+            -12
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_zm10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            3.2,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_z10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            3.2,
+            4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_z30",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            3.2,
+            12
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_z50",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            3.2,
+            20
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_z70",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            3.2,
+            28
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-xm10_z90",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            3.2,
+            36
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_zm90",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            3.2,
+            -36
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_zm70",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            3.2,
+            -28
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_zm50",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            3.2,
+            -20
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_zm30",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            3.2,
+            -12
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_zm10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            3.2,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_z10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            3.2,
+            4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_z30",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            3.2,
+            12
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_z50",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            3.2,
+            20
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_z70",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            3.2,
+            28
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        },
+        {
+          "interface_id": "underside-receiver-x10_z90",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            3.2,
+            36
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "catalogue_datum"
+        }
+      ],
+      "source": {
+        "file": "parts/3832.dat",
+        "revision": null,
+        "license": "Licensed under CC BY 4.0 : see CAreadme.txt",
+        "author": "Unknown (see LDraw source header)",
+        "library_commit": null
+      }
+    },
+    {
+      "part_id": "3700",
+      "description": "Technic Brick 1 x 2 with Hole",
+      "roles": [
+        "beam",
+        "structural_link"
+      ],
+      "capabilities": [
+        "technic_pin_holes",
+        "top_studs"
+      ],
+      "dimensions_mm": {
+        "width": 16,
+        "height": 9.6,
+        "depth": 8
+      },
+      "candidate_status": "nominal_geometry_available",
+      "interfaces": [
+        {
+          "interface_id": "pin-hole-1",
+          "interface_type": "technic_pin_hole",
+          "position_mm": [
+            0,
+            4,
+            0
+          ],
+          "axis_vector": [
+            0,
+            0,
+            1
+          ],
+          "nominal_diameter_mm": 4.8,
+          "evidence_status": "nominal_geometry_derived",
+          "source_primitive": "p/peghole.dat"
+        }
+      ],
+      "source": {
+        "file": "parts/3700.dat",
+        "revision": "UPDATE 2010-02",
+        "license": "CC BY 4.0",
+        "author": null,
+        "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
+      }
+    },
+    {
+      "part_id": "3701",
+      "description": "Technic Brick 1 x 4 with Holes",
+      "roles": [
+        "beam",
+        "structural_link"
+      ],
+      "capabilities": [
+        "technic_pin_holes",
+        "top_studs"
+      ],
+      "dimensions_mm": {
+        "width": 32,
+        "height": 9.6,
+        "depth": 8
+      },
+      "candidate_status": "nominal_geometry_available",
+      "interfaces": [
+        {
+          "interface_id": "pin-hole-1",
+          "interface_type": "technic_pin_hole",
+          "position_mm": [
+            -8,
+            4,
+            0
+          ],
+          "axis_vector": [
+            0,
+            0,
+            1
+          ],
+          "nominal_diameter_mm": 4.8,
+          "evidence_status": "nominal_geometry_derived",
+          "source_primitive": "p/peghole.dat"
+        },
+        {
+          "interface_id": "pin-hole-2",
+          "interface_type": "technic_pin_hole",
+          "position_mm": [
+            0,
+            4,
+            0
+          ],
+          "axis_vector": [
+            0,
+            0,
+            1
+          ],
+          "nominal_diameter_mm": 4.8,
+          "evidence_status": "nominal_geometry_derived",
+          "source_primitive": "p/peghole.dat"
+        },
+        {
+          "interface_id": "pin-hole-3",
+          "interface_type": "technic_pin_hole",
+          "position_mm": [
+            8,
+            4,
+            0
+          ],
+          "axis_vector": [
+            0,
+            0,
+            1
+          ],
+          "nominal_diameter_mm": 4.8,
+          "evidence_status": "nominal_geometry_derived",
+          "source_primitive": "p/peghole.dat"
+        }
+      ],
+      "source": {
+        "file": "parts/3701.dat",
+        "revision": "UPDATE 2010-02",
+        "license": "CC BY 4.0",
+        "author": null,
+        "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
+      }
+    },
+    {
+      "part_id": "3702",
+      "description": "Technic Brick 1 x 8 with Holes",
+      "roles": [
+        "beam",
+        "structural_link"
+      ],
+      "capabilities": [
+        "technic_pin_holes",
+        "top_studs"
+      ],
+      "dimensions_mm": {
+        "width": 64,
+        "height": 9.6,
+        "depth": 8
+      },
+      "candidate_status": "nominal_geometry_available",
+      "interfaces": [
+        {
+          "interface_id": "pin-hole-1",
+          "interface_type": "technic_pin_hole",
+          "position_mm": [
+            -24,
+            4,
+            0
+          ],
+          "axis_vector": [
+            0,
+            0,
+            1
+          ],
+          "nominal_diameter_mm": 4.8,
+          "evidence_status": "nominal_geometry_derived",
+          "source_primitive": "p/peghole.dat"
+        },
+        {
+          "interface_id": "pin-hole-2",
+          "interface_type": "technic_pin_hole",
+          "position_mm": [
+            -16,
+            4,
+            0
+          ],
+          "axis_vector": [
+            0,
+            0,
+            1
+          ],
+          "nominal_diameter_mm": 4.8,
+          "evidence_status": "nominal_geometry_derived",
+          "source_primitive": "p/peghole.dat"
+        },
+        {
+          "interface_id": "pin-hole-3",
+          "interface_type": "technic_pin_hole",
+          "position_mm": [
+            -8,
+            4,
+            0
+          ],
+          "axis_vector": [
+            0,
+            0,
+            1
+          ],
+          "nominal_diameter_mm": 4.8,
+          "evidence_status": "nominal_geometry_derived",
+          "source_primitive": "p/peghole.dat"
+        },
+        {
+          "interface_id": "pin-hole-4",
+          "interface_type": "technic_pin_hole",
+          "position_mm": [
+            0,
+            4,
+            0
+          ],
+          "axis_vector": [
+            0,
+            0,
+            1
+          ],
+          "nominal_diameter_mm": 4.8,
+          "evidence_status": "nominal_geometry_derived",
+          "source_primitive": "p/peghole.dat"
+        },
+        {
+          "interface_id": "pin-hole-5",
+          "interface_type": "technic_pin_hole",
+          "position_mm": [
+            8,
+            4,
+            0
+          ],
+          "axis_vector": [
+            0,
+            0,
+            1
+          ],
+          "nominal_diameter_mm": 4.8,
+          "evidence_status": "nominal_geometry_derived",
+          "source_primitive": "p/peghole.dat"
+        },
+        {
+          "interface_id": "pin-hole-6",
+          "interface_type": "technic_pin_hole",
+          "position_mm": [
+            16,
+            4,
+            0
+          ],
+          "axis_vector": [
+            0,
+            0,
+            1
+          ],
+          "nominal_diameter_mm": 4.8,
+          "evidence_status": "nominal_geometry_derived",
+          "source_primitive": "p/peghole.dat"
+        },
+        {
+          "interface_id": "pin-hole-7",
+          "interface_type": "technic_pin_hole",
+          "position_mm": [
+            24,
+            4,
+            0
+          ],
+          "axis_vector": [
+            0,
+            0,
+            1
+          ],
+          "nominal_diameter_mm": 4.8,
+          "evidence_status": "nominal_geometry_derived",
+          "source_primitive": "p/peghole.dat"
+        }
+      ],
+      "source": {
+        "file": "parts/3702.dat",
+        "revision": "UPDATE 2010-02",
+        "license": "CC BY 4.0",
+        "author": null,
+        "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
+      }
+    },
+    {
+      "part_id": "32064a",
+      "description": "Technic Brick 1 x 2 with Axlehole with Open Sides and Stud Blocker",
+      "roles": [
+        "axle_connector_candidate"
+      ],
+      "capabilities": [
+        "technic_axle_cross_hole"
+      ],
+      "dimensions_mm": null,
+      "candidate_status": "reference_only",
+      "interfaces": [],
+      "source": {
+        "file": "parts/32064a.dat",
+        "revision": "UPDATE 2022-02",
+        "license": "CC BY 2.0 and CC BY 4.0",
+        "author": null,
+        "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
+      }
+    }
+  ]
+}
