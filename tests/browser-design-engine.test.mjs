@@ -78,7 +78,7 @@ test("required spatial relationships are evaluated before construction", () => {
   related.components.push({
     id: "roof", role: "structural", geometry: "rectangular_prism",
     dimensions_mm: { width: 32, depth: 32, height: 9.6 },
-    position_mm: { x: 0, y: 19.2, z: 0 }, priority: "essential"
+    position_mm: { x: 0, y: 10, z: 0 }, priority: "essential"
   });
   related.relationships = [{ type: "above", from: "roof", to: "body" }];
   const result = planDesign(related, catalogue);
