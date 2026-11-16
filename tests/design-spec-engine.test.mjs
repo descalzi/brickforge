@@ -142,3 +142,16 @@ test("rejects negative space outside the positive design volume", async () => {
   }];
   assert.throws(() => constructDesign(invalid, catalogue), /extends outside the positive design/);
 });
+
+test("preserves required functional interfaces in the brief but refuses fake construction", async () => {
+  const catalogue = JSON.parse(await readFile(new URL("../docs/data/connection-profiles/basic-bricks.json", import.meta.url), "utf8"));
+  const functional = structuredClone(carBrief);
+  functional.components[0].required_interfaces = [{
+    interface_type: "technic_pin_hole",
+    diameter_mm: 4.8,
+    axis_vector: [0,0,1],
+    count: 1,
+  }];
+  assert.equal(validateDesignSpec(functional).valid, true);
+  assert.throws(() => constructDesign(functional, catalogue), /Required functional interfaces/);
+});
