@@ -1,8 +1,8 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
-import { buildFootprintBlock, buildRectangularBlock } from "./construction-engine.js?v=3233205dd5e1";
-import { recenterCameraPosition } from "./camera-utils.js?v=3233205dd5e1";
+import { buildFootprintBlock, buildRectangularBlock } from "./construction-engine.js?v=07b56d3093e4";
+import { recenterCameraPosition } from "./camera-utils.js?v=07b56d3093e4";
 
 const viewport = document.querySelector("#builder-viewport");
 const emptyState = document.querySelector("#builder-empty");
@@ -370,7 +370,7 @@ function parseFootprintGrid(value) {
 
 function buildFootprintInWorker(cells, height, options) {
   return new Promise((resolve, reject) => {
-    const worker = new Worker("./assets/footprint-worker.js?v=3233205dd5e1", { type: "module" });
+    const worker = new Worker("./assets/footprint-worker.js?v=07b56d3093e4", { type: "module" });
     worker.addEventListener("message", (event) => {
       worker.terminate();
       if (event.data && event.data.ok) {
@@ -515,7 +515,7 @@ function downloadBom() {
 }
 
 async function loadCatalogue() {
-  const response = await fetch("./data/connection-profiles/basic-bricks.json?v=3233205dd5e1", {
+  const response = await fetch("./data/connection-profiles/basic-bricks.json?v=07b56d3093e4", {
     credentials: "same-origin",
     headers: { Accept: "application/json" },
   });

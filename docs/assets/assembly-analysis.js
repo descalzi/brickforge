@@ -1,4 +1,4 @@
-import { transformVector } from './specialist-placement.js?v=3233205dd5e1';
+import { transformVector } from './specialist-placement.js?v=07b56d3093e4';
 export function partBodyBounds(part,profile){
  const vertices=profile.body_vertices_mm||[-1,1].flatMap(x=>[0,profile.body_height_ldu*.4].flatMap(y=>[-1,1].map(z=>[x*profile.footprint_studs_x*4,y,z*profile.footprint_studs_z*4])));
  const points=vertices.map(p=>transformVector(part.matrix,p).map((v,i)=>(v+part.translation_ldu[i]*.4)*(i===0?1:-1)));

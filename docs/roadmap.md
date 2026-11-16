@@ -11,7 +11,7 @@ optional reference tool. The old mesh-first programme is retained in the
 | --- | --- | --- |
 | Object specification | Versioned millimetre contract, components, shapes, relations, empty spaces, explicit dimension tolerance, visual position/colour edits, dimension ratios, axis/anchor alignment and mirror-plane constraints | Unrestricted relative-layout and component pose synthesis |
 | Part discovery and composition | Curated source-backed structural elements, slopes, open frames, mirrored wings, round elements, wheel-pin mounts and tyre/rim composition; export uses real part instances | Wider family coverage, glazing/hinged doors, clips, hinges, axles and richer multi-part mechanisms |
-| Global fitting | Exact structural tiling, profile matching, all 24 proper right-angle rotations, repeated extrusions, mixed component course heights, direct-attachment constraint pruning and bounded connector-derived pose fitting | General multi-element curved/profile packing and automatic shape/pose redesign; the original challenge briefs are still independent acceptance targets |
+| Global fitting | Exact structural tiling, profile matching, all 24 proper right-angle rotations, repeated extrusions, mixed component course heights, direct-attachment constraint pruning and bounded connector-, alignment- and mirror-derived pose fitting | General multi-element curved/profile packing and automatic shape/pose redesign; the original challenge briefs are still independent acceptance targets |
 | Validation | Contract and realised relation checks, nominal mating graph, placed body envelopes with explicit rim/tyre seat exceptions, support projection proxy and straight approach envelope checks | Measured clutch, detailed mesh collision/insertion, hand access, intermediate support, loads and physical stability; none is certified by nominal checks |
 | Instructions and revisions | Canonical graph sequence, scene-step inspection, matching LDraw STEP records, real-instance BOM, vector PDF with embedded font, browser-local saved brief revisions | Physical build trials, complex subassembly sequencing, exploded views and broader instruction usability tests |
 | Language integration | Provider-independent request/prompt/schema, output validation, cancellation, explicit HTTPS gateway transport and export/import route | A deployed provider, authentication/cost policy, and evaluation of actual model outputs on unseen descriptions; no hosted model service is bundled |
@@ -21,7 +21,7 @@ optional reference tool. The old mesh-first programme is retained in the
 The studio includes working briefs for an interlocked body, a wall with two
 openings, a table, a stepped platform, a courtyard, a windowed pavilion, a sloped
 canopy, a small road car, a tapered-wing aircraft, a rounded mushroom study and a
-doorway wall, plus an approximate-wheel vehicle that must fit its joints within declared tolerances. The briefs contain no part IDs or build recipes.
+doorway wall, plus an approximate-wheel vehicle that must fit its joints within declared tolerances and an approximately positioned table top resolved through explicit alignment. The briefs contain no part IDs or build recipes.
 
 New category examples demonstrate curated capabilities. They do not replace or
 mark complete the original car, house, aircraft and sphere/organic challenges.

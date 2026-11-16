@@ -1894,6 +1894,147 @@
         "Four nominal wheel-pin joints are required; rolling friction and physical retention are not certified.",
         "Wheel dimensions and positions are approximate within an explicit 2 mm allowance."
       ]
+    },
+    {
+      "schema_version": 1,
+      "design_id": "aligned-table",
+      "name": "Table \u00b7 approximate top fitted by alignment",
+      "units": "mm",
+      "components": [
+        {
+          "id": "leg-front-left",
+          "label": "Leg Front Left",
+          "role": "support",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 8,
+            "depth": 8,
+            "height": 19.2
+          },
+          "position_mm": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "colour": 0
+        },
+        {
+          "id": "leg-front-right",
+          "label": "Leg Front Right",
+          "role": "support",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 8,
+            "depth": 8,
+            "height": 19.2
+          },
+          "position_mm": {
+            "x": 24,
+            "y": 0,
+            "z": 0
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "colour": 0
+        },
+        {
+          "id": "leg-back-left",
+          "label": "Leg Back Left",
+          "role": "support",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 8,
+            "depth": 8,
+            "height": 19.2
+          },
+          "position_mm": {
+            "x": 0,
+            "y": 0,
+            "z": 24
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "colour": 0
+        },
+        {
+          "id": "leg-back-right",
+          "label": "Leg Back Right",
+          "role": "support",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 8,
+            "depth": 8,
+            "height": 19.2
+          },
+          "position_mm": {
+            "x": 24,
+            "y": 0,
+            "z": 24
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "colour": 0
+        },
+        {
+          "id": "top",
+          "label": "Top",
+          "role": "platform",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 32,
+            "depth": 32,
+            "height": 19.2
+          },
+          "position_mm": {
+            "x": 0.5,
+            "y": 19.6,
+            "z": -0.7
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "colour": 15,
+          "position_tolerance_mm": 1
+        }
+      ],
+      "relationships": [
+        {
+          "type": "aligned_with",
+          "from": "top",
+          "to": "leg-front-left",
+          "axis": "x",
+          "from_anchor": "min",
+          "to_anchor": "min",
+          "tolerance_mm": 0.001
+        },
+        {
+          "type": "aligned_with",
+          "from": "top",
+          "to": "leg-front-left",
+          "axis": "y",
+          "from_anchor": "min",
+          "to_anchor": "max",
+          "tolerance_mm": 0.001
+        },
+        {
+          "type": "aligned_with",
+          "from": "top",
+          "to": "leg-front-left",
+          "axis": "z",
+          "from_anchor": "min",
+          "to_anchor": "min",
+          "tolerance_mm": 0.001
+        }
+      ],
+      "constraints": {
+        "require_connected": true,
+        "allow_intersections": false,
+        "max_parts": 200,
+        "max_search_nodes": 100000,
+        "course_type": "brick"
+      },
+      "negative_spaces": []
     }
   ],
   "challenge_specs": [

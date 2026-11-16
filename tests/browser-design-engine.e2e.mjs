@@ -87,6 +87,8 @@ try{
  await page.click("#save-revision");const revision=await page.locator("#revision-select option").nth(1).getAttribute('value');assert.ok(revision);
  await page.selectOption("#fixture-select","tapered-aircraft");await page.click("#run-design");await page.waitForFunction(()=>document.querySelector("#engine-status").dataset.state==="planned");
  const aircraft=JSON.parse(await page.locator("#engine-report").innerText());assert.ok(['3933','3934'].every(id=>aircraft.parts.some(p=>p.part_id===id)));assert.ok(aircraft.relationship_checks.every(c=>c.status==='passed'));assert.equal(aircraft.relationship_checks.filter(c=>c.type==='dimension_ratio').length,1);
+ await page.selectOption('#fixture-select','aligned-table');await page.click('#run-design');await page.waitForFunction(()=>document.querySelector('#engine-status').dataset.state==='planned');
+ const alignedTable=JSON.parse(await page.locator('#engine-report').innerText());assert.ok(alignedTable.search.layout_candidates_generated>0);assert.ok(alignedTable.relationship_checks.every(c=>c.status==='passed'));await page.screenshot({path:'/tmp/brickforge-aligned-table.png',fullPage:true});
  await page.selectOption("#revision-select",revision);assert.equal(JSON.parse(await page.locator("#design-spec").inputValue()).components[0].colour,1);
  // A gateway is mocked only as transport/contract evidence, not real LLM quality.
  await page.locator(".description-panel").evaluate(el=>el.open=true);await page.fill("#description-input","A small vehicle with four rotating wheels.");await page.fill("#interpretation-endpoint","https://brickforge-gateway.example/interpret");
