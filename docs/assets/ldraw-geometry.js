@@ -163,8 +163,9 @@ export function createLDrawGeometryResolver(catalogue, options = {}) {
 
   async function resolvePart(partId, partIndex, resolveOptions = {}) {
     const part = partIndex?.parts?.find((item) => item.part_id === String(partId));
-    if (!part || typeof part.filename !== "string" || !part.filename.startsWith("parts/")) {
-      throw new Error("Part " + partId + " is not present in the searchable LDraw index.");
+    if (!part || typeof part.filename !== "string" || !part.filename.startsWith("parts/")
+        || part.filename.includes("\\\\") || part.filename.split("/").some((segment) => !segment || segment === "." || segment === "..")) {
+      throw new Error("Part " + partId + " is not present at a safe top-level path in the searchable LDraw index.");
     }
     const root = await loadDocument(part.filename);
     const positions = [];
