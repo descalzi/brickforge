@@ -35,6 +35,10 @@ export function matchRequiredInterfaces(requiredInterfaces, candidateInterfaces,
         && (!Number.isFinite(requirement.diameter_mm) || requirement.diameter_mm <= 0)) {
       throw new TypeError("Required interface " + index + " has an invalid diameter_mm.");
     }
+    if (requirement.max_diameter_error_mm !== undefined
+        && (!Number.isFinite(requirement.max_diameter_error_mm) || requirement.max_diameter_error_mm < 0)) {
+      throw new TypeError("Required interface " + index + " has an invalid max_diameter_error_mm.");
+    }
     return { ...requirement, count: requirement.count ?? 1, axis };
   });
   const matches = requirements.map((requirement) => {
