@@ -123,6 +123,8 @@ try {
       technicGeometryResolvedCount: beamRanking.ranking.geometry_resolved_count,
       technicBeamPartId: selectedBeam?.part_id,
       technicBeamInterfaceCandidate: selectedBeam?.specialised_interface_candidate,
+      technicBeamPlacementCandidate: selectedBeam?.component_placement_candidate,
+      technicBeamLocalTransform: selectedBeam?.part_local_transform,
       technicBeamPhysicalConnectionVerified: selectedBeam?.specialised_interface_match?.physical_connection_verified,
       parts: assembly.parts.length,
       edges: assembly.connections.length,
@@ -148,6 +150,8 @@ try {
   assert.equal(result.technicGeometryResolvedCount, 1);
   assert.equal(result.technicBeamPartId, "3701");
   assert.equal(result.technicBeamInterfaceCandidate, true);
+  assert.equal(result.technicBeamPlacementCandidate, true);
+  assert.equal(result.technicBeamLocalTransform.coordinate_frame, "component-centred-millimetres");
   assert.equal(result.technicBeamPhysicalConnectionVerified, false);
   assert.ok(result.parts > 0);
   assert.ok(result.edges > 0);
