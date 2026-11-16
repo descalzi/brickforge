@@ -53,3 +53,10 @@ test("specialist wheel, window, slope and wing parts are indexed but not promote
  assert.ok(wings.candidates.some(part=>part.part_id==="3934"&&part.candidate_status==="geometry_measured"));
  assert.ok(slopes.candidates.every(part=>part.dimensions_mm===null));
 });
+
+test("candidate dimensions are compared across orthogonal part orientations",()=>{
+ const result=discoverPartCandidates({role:"beam",dimensions_mm:{width:8,depth:32,height:11.2}},catalogue);
+ assert.equal(result.candidates[0].part_id,"3701");
+ assert.deepEqual(result.candidates[0].dimension_permutation,[1,0,2]);
+ assert.equal(result.candidates[0].dimension_error_mm,0);
+});
