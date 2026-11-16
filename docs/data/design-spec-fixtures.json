@@ -48,5 +48,531 @@
         "Only standard brick connection profiles currently have verified nominal interface datums."
       ]
     }
+  ],
+  "challenge_specs": [
+    {
+      "schema_version": 1,
+      "design_id": "challenge-car",
+      "name": "Four-wheel road car",
+      "units": "mm",
+      "relationships": [
+        {
+          "type": "above",
+          "from": "cabin",
+          "to": "chassis"
+        },
+        {
+          "type": "attached_to",
+          "from": "front-left-wheel",
+          "to": "chassis"
+        },
+        {
+          "type": "attached_to",
+          "from": "front-right-wheel",
+          "to": "chassis"
+        },
+        {
+          "type": "attached_to",
+          "from": "rear-left-wheel",
+          "to": "chassis"
+        },
+        {
+          "type": "attached_to",
+          "from": "rear-right-wheel",
+          "to": "chassis"
+        }
+      ],
+      "constraints": {
+        "require_connected": true,
+        "allow_intersections": false,
+        "max_parts": 200,
+        "max_search_nodes": 100000,
+        "course_type": "brick"
+      },
+      "appearance": {
+        "preferred_colours": [
+          4
+        ]
+      },
+      "components": [
+        {
+          "id": "chassis",
+          "role": "chassis",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 64,
+            "depth": 24,
+            "height": 9.6
+          },
+          "position_mm": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "function": [
+            "supports cabin and axles"
+          ]
+        },
+        {
+          "id": "cabin",
+          "role": "cabin",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 32,
+            "depth": 16,
+            "height": 19.2
+          },
+          "position_mm": {
+            "x": 16,
+            "y": 9.6,
+            "z": 4
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "function": [
+            "encloses passenger space"
+          ]
+        },
+        {
+          "id": "front-left-wheel",
+          "role": "wheel",
+          "geometry": "cylinder",
+          "dimensions_mm": {
+            "width": 16,
+            "depth": 8,
+            "height": 16
+          },
+          "position_mm": {
+            "x": 8,
+            "y": -8,
+            "z": -8
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "geometry_parameters": {
+            "axis": "z",
+            "diameter_mm": 16
+          },
+          "required_features": [
+            "rotating"
+          ]
+        },
+        {
+          "id": "front-right-wheel",
+          "role": "wheel",
+          "geometry": "cylinder",
+          "dimensions_mm": {
+            "width": 16,
+            "depth": 8,
+            "height": 16
+          },
+          "position_mm": {
+            "x": 8,
+            "y": -8,
+            "z": 24
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "geometry_parameters": {
+            "axis": "z",
+            "diameter_mm": 16
+          },
+          "required_features": [
+            "rotating"
+          ]
+        },
+        {
+          "id": "rear-left-wheel",
+          "role": "wheel",
+          "geometry": "cylinder",
+          "dimensions_mm": {
+            "width": 16,
+            "depth": 8,
+            "height": 16
+          },
+          "position_mm": {
+            "x": 40,
+            "y": -8,
+            "z": -8
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "geometry_parameters": {
+            "axis": "z",
+            "diameter_mm": 16
+          },
+          "required_features": [
+            "rotating"
+          ]
+        },
+        {
+          "id": "rear-right-wheel",
+          "role": "wheel",
+          "geometry": "cylinder",
+          "dimensions_mm": {
+            "width": 16,
+            "depth": 8,
+            "height": 16
+          },
+          "position_mm": {
+            "x": 40,
+            "y": -8,
+            "z": 24
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "geometry_parameters": {
+            "axis": "z",
+            "diameter_mm": 16
+          },
+          "required_features": [
+            "rotating"
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": 1,
+      "design_id": "challenge-house",
+      "name": "House with windows and pitched roof",
+      "units": "mm",
+      "relationships": [
+        {
+          "type": "above",
+          "from": "roof",
+          "to": "front-wall"
+        },
+        {
+          "type": "attached_to",
+          "from": "front-window",
+          "to": "front-wall"
+        }
+      ],
+      "constraints": {
+        "require_connected": true,
+        "allow_intersections": false,
+        "max_parts": 200,
+        "max_search_nodes": 100000,
+        "course_type": "brick"
+      },
+      "appearance": {
+        "preferred_colours": [
+          4
+        ]
+      },
+      "components": [
+        {
+          "id": "foundation",
+          "role": "base",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 64,
+            "depth": 64,
+            "height": 9.6
+          },
+          "position_mm": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "priority": "essential",
+          "confidence": "explicit"
+        },
+        {
+          "id": "front-wall",
+          "role": "wall",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 64,
+            "depth": 8,
+            "height": 28.8
+          },
+          "position_mm": {
+            "x": 0,
+            "y": 9.6,
+            "z": 0
+          },
+          "priority": "essential",
+          "confidence": "explicit"
+        },
+        {
+          "id": "back-wall",
+          "role": "wall",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 64,
+            "depth": 8,
+            "height": 28.8
+          },
+          "position_mm": {
+            "x": 0,
+            "y": 9.6,
+            "z": 56
+          },
+          "priority": "essential",
+          "confidence": "explicit"
+        },
+        {
+          "id": "left-wall",
+          "role": "wall",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 8,
+            "depth": 48,
+            "height": 28.8
+          },
+          "position_mm": {
+            "x": 0,
+            "y": 9.6,
+            "z": 8
+          },
+          "priority": "essential",
+          "confidence": "explicit"
+        },
+        {
+          "id": "right-wall",
+          "role": "wall",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 8,
+            "depth": 48,
+            "height": 28.8
+          },
+          "position_mm": {
+            "x": 56,
+            "y": 9.6,
+            "z": 8
+          },
+          "priority": "essential",
+          "confidence": "explicit"
+        },
+        {
+          "id": "front-window",
+          "role": "window",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 16,
+            "depth": 8,
+            "height": 16
+          },
+          "position_mm": {
+            "x": 24,
+            "y": 16,
+            "z": -8
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "required_features": [
+            "window"
+          ]
+        },
+        {
+          "id": "roof",
+          "role": "roof",
+          "geometry": "extruded_profile",
+          "dimensions_mm": {
+            "width": 64,
+            "depth": 64,
+            "height": 16
+          },
+          "position_mm": {
+            "x": 0,
+            "y": 38.4,
+            "z": 0
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "geometry_parameters": {
+            "depth_mm": 64,
+            "outline_mm": [
+              [
+                0,
+                0
+              ],
+              [
+                32,
+                16
+              ],
+              [
+                64,
+                0
+              ]
+            ]
+          },
+          "required_features": [
+            "sloped"
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": 1,
+      "design_id": "challenge-aircraft",
+      "name": "High-wing aircraft",
+      "units": "mm",
+      "relationships": [
+        {
+          "type": "aligned_with",
+          "from": "main-wing",
+          "to": "fuselage"
+        },
+        {
+          "type": "above",
+          "from": "tailplane",
+          "to": "fuselage"
+        }
+      ],
+      "constraints": {
+        "require_connected": true,
+        "allow_intersections": false,
+        "max_parts": 200,
+        "max_search_nodes": 100000,
+        "course_type": "brick"
+      },
+      "appearance": {
+        "preferred_colours": [
+          4
+        ]
+      },
+      "components": [
+        {
+          "id": "fuselage",
+          "role": "fuselage",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 96,
+            "depth": 16,
+            "height": 16
+          },
+          "position_mm": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "priority": "essential",
+          "confidence": "explicit"
+        },
+        {
+          "id": "main-wing",
+          "role": "wing",
+          "geometry": "extruded_profile",
+          "dimensions_mm": {
+            "width": 64,
+            "depth": 16,
+            "height": 3.2
+          },
+          "position_mm": {
+            "x": 16,
+            "y": 4,
+            "z": 0
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "geometry_parameters": {
+            "depth_mm": 16,
+            "outline_mm": [
+              [
+                0,
+                0
+              ],
+              [
+                32,
+                4
+              ],
+              [
+                64,
+                0
+              ]
+            ]
+          },
+          "required_features": [
+            "airfoil"
+          ]
+        },
+        {
+          "id": "tailplane",
+          "role": "wing",
+          "geometry": "extruded_profile",
+          "dimensions_mm": {
+            "width": 24,
+            "depth": 12,
+            "height": 2.4
+          },
+          "position_mm": {
+            "x": 72,
+            "y": 4,
+            "z": 2
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "geometry_parameters": {
+            "depth_mm": 12,
+            "outline_mm": [
+              [
+                0,
+                0
+              ],
+              [
+                12,
+                2.4
+              ],
+              [
+                24,
+                0
+              ]
+            ]
+          },
+          "required_features": [
+            "airfoil"
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": 1,
+      "design_id": "challenge-organic-form",
+      "name": "Organic sculptural form",
+      "units": "mm",
+      "relationships": [],
+      "constraints": {
+        "require_connected": true,
+        "allow_intersections": false,
+        "max_parts": 200,
+        "max_search_nodes": 100000,
+        "course_type": "brick"
+      },
+      "appearance": {
+        "preferred_colours": [
+          4
+        ]
+      },
+      "components": [
+        {
+          "id": "body",
+          "role": "organic_form",
+          "geometry": "sphere",
+          "dimensions_mm": {
+            "width": 32,
+            "depth": 32,
+            "height": 32
+          },
+          "position_mm": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "geometry_parameters": {
+            "radius_mm": 16
+          },
+          "function": [
+            "organic silhouette"
+          ]
+        }
+      ]
+    }
   ]
 }
