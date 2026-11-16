@@ -193,3 +193,19 @@ on variants of only the last layers. Source-profile mating and final material
 checks still validate selected assemblies. Beam/node limits are exposed; a good
 candidate is not an optimality proof. These stepped models do not implement
 general smooth curved-part packing.
+
+### Joint-selected dimensions and mixed heights
+
+An uncertain rectangular component enumerates structural grid sizes inside its
+explicit per-dimension allowance. Auto courses include both brick and plate
+height choices. Measured specialist alternatives are retained alongside those
+grids, and source poses/dimension groups retain search diversity. Joints, exact
+relations and collisions choose the realised size; nearest rounding alone is
+not authoritative. A shared node budget and retained-layout cap expose limits.
+Zero allowance never activates dimension changes. Original briefs are immutable.
+
+Auto structural heights that do not divide into brick courses can use the exact
+prism cover to combine bricks and plates within one component. Explicit rounded
+occupancy masks do not enter this full-box path. Rounded shape allowance and
+dimension allowance stay independent. The Studio displays requested and realised
+sizes and the allowed deviation beside connection evidence.

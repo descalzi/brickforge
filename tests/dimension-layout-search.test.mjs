@@ -1,0 +1,20 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {readFile} from 'node:fs/promises';import {planDesign} from '../docs/assets/design-engine.js';import {rectangularDimensionVariants} from '../docs/assets/dimension-variants.js';
+const read=async p=>JSON.parse(await readFile(new URL('../docs/data/'+p,import.meta.url))),cat=await read('connection-profiles/basic-bricks.json'),options={specialistCatalogue:await read('specialist-profiles-v1.json'),partCatalogue:await read('part-capabilities-v1.json'),designTranslation:await read('design-translation-v1.json')};
+const box=(id,width,depth,height,y=0)=>({id,role:'structural',geometry:'rectangular_prism',dimensions_mm:{width,depth,height},position_mm:{x:0,y,z:0},priority:'essential'});
+function design(base,top,relation){base.fit_tolerance_mm=4;return {schema_version:1,design_id:'joint-size-selection',units:'mm',components:[base,top],relationships:[{type:'attached_to',from:'base',to:'top'},relation],constraints:{require_connected:true,allow_intersections:false,max_parts:250,max_search_nodes:100000,course_type:'auto'}};}
+test('a joint and centre relationship choose 24 mm instead of the equally near 32 mm width',()=>{
+ const s=design(box('base',28,8,9.6),box('top',24,8,9.6,9.6),{type:'aligned_with',from:'base',to:'top',axis:'x',anchor:'center',tolerance_mm:.001}),original=structuredClone(s),p=planDesign(s,cat,options);assert.equal(p.status,'planned',p.failures?.join(' '));assert.deepEqual(s,original);const r=p.component_reports[0];assert.equal(r.realised_dimensions_mm.width,24);assert.ok(Math.abs(r.realised_dimensions_mm.height-9.6)<1e-6);assert.ok(r.dimension_search.variant_count>1);assert.ok(p.relationship_checks.every(c=>c.status==='passed'));
+});
+test('auto course search selects an exact plate height when nearest brick courses cannot mate',()=>{
+ const s=design(box('base',16,16,25.6),box('top',16,16,3.2,25.6),{type:'aligned_with',from:'base',to:'top',axis:'y',from_anchor:'max',to_anchor:'min',tolerance_mm:.001}),p=planDesign(s,cat,options);assert.equal(p.status,'planned',p.failures?.join(' '));assert.ok(Math.abs(p.component_reports[0].realised_dimensions_mm.height-25.6)<1e-6);assert.ok(p.component_reports[0].dimension_search.preserved_dimension_groups>1);assert.equal(p.component_reports[0].selected_construction_method,'exact_prism_material_cover');const heights=new Set(p.parts.filter(part=>part.component_id==='base').map(part=>cat.profiles.find(profile=>profile.part_id===part.part_id).body_height_ldu));assert.ok(heights.has(24)&&heights.has(8));
+});
+test('exact dimensions stay fixed and a tighter allowance cannot admit the previously required size',()=>{
+ const s=design(box('base',28,8,9.6),box('top',24,8,9.6,9.6),{type:'aligned_with',from:'base',to:'top',axis:'x',anchor:'center',tolerance_mm:.001});s.components[0].fit_tolerance_mm=3.9;assert.equal(planDesign(s,cat,options).status,'blocked');s.components[0].fit_tolerance_mm=0;assert.equal(planDesign(s,cat,options).status,'blocked');
+});
+test('dimension enumeration never extends the allowed interval and retains both boundary choices',()=>{
+ const c={...box('c',28,20,25.6),fit_tolerance_mm:4},vs=rectangularDimensionVariants(c);assert.ok(vs.some(v=>v.dimensions_mm.width===24));assert.ok(vs.some(v=>v.dimensions_mm.width===32));assert.ok(vs.some(v=>v.courseType==='plate'&&v.dimensions_mm.height===25.6));assert.ok(vs.every(v=>Object.values(v.deviation_mm).every(d=>Math.abs(d)<=4+1e-6)));
+});
+
+test('an exact auto-course box can combine brick and plate heights without changing its dimensions',()=>{
+ const base=box('base',16,16,25.6),s={schema_version:1,design_id:'exact-mixed-height',units:'mm',components:[base],relationships:[],constraints:{require_connected:true,allow_intersections:false,course_type:'auto',max_parts:200,max_search_nodes:100000}},p=planDesign(s,cat,options);assert.equal(p.status,'planned',p.failures?.join(' '));assert.equal(p.parts.length,4);assert.ok(Math.abs(p.dimensions_mm.height-25.6)<1e-6);assert.equal(p.component_reports[0].selected_construction_method,'exact_prism_material_cover');
+});

@@ -1,4 +1,4 @@
-import { scoreSurfaceFit } from "./surface-fit.js?v=1dc028710f7c";
+import { scoreSurfaceFit } from "./surface-fit.js?v=1b52eaceae39";
 
 function featureDiameter(feature) {
   return Number.isFinite(feature?.equivalent_diameter_mm)

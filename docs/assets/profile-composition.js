@@ -1,8 +1,8 @@
-import {orientationMatches} from './part-orientation.js?v=1dc028710f7c';
-import {transformVector} from './specialist-placement.js?v=1dc028710f7c';
-import {translateComponentRequirements} from './design-translation.js?v=1dc028710f7c';
-import {discoverPartCandidates} from './part-catalogue.js?v=1dc028710f7c';
-import {convexHull,polygonArea,pointInPolygon,clipConvex,triangulatePolygon} from './polygon-geometry.js?v=1dc028710f7c';
+import {orientationMatches} from './part-orientation.js?v=1b52eaceae39';
+import {transformVector} from './specialist-placement.js?v=1b52eaceae39';
+import {translateComponentRequirements} from './design-translation.js?v=1b52eaceae39';
+import {discoverPartCandidates} from './part-catalogue.js?v=1b52eaceae39';
+import {convexHull,polygonArea,pointInPolygon,clipConvex,triangulatePolygon} from './polygon-geometry.js?v=1b52eaceae39';
 const EPS=1e-6,yaws=[[1,0,0,0,1,0,0,0,1],[0,0,1,0,1,0,-1,0,0],[-1,0,0,0,1,0,0,0,-1],[0,0,-1,0,1,0,1,0,0]];
 const unique=values=>[...new Set(values.map(v=>+v.toFixed(7)))].sort((a,b)=>a-b);
 const rect=(x0,y0,x1,y1)=>[[x0,y0],[x1,y0],[x1,y1],[x0,y1]];
@@ -31,7 +31,7 @@ export function composeExtrudedProfile(component,catalogue,options,partCatalogue
     for(let z=0;z+size[ext]<=length+EPS;z+=8){if(spaces.some(s=>Math.min(s.hi,z+size[ext])-Math.max(s.lo,z)>EPS&&polygonArea(clipConvex(placed,s.polygon))>EPS))continue;
      const key=[profile.part_id,...placed.flat().map(v=>v.toFixed(6)),z,size[ext]].join(',');if(seen.has(key))continue;seen.add(key);
      const offset=[0,0,0];offset[u]=x;offset[1]=y;offset[ext]=z;const translation=origin.map((v,i)=>v+offset[i]-lo[i]);
-     candidates.push({polygon:placed,lo:z,hi:z+size[ext],volume:area*size[ext],capabilities:semantic.capabilities||[],part:{instance_id:component.id+'-pack-'+candidates.length,part_id:profile.part_id,component_id:component.id,matrix:[...matrix],translation_ldu:translation.map((v,i)=>v/.4*(i===0?1:-1)),colour_code:component.colour??options.defaultColour,course_index:Math.round(y/3.2)}});
+     candidates.push({polygon:placed,lo:z,hi:z+size[ext],volume:area*size[ext],capabilities:semantic.capabilities||[],semantic_axes:Object.keys(profile.orientation_frame||{up:[0,-1,0]}),part:{instance_id:component.id+'-pack-'+candidates.length,part_id:profile.part_id,component_id:component.id,matrix:[...matrix],translation_ldu:translation.map((v,i)=>v/.4*(i===0?1:-1)),colour_code:component.colour??options.defaultColour,course_index:Math.round(y/3.2)}});
      if(candidates.length>=maxCandidates)return {error:'Profile composition placement budget reached for '+component.id+'.',composition:{budget_exhausted:true,placement_count:candidates.length}};
     }
    }
@@ -54,7 +54,7 @@ export function composeExtrudedProfile(component,catalogue,options,partCatalogue
  if(covering.some(cs=>!cs.length))return {error:'Some required polygon material has no contained part placement on the stud/course grid.',composition:{atom_count:atoms.length,placement_count:placements.length,budget_exhausted:false}};
  const full=(1n<<BigInt(atoms.length))-1n,alternatives=[],chosen=[],maxAlternatives=options.maxComponentAlternatives||12;let nodes=0,combinations=0,exhausted=false;
  const required=translated.required_capabilities;
- function visit(covered){if(++nodes>options.maxSearchNodes||alternatives.length>=maxAlternatives){exhausted=true;return;}if(covered===full){combinations++;if(!required.every(cap=>chosen.some(i=>placements[i].capabilities.includes(cap))))return;const parts=chosen.map(i=>placements[i].part);alternatives.push({parts,score:parts.length*1000,tiling:[parts.map(p=>p.part_id)],specialist:true,composition:true});return;}if(chosen.length>=options.maxParts)return;
+ function visit(covered){if(++nodes>options.maxSearchNodes||alternatives.length>=maxAlternatives){exhausted=true;return;}if(covered===full){combinations++;if(!required.every(cap=>chosen.some(i=>placements[i].capabilities.includes(cap)))||!Object.keys(component.orientation||{}).every(axis=>chosen.some(i=>placements[i].semantic_axes.includes(axis))))return;const parts=chosen.map(i=>placements[i].part);alternatives.push({parts,score:parts.length*1000,tiling:[parts.map(p=>p.part_id)],specialist:true,composition:true});return;}if(chosen.length>=options.maxParts)return;
   let choices=null;for(let i=0;i<atoms.length;i++)if(!(covered&(1n<<BigInt(i)))){const available=covering[i].filter(j=>!(placements[j].mask&covered));if(!available.length)return;if(!choices||available.length<choices.length)choices=available;if(choices.length===1)break;}
   choices.sort((a,b)=>placements[b].volume-placements[a].volume||placements[a].part.part_id.localeCompare(placements[b].part.part_id));for(const i of choices){chosen.push(i);visit(covered|placements[i].mask);chosen.pop();if(nodes>options.maxSearchNodes||alternatives.length>=maxAlternatives)break;}
  }

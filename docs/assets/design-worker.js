@@ -1,4 +1,4 @@
-import { planDesign } from "./design-engine.js?v=1dc028710f7c";
+import { planDesign } from "./design-engine.js?v=1b52eaceae39";
 self.onmessage = ({data}) => {
   try {
     const result = planDesign(data.spec, data.catalogue, data.options);
