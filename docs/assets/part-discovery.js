@@ -1,3 +1,4 @@
+import { matchRequiredInterfaces } from "./interface-matcher.js";
 import { scoreGeometrySuitability } from "./ldraw-geometry.js";
 
 const ROLE_TERMS = Object.freeze({
@@ -43,6 +44,8 @@ export function discoverPartsForRole(role, partCatalogue, connectionCatalogue, o
   const key = normalise(role);
   const terms = options.synonyms || ROLE_TERMS[key] || [key];
   const profileIds = new Set((connectionCatalogue?.profiles || []).map((profile) => String(profile.part_id)));
+  const specialisedProfiles = new Map((options.specialisedCatalogue?.profiles || [])
+    .map((profile) => [String(profile.part_id), profile]));
   const limit = options.limit ?? 30;
   if (!Number.isInteger(limit) || limit < 1) throw new RangeError("limit must be a positive integer.");
 
@@ -72,6 +75,7 @@ export function discoverPartsForRole(role, partCatalogue, connectionCatalogue, o
     }
     if (!matches.length) continue;
     const hasConnectionProfile = profileIds.has(part.part_id);
+    const specialisedProfile = specialisedProfiles.get(part.part_id) || null;
     ranked.push({
       part_id: part.part_id,
       name: part.name || part.description || part.part_id,
@@ -80,11 +84,16 @@ export function discoverPartsForRole(role, partCatalogue, connectionCatalogue, o
       score,
       matched_terms: matches,
       connection_profile_available: hasConnectionProfile,
+      specialised_interface_profile_available: Boolean(specialisedProfile),
+      specialised_interfaces: specialisedProfile?.nominal_connection_interfaces || [],
+      specialised_dimensions_mm: specialisedProfile?.dimensions_mm || null,
       planner_eligible: false,
       geometry_inspection_required: true,
       suitability_status: hasConnectionProfile
         ? "profile_available_geometry_and_interface_checks_required"
-        : "catalogue_candidate_only_not_yet_plannable",
+        : specialisedProfile
+          ? "specialised_interfaces_available_geometry_and_assembly_checks_required"
+          : "catalogue_candidate_only_not_yet_plannable",
     });
   }
   ranked.sort((a, b) => b.score - a.score || a.part_id.localeCompare(b.part_id, undefined, { numeric: true }));
@@ -92,7 +101,7 @@ export function discoverPartsForRole(role, partCatalogue, connectionCatalogue, o
     role: key,
     query_terms: [...terms],
     candidate_count: ranked.length,
-    profiled_candidate_count: ranked.filter((candidate) => candidate.connection_profile_available).length,
+    profiled_candidate_count: ranked.filter((candidate) => candidate.connection_profile_available || candidate.specialised_interface_profile_available).length,
     planner_ready_count: 0,
     candidates: ranked.slice(0, limit),
     limitations: [
@@ -141,21 +150,35 @@ export async function rankPartCandidatesWithGeometry(discovery, geometryResolver
         const semanticScore = discovery.candidates[0]?.score
           ? 100 * candidate.score / discovery.candidates[0].score
           : 0;
-        const combinedScore = fit.score * 0.75 + semanticScore * 0.25;
+        const interfaceMatch = options.requiredInterfaces
+          ? matchRequiredInterfaces(options.requiredInterfaces, candidate.specialised_interfaces || {}, options.interfaceMatchOptions)
+          : null;
+        const specialisedInterfaceCandidate = Boolean(
+          interfaceMatch?.satisfied && candidate.specialised_interface_profile_available
+            && fit.within_dimension_tolerance,
+        );
+        const combinedScore = fit.score * 0.75 + semanticScore * 0.25
+          + (specialisedInterfaceCandidate ? 15 : 0);
         results[index] = {
           ...candidate,
           geometry_status: "resolved",
           geometry_dimensions_mm: geometry.dimensions_mm,
           geometry_fit: fit,
+          specialised_interface_match: interfaceMatch,
+          specialised_interface_candidate: specialisedInterfaceCandidate,
           combined_score: combinedScore,
           nominal_placement_candidate: candidate.connection_profile_available
             && fit.within_dimension_tolerance,
           requires_connection_validation: true,
-          suitability_status: candidate.connection_profile_available && fit.within_dimension_tolerance
-            ? "dimensions_fit_profile_available_requires_interface_validation"
-            : candidate.connection_profile_available
-              ? "profile_available_but_dimensions_outside_tolerance"
-              : "geometry_ranked_only_not_yet_plannable",
+          suitability_status: specialisedInterfaceCandidate
+            ? "geometry_and_specialised_interfaces_match_requires_assembly_validation"
+            : candidate.connection_profile_available && fit.within_dimension_tolerance
+              ? "dimensions_fit_profile_available_requires_interface_validation"
+              : candidate.connection_profile_available
+                ? "profile_available_but_dimensions_outside_tolerance"
+                : interfaceMatch && !interfaceMatch.satisfied
+                  ? "required_specialised_interfaces_not_satisfied"
+                  : "geometry_ranked_only_not_yet_plannable",
         };
       } catch (error) {
         results[index] = {
