@@ -213,3 +213,43 @@ export async function rankPartCandidatesWithGeometry(discovery, geometryResolver
     ],
   };
 }
+
+/**
+ * End-to-end candidate ranking for one semantic component from Design Specification v1.
+ * This selects candidates only; it deliberately does not claim to place or assemble them.
+ */
+export async function rankDesignComponentCandidates(component, partIndex, connectionCatalogue, specialisedCatalogue, geometryResolver, options = {}) {
+  if (!component || typeof component.role !== "string" || !component.geometry
+      || component.geometry.type !== "orthogonal_prism") {
+    throw new TypeError("A semantic component with an orthogonal_prism geometry is required.");
+  }
+  if (!Array.isArray(partIndex?.parts)) throw new TypeError("partIndex.parts must be an array.");
+  const targetDimensionsMm = options.targetDimensionsMm || [
+    component.geometry.width_studs * 8,
+    component.height_courses * 9.6,
+    component.geometry.depth_studs * 8,
+  ];
+  const discovery = discoverPartsForRole(component.role, partIndex.parts, connectionCatalogue, {
+    specialisedCatalogue,
+    synonyms: options.synonyms,
+    limit: options.discoveryLimit ?? options.maxCandidates ?? 30,
+  });
+  const ranking = await rankPartCandidatesWithGeometry(
+    discovery,
+    geometryResolver,
+    partIndex,
+    targetDimensionsMm,
+    {
+      ...options,
+      requiredInterfaces: options.requiredInterfaces ?? component.required_interfaces,
+    },
+  );
+  return {
+    component_id: component.id ?? null,
+    component_role: component.role,
+    target_dimensions_mm: targetDimensionsMm,
+    discovery,
+    ranking,
+    assembly_status: "candidate_ranking_only_not_placed",
+  };
+}
