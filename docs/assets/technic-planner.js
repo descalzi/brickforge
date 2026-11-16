@@ -1,6 +1,6 @@
-import { discoverPartCandidates } from "./part-catalogue.js?v=9b57eca72db0";
-import { translateComponentRequirements } from "./design-translation.js?v=9b57eca72db0";
-import { interfacesForPartInstances, matchAssemblyConnectors } from "./connector-matcher.js?v=9b57eca72db0";
+import { discoverPartCandidates } from "./part-catalogue.js?v=1dc028710f7c";
+import { translateComponentRequirements } from "./design-translation.js?v=1dc028710f7c";
+import { interfacesForPartInstances, matchAssemblyConnectors } from "./connector-matcher.js?v=1dc028710f7c";
 
 const RY90=[0,0,1,0,1,0,-1,0,0];
 const IDENTITY=[1,0,0,0,1,0,0,0,1];

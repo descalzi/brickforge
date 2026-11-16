@@ -37,7 +37,7 @@ jobs:
       - name: Check LDraw part explorer JavaScript syntax
         run: node --check docs/assets/parts.js && node --check docs/assets/part-feature-worker.js && node --check docs/assets/catalogue-utils.js
       - name: Check browser construction engine syntax
-        run: node --check docs/assets/construction-engine.js && node --check docs/assets/design-intent.js && node --check docs/assets/design-spec.js && node --check docs/assets/text-design.js && node --check docs/assets/instruction-rasterizer.js && node --check docs/assets/part-orientation.js && node --check docs/assets/instruction-pdf.js && node --check docs/assets/assembly-analysis.js && node --check docs/assets/specialist-placement.js && node --check docs/assets/assembly-instructions.js && node --check docs/assets/layout-fitting.js && node --check docs/assets/design-relations.js && node --check docs/assets/profile-composition.js && node --check docs/assets/polygon-geometry.js && node --check docs/assets/nominal-collision.js && node --check docs/assets/design-engine.js && node --check docs/assets/designer.js && node --check docs/assets/design-worker.js && node --check docs/assets/design-viewer.js && node --check docs/assets/design-svg-viewer.js && node --check docs/assets/connector-matcher.js && node --check docs/assets/part-catalogue.js && node --check docs/assets/design-translation.js && node --check docs/assets/part-geometry-lab.js && node --check docs/assets/technic-planner.js && node --check docs/assets/interface-matcher.js && node --check docs/assets/ldraw-geometry.js && node --check docs/assets/part-discovery.js && node --check docs/assets/builder.js && node --check docs/assets/footprint-worker.js && node --check docs/assets/camera-utils.js
+        run: node --check docs/assets/construction-engine.js && node --check docs/assets/design-intent.js && node --check docs/assets/design-spec.js && node --check docs/assets/text-design.js && node --check docs/assets/instruction-rasterizer.js && node --check docs/assets/part-orientation.js && node --check docs/assets/instruction-pdf.js && node --check docs/assets/assembly-analysis.js && node --check docs/assets/specialist-placement.js && node --check docs/assets/assembly-instructions.js && node --check docs/assets/layout-fitting.js && node --check docs/assets/design-relations.js && node --check docs/assets/rounded-shape.js && node --check docs/assets/course-beam-search.js && node --check docs/assets/profile-composition.js && node --check docs/assets/polygon-geometry.js && node --check docs/assets/nominal-collision.js && node --check docs/assets/design-engine.js && node --check docs/assets/designer.js && node --check docs/assets/design-worker.js && node --check docs/assets/design-viewer.js && node --check docs/assets/design-svg-viewer.js && node --check docs/assets/connector-matcher.js && node --check docs/assets/part-catalogue.js && node --check docs/assets/design-translation.js && node --check docs/assets/part-geometry-lab.js && node --check docs/assets/technic-planner.js && node --check docs/assets/interface-matcher.js && node --check docs/assets/ldraw-geometry.js && node --check docs/assets/part-discovery.js && node --check docs/assets/builder.js && node --check docs/assets/footprint-worker.js && node --check docs/assets/camera-utils.js
       - name: Verify native module release and published contract
         run: python scripts/stamp_browser_modules.py --check && cmp schemas/design-spec-v1.schema.json docs/data/design-spec-schema-v1.json
       - name: Test Inspector end-to-end in Chromium
@@ -57,11 +57,13 @@ jobs:
             /tmp/brickforge-car.png
             /tmp/brickforge-composed-roof.png
             /tmp/brickforge-mushroom.png
+            /tmp/brickforge-rounded-body.png
             /tmp/brickforge-aligned-table.png
             /tmp/brickforge-home.png
             /tmp/brickforge-mobile.png
             /tmp/brickforge-car.instructions.pdf
             /tmp/brickforge-mushroom.instructions.pdf
+            /tmp/brickforge-rounded-body.instructions.pdf
           if-no-files-found: ignore
           retention-days: 7
       - name: Measure real LDraw parts in headless Chromium

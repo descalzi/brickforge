@@ -1070,8 +1070,33 @@
             }
           },
           "description": "Required world directions of source-profile semantic up/forward faces. Forward on a slope points downhill. Unsupported frames are rejected."
+        },
+        "shape_tolerance_mm": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 8,
+          "description": "Explicit radial shape-error allowance for a stepped sphere/cylinder approximation. Zero retains exact source-shape matching; dimensions have their own tolerance."
         }
-      }
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "shape_tolerance_mm"
+            ]
+          },
+          "then": {
+            "properties": {
+              "geometry": {
+                "enum": [
+                  "sphere",
+                  "cylinder"
+                ]
+              }
+            }
+          }
+        }
+      ]
     }
   }
 }
