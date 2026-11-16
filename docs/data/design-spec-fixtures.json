@@ -154,6 +154,63 @@
         ],
         "require_connected": true
       }
+    },
+    {
+      "schema_version": 1,
+      "design_id": "box-with-opening",
+      "name": "Box shell with through-opening",
+      "description": "A connected square shell with a clear central opening through both courses.",
+      "units": "studs-and-brick-courses",
+      "components": [
+        {
+          "id": "shell",
+          "name": "Outer shell",
+          "role": "box-shell",
+          "geometry": {
+            "type": "orthogonal_prism",
+            "width_studs": 4,
+            "depth_studs": 4
+          },
+          "origin_studs": [
+            0,
+            0
+          ],
+          "height_courses": 2,
+          "priority": "essential"
+        }
+      ],
+      "negative_spaces": [
+        {
+          "id": "central-opening",
+          "name": "Central through-opening",
+          "purpose": "Keep the centre clear",
+          "geometry": {
+            "type": "orthogonal_prism",
+            "width_studs": 2,
+            "depth_studs": 2
+          },
+          "origin_studs": [
+            1,
+            1
+          ],
+          "height_courses": 2,
+          "priority": "essential"
+        }
+      ],
+      "requirements": {
+        "required_roles": [
+          "box-shell"
+        ],
+        "require_connected": true
+      },
+      "preferences": {
+        "colours": [
+          4,
+          1
+        ],
+        "max_parts": 80,
+        "optimisation": "balanced"
+      }
     }
   ]
 }
