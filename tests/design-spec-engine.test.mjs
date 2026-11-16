@@ -158,31 +158,8 @@ test("preserves required functional interfaces in the brief but refuses fake con
 
 test("preserves different component colours across separate vertical courses", async () => {
   const catalogue = JSON.parse(await readFile(new URL("../docs/data/connection-profiles/basic-bricks.json", import.meta.url), "utf8"));
-  const twoTone = structuredClone(carBrief);
-  twoTone.design_id = "two-tone-stack";
-  twoTone.components = [
-    {
-      id: "lower",
-      name: "Lower body",
-      role: "body",
-      geometry: { type: "orthogonal_prism", width_studs: 4, depth_studs: 4 },
-      origin_studs: [0,0],
-      base_course: 0,
-      height_courses: 2,
-      colour_code: 4,
-    },
-    {
-      id: "upper",
-      name: "Upper body",
-      role: "roof",
-      geometry: { type: "orthogonal_prism", width_studs: 4, depth_studs: 4 },
-      origin_studs: [0,0],
-      base_course: 2,
-      height_courses: 1,
-      colour_code: 1,
-    },
-  ];
-  twoTone.requirements = { required_roles: ["body", "roof"], require_connected: true };
+  const fixtureData = JSON.parse(await readFile(new URL("../docs/data/design-spec-fixtures.json", import.meta.url), "utf8"));
+  const twoTone = fixtureData.specifications.find((item) => item.design_id === "two-tone-building");
   const result = constructDesign(twoTone, catalogue);
   assert.deepEqual(result.course_colour_codes, [4,4,1]);
   assert.deepEqual([...new Set(result.parts.map(part => part.colour))].sort(), [1,4]);
