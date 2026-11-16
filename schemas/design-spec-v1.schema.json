@@ -1,0 +1,220 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://descalzi.github.io/brickforge/schemas/design-spec-v1.schema.json",
+  "title": "BrickForge Design Specification v1",
+  "description": "LEGO-independent semantic and geometric requirements. It describes the intended object, never a LEGO solution.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "design_id",
+    "name",
+    "units",
+    "components"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "design_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{1,63}$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string"
+    },
+    "units": {
+      "const": "studs-and-brick-courses"
+    },
+    "components": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/component"
+      }
+    },
+    "relationships": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/relationship"
+      }
+    },
+    "requirements": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "required_roles": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "forbidden_features": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "require_connected": {
+          "type": "boolean"
+        },
+        "allow_compromises": {
+          "type": "boolean"
+        }
+      }
+    },
+    "preferences": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "colours": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "max_parts": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "optimisation": {
+          "enum": [
+            "fidelity",
+            "part-count",
+            "balanced"
+          ]
+        }
+      }
+    }
+  },
+  "$defs": {
+    "component": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "role",
+        "geometry",
+        "origin_studs",
+        "height_courses"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_-]{0,47}$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "role": {
+          "type": "string",
+          "minLength": 1
+        },
+        "geometry": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "width_studs",
+            "depth_studs"
+          ],
+          "properties": {
+            "type": {
+              "const": "orthogonal_prism"
+            },
+            "width_studs": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "depth_studs": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        },
+        "origin_studs": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {
+            "type": "integer"
+          }
+        },
+        "height_courses": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "priority": {
+          "enum": [
+            "essential",
+            "preferred",
+            "optional"
+          ]
+        },
+        "colour_code": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "functional_requirements": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "provenance": {
+          "enum": [
+            "explicit",
+            "inferred",
+            "uncertain"
+          ]
+        }
+      }
+    },
+    "relationship": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "from",
+        "to"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "attached_to",
+            "above",
+            "below",
+            "left_of",
+            "right_of",
+            "in_front_of",
+            "behind",
+            "aligned_with",
+            "symmetrical_to"
+          ]
+        },
+        "from": {
+          "type": "string"
+        },
+        "to": {
+          "type": "string"
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "tolerance_studs": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    }
+  }
+}
