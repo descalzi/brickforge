@@ -108,6 +108,7 @@ export function discoverPartsForRole(role, partCatalogue, connectionCatalogue, o
       name: part.name || part.description || specialisedProfile?.description || part.part_id,
       category: part.category || null,
       filename: part.filename || null,
+      source: part.source || "ldraw-part-index",
       score,
       matched_terms: matches,
       connection_profile_available: hasConnectionProfile,
