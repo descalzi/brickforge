@@ -48,13 +48,13 @@ test("rejects malformed requirements and invalid tolerance controls", () => {
 
 test("matches real curated Technic catalogue interfaces", async () => {
   const catalogue = JSON.parse(await readFile(new URL("../docs/data/specialised-technic-part-catalogue.json", import.meta.url), "utf8"));
-  const profile = catalogue.profiles.find((item) => item.part_id === "3700");
+  const profile = catalogue.profiles.find((item) => item.part_id === "3701");
   assert.ok(profile);
   const result = matchRequiredInterfaces([
-    { interface_type: "round_opening", diameter_mm: 4.8, axis_vector: [0,0,1], count: 2 },
+    { interface_type: "round_opening", diameter_mm: 4.8, axis_vector: [0,0,1], count: 3 },
   ], profile.nominal_connection_interfaces);
   assert.equal(result.satisfied, true);
-  assert.equal(result.requirements[0].matched_count, 2);
+  assert.equal(result.requirements[0].matched_count, 3);
 });
 
 test("matches required interface positions against distinct source-derived hole centres", () => {
