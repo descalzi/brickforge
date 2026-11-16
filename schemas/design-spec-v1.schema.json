@@ -78,7 +78,6 @@
         "priority": { "enum": ["essential", "preferred", "optional"] },
         "required_features": { "type": "array", "items": { "type": "string" } },
         "forbidden_features": { "type": "array", "items": { "type": "string" } },
-        "preferred_families": { "type": "array", "items": { "type": "string" } },
         "colour": { "type": "integer", "minimum": 0 },
         "confidence": { "enum": ["explicit", "inferred", "uncertain"] }
       }
