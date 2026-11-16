@@ -8,7 +8,7 @@ The design specification describes **what the object is**. It must not contain L
 
 ## v1 contract
 
-The JSON Schema is `schemas/design-spec-v1.schema.json`; the JavaScript entry points are `validateDesignSpec(spec)` and `constructDesign(spec, connectionCatalogue, options)`. The separate catalogue services expose `discoverPartsForRole`, `createLDrawGeometryResolver`, `createLDrawGeometryResolverFromSpecialisedCatalogue`, `rankPartCandidatesWithGeometry`, `rankDesignComponentCandidates` and `matchRequiredInterfaces`. Their stable top-level identity is:
+The JSON Schema is `schemas/design-spec-v1.schema.json`; the JavaScript entry points are `validateDesignSpec(spec)` and `constructDesign(spec, connectionCatalogue, options)`. The separate catalogue services expose `discoverPartsForRole`, `createLDrawGeometryResolver`, `createLDrawGeometryResolverFromSpecialisedCatalogue`, `rankPartCandidatesWithGeometry`, `rankDesignComponentCandidates` and `matchRequiredInterfaces`. Ranked candidates include a proper rigid transform from the part-local frame into the semantic component-centred frame. Their stable top-level identity is:
 
 - `schema_version`, `design_id`, `name`, and declared units;
 - semantic `components` with stable IDs, names, functional roles and geometry;
