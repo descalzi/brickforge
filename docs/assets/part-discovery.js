@@ -18,6 +18,8 @@ const ROLE_TERMS = Object.freeze({
   plate: ["plate"],
   brick: ["brick"],
   tile: ["tile"],
+  beam: ["beam", "bar", "technic"],
+  "structural-beam": ["beam", "bar", "technic"],
 });
 
 function normalise(value) {
