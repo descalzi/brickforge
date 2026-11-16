@@ -2376,6 +2376,141 @@
       "assumptions": [
         "The solid body permits a stepped brick approximation with a 6.4 mm radial shape allowance. Smooth curved source surfaces are not required."
       ]
+    },
+    {
+      "schema_version": 1,
+      "design_id": "joint-sized-platform",
+      "name": "Platform \u00b7 joints choose the allowed width",
+      "units": "mm",
+      "components": [
+        {
+          "id": "base",
+          "label": "Adjustable support",
+          "role": "structural",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 28,
+            "depth": 8,
+            "height": 9.6
+          },
+          "position_mm": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "priority": "essential",
+          "fit_tolerance_mm": 4,
+          "colour": 7
+        },
+        {
+          "id": "top",
+          "label": "Fixed upper part",
+          "role": "structural",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 24,
+            "depth": 8,
+            "height": 9.6
+          },
+          "position_mm": {
+            "x": 0,
+            "y": 9.6,
+            "z": 0
+          },
+          "priority": "essential",
+          "colour": 4
+        }
+      ],
+      "relationships": [
+        {
+          "type": "attached_to",
+          "from": "base",
+          "to": "top"
+        },
+        {
+          "type": "aligned_with",
+          "from": "base",
+          "to": "top",
+          "axis": "x",
+          "anchor": "center",
+          "tolerance_mm": 0.001
+        }
+      ],
+      "constraints": {
+        "require_connected": true,
+        "allow_intersections": false,
+        "max_parts": 200,
+        "max_search_nodes": 100000,
+        "course_type": "auto"
+      }
+    },
+    {
+      "schema_version": 1,
+      "design_id": "joint-height-platform",
+      "name": "Platform \u00b7 mixed heights meet a fixed joint",
+      "units": "mm",
+      "components": [
+        {
+          "id": "base",
+          "label": "Adjustable support",
+          "role": "structural",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 16,
+            "depth": 16,
+            "height": 25.6
+          },
+          "position_mm": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "priority": "essential",
+          "fit_tolerance_mm": 4,
+          "colour": 7
+        },
+        {
+          "id": "top",
+          "label": "Fixed upper part",
+          "role": "structural",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 16,
+            "depth": 16,
+            "height": 3.2
+          },
+          "position_mm": {
+            "x": 0,
+            "y": 25.6,
+            "z": 0
+          },
+          "priority": "essential",
+          "colour": 4
+        }
+      ],
+      "relationships": [
+        {
+          "type": "attached_to",
+          "from": "base",
+          "to": "top"
+        },
+        {
+          "type": "aligned_with",
+          "from": "base",
+          "to": "top",
+          "axis": "y",
+          "from_anchor": "max",
+          "to_anchor": "min",
+          "tolerance_mm": 0.001
+        }
+      ],
+      "constraints": {
+        "require_connected": true,
+        "allow_intersections": false,
+        "max_parts": 200,
+        "max_search_nodes": 100000,
+        "course_type": "auto"
+      }
     }
   ],
   "challenge_specs": [

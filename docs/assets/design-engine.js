@@ -1,16 +1,17 @@
-import {combineCourseTilings} from './course-beam-search.js?v=1dc028710f7c';
-import {roundedShapeOccupancy} from './rounded-shape.js?v=1dc028710f7c';
-import {composeExtrudedProfile} from './profile-composition.js?v=1dc028710f7c';
-import { evaluateDesignRelationships as evaluateRelationships } from "./design-relations.js?v=1dc028710f7c";
-import { featureCompatibility, axesCompatible } from "./connection-types.js?v=1dc028710f7c";
-import { fitAttachmentPoses } from "./attachment-fitting.js?v=1dc028710f7c";
-import { assertValidDesignSpec } from "./design-spec.js?v=1dc028710f7c";
-import { discoverPartCandidates, validatePartCapabilityCatalogue } from "./part-catalogue.js?v=1dc028710f7c";
-import { translateComponentRequirements } from "./design-translation.js?v=1dc028710f7c";
-import { planTechnicBeamJoint } from "./technic-planner.js?v=1dc028710f7c";
-import { specialistComponentCandidates } from "./specialist-placement.js?v=1dc028710f7c";
-import { partBodyBounds, analyzeAssembly,findBodyCollisions } from "./assembly-analysis.js?v=1dc028710f7c";
-import { createAssemblyInstructions } from "./assembly-instructions.js?v=1dc028710f7c";
+import {rectangularDimensionVariants} from './dimension-variants.js?v=1b52eaceae39';
+import {combineCourseTilings} from './course-beam-search.js?v=1b52eaceae39';
+import {roundedShapeOccupancy} from './rounded-shape.js?v=1b52eaceae39';
+import {composeExtrudedProfile} from './profile-composition.js?v=1b52eaceae39';
+import { evaluateDesignRelationships as evaluateRelationships } from "./design-relations.js?v=1b52eaceae39";
+import { featureCompatibility, axesCompatible } from "./connection-types.js?v=1b52eaceae39";
+import { fitAttachmentPoses } from "./attachment-fitting.js?v=1b52eaceae39";
+import { assertValidDesignSpec } from "./design-spec.js?v=1b52eaceae39";
+import { discoverPartCandidates, validatePartCapabilityCatalogue } from "./part-catalogue.js?v=1b52eaceae39";
+import { translateComponentRequirements } from "./design-translation.js?v=1b52eaceae39";
+import { planTechnicBeamJoint } from "./technic-planner.js?v=1b52eaceae39";
+import { specialistComponentCandidates } from "./specialist-placement.js?v=1b52eaceae39";
+import { partBodyBounds, analyzeAssembly,findBodyCollisions } from "./assembly-analysis.js?v=1b52eaceae39";
+import { createAssemblyInstructions } from "./assembly-instructions.js?v=1b52eaceae39";
 
 const LDU_TO_MM = 0.4;
 const STUD_PITCH_MM = 8;
@@ -134,18 +135,16 @@ function assemble(parts, profileMap, requireConnected) {
 
 function componentCandidates(component,catalogue,options,partCatalogue,designTranslation) {
   const requestedCourseType=options.courseType;
+  if(component.geometry==='rectangular_prism'&&component.fit_tolerance_mm&&!options.dimensionVariant)return fitRectangularDimensions(component,catalogue,options,partCatalogue,designTranslation);
   if(options.courseType==='auto'){
     const h=component.dimensions_mm.height,t=component.fit_tolerance_mm||0;
     options={...options,courseType:Math.abs(h-Math.round(h/9.6)*9.6)<=Math.max(t,1e-6)?'brick':'plate'};
   }
-  if(component.geometry==='rectangular_prism'&&component.fit_tolerance_mm){
-    const t=component.fit_tolerance_mm,step=options.courseType==='plate'?3.2:9.6,original=component;
-    const snap=(v,p)=>{const n=Math.round(v/p)*p;return n>0&&Math.abs(n-v)<=t+1e-6?n:v;};
-    component={...original,dimensions_mm:{width:snap(original.dimensions_mm.width,8),depth:snap(original.dimensions_mm.depth,8),height:snap(original.dimensions_mm.height,step)}};
-  }
   const specialised=specialistComponentCandidates(component,options,partCatalogue,designTranslation,options.specialistCatalogue);
   if(specialised?.alternatives)return specialised;
-  const composed=composeExtrudedProfile(component,catalogue,options,partCatalogue,designTranslation,options.specialistCatalogue);
+  const mixed=component.geometry==='rectangular_prism'&&!options.shapeOccupancy&&(options.allowMixedStructural||(requestedCourseType==='auto'&&component.dimensions_mm.height>9.6&&Math.abs(component.dimensions_mm.height/9.6-Math.round(component.dimensions_mm.height/9.6))>1e-6));
+  const d=component.dimensions_mm,profileTarget=mixed?{...component,geometry:'extruded_profile',geometry_parameters:{depth_mm:d.depth,outline_mm:[[0,0],[d.width,0],[d.width,d.height],[0,d.height]]}}:component;
+  const composed=composeExtrudedProfile(profileTarget,catalogue,options,partCatalogue,designTranslation,options.specialistCatalogue);
   if(composed?.alternatives)return composed;
   const rounded=roundedShapeOccupancy(component,options.negativeSpaces,requestedCourseType);
   if(rounded){if(rounded.error)return rounded;const result=componentCandidates(rounded.component,catalogue,{...options,courseType:rounded.courseType,shapeOccupancy:rounded.occupancy},partCatalogue,designTranslation);return {...result,approximation:rounded.approximation};}
@@ -236,7 +235,7 @@ function componentCandidates(component,catalogue,options,partCatalogue,designTra
     }
   }
   let courseSearch=null;
-  if(options.shapeOccupancy){
+  if(options.shapeOccupancy||options.useCourseBeam){
     courseSearch=combineCourseTilings(courseTilings,width,depth,{maxNodes:options.maxSearchNodes,beamWidth:48});
     for(const state of courseSearch.states){const parts=[];state.plans.forEach((tiling,level)=>tiling.forEach((item,index)=>parts.push(placementFor(item,component,level,component.colour??options.defaultColour,component.id+'-'+level+'-'+index,courseHeight/LDU_TO_MM))));const graph=assemble(parts,profileMap,false);if(!graph)continue;const score=parts.length*1000-graph.connections.length*5-graph.connections.reduce((sum,edge)=>sum+edge.mating_pairs.length,0);alternatives.push({parts,graph,score,tiling:state.plans.map(layer=>layer.map(item=>item.candidate.profile.part_id))});combinations++;}
   }else search(0);
@@ -250,6 +249,23 @@ function componentCandidates(component,catalogue,options,partCatalogue,designTra
     if(unique.length>=options.maxComponentAlternatives) break;
   }
   return unique.length?{alternatives:unique,semantic_candidates:semanticSearch.candidates,search_nodes:nodes+(courseSearch?.nodes||0),combinations,course_search:courseSearch?{...courseSearch,states:undefined}:null}:{error:"No fully connected course arrangement found for component "+component.id+".",search_nodes:nodes,combinations,course_search:courseSearch?{...courseSearch,states:undefined}:null};
+}
+
+function fitRectangularDimensions(component,catalogue,options,partCatalogue,mapping){
+ const variants=rectangularDimensionVariants(component,options.courseType),groups=[],semantic=new Map(),seen=new Set();let nodes=0,combinations=0,attempted=0,bounded=false;
+ const add=(key,result)=>{if(!result?.alternatives?.length)return;const alternatives=[];for(const a of result.alternatives){const signature=a.parts.map(p=>p.part_id+':'+p.matrix.join(',')+':'+p.translation_ldu.map(v=>v.toFixed(6)).join(',')).join('|');if(seen.has(signature))continue;seen.add(signature);alternatives.push(a);}if(alternatives.length)groups.push({key,alternatives});for(const c of result.semantic_candidates||[])semantic.set(c.part_id,c);};
+ const measured=specialistComponentCandidates(component,options,partCatalogue,mapping,options.specialistCatalogue);
+ if(measured?.alternatives)for(const a of measured.alternatives)add('source:'+a.parts[0].matrix.join(','),{...measured,alternatives:[a]});
+ for(const variant of variants){
+  const remaining=options.maxSearchNodes-nodes;if(remaining<=0){bounded=true;break;}attempted++;
+  const adjusted={...component,dimensions_mm:variant.dimensions_mm,fit_tolerance_mm:undefined},result=componentCandidates(adjusted,catalogue,{...options,dimensionVariant:true,allowMixedStructural:options.courseType==='auto',courseType:variant.courseType,useCourseBeam:true,maxSearchNodes:remaining,maxComponentAlternatives:Math.max(2,Math.ceil((options.maxComponentAlternatives||12)/Math.max(1,variants.length)))},partCatalogue,mapping);
+  nodes+=result.search_nodes||0;combinations+=result.combinations||0;bounded ||= !!(result.course_search?.budget_exhausted||result.composition?.budget_exhausted);add(variant.courseType+':'+Object.values(variant.dimensions_mm).join(','),result);
+ }
+ const limit=Math.min(96,Math.max(options.maxComponentAlternatives||12,groups.length*2)),alternatives=[];
+ for(let round=0;alternatives.length<limit;round++){let added=false;for(const group of groups)if(group.alternatives[round]&&alternatives.length<limit){alternatives.push(group.alternatives[round]);added=true;}if(!added)break;}
+ bounded ||= alternatives.length<groups.reduce((s,g)=>s+g.alternatives.length,0);
+ const dimension_search={method:'bounded_grid_dimension_choices',requested_tolerance_mm:component.fit_tolerance_mm,variant_count:variants.length,attempted_variants:attempted,preserved_dimension_groups:groups.length,retained_layouts:alternatives.length,budget_exhausted:bounded};
+ return alternatives.length?{alternatives,semantic_candidates:[...semantic.values()],search_nodes:nodes,combinations,dimension_search}:{error:'No source-backed layout within the declared dimension allowance was found for '+component.id+'.',dimension_search,search_nodes:nodes};
 }
 
 function componentBounds(component) {
@@ -297,13 +313,13 @@ export function planDesign(spec,catalogue,overrides={}) {
   const componentReports=[],candidateSets=[];
   for(const component of spec.components) {
     const result=componentCandidates(component,catalogue,options,partCatalogue,designTranslation);
-    if(result.error) return {status:"blocked",design_id:spec.design_id,failures:[result.error],warnings:[],parts:[],connections:[],search:{component_budget_exhausted:!!(result.composition?.budget_exhausted||result.course_search?.budget_exhausted||result.approximation?.budget_exhausted),budget_exhausted:!!(result.composition?.budget_exhausted||result.course_search?.budget_exhausted||result.approximation?.budget_exhausted)},component_reports:[{component_id:component.id,status:"blocked",reason:result.error,course_search:result.course_search||null,approximation:result.approximation||null,composition:result.composition||null}]};
+    if(result.error) return {status:"blocked",design_id:spec.design_id,failures:[result.error],warnings:[],parts:[],connections:[],search:{component_budget_exhausted:!!(result.composition?.budget_exhausted||result.course_search?.budget_exhausted||result.dimension_search?.budget_exhausted||result.approximation?.budget_exhausted),budget_exhausted:!!(result.composition?.budget_exhausted||result.course_search?.budget_exhausted||result.dimension_search?.budget_exhausted||result.approximation?.budget_exhausted)},component_reports:[{component_id:component.id,status:"blocked",reason:result.error,dimension_search:result.dimension_search||null,course_search:result.course_search||null,approximation:result.approximation||null,composition:result.composition||null}]};
     candidateSets.push(result.alternatives);
-    componentReports.push({component_id:component.id,status:"planned",course_search:result.course_search||null,approximation:result.approximation||null,composition:result.composition||null,semantic_candidate_count:result.semantic_candidates.length,specialist:result.alternatives.some(a=>a.specialist),top_part_candidates:result.semantic_candidates.slice(0,5).map(candidate=>({part_id:candidate.part_id,description:candidate.description,score:candidate.score,dimension_error_mm:candidate.dimension_error_mm})),candidate_layouts:result.alternatives.length,search_nodes:result.search_nodes,combinations_examined:result.combinations});
+    componentReports.push({component_id:component.id,status:"planned",dimension_search:result.dimension_search||null,course_search:result.course_search||null,approximation:result.approximation||null,composition:result.composition||null,semantic_candidate_count:result.semantic_candidates.length,specialist:result.alternatives.some(a=>a.specialist),top_part_candidates:result.semantic_candidates.slice(0,5).map(candidate=>({part_id:candidate.part_id,description:candidate.description,score:candidate.score,dimension_error_mm:candidate.dimension_error_mm})),candidate_layouts:result.alternatives.length,search_nodes:result.search_nodes,combinations_examined:result.combinations});
   }
   const poseSearch=fitAttachmentPoses(spec,candidateSets,profileMap,{maxAttempts:options.maxSearchNodes});
   candidateSets.splice(0,candidateSets.length,...poseSearch.sets);
-  const poseStats={component_budget_exhausted:componentReports.some(r=>r.composition?.budget_exhausted||r.course_search?.budget_exhausted),pose_attempts:poseSearch.attempts,pose_candidates_generated:poseSearch.generated,layout_candidates_generated:poseSearch.layout_generated,pose_budget_exhausted:poseSearch.budget_exhausted};
+  const poseStats={component_budget_exhausted:componentReports.some(r=>r.composition?.budget_exhausted||r.course_search?.budget_exhausted||r.dimension_search?.budget_exhausted),pose_attempts:poseSearch.attempts,pose_candidates_generated:poseSearch.generated,layout_candidates_generated:poseSearch.layout_generated,pose_budget_exhausted:poseSearch.budget_exhausted};
   let best=null,globalCombinations=0,globalNodes=0,overBudget=false;
   const chosen=Array(candidateSets.length);
   const componentIndex=new Map(spec.components.map((c,i)=>[c.id,i]));
@@ -341,7 +357,7 @@ export function planDesign(spec,catalogue,overrides={}) {
         check.status=matched?'passed':check.required?'failed':'warning';if(!matched&&!check.required)realisedRelationships.warnings.push('Optional attachment between '+check.from+' and '+check.to+' was not realised.');
       }
       const score=parts.length*1000-graph.connections.length*5-graph.connections.reduce((sum,edge)=>sum+edge.mating_pairs.length,0);
-      if(!best||score<best.score)best={parts,graph,score,chosen:chosen.map(item=>item.tiling),poses:chosen.map(item=>item.pose_offset_ldu||[0,0,0]),relationship_report:realisedRelationships};
+      if(!best||score<best.score)best={parts,graph,score,chosen:chosen.map(item=>item.tiling),poses:chosen.map(item=>item.pose_offset_ldu||[0,0,0]),methods:chosen.map(item=>item.composition?'exact_prism_material_cover':item.specialist?'profiled_rigid':'uniform_course_tiling'),relationship_report:realisedRelationships};
       return;
     }
     const component=order[index];
@@ -357,7 +373,7 @@ export function planDesign(spec,catalogue,overrides={}) {
   if(!best) return {status:"blocked",design_id:spec.design_id,failures:[overBudget?"No arrangement found within the search limits and max_parts budget of "+options.maxParts+".":"No globally connected arrangement was found within the configured candidate and search limits."],warnings:[],parts:[],connections:[],search:{...poseStats,global_nodes:globalNodes,global_combinations:globalCombinations,budget_exhausted:poseStats.component_budget_exhausted||poseSearch.budget_exhausted||globalNodes>options.maxSearchNodes||globalCombinations>=options.maxGlobalCombinations},component_reports:componentReports};
   const parts=best.parts,graph=best.graph;
   componentReports.forEach((report,index)=>{
-    report.selected_course_layouts=best.chosen[index];report.requested_orientation=spec.components[index].orientation||null;report.selected_part_orientations=best.parts.filter(p=>p.component_id===report.component_id).map(p=>({instance_id:p.instance_id,matrix:p.matrix,source_frame:profileMap.get(p.part_id).orientation_frame||null}));report.pose_alternatives=candidateSets[index].length;const c=spec.components[index],bs=parts.filter(p=>p.component_id===c.id).map(p=>partBodyBounds(p,profileMap.get(p.part_id)));
+    report.selected_course_layouts=best.chosen[index];report.selected_construction_method=best.methods[index];report.requested_orientation=spec.components[index].orientation||null;report.selected_part_orientations=best.parts.filter(p=>p.component_id===report.component_id).map(p=>({instance_id:p.instance_id,matrix:p.matrix,source_frame:profileMap.get(p.part_id).orientation_frame||null}));report.pose_alternatives=candidateSets[index].length;const c=spec.components[index],bs=parts.filter(p=>p.component_id===c.id).map(p=>partBodyBounds(p,profileMap.get(p.part_id)));
     const min=[0,1,2].map(i=>Math.min(...bs.map(b=>b.min[i]))),max=[0,1,2].map(i=>Math.max(...bs.map(b=>b.max[i])));
     report.realised_dimensions_mm={width:max[0]-min[0],height:max[1]-min[1],depth:max[2]-min[2]};report.requested_dimensions_mm=c.dimensions_mm;report.allowed_deviation_mm=c.fit_tolerance_mm||0;
     report.position_adjustment_mm=best.poses[index].map((v,i)=>v*.4*(i===0?1:-1));report.allowed_position_deviation_mm=c.position_tolerance_mm||0;
@@ -375,8 +391,8 @@ export function planDesign(spec,catalogue,overrides={}) {
   if(spec.appearance?.symmetry&&spec.appearance.symmetry!=="none") warnings.push("The requested global symmetry is not yet an optimisation constraint and has not been verified.");
   warnings.push("Connection edges represent nominal stud/receiver datum alignment only; clutch force, stability and structural strength are not verified.");
   if(options.negativeSpaces.length) warnings.push("Negative spaces are checked against nominal part bodies; stud protrusions, underside details and insertion clearances are not assessed.");
-  if(componentReports.some(r=>r.specialist))warnings.push(...options.specialistCatalogue.limitations);
-  if(componentReports.some(r=>r.composition?.budget_exhausted||r.course_search?.budget_exhausted)||poseSearch.budget_exhausted||globalNodes>options.maxSearchNodes||globalCombinations>=options.maxGlobalCombinations)warnings.push('The candidate search reached its configured limit. The returned plan passed the declared checks; a global optimum is not established.');
+  if(componentReports.some(r=>r.specialist))warnings.push(...(options.specialistCatalogue?.limitations||[]));
+  if(componentReports.some(r=>r.composition?.budget_exhausted||r.course_search?.budget_exhausted||r.dimension_search?.budget_exhausted)||poseSearch.budget_exhausted||globalNodes>options.maxSearchNodes||globalCombinations>=options.maxGlobalCombinations)warnings.push('The candidate search reached its configured limit. The returned plan passed the declared checks; a global optimum is not established.');
   const analysis=analyzeAssembly(parts,graph.connections,profileMap);
   if(analysis.body_envelope_collisions.length)return {status:'blocked',design_id:spec.design_id,parts:[],connections:[],failures:['Placed part body envelopes intersect outside a profiled rim/tyre seat.'],warnings:[],analysis};
   const instructions=createAssemblyInstructions(parts,graph.connections,profileMap);
@@ -397,7 +413,7 @@ export function planDesign(spec,catalogue,overrides={}) {
     {id:"part_catalogue_coverage",status:"passed",detail:"Every placed part has a source profile in the supplied catalogue."},
     {id:"semantic_relationships",status:"passed",detail:"All required spatial relationships in the design specification are satisfied."},
     {id:"component_intersections",status:"passed",detail:"Placed nominal component material does not intersect; a shared bounding-box region alone is not treated as a collision."},
-    {id:"exact_course_tiling",status:"passed",detail:"Rectangular components use exact course tiling; profiles use rigid matching or exact multi-part prism material cover. Stepped rounded targets use only explicitly permitted shape error; no bounding-box substitution is used."},
+    {id:"exact_course_tiling",status:"passed",detail:"Rectangular components use exact course tiling or mixed-height prism material cover; profiles use rigid matching or exact multi-part prism material cover. Stepped rounded targets use only explicitly permitted shape error; no bounding-box substitution is used."},
     {id:"nominal_connection_alignment",status:"passed",detail:"Graph edges match profiled stud/receiver, wheel-pin/bore or rim/tyre datums."},
     {id:"graph_connectivity",status:graph.connected?"passed":"failed",detail:graph.connected?"All part instances belong to one connected graph.":"The assembly contains disconnected components."},
     {id:"physical_clutch_strength",status:"not_assessed",detail:"The available catalogue contains nominal datums, not measured clutch geometry or force."},
