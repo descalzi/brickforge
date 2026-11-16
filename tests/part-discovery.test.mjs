@@ -136,7 +136,7 @@ test("ranks real part candidates directly from a semantic design component", asy
   }] };
   const result = await rankDesignComponentCandidates(
     component, partIndex, connections, specialisedCatalogue,
-    { async resolvePart() { return { part_id: "3701", dimensions_mm: [32, 9.6, 8] }; } },
+    { async resolvePart() { return { part_id: "3701", dimensions_mm: [32, 9.6, 8], bounds_mm: { minimum: [-16,-1.6,-4], maximum: [16,9.6,4] } }; } },
   );
   assert.deepEqual(result.target_dimensions_mm, [32, 9.6, 8]);
   assert.equal(result.discovery.candidates[0].source, "pinned-specialised-part-catalogue");
