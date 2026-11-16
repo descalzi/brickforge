@@ -1,3 +1,5 @@
+import { scoreGeometrySuitability } from "./ldraw-geometry.js";
+
 const ROLE_TERMS = Object.freeze({
   wheel: ["wheel", "tyre", "tire", "rim"],
   tyre: ["tyre", "tire", "wheel"],
