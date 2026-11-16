@@ -149,22 +149,37 @@ export async function rankPartCandidatesWithGeometry(discovery, geometryResolver
       const candidate = selected[index];
       try {
         const geometry = await geometryResolver.resolvePart(candidate.part_id, partIndex);
-        const fit = scoreGeometrySuitability(geometry, targetDimensionsMm, options);
         const semanticScore = discovery.candidates[0]?.score
           ? 100 * candidate.score / discovery.candidates[0].score
           : 0;
-        const interfaceMatch = options.requiredInterfaces
-          ? matchRequiredInterfaces(options.requiredInterfaces, candidate.specialised_interfaces || [], {
-            ...(options.interfaceMatchOptions || {}),
-            orientationPermutation: fit.orientation_permutation,
-          })
-          : null;
-        const specialisedInterfaceCandidate = Boolean(
-          interfaceMatch?.satisfied && candidate.specialised_interface_profile_available
-            && fit.within_dimension_tolerance,
-        );
-        const combinedScore = fit.score * 0.75 + semanticScore * 0.25
-          + (specialisedInterfaceCandidate ? 15 : 0);
+        const permutations = options.requiredInterfaces?.length
+          ? [[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]]
+          : [undefined];
+        let best = null;
+        for (const orientationPermutation of permutations) {
+          const fit = scoreGeometrySuitability(geometry, targetDimensionsMm, {
+            ...options,
+            orientationPermutation,
+          });
+          const interfaceMatch = options.requiredInterfaces
+            ? matchRequiredInterfaces(options.requiredInterfaces, candidate.specialised_interfaces || [], {
+              ...(options.interfaceMatchOptions || {}),
+              orientationPermutation: fit.orientation_permutation,
+            })
+            : null;
+          const specialisedInterfaceCandidate = Boolean(
+            interfaceMatch?.satisfied && candidate.specialised_interface_profile_available
+              && fit.within_dimension_tolerance,
+          );
+          const combinedScore = fit.score * 0.75 + semanticScore * 0.25
+            + (specialisedInterfaceCandidate ? 15 : 0);
+          if (!best || combinedScore > best.combinedScore
+              || (combinedScore === best.combinedScore
+                && specialisedInterfaceCandidate && !best.specialisedInterfaceCandidate)) {
+            best = { fit, interfaceMatch, specialisedInterfaceCandidate, combinedScore };
+          }
+        }
+        const { fit, interfaceMatch, specialisedInterfaceCandidate, combinedScore } = best;
         results[index] = {
           ...candidate,
           geometry_status: "resolved",
