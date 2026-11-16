@@ -19,7 +19,7 @@ Component priority and provenance distinguish essential, preferred and optional/
 
 ## Current implemented construction slice
 
-`docs/assets/design-spec-engine.js` validates this contract and converts connected orthogonal-prism footprints into the existing browser assembly pipeline. The construction step uses the published connection-profile catalogue, the deterministic interlocking footprint search, nominal stud/receiver matching, body-envelope collision checks, graph connectivity, LDraw export and BOM generation. A separate role-aware catalogue discovery module searches the full LDraw name/category/keyword index for wheel, window, axle, slope and other semantic roles. It clearly distinguishes text-only discoveries from candidates with authored connection profiles; discovery is not mistaken for physical suitability. A pinned-source LDraw geometry resolver now expands nested part, subpart and primitive references in the browser, measures real display-surface bounds and surface area, and scores fixed-part envelopes against target dimensions across rotations. Semantic discovery can now be combined with bounded-concurrency geometry resolution to rank candidates and identify the subset that has both a measured envelope fit and an authored nominal connection profile. These are candidate-generation signals only; they do not yet prove functional or connection suitability.
+`docs/assets/design-spec-engine.js` validates this contract and converts orthogonal-prism component volumes into per-course occupancy and the browser's variable-course assembly planner. The construction step uses the published connection-profile catalogue, the deterministic interlocking footprint search, nominal stud/receiver matching, body-envelope collision checks, graph connectivity, LDraw export and BOM generation. A separate role-aware catalogue discovery module searches the full LDraw name/category/keyword index for wheel, window, axle, slope and other semantic roles. It clearly distinguishes text-only discoveries from candidates with authored connection profiles; discovery is not mistaken for physical suitability. A pinned-source LDraw geometry resolver now expands nested part, subpart and primitive references in the browser, measures real display-surface bounds and surface area, and scores fixed-part envelopes against target dimensions across rotations. Semantic discovery can now be combined with bounded-concurrency geometry resolution to rank candidates and identify the subset that has both a measured envelope fit and an authored nominal connection profile. These are candidate-generation signals only; they do not yet prove functional or connection suitability.
 
 The hand-authored fixtures in `docs/data/design-spec-fixtures.json` are examples of ideal structured output. They do not specify any LEGO solution.
 
@@ -30,10 +30,10 @@ This is a first end-to-end vertical slice, not the finished arbitrary-object eng
 - each component is currently an orthogonal rectangular prism on an integer stud grid with an integer base course and height;
 - the per-course occupancy must be non-empty and the complete selected part graph must be connected;
 - component volumes may not overlap; the current planner is bounded to 64 courses and 256 occupied cells per course;
-- semantic component boundaries are retained as annotations, but the current solid-footprint strategy does not yet create separate physical subassemblies;
+- semantic component boundaries are retained as annotations, but the current variable-course strategy does not yet create separate physical subassemblies;
 - the published connection catalogue currently provides authored nominal profiles for a limited set of rectangular brick/plate families; the broader 25k-part index is searchable and its real LDraw geometry can be resolved, but most results are not yet planner-eligible;
 - the current matcher verifies nominal stud/receiver datum alignment, not physical clutch force, strength or stability;
-- selecting and placing specialised parts such as windows, wheels, curved/sloped surfaces and Technic interfaces is not yet implemented; catalogue text discovery alone is not a substitute; vertical variation, support analysis, build sequence and instruction generation are also outstanding.
+- selecting and placing specialised parts such as windows, wheels, curved/sloped surfaces and Technic interfaces is not yet implemented; catalogue text discovery alone is not a substitute; negative-space/keep-out semantics, support analysis, build sequence and instruction generation are also outstanding.
 
 Unsupported geometry is rejected rather than silently flattened or claimed as solved.
 
@@ -47,7 +47,7 @@ Unsupported geometry is rejected rather than silently flattened or claimed as so
 
 1. Catalogue enrichment: semantic part roles, measured geometry descriptors, dimensions, connection interfaces, orientations, colour and availability metadata. The first browser geometry resolver is implemented; richer descriptors and profile coverage remain.
 2. Candidate generation: role-aware part discovery and geometric/functional suitability scoring. The first semantic-plus-envelope ranking pipeline is implemented; exact interface compatibility and feature-aware geometry scoring remain.
-3. General geometry: non-uniform heights, 3D component volumes, negative space, openings, curved and sloped surfaces.
+3. General geometry: arbitrary non-orthogonal shapes, explicit negative space and keep-outs, openings, curved and sloped surfaces.
 4. Assembly planning: global constraint search over candidate parts and poses, not independent greedy substitutions.
 5. Physical validation: detailed collision, interface compatibility, support/stability and assembly-order checks with explicit confidence levels.
 6. Optimisation and outputs: fidelity/part-count/cost trade-offs, BOM, LDraw and build instructions.
