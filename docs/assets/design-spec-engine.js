@@ -64,6 +64,48 @@ export function validateDesignSpec(spec) {
   if (spec.relationships !== undefined && !Array.isArray(spec.relationships)) {
     fail("relationships must be an array.");
   }
+  if (spec.requirements !== undefined) {
+    const requirements = spec.requirements;
+    if (!requirements || typeof requirements !== "object" || Array.isArray(requirements)) {
+      fail("requirements must be an object.");
+    } else {
+      if (requirements.required_roles !== undefined
+          && (!Array.isArray(requirements.required_roles)
+            || !requirements.required_roles.every((role) => typeof role === "string" && role.trim()))) {
+        fail("requirements.required_roles must be an array of non-empty strings.");
+      }
+      if (requirements.forbidden_features !== undefined
+          && (!Array.isArray(requirements.forbidden_features)
+            || !requirements.forbidden_features.every((feature) => typeof feature === "string" && feature.trim()))) {
+        fail("requirements.forbidden_features must be an array of non-empty strings.");
+      }
+      for (const key of ["require_connected", "allow_compromises"]) {
+        if (requirements[key] !== undefined && typeof requirements[key] !== "boolean") {
+          fail("requirements." + key + " must be a boolean.");
+        }
+      }
+    }
+  }
+  if (spec.preferences !== undefined) {
+    const preferences = spec.preferences;
+    if (!preferences || typeof preferences !== "object" || Array.isArray(preferences)) {
+      fail("preferences must be an object.");
+    } else {
+      if (preferences.colours !== undefined
+          && (!Array.isArray(preferences.colours)
+            || !preferences.colours.every((code) => Number.isInteger(code) && code >= 0))) {
+        fail("preferences.colours must be non-negative integer LDraw colour codes.");
+      }
+      if (preferences.max_parts !== undefined
+          && (!Number.isInteger(preferences.max_parts) || preferences.max_parts < 1)) {
+        fail("preferences.max_parts must be a positive integer.");
+      }
+      if (preferences.optimisation !== undefined
+          && !["fidelity", "part-count", "balanced"].includes(preferences.optimisation)) {
+        fail("preferences.optimisation is unsupported.");
+      }
+    }
+  }
   return { valid: errors.length === 0, errors };
 }
 
