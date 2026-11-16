@@ -58,7 +58,7 @@ test("constructs stepped-height components through variable-course planning", as
   const result = constructDesign(stepped, catalogue);
   assert.equal(result.course_part_counts.length, 2);
   assert.ok(result.connections.length > 0);
-  assert.equal(result.dimensions_mm.height, 19.2);
+  assert.ok(Math.abs(result.dimensions_mm.height - 19.2) < 1e-9);
   assert.equal(result.design_diagnostics.component_coverage[1].base_course, 1);
 });
 
