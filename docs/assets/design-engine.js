@@ -33,8 +33,9 @@ function enumerateTilings(width, depth, candidates, maxResults, maxNodes) {
   let nodes = 0;
   const placed = [];
   const perRootBranchQuota = Math.max(1, Math.ceil(maxResults / Math.max(1, candidates.length * 2)));
-  function visit(rootBranch = null) {
-    if (++nodes > maxNodes || results.length >= maxResults) return;
+  function visit(rootBranch = null, rootResultsStart = results.length) {
+    if (++nodes > maxNodes || results.length >= maxResults
+        || (rootBranch !== null && results.length - rootResultsStart >= perRootBranchQuota)) return;
     let first = -1;
     for (let i=0;i<occupied.length;i++) if (!occupied[i]) { first=i; break; }
     if (first < 0) { results.push(placed.map(item=>({...item}))); return; }
@@ -53,7 +54,7 @@ function enumerateTilings(width, depth, candidates, maxResults, maxNodes) {
         const nextRootBranch = isRootBranch ? candidate.profile.part_id + ":" + rotated : rootBranch;
         const resultsBeforeBranch = results.length;
         placed.push({candidate,rotated,x,z,sx,sz});
-        visit(nextRootBranch);
+        visit(nextRootBranch, isRootBranch ? resultsBeforeBranch : rootResultsStart);
         placed.pop();
         for(let dz=0;dz<sz;dz++) for(let dx=0;dx<sx;dx++) occupied[(z+dz)*width+x+dx]=0;
         if(isRootBranch && results.length-resultsBeforeBranch>=perRootBranchQuota) continue;
