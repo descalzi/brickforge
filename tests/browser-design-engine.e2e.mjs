@@ -29,6 +29,7 @@ try{
  assert.equal(await page.locator("#engine-pairs").innerText(),"16");
  assert.equal(await page.locator("#download-ldraw").isEnabled(),true);
  assert.equal(await page.locator("#studio-viewport [data-parts]").getAttribute("data-parts"),"4");
+ await page.locator(".diagnostics-panel summary").click();
  const report=await page.locator("#engine-report").innerText();
  assert.match(report,/physical_clutch_strength/);
  assert.match(report,/not_assessed/);
