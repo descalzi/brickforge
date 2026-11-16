@@ -166,3 +166,30 @@ test("chooses a dimension-equivalent orientation that aligns a required interfac
   assert.equal(ranked.candidates[0].specialised_interface_candidate, true);
   assert.deepEqual(ranked.candidates[0].geometry_fit.orientation_permutation, [1,0,2]);
 });
+
+test("searches signed rotations to align asymmetric functional interface positions", async () => {
+  const partList = [{ part_id: "offset-beam", name: "Offset beam", category: "Beam", keywords: ["beam"] }];
+  const special = { profiles: [{
+    part_id: "offset-beam",
+    nominal_connection_interfaces: [{
+      interface_id: "offset-hole",
+      interface_type: "technic_pin_hole",
+      nominal_diameter_mm: 4.8,
+      axis_vector: [0,0,1],
+      centre_mm: [8,4,0],
+    }],
+  }] };
+  const discovery = discoverPartsForRole("beam", partList, connections, { specialisedCatalogue: special });
+  const ranked = await rankPartCandidatesWithGeometry(
+    discovery,
+    { async resolvePart() { return { part_id: "offset-beam", dimensions_mm: [10,10,8], bounds_mm: { minimum: [-5,-1,-4], maximum: [5,9,4] } }; } },
+    { parts: partList },
+    [10,10,8],
+    { requiredInterfaces: [{
+      interface_type: "round_opening", diameter_mm: 4.8, axis_vector: [0,0,1],
+      positions_mm: [[-8,0,0]], position_tolerance_mm: 0.1,
+    }] },
+  );
+  assert.equal(ranked.candidates[0].specialised_interface_candidate, true);
+  assert.deepEqual(ranked.candidates[0].geometry_fit.orientation_signs, [-1,-1,1]);
+});
