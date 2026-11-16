@@ -152,7 +152,8 @@ export async function rankPartCandidatesWithGeometry(discovery, geometryResolver
         const semanticScore = discovery.candidates[0]?.score
           ? 100 * candidate.score / discovery.candidates[0].score
           : 0;
-        const permutations = options.requiredInterfaces?.length
+        const hasRequiredInterfaces = Array.isArray(options.requiredInterfaces) && options.requiredInterfaces.length > 0;
+        const permutations = hasRequiredInterfaces
           ? [[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]]
           : [undefined];
         let best = null;
@@ -161,7 +162,7 @@ export async function rankPartCandidatesWithGeometry(discovery, geometryResolver
             ...options,
             orientationPermutation,
           });
-          const interfaceMatch = options.requiredInterfaces
+          const interfaceMatch = hasRequiredInterfaces
             ? matchRequiredInterfaces(options.requiredInterfaces, candidate.specialised_interfaces || [], {
               ...(options.interfaceMatchOptions || {}),
               orientationPermutation: fit.orientation_permutation,
