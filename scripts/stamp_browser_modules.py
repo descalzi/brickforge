@@ -8,7 +8,7 @@ import sys
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 root=Path(__file__).resolve().parents[1]/'docs'
 modules=sorted(p for p in (root/'assets').glob('*.js') if p.name!='release-version.js')
-pattern=re.compile(r'''(["'])(\.{1,2}/[^"'\s?]+\.(?:js|css|json))(?:\?v=[^"'\s]*)?\1''')
+pattern=re.compile(r'''(["'])(\.{1,2}/[^"'\s?]+\.(?:js|css|json))(?:\?v=[^"'\s]+)?\1''')
 html_links=re.compile(r'''(href=["'])(\./[^"']+\.html(?:\?[^"']*)?(?:\#[^"']*)?)(["'])''')
 def normalize(text):
  text=pattern.sub(lambda m:m[1]+m[2]+m[1],text)

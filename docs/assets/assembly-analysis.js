@@ -1,4 +1,4 @@
-import { transformVector } from './specialist-placement.js?v=68f40f52a849';
+import { transformVector } from './specialist-placement.js?v=c37e3f51f3b7';
 export function partBodyBounds(part,profile){
  const vertices=profile.body_vertices_mm||[-1,1].flatMap(x=>[0,profile.body_height_ldu*.4].flatMap(y=>[-1,1].map(z=>[x*profile.footprint_studs_x*4,y,z*profile.footprint_studs_z*4])));
  const points=vertices.map(p=>transformVector(part.matrix,p).map((v,i)=>(v+part.translation_ldu[i]*.4)*(i===0?1:-1)));
@@ -19,7 +19,8 @@ export function analyzeAssembly(parts,connections,profiles){
  const supportHull=hull(contacts);let volume=0,centre=[0,0,0];
  for(const b of bounds.values()){const v=b.max.reduce((p,x,i)=>p*(x-b.min[i]),1);volume+=v;centre=centre.map((n,i)=>n+v*(b.max[i]+b.min[i])/2);}
  centre=centre.map(n=>n/(volume||1));const inside=supportHull.length>=3&&supportHull.every((p,i)=>cross(p,supportHull[(i+1)%supportHull.length],[centre[0],centre[2]])>=-1e-5);
- return {body_envelope_collisions:collisions,support:{floor_mm:floor,contact_hull_xz_mm:supportHull,uniform_envelope_volume_centre_mm:centre,projection_inside_support_hull:inside,evidence:'Bounding-volume, uniform-density proxy only; hollow parts, material density, bending, clutch and intermediate build steps are not simulated.'}};
+ const min=[0,1,2].map(i=>Math.min(...[...bounds.values()].map(b=>b.min[i]))),max=[0,1,2].map(i=>Math.max(...[...bounds.values()].map(b=>b.max[i])));
+ return {nominal_dimensions_mm:{width:max[0]-min[0],height:max[1]-min[1],depth:max[2]-min[2]},body_envelope_collisions:collisions,support:{floor_mm:floor,contact_hull_xz_mm:supportHull,uniform_envelope_volume_centre_mm:centre,projection_inside_support_hull:inside,evidence:'Bounding-volume, uniform-density proxy only; hollow parts, material density, bending, clutch and intermediate build steps are not simulated.'}};
 }
 export function clearApproach(part,built,partsById,connections,profiles){
  const b=partBodyBounds(part,profiles.get(part.part_id)),directions=[];

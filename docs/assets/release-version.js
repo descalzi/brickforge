@@ -1,1 +1,1 @@
-export const ASSET_VERSION="68f40f52a849";
+export const ASSET_VERSION="c37e3f51f3b7";

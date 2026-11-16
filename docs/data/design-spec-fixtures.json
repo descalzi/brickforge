@@ -1474,6 +1474,382 @@
           4
         ]
       }
+    },
+    {
+      "schema_version": 1,
+      "design_id": "approximate-road-car",
+      "name": "Road car \u00b7 approximate wheels fitted to real joints",
+      "units": "mm",
+      "components": [
+        {
+          "id": "chassis",
+          "label": "Chassis",
+          "role": "chassis",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 16,
+            "depth": 48,
+            "height": 3.2
+          },
+          "position_mm": {
+            "x": -8,
+            "y": 0,
+            "z": 0
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "colour": 7
+        },
+        {
+          "id": "front-wheel-mount",
+          "label": "Front Wheel Mount",
+          "role": "wheel_mount",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 16,
+            "depth": 16,
+            "height": 3.2
+          },
+          "position_mm": {
+            "x": -8,
+            "y": -3.2,
+            "z": 0
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "colour": 0
+        },
+        {
+          "id": "front-left-wheel",
+          "label": "Front Left Wheel",
+          "role": "wheel",
+          "geometry": "cylinder",
+          "dimensions_mm": {
+            "width": 8,
+            "depth": 16,
+            "height": 16
+          },
+          "position_mm": {
+            "x": -16,
+            "y": -10,
+            "z": 0
+          },
+          "priority": "essential",
+          "confidence": "inferred",
+          "required_features": [
+            "rotating"
+          ],
+          "geometry_parameters": {
+            "axis": "x",
+            "diameter_mm": 16
+          },
+          "fit_tolerance_mm": 2,
+          "position_tolerance_mm": 2
+        },
+        {
+          "id": "front-right-wheel",
+          "label": "Front Right Wheel",
+          "role": "wheel",
+          "geometry": "cylinder",
+          "dimensions_mm": {
+            "width": 8,
+            "depth": 16,
+            "height": 16
+          },
+          "position_mm": {
+            "x": 8,
+            "y": -10,
+            "z": 0
+          },
+          "priority": "essential",
+          "confidence": "inferred",
+          "required_features": [
+            "rotating"
+          ],
+          "geometry_parameters": {
+            "axis": "x",
+            "diameter_mm": 16
+          },
+          "fit_tolerance_mm": 2,
+          "position_tolerance_mm": 2
+        },
+        {
+          "id": "rear-wheel-mount",
+          "label": "Rear Wheel Mount",
+          "role": "wheel_mount",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 16,
+            "depth": 16,
+            "height": 3.2
+          },
+          "position_mm": {
+            "x": -8,
+            "y": -3.2,
+            "z": 32
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "colour": 0
+        },
+        {
+          "id": "rear-left-wheel",
+          "label": "Rear Left Wheel",
+          "role": "wheel",
+          "geometry": "cylinder",
+          "dimensions_mm": {
+            "width": 8,
+            "depth": 16,
+            "height": 16
+          },
+          "position_mm": {
+            "x": -16,
+            "y": -10,
+            "z": 32
+          },
+          "priority": "essential",
+          "confidence": "inferred",
+          "required_features": [
+            "rotating"
+          ],
+          "geometry_parameters": {
+            "axis": "x",
+            "diameter_mm": 16
+          },
+          "fit_tolerance_mm": 2,
+          "position_tolerance_mm": 2
+        },
+        {
+          "id": "rear-right-wheel",
+          "label": "Rear Right Wheel",
+          "role": "wheel",
+          "geometry": "cylinder",
+          "dimensions_mm": {
+            "width": 8,
+            "depth": 16,
+            "height": 16
+          },
+          "position_mm": {
+            "x": 8,
+            "y": -10,
+            "z": 32
+          },
+          "priority": "essential",
+          "confidence": "inferred",
+          "required_features": [
+            "rotating"
+          ],
+          "geometry_parameters": {
+            "axis": "x",
+            "diameter_mm": 16
+          },
+          "fit_tolerance_mm": 2,
+          "position_tolerance_mm": 2
+        },
+        {
+          "id": "rear-body",
+          "label": "Rear Body",
+          "role": "body",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 16,
+            "depth": 16,
+            "height": 9.6
+          },
+          "position_mm": {
+            "x": -8,
+            "y": 3.2,
+            "z": 32
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "colour": 4
+        },
+        {
+          "id": "windscreen-frame",
+          "label": "Windscreen Frame",
+          "role": "window",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 16,
+            "depth": 8,
+            "height": 19.2
+          },
+          "position_mm": {
+            "x": -8,
+            "y": 3.2,
+            "z": 16
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "required_features": [
+            "window"
+          ],
+          "colour": 15
+        },
+        {
+          "id": "cabin-back",
+          "label": "Cabin Back",
+          "role": "body",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 16,
+            "depth": 8,
+            "height": 19.2
+          },
+          "position_mm": {
+            "x": -8,
+            "y": 3.2,
+            "z": 24
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "colour": 4
+        },
+        {
+          "id": "bonnet",
+          "label": "Bonnet",
+          "role": "roof",
+          "geometry": "extruded_profile",
+          "dimensions_mm": {
+            "width": 16,
+            "depth": 16,
+            "height": 9.6
+          },
+          "position_mm": {
+            "x": -8,
+            "y": 3.2,
+            "z": 0
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "required_features": [
+            "sloped"
+          ],
+          "colour": 4,
+          "geometry_parameters": {
+            "depth_mm": 16,
+            "outline_mm": [
+              [
+                0,
+                0
+              ],
+              [
+                16,
+                0
+              ],
+              [
+                16,
+                9.6
+              ],
+              [
+                8,
+                9.6
+              ],
+              [
+                0,
+                1.6
+              ]
+            ]
+          }
+        },
+        {
+          "id": "roof",
+          "label": "Roof",
+          "role": "roof",
+          "geometry": "extruded_profile",
+          "dimensions_mm": {
+            "width": 16,
+            "depth": 16,
+            "height": 9.6
+          },
+          "position_mm": {
+            "x": -8,
+            "y": 22.4,
+            "z": 16
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "required_features": [
+            "sloped"
+          ],
+          "colour": 4,
+          "geometry_parameters": {
+            "depth_mm": 16,
+            "outline_mm": [
+              [
+                0,
+                0
+              ],
+              [
+                16,
+                0
+              ],
+              [
+                16,
+                9.6
+              ],
+              [
+                8,
+                9.6
+              ],
+              [
+                0,
+                1.6
+              ]
+            ]
+          }
+        }
+      ],
+      "relationships": [
+        {
+          "type": "attached_to",
+          "from": "front-wheel-mount",
+          "to": "chassis"
+        },
+        {
+          "type": "attached_to",
+          "from": "front-left-wheel",
+          "to": "front-wheel-mount"
+        },
+        {
+          "type": "attached_to",
+          "from": "front-right-wheel",
+          "to": "front-wheel-mount"
+        },
+        {
+          "type": "attached_to",
+          "from": "rear-wheel-mount",
+          "to": "chassis"
+        },
+        {
+          "type": "attached_to",
+          "from": "rear-left-wheel",
+          "to": "rear-wheel-mount"
+        },
+        {
+          "type": "attached_to",
+          "from": "rear-right-wheel",
+          "to": "rear-wheel-mount"
+        }
+      ],
+      "constraints": {
+        "require_connected": true,
+        "allow_intersections": false,
+        "max_parts": 250,
+        "max_search_nodes": 100000,
+        "course_type": "auto"
+      },
+      "appearance": {
+        "preferred_colours": [
+          4
+        ]
+      },
+      "assumptions": [
+        "The windscreen is an open frame without glazing.",
+        "Four nominal wheel-pin joints are required; rolling friction and physical retention are not certified.",
+        "Wheel dimensions and positions are approximate within an explicit 2 mm allowance."
+      ]
     }
   ],
   "challenge_specs": [

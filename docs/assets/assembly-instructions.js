@@ -1,4 +1,4 @@
-import { clearApproach } from "./assembly-analysis.js?v=68f40f52a849";
+import { clearApproach } from "./assembly-analysis.js?v=c37e3f51f3b7";
 /** A connected nominal assembly sequence. This is deliberately not described
  * as a collision-free insertion path or a structural buildability proof. */
 export function createAssemblyInstructions(parts,connections,profiles) {

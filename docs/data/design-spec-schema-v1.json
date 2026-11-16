@@ -355,6 +355,12 @@
           "minimum": 0,
           "maximum": 4,
           "description": "Explicit allowed nominal dimension deviation; zero means exact."
+        },
+        "position_tolerance_mm": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 8,
+          "description": "Explicit per-axis translation uncertainty; compatible interfaces may align within this bound. Zero fixes the position."
         }
       }
     }

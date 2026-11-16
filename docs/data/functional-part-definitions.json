@@ -142,7 +142,8 @@
             -1,
             0,
             0
-          ]
+          ],
+          "fit_key": "wheel-pin-for-8mm-rim"
         },
         {
           "feature_id": "wheel-pin-right",
@@ -156,7 +157,8 @@
             1,
             0,
             0
-          ]
+          ],
+          "fit_key": "wheel-pin-for-8mm-rim"
         }
       ],
       "body_vertices_mm": [
@@ -228,7 +230,8 @@
             0,
             0,
             1
-          ]
+          ],
+          "fit_key": "8mm-rim-seat-6.4mm-width"
         },
         {
           "feature_id": "wheel-bore",
@@ -242,7 +245,8 @@
             0,
             0,
             1
-          ]
+          ],
+          "fit_key": "wheel-pin-for-8mm-rim"
         }
       ],
       "body_vertices_mm": [
@@ -314,7 +318,8 @@
             0,
             0,
             1
-          ]
+          ],
+          "fit_key": "8mm-rim-seat-6.4mm-width"
         }
       ],
       "body_vertices_mm": [

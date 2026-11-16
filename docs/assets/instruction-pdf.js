@@ -1,6 +1,6 @@
 // Dependency-free vector PDF export: no server, external fonts or image service.
 // Geometry and inventory come from the same plan as the browser workbench.
-import { transformVector } from './specialist-placement.js?v=68f40f52a849';
+import { transformVector } from './specialist-placement.js?v=c37e3f51f3b7';
 const palette=new Map([[0,'#26343b'],[1,'#1e5aa8'],[2,'#00852b'],[4,'#b40000'],[7,'#8a928d'],[14,'#f2cd37'],[15,'#eeeeee'],[19,'#e4cd9e'],[25,'#d66b24']]);
 const clean=s=>String(s).normalize('NFKD').replace(/[^\x20-\x7e]/g,' ').replace(/[\\()]/g,'\\$&');
 const n=v=>Number(v.toFixed(3));
@@ -50,6 +50,6 @@ export function createInstructionPdf(plan,catalogue,spec={}){
   stream+=text(36,base+20,8,'New element shown in its colour; previous elements shown in grey.')+text(36,base+7,8,step.nominal_approach_clear?'Nominal body-envelope approach is clear; check studs, clutch and hand access.':'Approach not established. Review this step before attempting a physical build.');
   if(index%2===1||index===steps.length-1)streams.push(stream);
  });
- const items=plan.bom.items||plan.bom;for(let start=0;start<items.length;start+=28){stream=header(streams.length+1)+text(36,746,18,'Parts inventory')+text(36,722,9,'Derived from the exact part instances used in the model and sequence.');items.slice(start,start+28).forEach((p,i)=>{const description=profiles.get(p.part_id)?.description||'';stream+=text(36,690-i*21,10,`${p.quantity} x ${p.part_id}  |  colour ${p.colour_code??'see model'}  |  ${description}`.slice(0,95));});streams.push(stream);}
+ const items=plan.bom.items||plan.bom;for(let start=0;start<items.length;start+=28){stream=header(streams.length+1)+text(36,746,18,'Parts inventory')+text(36,722,9,'Derived from the exact part instances used in the model and sequence.');items.slice(start,start+28).forEach((p,i)=>{const description=profiles.get(p.part_id)?.description||'';stream+=text(36,690-i*21,10,`${p.quantity} x ${p.part_id}  |  colour ${p.colour_code??'see model'}  |  ${description}`.slice(0,95));});stream+=text(36,88,8,'LDraw source geometry. Authors and per-file licence notices:')+text(36,73,8,'github.com/descalzi/brickforge/tree/main/docs/data/part-meshes')+text(36,58,8,'Surface transforms, triangulation and diagram projection by BrickForge.');streams.push(stream);}
  return documentBytes(streams,catalogue.pdf_font);
 }

@@ -1,9 +1,9 @@
-import { ASSET_VERSION } from "./release-version.js?v=68f40f52a849";
-import { buildInterpretationRequest, interpretDescription, endpointProvider } from "./text-design.js?v=68f40f52a849";
-import { createInstructionPdf } from "./instruction-pdf.js?v=68f40f52a849";
-import { partBodyBounds } from "./assembly-analysis.js?v=68f40f52a849";
-import { validateDesignSpec } from "./design-spec.js?v=68f40f52a849";
-import { createDesignViewer, colours } from "./design-viewer.js?v=68f40f52a849";
+import { ASSET_VERSION } from "./release-version.js?v=c37e3f51f3b7";
+import { buildInterpretationRequest, interpretDescription, endpointProvider } from "./text-design.js?v=c37e3f51f3b7";
+import { createInstructionPdf } from "./instruction-pdf.js?v=c37e3f51f3b7";
+import { partBodyBounds } from "./assembly-analysis.js?v=c37e3f51f3b7";
+import { validateDesignSpec } from "./design-spec.js?v=c37e3f51f3b7";
+import { createDesignViewer, colours } from "./design-viewer.js?v=c37e3f51f3b7";
 const $=id=>document.getElementById(id);
 const editor=$("design-spec"),status=$("engine-status"),runButton=$("run-design"),selector=$("fixture-select");
 const downloads=[$("download-ldraw"),$("download-bom"),$("download-report"),$("download-instructions"),$("download-pdf")];
@@ -26,10 +26,10 @@ function components(spec,plan){
   $("component-list").replaceChildren();
   for(const component of spec.components||[]){
     const button=document.createElement("button");button.className="component-row";button.setAttribute("aria-pressed","false");
-    const swatch=document.createElement("span");swatch.className="swatch";swatch.style.background=colours.get(component.colour??spec.appearance?.preferred_colours?.[0]??4)||"#a9b8c2";
+    const swatch=document.createElement("span");swatch.className="swatch";const placedColours=[...new Set((plan?.parts||[]).filter(p=>p.component_id===component.id).map(p=>colours.get(p.colour_code??p.colour)||'#a9b8c2'))];swatch.style.background=placedColours.length>1?`linear-gradient(${placedColours.join(',')})`:placedColours[0]||colours.get(component.colour??spec.appearance?.preferred_colours?.[0]??4)||"#a9b8c2";
     const text=document.createElement("span"),name=document.createElement("span"),detail=document.createElement("small");name.className="component-name";name.textContent=component.label||component.id;
     const d=component.dimensions_mm;detail.textContent=`${component.role} · ${d?.width} × ${d?.depth} × ${d?.height} mm`;text.append(name,detail);
-    const state=document.createElement("span");state.className="component-state";state.textContent=plan?.status==="planned"?`${plan.parts.filter(p=>p.component_id===component.id).length} parts`:component.geometry;
+    const state=document.createElement("span");state.className="component-state";const count=plan?.parts?.filter(p=>p.component_id===component.id).length;state.textContent=plan?.status==="planned"?`${count} ${count===1?"part":"parts"}`:component.geometry;
     button.append(swatch,text,state);button.addEventListener("click",()=>{const on=button.getAttribute("aria-pressed")!=="true";for(const b of $("component-list").children)b.setAttribute("aria-pressed","false");button.setAttribute("aria-pressed",String(on));viewer?.select(on?component.id:null);editComponent(on?component:null);});$("component-list").append(button);
   }
   if(spec.negative_spaces?.length){const note=document.createElement("p");note.className="muted";note.textContent=spec.negative_spaces.length+" explicit empty-space requirements";$("component-list").append(note);}
@@ -48,7 +48,7 @@ function run(){
   invalidate("Validating design specification…");
   let spec;try{spec=JSON.parse(editor.value);const validation=validateDesignSpec(spec);if(!validation.valid)throw new Error(validation.errors.join(" "));}catch(error){setStatus(error.message,"blocked");$("engine-report").textContent=error.message;return;}
   components(spec);activeSpec=spec;runButton.disabled=true;$("cancel-design").hidden=false;setStatus("Searching catalogue parts and connected layouts…","planning");
-  const started=performance.now();worker=new Worker(new URL("./design-worker.js?v=68f40f52a849",import.meta.url),{type:"module"});
+  const started=performance.now();worker=new Worker(new URL("./design-worker.js?v=c37e3f51f3b7",import.meta.url),{type:"module"});
   worker.onmessage=({data})=>{
     finishWorker();if(data.error){setStatus(data.error,"blocked");$("engine-report").textContent=data.error;return;}
     result=data.result;showEvidence(result);components(spec,result);
@@ -109,15 +109,18 @@ for(const [id,view] of [["view-iso","iso"],["view-top","top"],["view-front","fro
 $("course-slider").addEventListener("input",()=>{const input=$("course-slider");$("course-value").textContent=input.value+"/"+input.max;viewer?.course(Number(input.value));});
 initialise();
 
-$("download-pdf").addEventListener("click",async()=>{if(!result)return;try{if(!displayCatalogue.pdf_font){const font=await fetch("./data/pdf-font-v1.json?v=68f40f52a849"+ASSET_VERSION);if(!font.ok)throw new Error("Could not load the instruction font.");displayCatalogue.pdf_font=await font.json();}download(result.design_id+".instructions.pdf",createInstructionPdf(result,displayCatalogue,activeSpec),"application/pdf");}catch(error){setStatus(error.message,"blocked");}});
+$("download-pdf").addEventListener("click",async()=>{
+ if(!result)return;const plan=result,specification=activeSpec;
+ try{if(!displayCatalogue.pdf_font){const font=await fetch(`./data/pdf-font-v1.json?v=${ASSET_VERSION}`);if(!font.ok)throw new Error("Could not load the instruction font.");displayCatalogue.pdf_font=await font.json();}if(result!==plan)return;download(plan.design_id+".instructions.pdf",createInstructionPdf(plan,displayCatalogue,specification),"application/pdf");}catch(error){if(result===plan)setStatus(error.message,"blocked");}
+});
 
 function editComponent(c){
  selectedComponent=c?.id||null;$("component-editor").hidden=!c;if(!c)return;$("component-editor").open=true;$("component-editor-name").textContent=c.label||c.id;
  for(const axis of ['x','y','z'])$("component-"+axis).value=c.position_mm[axis];
  for(const axis of ['width','depth','height']){$("component-"+axis).value=c.dimensions_mm[axis];$("component-"+axis).disabled=c.geometry!=='rectangular_prism';}
- $("component-colour").value=c.colour??4;$("component-tolerance").value=c.fit_tolerance_mm||0;
+ $("component-colour").value=c.colour??4;$("component-tolerance").value=c.fit_tolerance_mm||0;$("component-position-tolerance").value=c.position_tolerance_mm||0;
 }
-$("apply-component").addEventListener('click',()=>{try{const spec=JSON.parse(editor.value),c=spec.components.find(c=>c.id===selectedComponent);if(!c)throw new Error('Select a component.');for(const a of ['x','y','z'])c.position_mm[a]=Number($("component-"+a).value);if(c.geometry==='rectangular_prism')for(const a of ['width','depth','height'])c.dimensions_mm[a]=Number($("component-"+a).value);c.colour=Number($("component-colour").value);c.fit_tolerance_mm=Number($("component-tolerance").value);const check=validateDesignSpec(spec);if(!check.valid)throw new Error(check.errors.join(' '));editor.value=JSON.stringify(spec,null,2);invalidate('Component changed. Plan again to check its fit.');components(spec);editComponent(c);}catch(error){setStatus(error.message,'blocked');}});
+$("apply-component").addEventListener('click',()=>{try{const spec=JSON.parse(editor.value),c=spec.components.find(c=>c.id===selectedComponent);if(!c)throw new Error('Select a component.');for(const a of ['x','y','z'])c.position_mm[a]=Number($("component-"+a).value);if(c.geometry==='rectangular_prism')for(const a of ['width','depth','height'])c.dimensions_mm[a]=Number($("component-"+a).value);c.colour=Number($("component-colour").value);c.fit_tolerance_mm=Number($("component-tolerance").value);c.position_tolerance_mm=Number($("component-position-tolerance").value);const check=validateDesignSpec(spec);if(!check.valid)throw new Error(check.errors.join(' '));editor.value=JSON.stringify(spec,null,2);invalidate('Component changed. Plan again to check its fit.');components(spec);editComponent(c);}catch(error){setStatus(error.message,'blocked');}});
 $("interpretation-endpoint").addEventListener('input',()=>{$("analyse-description").disabled=!responseSchema||!$("interpretation-endpoint").value.trim();});
 $("analyse-description").addEventListener('click',async()=>{
  invalidate('Analysing the description using your selected gateway…');const generation=analysisGeneration;analysisController=new AbortController();$("analyse-description").disabled=true;$("cancel-interpretation").hidden=false;

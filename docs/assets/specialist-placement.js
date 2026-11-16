@@ -1,5 +1,5 @@
-import { discoverPartCandidates } from './part-catalogue.js?v=68f40f52a849';
-import { translateComponentRequirements } from './design-translation.js?v=68f40f52a849';
+import { discoverPartCandidates } from './part-catalogue.js?v=c37e3f51f3b7';
+import { translateComponentRequirements } from './design-translation.js?v=c37e3f51f3b7';
 
 const yawRotations = [[1,0,0,0,1,0,0,0,1],[0,0,1,0,1,0,-1,0,0],[-1,0,0,0,1,0,0,0,-1],[0,0,-1,0,1,0,1,0,0]];
 const permutations=[[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]];
@@ -75,7 +75,7 @@ export function specialistComponentCandidates(component,options,partCatalogue,ma
     const translation=origin.map((v,axis)=>v-min[axis]);
     const parent={instance_id:`${component.id}-special-${i}`,component_id:component.id,part_id:profile.part_id,colour_code:component.colour??options.defaultColour,matrix:[...matrix],translation_ldu:translation.map((v,axis)=>v/.4*(axis===0?1:-1)),course_index:0};
     if(profile.children){
-     for(const [childIndex,child] of profile.children.entries())parts.push({...parent,instance_id:parent.instance_id+'-'+childIndex,part_id:child.part_id,colour_code:child.colour_code??parent.colour_code,catalogue_assembly_id:profile.part_id});
+     for(const [childIndex,child] of profile.children.entries())parts.push({...parent,instance_id:parent.instance_id+'-'+childIndex,part_id:child.part_id,colour_code:component.colour??child.colour_code??parent.colour_code,catalogue_assembly_id:profile.part_id});
     }else parts.push(parent);
    }
    // Conservative envelopes; cavity-aware narrow-phase collision is pending.

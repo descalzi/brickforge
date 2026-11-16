@@ -1,3 +1,4 @@
+import {fitAttachmentPoses} from "../docs/assets/attachment-fitting.js";
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
@@ -10,6 +11,12 @@ const read=async p=>JSON.parse(await readFile(new URL('../docs/data/'+p,import.m
 const cat=await read('connection-profiles/basic-bricks.json'),special=await read('specialist-profiles-v1.json'),fixtures=await read('design-spec-fixtures.json');
 const options={specialistCatalogue:special,partCatalogue:await read('part-capabilities-v1.json'),designTranslation:await read('design-translation-v1.json')},spec=id=>structuredClone(fixtures.fixtures.find(f=>f.design_id===id));
 const profileMap=new Map([...cat.profiles,...special.profiles].map(p=>[p.part_id,p]));
+test('connector pose expansion obeys its alternative and attempt budgets',()=>{
+ const moving=matrix=>({parts:[{instance_id:'moving',part_id:'3005',matrix,translation_ldu:[0,-24,0]}]}),target={parts:[{instance_id:'anchor',part_id:'3001',matrix:[1,0,0,0,1,0,0,0,1],translation_ldu:[0,0,0]}]};
+ const input={components:[{id:'a',position_tolerance_mm:8},{id:'b'}],relationships:[{type:'attached_to',from:'a',to:'b'}]},sets=[[moving([1,0,0,0,1,0,0,0,1]),moving([0,0,1,0,1,0,-1,0,0])],[target]];
+ const fitted=fitAttachmentPoses(input,sets,profileMap,{maxAlternatives:3,maxAttempts:1000});assert.equal(fitted.sets[0].length,3);assert.equal(fitted.budget_exhausted,true);
+ const bounded=fitAttachmentPoses(input,sets,profileMap,{maxAlternatives:20,maxAttempts:1});assert.equal(bounded.attempts,1);assert.equal(bounded.budget_exhausted,true);
+});
 test('four wheels flatten into real rim/tyre inventories and four directional wheel-pin joints',()=>{
  const p=planDesign(spec('small-road-car'),cat,options);assert.equal(p.status,'planned',p.failures?.join(' '));
  assert.equal(p.parts.filter(p=>p.part_id==='3641').length,4);assert.equal(p.parts.filter(p=>p.part_id==='4624').length,4);assert.equal(p.parts.filter(p=>p.part_id==='4600').length,2);
@@ -17,10 +24,17 @@ test('four wheels flatten into real rim/tyre inventories and four directional wh
  assert.equal(p.analysis.body_envelope_collisions.length,0);assert.equal(p.analysis.support.projection_inside_support_hull,true);assert.ok(p.instructions.steps.every(s=>s.nominal_approach_clear));
  assert.equal(p.bom.items.reduce((n,p)=>n+p.quantity,0),p.parts.length);assert.ok(p.parts.every(p=>!p.part_id.includes('assembly')));
 });
+test('explicit uncertainty fits approximate wheels to real nominal joints and reports actual dimensions',()=>{
+ const s=spec('approximate-road-car'),p=planDesign(s,cat,options);assert.equal(p.status,'planned',p.failures?.join(' '));assert.ok(p.search.pose_candidates_generated>0);const reports=p.component_reports.filter(r=>r.component_id.endsWith('wheel'));assert.equal(reports.length,4);for(const r of reports){assert.ok(r.position_adjustment_mm.every(v=>Math.abs(v)<=2));assert.ok(r.position_adjustment_mm.some(v=>Math.abs(v)>.1));assert.ok(Math.abs(r.realised_dimensions_mm.height-14.4)<1e-6);}
+ assert.ok(Math.abs(p.dimensions_mm.width-30.4)<1e-6);assert.equal(p.requested_dimensions_mm.width,32);assert.equal(JSON.stringify(s).includes('part_id'),false);
+ const strict=spec('small-road-car');strict.components.find(c=>c.id==='front-left-wheel').position_mm.x-=.5;assert.equal(planDesign(strict,cat,options).status,'blocked');strict.components.find(c=>c.id==='front-left-wheel').position_tolerance_mm=1;assert.equal(planDesign(strict,cat,options).status,'planned');
+});
+test('explicit component colour applies to every element of a compound wheel',()=>{const s=spec('small-road-car');s.components.find(c=>c.id==='front-left-wheel').colour=1;const p=planDesign(s,cat,options);assert.ok(p.parts.filter(p=>p.component_id==='front-left-wheel').every(p=>p.colour_code===1));});
 test('a displaced wheel or wrong bore axis is rejected instead of a visually plausible floating wheel',()=>{
  const s=spec('small-road-car');s.components.find(c=>c.id==='front-left-wheel').position_mm.x-=.5;assert.equal(planDesign(s,cat,options).status,'blocked');
  const broken=structuredClone(special);broken.profiles.find(p=>p.part_id==='4624').features.find(f=>f.kind==='wheel_bore').axis=[0,1,0];assert.equal(planDesign(spec('small-road-car'),cat,{...options,specialistCatalogue:broken}).status,'blocked');
 });
+test('an incompatible rim seat family is rejected even when its centre and axis match',()=>{const broken=structuredClone(special);broken.profiles.find(p=>p.part_id==='3641').features.find(f=>f.kind==='tyre_seat').fit_key='other-seat-family';assert.equal(planDesign(spec('small-road-car'),cat,{...options,specialistCatalogue:broken}).status,'blocked');});
 test('tapered wings remain dedicated mirrored source elements and connect through a bridge',()=>{const p=planDesign(spec('tapered-aircraft'),cat,options);assert.equal(p.status,'planned');assert.ok(['3933','3934'].every(id=>p.parts.some(p=>p.part_id===id)));assert.ok(p.parts.some(p=>p.part_id==='3006'));assert.equal(p.parts.length,4);});
 test('declared dimension tolerance permits a bounded adjustment; exact intent remains exact',()=>{
  const s=spec('interlocked-structural-body');s.components[0].dimensions_mm.width+=1;s.components[0].dimensions_mm.depth+=1;assert.equal(planDesign(s,cat,options).status,'blocked');s.components[0].fit_tolerance_mm=1;const p=planDesign(s,cat,options);assert.equal(p.status,'planned',p.failures?.join(' '));const r=p.component_reports[0];assert.equal(r.allowed_deviation_mm,1);assert.equal(r.realised_dimensions_mm.width,r.requested_dimensions_mm.width-1);s.components[0].fit_tolerance_mm=5;assert.equal(validateDesignSpec(s).valid,false);
@@ -38,7 +52,7 @@ test('gateway transport sends only the explicit interpretation request without b
 });
 test('instruction PDF has consistent xref offsets and an inventory derived from the plan',async()=>{
  const s=spec('small-road-car'),p=planDesign(s,cat,options),display={...cat,profiles:[...cat.profiles,...await Promise.all(special.profiles.map(async p=>({...p,preview_triangles_mm:(await read(p.mesh_file)).triangle_positions_mm})))],pdf_font:await read('pdf-font-v1.json')};
- const bytes=createInstructionPdf(p,display,s),pdf=new TextDecoder().decode(bytes);assert.ok(pdf.startsWith('%PDF-1.4'));assert.match(pdf,/\/Type \/Pages \/Count 10/);assert.match(pdf,/Parts inventory/);assert.match(pdf,/STEP 17/);assert.match(pdf,/FontFile2/);
+ const bytes=createInstructionPdf(p,display,s),pdf=new TextDecoder().decode(bytes);assert.ok(pdf.startsWith('%PDF-1.4'));assert.match(pdf,/\/Type \/Pages \/Count 10/);assert.match(pdf,/Parts inventory/);assert.match(pdf,/STEP 17/);assert.match(pdf,/FontFile2/);assert.match(pdf,/per-file licence notices/);
  const xref=Number(pdf.match(/startxref\n(\d+)/)[1]);assert.equal(pdf.slice(xref,xref+4),'xref');const offsets=pdf.slice(xref).match(/\d{10} 00000 n/g).map(x=>Number(x.slice(0,10)));offsets.forEach((offset,i)=>assert.ok(pdf.slice(offset).startsWith((i+1)+' 0 obj')));
 });
 test('published language schema is the canonical specification schema',async()=>{assert.deepEqual(await read('design-spec-schema-v1.json'),JSON.parse(await readFile(new URL('../schemas/design-spec-v1.schema.json',import.meta.url))));});

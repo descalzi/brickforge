@@ -7,7 +7,7 @@ semantic components, millimetre geometry, required/forbidden features, colours,
 relations and empty spaces. There are no part IDs or build recipes in authored
 briefs. Runtime validation and the JSON Schema share the version-1 contract.
 `fit_tolerance_mm` permits an explicit dimension deviation of at most 4 mm;
-otherwise dimensions remain exact. Realised sizes are reported against requests.
+otherwise dimensions remain exact. `position_tolerance_mm` permits connector-derived translations within an explicit per-axis uncertainty of at most 8 mm; zero keeps a component fixed. Realised sizes are reported against requests.
 
 Browser JavaScript is authoritative. Static publication serves code and data;
 construction needs no server. Python ingests source catalogues and produces or
@@ -27,7 +27,7 @@ The global search enforces requested direct attachments with cached nominal
 interface compatibility, chooses constrained components first and evaluates
 realised spatial relationships. Node/combination budgets remain bounded and are
 reported. Unknown, absent or geometrically incompatible essentials stay blocked.
-This is not yet general polyhedral packing or automatic object/pose synthesis.
+Connector-derived translations propagate through declared attachments inside explicit position tolerances, retaining required relationships and rejecting overlaps. This is not yet general polyhedral packing or unrestricted object/pose synthesis.
 
 ## Geometry, connectivity and evidence
 

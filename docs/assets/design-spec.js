@@ -1,7 +1,7 @@
 const finite = (value) => typeof value === "number" && Number.isFinite(value);
 const RELATIONSHIPS = new Set(["above","below","left_of","right_of","in_front_of","behind","attached_to","aligned_with","symmetric_to"]);
 const ROOT_KEYS = new Set(["schema_version","design_id","name","units","components","relationships","constraints","appearance","assumptions","negative_spaces"]);
-const COMPONENT_KEYS = new Set(["id","label","role","function","geometry","geometry_parameters","dimensions_mm","position_mm","priority","required_features","forbidden_features","colour","confidence","fit_tolerance_mm"]);
+const COMPONENT_KEYS = new Set(["id","label","role","function","geometry","geometry_parameters","dimensions_mm","position_mm","priority","required_features","forbidden_features","colour","confidence","fit_tolerance_mm","position_tolerance_mm"]);
 const hasOnlyKeys = (value, allowed) => Object.keys(value || {}).filter(key => !allowed.has(key));
 
 export function validateDesignSpec(spec) {
@@ -60,6 +60,7 @@ export function validateDesignSpec(spec) {
     for (const key of ["function","required_features","forbidden_features"]) {
       if (component[key] !== undefined && (!Array.isArray(component[key]) || component[key].some(value => typeof value !== "string" || !value.trim()))) errors.push(path + "." + key + " must be an array of non-empty strings.");
     }
+    if(component.position_tolerance_mm!==undefined&&(!finite(component.position_tolerance_mm)||component.position_tolerance_mm<0||component.position_tolerance_mm>8))errors.push(path+'.position_tolerance_mm must be between 0 and 8 mm.');
     if(component.fit_tolerance_mm!==undefined&&(!finite(component.fit_tolerance_mm)||component.fit_tolerance_mm<0||component.fit_tolerance_mm>4))errors.push(path+'.fit_tolerance_mm must be between 0 and 4 mm.');
     if (component.colour !== undefined && (!Number.isInteger(component.colour) || component.colour < 0)) errors.push(path + ".colour must be a non-negative integer.");
     if (component.confidence !== undefined && !["explicit","inferred","uncertain"].includes(component.confidence)) errors.push(path + ".confidence is invalid.");
