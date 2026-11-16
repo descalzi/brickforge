@@ -121,13 +121,18 @@ function assemble(parts, profileMap, requireConnected) {
 function componentCandidates(component,catalogue,options,partCatalogue,designTranslation) {
   const translated=translateComponentRequirements(component,designTranslation);
   if(!translated.valid)return {error:translated.errors.join(" ")};
-  const semanticSearch=discoverPartCandidates({
+  const requirement={
     roles:translated.part_roles,
     required_capabilities:translated.required_capabilities,
     forbidden_capabilities:translated.forbidden_capabilities,
     dimensions_mm:component.dimensions_mm
-  },partCatalogue);
-  if(semanticSearch.status==="no_candidates") return {error:"No source-backed part candidates satisfy semantic role "+component.role+(component.required_features?.length?" and required design features "+component.required_features.join(", "):"")+"."};
+  };
+  const semanticSearch=discoverPartCandidates(requirement,partCatalogue);
+  if(semanticSearch.status==="no_candidates") {
+    const referenceSearch=discoverPartCandidates(requirement,partCatalogue,{includeReferenceOnly:true,allowUnknownDimensions:true});
+    if(referenceSearch.candidates.length) return {error:"Reference-only parts exist for semantic role "+component.role+" ("+referenceSearch.candidates.map(candidate=>candidate.part_id).join(", ")+"), but their geometry and connector interfaces are not yet measured; they cannot be placed safely."};
+    return {error:"No source-backed part candidates satisfy semantic role "+component.role+(component.required_features?.length?" and required design features "+component.required_features.join(", "):"")+"."};
+  }
   const candidateIds=new Set(semanticSearch.candidates.map(candidate=>candidate.part_id));
   const candidateScores=new Map(semanticSearch.candidates.map(candidate=>[candidate.part_id,candidate.score]));
   const width=component.dimensions_mm.width/STUD_PITCH_MM;
