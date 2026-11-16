@@ -200,8 +200,8 @@ test("two semantic Technic beams are planned with a source-derived friction pin"
  const technicSpec={
   schema_version:1,design_id:"two-beam-pin-joint",name:"Two Technic beams joined by a friction pin",units:"mm",
   components:[
-   {id:"beam-a",role:"beam",geometry:"rectangular_prism",dimensions_mm:{width:32,depth:8,height:11.2},position_mm:{x:0,y:0,z:0},priority:"essential",required_features:["pin_joint"],confidence:"explicit"},
-   {id:"beam-b",role:"beam",geometry:"rectangular_prism",dimensions_mm:{width:32,depth:8,height:11.2},position_mm:{x:0,y:0,z:8},priority:"essential",required_features:["pin_joint"],confidence:"explicit"}
+   {id:"beam-a",role:"beam",geometry:"rectangular_prism",dimensions_mm:{width:8,depth:32,height:11.2},position_mm:{x:0,y:0,z:0},priority:"essential",required_features:["pin_joint"],confidence:"explicit"},
+   {id:"beam-b",role:"beam",geometry:"rectangular_prism",dimensions_mm:{width:8,depth:32,height:11.2},position_mm:{x:8,y:0,z:0},priority:"essential",required_features:["pin_joint"],confidence:"explicit"}
   ],
   relationships:[{type:"attached_to",from:"beam-a",to:"beam-b"}],
   constraints:{require_connected:true,allow_intersections:false,max_parts:10,max_search_nodes:10000,course_type:"brick"}
