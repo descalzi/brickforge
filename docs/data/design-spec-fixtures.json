@@ -1,0 +1,159 @@
+{
+  "schema_version": 1,
+  "description": "Hand-authored ideal design briefs. They describe object intent and deliberately do not prescribe LEGO part IDs or placements.",
+  "specifications": [
+    {
+      "schema_version": 1,
+      "design_id": "compact-car-body",
+      "name": "Compact car body",
+      "units": "studs-and-brick-courses",
+      "components": [
+        {
+          "id": "chassis",
+          "name": "Chassis",
+          "role": "chassis",
+          "geometry": {
+            "type": "orthogonal_prism",
+            "width_studs": 4,
+            "depth_studs": 4
+          },
+          "origin_studs": [
+            0,
+            0
+          ],
+          "height_courses": 2,
+          "priority": "essential"
+        },
+        {
+          "id": "body",
+          "name": "Body shell",
+          "role": "body",
+          "geometry": {
+            "type": "orthogonal_prism",
+            "width_studs": 4,
+            "depth_studs": 2
+          },
+          "origin_studs": [
+            0,
+            1
+          ],
+          "height_courses": 2,
+          "priority": "essential"
+        }
+      ],
+      "relationships": [
+        {
+          "type": "attached_to",
+          "from": "body",
+          "to": "chassis",
+          "required": true
+        }
+      ],
+      "requirements": {
+        "required_roles": [
+          "chassis",
+          "body"
+        ],
+        "require_connected": true
+      },
+      "preferences": {
+        "colours": [
+          4,
+          1
+        ],
+        "max_parts": 100,
+        "optimisation": "balanced"
+      }
+    },
+    {
+      "schema_version": 1,
+      "design_id": "small-house",
+      "name": "Small house massing",
+      "units": "studs-and-brick-courses",
+      "components": [
+        {
+          "id": "walls",
+          "name": "Main walls",
+          "role": "wall",
+          "geometry": {
+            "type": "orthogonal_prism",
+            "width_studs": 4,
+            "depth_studs": 4
+          },
+          "origin_studs": [
+            0,
+            0
+          ],
+          "height_courses": 2,
+          "priority": "essential"
+        }
+      ],
+      "requirements": {
+        "required_roles": [
+          "wall"
+        ],
+        "require_connected": true
+      }
+    },
+    {
+      "schema_version": 1,
+      "design_id": "aircraft-fuselage",
+      "name": "Aircraft fuselage study",
+      "units": "studs-and-brick-courses",
+      "components": [
+        {
+          "id": "fuselage",
+          "name": "Fuselage",
+          "role": "fuselage",
+          "geometry": {
+            "type": "orthogonal_prism",
+            "width_studs": 2,
+            "depth_studs": 8
+          },
+          "origin_studs": [
+            0,
+            0
+          ],
+          "height_courses": 2,
+          "priority": "essential"
+        }
+      ],
+      "requirements": {
+        "required_roles": [
+          "fuselage"
+        ],
+        "require_connected": true
+      }
+    },
+    {
+      "schema_version": 1,
+      "design_id": "organic-study",
+      "name": "Organic form study",
+      "units": "studs-and-brick-courses",
+      "components": [
+        {
+          "id": "core",
+          "name": "Core mass",
+          "role": "organic-core",
+          "geometry": {
+            "type": "orthogonal_prism",
+            "width_studs": 3,
+            "depth_studs": 3
+          },
+          "origin_studs": [
+            0,
+            0
+          ],
+          "height_courses": 2,
+          "priority": "preferred"
+        }
+      ],
+      "requirements": {
+        "required_roles": [
+          "organic-core"
+        ],
+        "require_connected": true
+      }
+    }
+  ]
+}
