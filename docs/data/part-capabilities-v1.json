@@ -66,6 +66,26 @@
       }
     },
     {
+      "part_id": "2780",
+      "description": "Technic Pin with Friction and Slots",
+      "roles": [
+        "connector_pin"
+      ],
+      "capabilities": [
+        "technic_friction_pin"
+      ],
+      "dimensions_mm": null,
+      "candidate_status": "reference_only",
+      "interfaces": [],
+      "source": {
+        "file": "parts/2780.dat",
+        "revision": "UPDATE 2009-02",
+        "license": "Licensed under CC BY 2.0 and CC BY 4.0; see CAreadme.txt",
+        "author": "Guy Vivan [guyvivan]",
+        "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
+      }
+    },
+    {
       "part_id": "2998",
       "description": "Wheel Rim 32 x 56 with Peghole and 6 Spokes with Pegholes",
       "roles": [
