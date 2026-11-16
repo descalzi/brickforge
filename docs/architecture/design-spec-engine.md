@@ -41,7 +41,7 @@ The existing source-derived Technic catalogue contributes real pin-hole interfac
 
 ## Evidence and honesty
 
-The current trusted course-placement catalogue contains standard bricks and plates with nominal stud/receiver datums. A separate source-derived Technic catalogue provides hole-interface geometry for selected beam parts. A matching datum is evidence of a geometric candidate interface, not proof of clutch force or structural integrity. Typed connector compatibility is kept separate from the course-placement planner until real connector part geometry and validated insertion/retention behaviour are available.
+The current trusted course-placement catalogue contains standard bricks and plates with nominal stud/receiver datums. A separate source-derived Technic catalogue provides hole-interface geometry for selected beam parts, and the typed connector matcher now matches the measured 2780 friction-pin datum to 3701 beam-hole datums in a nominal, explicitly unverified test. A matching datum is evidence of a geometric candidate interface, not proof of clutch force or structural integrity. Typed connector compatibility is kept separate from the course-placement planner until real connector part geometry and validated insertion/retention behaviour are available.
 
 Consequently, the engine:
 - blocks semantic roles such as wheel/window when the catalogue has no verified capability data for them;
