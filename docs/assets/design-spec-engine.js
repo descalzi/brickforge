@@ -298,6 +298,9 @@ export function constructDesign(spec, catalogue, options = {}) {
     if (endCourse > layerCount) {
       throw new Error("Negative space " + negativeSpace.id + " extends beyond the positive design volume.");
     }
+    if (negativeSpace.geometry.width_studs * negativeSpace.geometry.depth_studs > 256) {
+      throw new RangeError("Each negative-space footprint is limited to 256 stud cells.");
+    }
     const cells = footprintFor(negativeSpace);
     let removed = 0;
     for (let course = baseCourse; course < endCourse; course += 1) {
