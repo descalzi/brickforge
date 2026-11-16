@@ -3,6 +3,90 @@
   "units": "mm",
   "parts": [
     {
+      "part_id": "35",
+      "description": "Wheel 8 x 35 with 12 Spokes (Complete)",
+      "roles": [
+        "wheel"
+      ],
+      "capabilities": [
+        "wheel",
+        "rotating_element"
+      ],
+      "dimensions_mm": null,
+      "candidate_status": "reference_only",
+      "interfaces": [],
+      "source": {
+        "file": "parts/35.dat",
+        "revision": "UPDATE 2025-09",
+        "license": "Licensed under CC BY 4.0; see CAreadme.txt",
+        "author": "James Jessiman",
+        "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
+      }
+    },
+    {
+      "part_id": "2493b",
+      "description": "Window 1 x 4 x 5 with Hollow Studs",
+      "roles": [
+        "window"
+      ],
+      "capabilities": [
+        "window_frame",
+        "top_studs"
+      ],
+      "dimensions_mm": null,
+      "candidate_status": "reference_only",
+      "interfaces": [],
+      "source": {
+        "file": "parts/2493b.dat",
+        "revision": "UPDATE 2009-03",
+        "license": "Licensed under CC BY 4.0; see CAreadme.txt",
+        "author": "James Jessiman",
+        "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
+      }
+    },
+    {
+      "part_id": "2593",
+      "description": "Wheel 30 x 35 with Tread on Sidewall",
+      "roles": [
+        "wheel"
+      ],
+      "capabilities": [
+        "wheel",
+        "rotating_element"
+      ],
+      "dimensions_mm": null,
+      "candidate_status": "reference_only",
+      "interfaces": [],
+      "source": {
+        "file": "parts/2593.dat",
+        "revision": "UPDATE 2017-01",
+        "license": "Licensed under CC BY 4.0; see CAreadme.txt",
+        "author": "Steve Bliss [sbliss]",
+        "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
+      }
+    },
+    {
+      "part_id": "2998",
+      "description": "Wheel Rim 32 x 56 with Peghole and 6 Spokes with Pegholes",
+      "roles": [
+        "wheel"
+      ],
+      "capabilities": [
+        "wheel_rim",
+        "peg_hole"
+      ],
+      "dimensions_mm": null,
+      "candidate_status": "reference_only",
+      "interfaces": [],
+      "source": {
+        "file": "parts/2998.dat",
+        "revision": "UPDATE 2014-01",
+        "license": "Licensed under CC BY 4.0; see CAreadme.txt",
+        "author": "Donald Sutter [technog]",
+        "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
+      }
+    },
+    {
       "part_id": "3001",
       "description": "Brick 2 x 4",
       "roles": [
@@ -4131,6 +4215,26 @@
       }
     },
     {
+      "part_id": "3039",
+      "description": "Slope Brick 45 2 x 2",
+      "roles": [
+        "slope"
+      ],
+      "capabilities": [
+        "sloped_surface"
+      ],
+      "dimensions_mm": null,
+      "candidate_status": "reference_only",
+      "interfaces": [],
+      "source": {
+        "file": "parts/3039.dat",
+        "revision": "UPDATE 2003-03",
+        "license": "Licensed under CC BY 4.0; see CAreadme.txt",
+        "author": "James Jessiman",
+        "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
+      }
+    },
+    {
       "part_id": "3460",
       "description": "Plate 1 x 8",
       "roles": [
@@ -4418,6 +4522,48 @@
         "license": "Licensed under CC BY 4.0 : see CAreadme.txt",
         "author": "Unknown (see LDraw source header)",
         "library_commit": null
+      }
+    },
+    {
+      "part_id": "3486",
+      "description": "Wheel 16 x 37 Hard-Plastic with 4 Studs",
+      "roles": [
+        "wheel"
+      ],
+      "capabilities": [
+        "wheel",
+        "rotating_element",
+        "top_studs"
+      ],
+      "dimensions_mm": null,
+      "candidate_status": "reference_only",
+      "interfaces": [],
+      "source": {
+        "file": "parts/3486.dat",
+        "revision": "UPDATE 2023-03",
+        "license": "Licensed under CC BY 4.0; see CAreadme.txt",
+        "author": "Gerald Lasser [GeraldLasser]",
+        "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
+      }
+    },
+    {
+      "part_id": "3545",
+      "description": "Wing 3 x 8 Right",
+      "roles": [
+        "wing"
+      ],
+      "capabilities": [
+        "airfoil_surface"
+      ],
+      "dimensions_mm": null,
+      "candidate_status": "reference_only",
+      "interfaces": [],
+      "source": {
+        "file": "parts/3545.dat",
+        "revision": "UPDATE 2024-06",
+        "license": "Licensed under CC BY 4.0; see CAreadme.txt",
+        "author": "Gerald Lasser [GeraldLasser]",
+        "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
       }
     },
     {
@@ -4907,6 +5053,274 @@
       }
     },
     {
+      "part_id": "3700",
+      "description": "Technic Brick 1 x 2 with Hole",
+      "roles": [
+        "beam",
+        "structural_link"
+      ],
+      "capabilities": [
+        "technic_pin_holes",
+        "top_studs"
+      ],
+      "dimensions_mm": {
+        "width": 16,
+        "height": 9.6,
+        "depth": 8
+      },
+      "candidate_status": "nominal_geometry_available",
+      "interfaces": [
+        {
+          "interface_id": "pin-hole-1",
+          "interface_type": "technic_pin_hole",
+          "position_mm": [
+            0,
+            4,
+            0
+          ],
+          "axis_vector": [
+            0,
+            0,
+            1
+          ],
+          "nominal_diameter_mm": 4.8,
+          "evidence_status": "nominal_geometry_derived",
+          "source_primitive": "p/peghole.dat"
+        }
+      ],
+      "source": {
+        "file": "parts/3700.dat",
+        "revision": "UPDATE 2010-02",
+        "license": "CC BY 4.0",
+        "author": null,
+        "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
+      }
+    },
+    {
+      "part_id": "3701",
+      "description": "Technic Brick 1 x 4 with Holes",
+      "roles": [
+        "beam",
+        "structural_link"
+      ],
+      "capabilities": [
+        "technic_pin_holes",
+        "top_studs"
+      ],
+      "dimensions_mm": {
+        "width": 32,
+        "height": 9.6,
+        "depth": 8
+      },
+      "candidate_status": "nominal_geometry_available",
+      "interfaces": [
+        {
+          "interface_id": "pin-hole-1",
+          "interface_type": "technic_pin_hole",
+          "position_mm": [
+            -8,
+            4,
+            0
+          ],
+          "axis_vector": [
+            0,
+            0,
+            1
+          ],
+          "nominal_diameter_mm": 4.8,
+          "evidence_status": "nominal_geometry_derived",
+          "source_primitive": "p/peghole.dat"
+        },
+        {
+          "interface_id": "pin-hole-2",
+          "interface_type": "technic_pin_hole",
+          "position_mm": [
+            0,
+            4,
+            0
+          ],
+          "axis_vector": [
+            0,
+            0,
+            1
+          ],
+          "nominal_diameter_mm": 4.8,
+          "evidence_status": "nominal_geometry_derived",
+          "source_primitive": "p/peghole.dat"
+        },
+        {
+          "interface_id": "pin-hole-3",
+          "interface_type": "technic_pin_hole",
+          "position_mm": [
+            8,
+            4,
+            0
+          ],
+          "axis_vector": [
+            0,
+            0,
+            1
+          ],
+          "nominal_diameter_mm": 4.8,
+          "evidence_status": "nominal_geometry_derived",
+          "source_primitive": "p/peghole.dat"
+        }
+      ],
+      "source": {
+        "file": "parts/3701.dat",
+        "revision": "UPDATE 2010-02",
+        "license": "CC BY 4.0",
+        "author": null,
+        "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
+      }
+    },
+    {
+      "part_id": "3702",
+      "description": "Technic Brick 1 x 8 with Holes",
+      "roles": [
+        "beam",
+        "structural_link"
+      ],
+      "capabilities": [
+        "technic_pin_holes",
+        "top_studs"
+      ],
+      "dimensions_mm": {
+        "width": 64,
+        "height": 9.6,
+        "depth": 8
+      },
+      "candidate_status": "nominal_geometry_available",
+      "interfaces": [
+        {
+          "interface_id": "pin-hole-1",
+          "interface_type": "technic_pin_hole",
+          "position_mm": [
+            -24,
+            4,
+            0
+          ],
+          "axis_vector": [
+            0,
+            0,
+            1
+          ],
+          "nominal_diameter_mm": 4.8,
+          "evidence_status": "nominal_geometry_derived",
+          "source_primitive": "p/peghole.dat"
+        },
+        {
+          "interface_id": "pin-hole-2",
+          "interface_type": "technic_pin_hole",
+          "position_mm": [
+            -16,
+            4,
+            0
+          ],
+          "axis_vector": [
+            0,
+            0,
+            1
+          ],
+          "nominal_diameter_mm": 4.8,
+          "evidence_status": "nominal_geometry_derived",
+          "source_primitive": "p/peghole.dat"
+        },
+        {
+          "interface_id": "pin-hole-3",
+          "interface_type": "technic_pin_hole",
+          "position_mm": [
+            -8,
+            4,
+            0
+          ],
+          "axis_vector": [
+            0,
+            0,
+            1
+          ],
+          "nominal_diameter_mm": 4.8,
+          "evidence_status": "nominal_geometry_derived",
+          "source_primitive": "p/peghole.dat"
+        },
+        {
+          "interface_id": "pin-hole-4",
+          "interface_type": "technic_pin_hole",
+          "position_mm": [
+            0,
+            4,
+            0
+          ],
+          "axis_vector": [
+            0,
+            0,
+            1
+          ],
+          "nominal_diameter_mm": 4.8,
+          "evidence_status": "nominal_geometry_derived",
+          "source_primitive": "p/peghole.dat"
+        },
+        {
+          "interface_id": "pin-hole-5",
+          "interface_type": "technic_pin_hole",
+          "position_mm": [
+            8,
+            4,
+            0
+          ],
+          "axis_vector": [
+            0,
+            0,
+            1
+          ],
+          "nominal_diameter_mm": 4.8,
+          "evidence_status": "nominal_geometry_derived",
+          "source_primitive": "p/peghole.dat"
+        },
+        {
+          "interface_id": "pin-hole-6",
+          "interface_type": "technic_pin_hole",
+          "position_mm": [
+            16,
+            4,
+            0
+          ],
+          "axis_vector": [
+            0,
+            0,
+            1
+          ],
+          "nominal_diameter_mm": 4.8,
+          "evidence_status": "nominal_geometry_derived",
+          "source_primitive": "p/peghole.dat"
+        },
+        {
+          "interface_id": "pin-hole-7",
+          "interface_type": "technic_pin_hole",
+          "position_mm": [
+            24,
+            4,
+            0
+          ],
+          "axis_vector": [
+            0,
+            0,
+            1
+          ],
+          "nominal_diameter_mm": 4.8,
+          "evidence_status": "nominal_geometry_derived",
+          "source_primitive": "p/peghole.dat"
+        }
+      ],
+      "source": {
+        "file": "parts/3702.dat",
+        "revision": "UPDATE 2010-02",
+        "license": "CC BY 4.0",
+        "author": null,
+        "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
+      }
+    },
+    {
       "part_id": "3710",
       "description": "Plate 1 x 4",
       "roles": [
@@ -5066,6 +5480,27 @@
         "license": "Licensed under CC BY 4.0 : see CAreadme.txt",
         "author": "Unknown (see LDraw source header)",
         "library_commit": null
+      }
+    },
+    {
+      "part_id": "3739",
+      "description": "Wheel 24 x 43 Technic",
+      "roles": [
+        "wheel"
+      ],
+      "capabilities": [
+        "wheel",
+        "rotating_element"
+      ],
+      "dimensions_mm": null,
+      "candidate_status": "reference_only",
+      "interfaces": [],
+      "source": {
+        "file": "parts/3739.dat",
+        "revision": "UPDATE 2012-03",
+        "license": "Licensed under CC BY 4.0; see CAreadme.txt",
+        "author": "Chris Moseley",
+        "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
       }
     },
     {
@@ -6161,270 +6596,211 @@
       }
     },
     {
-      "part_id": "3700",
-      "description": "Technic Brick 1 x 2 with Hole",
+      "part_id": "3856",
+      "description": "Window 1 x 2 x 3 Shutter",
       "roles": [
-        "beam",
-        "structural_link"
+        "window"
       ],
       "capabilities": [
-        "technic_pin_holes",
-        "top_studs"
+        "window_frame",
+        "shutter"
       ],
-      "dimensions_mm": {
-        "width": 16,
-        "height": 9.6,
-        "depth": 8
-      },
-      "candidate_status": "nominal_geometry_available",
-      "interfaces": [
-        {
-          "interface_id": "pin-hole-1",
-          "interface_type": "technic_pin_hole",
-          "position_mm": [
-            0,
-            4,
-            0
-          ],
-          "axis_vector": [
-            0,
-            0,
-            1
-          ],
-          "nominal_diameter_mm": 4.8,
-          "evidence_status": "nominal_geometry_derived",
-          "source_primitive": "p/peghole.dat"
-        }
-      ],
+      "dimensions_mm": null,
+      "candidate_status": "reference_only",
+      "interfaces": [],
       "source": {
-        "file": "parts/3700.dat",
-        "revision": "UPDATE 2010-02",
-        "license": "CC BY 4.0",
-        "author": null,
+        "file": "parts/3856.dat",
+        "revision": "UPDATE 2009-03",
+        "license": "Licensed under CC BY 4.0; see CAreadme.txt",
+        "author": "James Jessiman",
         "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
       }
     },
     {
-      "part_id": "3701",
-      "description": "Technic Brick 1 x 4 with Holes",
+      "part_id": "3934",
+      "description": "Wing 4 x 8 Right",
       "roles": [
-        "beam",
-        "structural_link"
+        "wing"
       ],
       "capabilities": [
-        "technic_pin_holes",
-        "top_studs"
+        "airfoil_surface"
       ],
-      "dimensions_mm": {
-        "width": 32,
-        "height": 9.6,
-        "depth": 8
-      },
-      "candidate_status": "nominal_geometry_available",
-      "interfaces": [
-        {
-          "interface_id": "pin-hole-1",
-          "interface_type": "technic_pin_hole",
-          "position_mm": [
-            -8,
-            4,
-            0
-          ],
-          "axis_vector": [
-            0,
-            0,
-            1
-          ],
-          "nominal_diameter_mm": 4.8,
-          "evidence_status": "nominal_geometry_derived",
-          "source_primitive": "p/peghole.dat"
-        },
-        {
-          "interface_id": "pin-hole-2",
-          "interface_type": "technic_pin_hole",
-          "position_mm": [
-            0,
-            4,
-            0
-          ],
-          "axis_vector": [
-            0,
-            0,
-            1
-          ],
-          "nominal_diameter_mm": 4.8,
-          "evidence_status": "nominal_geometry_derived",
-          "source_primitive": "p/peghole.dat"
-        },
-        {
-          "interface_id": "pin-hole-3",
-          "interface_type": "technic_pin_hole",
-          "position_mm": [
-            8,
-            4,
-            0
-          ],
-          "axis_vector": [
-            0,
-            0,
-            1
-          ],
-          "nominal_diameter_mm": 4.8,
-          "evidence_status": "nominal_geometry_derived",
-          "source_primitive": "p/peghole.dat"
-        }
-      ],
+      "dimensions_mm": null,
+      "candidate_status": "reference_only",
+      "interfaces": [],
       "source": {
-        "file": "parts/3701.dat",
-        "revision": "UPDATE 2010-02",
-        "license": "CC BY 4.0",
-        "author": null,
+        "file": "parts/3934.dat",
+        "revision": "UPDATE 2005-01",
+        "license": "Licensed under CC BY 4.0; see CAreadme.txt",
+        "author": "James Jessiman",
         "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
       }
     },
     {
-      "part_id": "3702",
-      "description": "Technic Brick 1 x 8 with Holes",
+      "part_id": "4266",
+      "description": "Wheel Rim 20 x 30 Smooth with 6 Pinholes",
       "roles": [
-        "beam",
-        "structural_link"
+        "wheel"
       ],
       "capabilities": [
-        "technic_pin_holes",
-        "top_studs"
+        "wheel_rim",
+        "technic_pin_holes"
       ],
-      "dimensions_mm": {
-        "width": 64,
-        "height": 9.6,
-        "depth": 8
-      },
-      "candidate_status": "nominal_geometry_available",
-      "interfaces": [
-        {
-          "interface_id": "pin-hole-1",
-          "interface_type": "technic_pin_hole",
-          "position_mm": [
-            -24,
-            4,
-            0
-          ],
-          "axis_vector": [
-            0,
-            0,
-            1
-          ],
-          "nominal_diameter_mm": 4.8,
-          "evidence_status": "nominal_geometry_derived",
-          "source_primitive": "p/peghole.dat"
-        },
-        {
-          "interface_id": "pin-hole-2",
-          "interface_type": "technic_pin_hole",
-          "position_mm": [
-            -16,
-            4,
-            0
-          ],
-          "axis_vector": [
-            0,
-            0,
-            1
-          ],
-          "nominal_diameter_mm": 4.8,
-          "evidence_status": "nominal_geometry_derived",
-          "source_primitive": "p/peghole.dat"
-        },
-        {
-          "interface_id": "pin-hole-3",
-          "interface_type": "technic_pin_hole",
-          "position_mm": [
-            -8,
-            4,
-            0
-          ],
-          "axis_vector": [
-            0,
-            0,
-            1
-          ],
-          "nominal_diameter_mm": 4.8,
-          "evidence_status": "nominal_geometry_derived",
-          "source_primitive": "p/peghole.dat"
-        },
-        {
-          "interface_id": "pin-hole-4",
-          "interface_type": "technic_pin_hole",
-          "position_mm": [
-            0,
-            4,
-            0
-          ],
-          "axis_vector": [
-            0,
-            0,
-            1
-          ],
-          "nominal_diameter_mm": 4.8,
-          "evidence_status": "nominal_geometry_derived",
-          "source_primitive": "p/peghole.dat"
-        },
-        {
-          "interface_id": "pin-hole-5",
-          "interface_type": "technic_pin_hole",
-          "position_mm": [
-            8,
-            4,
-            0
-          ],
-          "axis_vector": [
-            0,
-            0,
-            1
-          ],
-          "nominal_diameter_mm": 4.8,
-          "evidence_status": "nominal_geometry_derived",
-          "source_primitive": "p/peghole.dat"
-        },
-        {
-          "interface_id": "pin-hole-6",
-          "interface_type": "technic_pin_hole",
-          "position_mm": [
-            16,
-            4,
-            0
-          ],
-          "axis_vector": [
-            0,
-            0,
-            1
-          ],
-          "nominal_diameter_mm": 4.8,
-          "evidence_status": "nominal_geometry_derived",
-          "source_primitive": "p/peghole.dat"
-        },
-        {
-          "interface_id": "pin-hole-7",
-          "interface_type": "technic_pin_hole",
-          "position_mm": [
-            24,
-            4,
-            0
-          ],
-          "axis_vector": [
-            0,
-            0,
-            1
-          ],
-          "nominal_diameter_mm": 4.8,
-          "evidence_status": "nominal_geometry_derived",
-          "source_primitive": "p/peghole.dat"
-        }
-      ],
+      "dimensions_mm": null,
+      "candidate_status": "reference_only",
+      "interfaces": [],
       "source": {
-        "file": "parts/3702.dat",
-        "revision": "UPDATE 2010-02",
-        "license": "CC BY 4.0",
-        "author": null,
+        "file": "parts/4266.dat",
+        "revision": "UPDATE 2024-02",
+        "license": "Licensed under CC BY 2.0 and CC BY 4.0; see CAreadme.txt",
+        "author": "Niels Bugge [SirBugge]",
+        "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
+      }
+    },
+    {
+      "part_id": "4286",
+      "description": "Slope Brick 33 3 x 1",
+      "roles": [
+        "slope"
+      ],
+      "capabilities": [
+        "sloped_surface"
+      ],
+      "dimensions_mm": null,
+      "candidate_status": "reference_only",
+      "interfaces": [],
+      "source": {
+        "file": "parts/4286.dat",
+        "revision": "UPDATE 2026-04",
+        "license": "Licensed under CC BY 4.0; see CAreadme.txt",
+        "author": "James Jessiman",
+        "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
+      }
+    },
+    {
+      "part_id": "5260",
+      "description": "Window 1 x 4 x 3 Curved Top with 4 Panes and Sill",
+      "roles": [
+        "window"
+      ],
+      "capabilities": [
+        "window_frame",
+        "transparent_insert_mount",
+        "curved_top"
+      ],
+      "dimensions_mm": null,
+      "candidate_status": "reference_only",
+      "interfaces": [],
+      "source": {
+        "file": "parts/5260.dat",
+        "revision": "UPDATE 2024-05",
+        "license": "Licensed under CC BY 4.0; see CAreadme.txt",
+        "author": "Philippe Hurbain [Philo]",
+        "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
+      }
+    },
+    {
+      "part_id": "6237",
+      "description": "Window 1 x 3 x 4 Pane Freestyle",
+      "roles": [
+        "window"
+      ],
+      "capabilities": [
+        "window_frame",
+        "transparent_insert_mount"
+      ],
+      "dimensions_mm": null,
+      "candidate_status": "reference_only",
+      "interfaces": [],
+      "source": {
+        "file": "parts/6237.dat",
+        "revision": "UPDATE 2025-09",
+        "license": "Licensed under CC BY 4.0; see CAreadme.txt",
+        "author": "James Jessiman",
+        "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
+      }
+    },
+    {
+      "part_id": "6582",
+      "description": "Wheel Rim 20 x 33 with 6 Pinholes",
+      "roles": [
+        "wheel"
+      ],
+      "capabilities": [
+        "wheel_rim",
+        "technic_pin_holes"
+      ],
+      "dimensions_mm": null,
+      "candidate_status": "reference_only",
+      "interfaces": [],
+      "source": {
+        "file": "parts/6582.dat",
+        "revision": "UPDATE 2022-03",
+        "license": "Licensed under CC BY 2.0 and CC BY 4.0; see CAreadme.txt",
+        "author": "Jeff Boen [onyx]",
+        "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
+      }
+    },
+    {
+      "part_id": "6600",
+      "description": "Wheel 4 x 21 with Three Spokes and Integral Rubber Tyre",
+      "roles": [
+        "wheel"
+      ],
+      "capabilities": [
+        "wheel",
+        "rotating_element"
+      ],
+      "dimensions_mm": null,
+      "candidate_status": "reference_only",
+      "interfaces": [],
+      "source": {
+        "file": "parts/6600.dat",
+        "revision": "UPDATE 2025-01",
+        "license": "Licensed under CC BY 4.0; see CAreadme.txt",
+        "author": "Gerald Lasser [GeraldLasser]",
+        "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
+      }
+    },
+    {
+      "part_id": "7826",
+      "description": "Slope Brick 31 1 x 1 x 0.667 Double Convex",
+      "roles": [
+        "slope"
+      ],
+      "capabilities": [
+        "sloped_surface",
+        "curved_surface"
+      ],
+      "dimensions_mm": null,
+      "candidate_status": "reference_only",
+      "interfaces": [],
+      "source": {
+        "file": "parts/7826.dat",
+        "revision": "UPDATE 2026-01",
+        "license": "Licensed under CC BY 4.0; see CAreadme.txt",
+        "author": "Gerald Lasser [GeraldLasser]",
+        "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
+      }
+    },
+    {
+      "part_id": "7877",
+      "description": "Wheel Rim 13 x 56 with 12 Spokes and Axlehole",
+      "roles": [
+        "wheel"
+      ],
+      "capabilities": [
+        "wheel_rim",
+        "axle_hole"
+      ],
+      "dimensions_mm": null,
+      "candidate_status": "reference_only",
+      "interfaces": [],
+      "source": {
+        "file": "parts/7877.dat",
+        "revision": "UPDATE 2026-03",
+        "license": "Licensed under CC BY 4.0; see CAreadme.txt",
+        "author": "Jens Brühl [jb70]",
         "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
       }
     },
@@ -6445,6 +6821,48 @@
         "revision": "UPDATE 2022-02",
         "license": "CC BY 2.0 and CC BY 4.0",
         "author": null,
+        "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
+      }
+    },
+    {
+      "part_id": "39367",
+      "description": "Wheel 14 x 48 with 4 Spokes with Integral Tyre",
+      "roles": [
+        "wheel"
+      ],
+      "capabilities": [
+        "wheel",
+        "rotating_element"
+      ],
+      "dimensions_mm": null,
+      "candidate_status": "reference_only",
+      "interfaces": [],
+      "source": {
+        "file": "parts/39367.dat",
+        "revision": "UPDATE 2025-08",
+        "license": "Licensed under CC BY 4.0; see CAreadme.txt",
+        "author": "Philippe Hurbain [Philo]",
+        "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
+      }
+    },
+    {
+      "part_id": "61345",
+      "description": "Window 1 x 4 x 2 Plane with Single Hole Top and Bottom for Glass",
+      "roles": [
+        "window"
+      ],
+      "capabilities": [
+        "window_frame",
+        "transparent_insert_mount"
+      ],
+      "dimensions_mm": null,
+      "candidate_status": "reference_only",
+      "interfaces": [],
+      "source": {
+        "file": "parts/61345.dat",
+        "revision": "UPDATE 2013-02",
+        "license": "Licensed under CC BY 4.0; see CAreadme.txt",
+        "author": "Michael Heidemann [mikeheide]",
         "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
       }
     }
