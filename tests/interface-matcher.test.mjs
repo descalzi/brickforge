@@ -56,3 +56,32 @@ test("matches real curated Technic catalogue interfaces", async () => {
   assert.equal(result.satisfied, true);
   assert.equal(result.requirements[0].matched_count, 2);
 });
+
+test("matches required interface positions against distinct source-derived hole centres", () => {
+  const interfaces = [
+    { interface_id: "h1", interface_type: "technic_pin_hole", nominal_diameter_mm: 4.8, axis_vector: [0,0,1], centre_mm: [-8,4,0] },
+    { interface_id: "h2", interface_type: "technic_pin_hole", nominal_diameter_mm: 4.8, axis_vector: [0,0,1], centre_mm: [0,4,0] },
+    { interface_id: "h3", interface_type: "technic_pin_hole", nominal_diameter_mm: 4.8, axis_vector: [0,0,1], centre_mm: [8,4,0] },
+  ];
+  const result = matchRequiredInterfaces([{
+    interface_type: "round_opening",
+    diameter_mm: 4.8,
+    axis_vector: [0,0,1],
+    count: 3,
+    positions_mm: [[-8,0,0],[0,0,0],[8,0,0]],
+    position_tolerance_mm: 0.1,
+  }], interfaces, { geometryCenterMm: [0,4,0] });
+  assert.equal(result.satisfied, true);
+  assert.deepEqual(result.requirements[0].matched_interfaces.map(item => item.position_error_mm), [0,0,0]);
+});
+
+test("rejects interfaces whose nominal positions do not match the design", () => {
+  const result = matchRequiredInterfaces([{
+    interface_type: "round_opening",
+    diameter_mm: 4.8,
+    axis_vector: [0,0,1],
+    positions_mm: [[-8,0,0],[0,0,0],[8,4,0]],
+    position_tolerance_mm: 0.1,
+  }], technicProfile.nominal_connection_interfaces, { geometryCenterMm: [0,4,0] });
+  assert.equal(result.satisfied, false);
+});
