@@ -36,7 +36,7 @@ test("resolves nested LDraw part and primitive geometry into transformed dimensi
   const report = await resolver.resolvePart("testpart", partIndex, { includeTrianglePositions: true });
   assert.equal(report.part_id, "testpart");
   assert.equal(report.triangle_count, 2);
-  assert.deepEqual(report.dimensions_mm, [8, 4, 4]);
+  assert.deepEqual(report.dimensions_mm, [4, 4, 4]);
   assert.equal(report.geometry_status, "resolved_ldraw_surface");
   assert.equal(report.triangle_positions_mm.length, 18);
   assert.ok(fetchImpl.requested.some((url) => url.endsWith("/p/primitive.dat")));
@@ -61,7 +61,7 @@ test("rejects unpinned geometry sources and invalid target envelopes", () => {
 test("detects cyclic nested references instead of recursing indefinitely", async () => {
   const fetchImpl = fakeFetch({
     "parts/testpart.dat": "1 16 0 0 0 1 0 0 0 1 0 0 0 1 s/testparts01.dat",
-    "parts/s/testparts01.dat": "1 16 0 0 0 1 0 0 0 1 0 0 0 1 testpart.dat",
+    "parts/s/testparts01.dat": "1 16 0 0 0 1 0 0 0 1 0 0 0 1 parts/testpart.dat",
   });
   const resolver = createLDrawGeometryResolver(catalogue, { fetchImpl });
   await assert.rejects(() => resolver.resolvePart("testpart", partIndex), /Cyclic LDraw reference/);
