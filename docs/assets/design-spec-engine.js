@@ -48,6 +48,19 @@ export function validateDesignSpec(spec) {
         && (!Number.isInteger(component.colour_code) || component.colour_code < 0)) {
       fail(at + ".colour_code must be a non-negative integer.");
     }
+    if (component.priority !== undefined
+        && !["essential", "preferred", "optional"].includes(component.priority)) {
+      fail(at + ".priority is unsupported.");
+    }
+    if (component.provenance !== undefined
+        && !["explicit", "inferred", "uncertain"].includes(component.provenance)) {
+      fail(at + ".provenance is unsupported.");
+    }
+    if (component.functional_requirements !== undefined
+        && (!Array.isArray(component.functional_requirements)
+          || !component.functional_requirements.every((item) => typeof item === "string" && item.trim()))) {
+      fail(at + ".functional_requirements must be an array of non-empty strings.");
+    }
   }
   if (spec.relationships !== undefined && !Array.isArray(spec.relationships)) {
     fail("relationships must be an array.");
