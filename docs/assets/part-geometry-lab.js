@@ -1,6 +1,6 @@
 import { loadLDrawPartSurface } from "./ldraw-surface-loader.js";
 const status=document.querySelector("#status"),output=document.querySelector("#results");
-const ids=(new URLSearchParams(location.search).get("parts")||"3001,3739,5260,3934").split(",").map(value=>value.trim()).filter(Boolean);
+const ids=(new URLSearchParams(location.search).get("parts")||"3001,3739,5260,3934,2780,3701").split(",").map(value=>value.trim()).filter(Boolean);
 async function run(){
  const results=await Promise.all(ids.map(async partId=>{
   try{
