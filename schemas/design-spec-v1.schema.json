@@ -212,7 +212,8 @@
                 "exclusiveMinimum": 0
               },
               "axis_vector": {
-                "$ref": "#/$defs/vector3"
+                "$ref": "#/$defs/vector3",
+                "description": "Required interface axis in the semantic component's local coordinate frame."
               },
               "max_diameter_error_mm": {
                 "type": "number",
@@ -222,11 +223,14 @@
                 "type": "array",
                 "items": {
                   "$ref": "#/$defs/vector3"
-                }
+                },
+                "minItems": 1,
+                "description": "Optional hole/interface centres in millimetres relative to the semantic component's bounding-box centre."
               },
               "position_tolerance_mm": {
                 "type": "number",
-                "minimum": 0
+                "minimum": 0,
+                "description": "Maximum allowed positional error when matching a candidate part interface."
               }
             }
           }
