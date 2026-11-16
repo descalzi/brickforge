@@ -147,7 +147,7 @@ test("preserves required functional interfaces in the brief but refuses fake con
   const catalogue = JSON.parse(await readFile(new URL("../docs/data/connection-profiles/basic-bricks.json", import.meta.url), "utf8"));
   const functional = structuredClone(carBrief);
   functional.components[0].required_interfaces = [{
-    interface_type: "technic_pin_hole",
+    interface_type: "round_opening",
     diameter_mm: 4.8,
     axis_vector: [0,0,1],
     count: 1,
