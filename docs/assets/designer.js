@@ -1,5 +1,5 @@
 import { validateDesignSpec } from "./design-spec.js";
-import { createDesignViewer, colours } from "./design-viewer.js";
+import { createDesignViewer, colours } from "./design-viewer.js?v=20261116.2";
 const $=id=>document.getElementById(id);
 const editor=$("design-spec"),status=$("engine-status"),runButton=$("run-design"),selector=$("fixture-select");
 const downloads=[$("download-ldraw"),$("download-bom"),$("download-report"),$("download-instructions")];
