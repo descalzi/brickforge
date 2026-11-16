@@ -1,0 +1,61 @@
+# Design specification and construction engine
+
+## Product boundary
+
+The primary workflow is **description → structured design specification → LEGO construction**. A design specification describes the intended object independently of the LEGO catalogue. It must not contain part IDs, LEGO-specific placement recipes or preselected construction solutions.
+
+STL/OBJ import remains useful for optional reference comparison and mesh validation. It is not the product's primary design representation.
+
+## Specification v1
+
+The contract is defined in [design-spec-v1.schema.json](../../schemas/design-spec-v1.schema.json), with runtime validation in `docs/assets/design-spec.js`.
+
+A specification describes:
+- semantic components and their roles/functions;
+- geometry class, dimensions in millimetres and world-space position;
+- essential/preferred/optional priority and confidence;
+- required and forbidden features;
+- spatial relationships between components;
+- appearance preferences and construction constraints.
+
+The v1 geometric primitive is an axis-aligned rectangular prism. The schema is deliberately versioned so richer primitives, coordinate frames, negative space, curves, functional joints and uncertainty can be added without making LEGO part choices part of the intent contract.
+
+## Deterministic planner
+
+`docs/assets/design-engine.js` is browser-native and deterministic. It:
+1. validates the design specification;
+2. checks semantic relationships and component-volume intersections;
+3. searches the supplied connection-profile catalogue for candidates with the required course height and nominal interfaces;
+4. enumerates exact-cover tilings for each course;
+5. explores combinations of course layouts and scores complete assemblies, selecting a connected graph rather than committing to the first local tiling;
+6. derives nominal interface edges, BOM and LDraw export from the selected placements;
+7. reports checks and limitations separately.
+
+The planner is catalogue-driven: part dimensions and mating-feature datums come from the supplied profiles, not from hard-coded part IDs in the algorithm. Search budgets are explicit and bounded.
+
+## Evidence and honesty
+
+The current trusted catalogue contains standard bricks and plates with nominal stud/receiver datums. A matching datum is evidence of a geometric candidate interface, not proof of clutch force or structural integrity.
+
+Consequently, the engine:
+- blocks semantic roles such as wheel/window when the catalogue has no verified capability data for them;
+- blocks required semantic features that the catalogue cannot represent;
+- marks physical clutch strength and structural stability as not assessed;
+- never silently fills a missing specialist feature with a generic brick.
+
+This is a deliberately small but end-to-end vertical slice. It proves a hand-authored design specification can drive a globally searched, connected, exported assembly. It does not yet claim arbitrary object construction.
+
+## Browser workbench and regression
+
+Open [the Design Engine workbench](../designer.html). The authored fixture in `docs/data/design-spec-fixtures.json` is intentionally LEGO-agnostic. The page fetches the catalogue, runs the deterministic planner in the browser, displays a footprint preview and exposes LDraw, BOM and assembly-report downloads.
+
+Node tests exercise validation, scale rejection, global interlocking, role refusal, relationship constraints and part budgets. A separate headless Chromium regression opens the actual workbench URL and verifies the generated result and diagnostics.
+
+## Next engineering layers
+
+1. Enrich the part catalogue with semantic roles, measured geometry descriptors, orientation constraints and source provenance.
+2. Add specialised interfaces (Technic pins/axles, clips/bars, hinges, wheels/tyres, windows and other families) with compatibility evidence and confidence levels.
+3. Replace rectangular-only component geometry with multi-primitive geometry, negative space and feature constraints.
+4. Expand the global planner to joint component placement, support graphs, stability, collision and build sequence constraints.
+5. Add multi-objective optimisation and instruction generation.
+6. Only after the engine's input/output contract is stable, integrate an LLM adapter that produces this specification.
