@@ -168,3 +168,14 @@ test("organic form intent is valid but is not silently reduced to a rectangular 
   assert.equal(result.status, "blocked");
   assert.match(result.failures[0], /No part-role translation exists|No source-backed part candidates/);
 });
+
+test("a sphere-shaped component is never silently tiled as a rectangular box",()=>{
+ const sphere=structuredClone(carBody);
+ sphere.components[0].geometry="sphere";
+ sphere.components[0].geometry_parameters={radius_mm:16};
+ sphere.components[0].dimensions_mm={width:32,depth:32,height:32};
+ const result=planDesign(sphere,catalogue,{partCatalogue,designTranslation});
+ assert.equal(result.status,"blocked");
+ assert.match(result.failures[0],/geometry primitive sphere is not yet supported/);
+ assert.match(result.failures[0],/no rectangular-block substitution/);
+});
