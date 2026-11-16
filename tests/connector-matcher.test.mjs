@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
-import { matchConnectorInterfaces } from "../docs/assets/connector-matcher.js";
+import { matchConnectorInterfaces, nominalInterfacesForInstances } from "../docs/assets/connector-matcher.js";
 
 const catalogue=JSON.parse(await readFile(new URL("../docs/data/connector-compatibility-v1.json",import.meta.url),"utf8"));
 const rules=catalogue.rules;
@@ -40,4 +40,13 @@ test("invalid connector transforms are reported rather than treated as a match",
  const result=matchConnectorInterfaces({interface:pin,placement:{matrix:[1,2],translation_mm:[0,0,0]}},{interface:hole},rules);
  assert.equal(result.compatible,false);
  assert.equal(result.status,"invalid_interface_geometry");
+});
+
+test("source-derived Technic beam interfaces can be lifted into positioned assembly instances", async()=>{
+ const specialised=JSON.parse(await readFile(new URL("../docs/data/specialised-technic-part-catalogue.json",import.meta.url),"utf8"));
+ const interfaces=nominalInterfacesForInstances(specialised,[{instance_id:"beam-a",part_id:"3701"}]);
+ assert.equal(interfaces.length,3);
+ assert.ok(interfaces.every(item=>item.interface_type==="technic_pin_hole"));
+ assert.ok(interfaces.every(item=>item.nominal_diameter_mm===4.8));
+ assert.ok(interfaces.every(item=>item.evidence_status==="nominal_geometry_derived"));
 });
