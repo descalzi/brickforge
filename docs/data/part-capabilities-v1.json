@@ -82,10 +82,27 @@
       "candidate_status": "geometry_measured",
       "interfaces": [
         {
-          "interface_id": "friction-pin-shaft",
+          "interface_id": "friction-pin-end-a",
           "interface_type": "technic_friction_pin",
           "position_mm": [
+            -4,
             0,
+            0
+          ],
+          "axis_vector": [
+            1,
+            0,
+            0
+          ],
+          "nominal_diameter_mm": 4.9,
+          "evidence_status": "source_derived_nominal_geometry",
+          "source_primitive": "p/confric5.dat"
+        },
+        {
+          "interface_id": "friction-pin-end-b",
+          "interface_type": "technic_friction_pin",
+          "position_mm": [
+            4,
             0,
             0
           ],
