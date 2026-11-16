@@ -76,7 +76,25 @@
       ],
       "dimensions_mm": null,
       "candidate_status": "reference_only",
-      "interfaces": [],
+      "interfaces": [
+        {
+          "interface_id": "friction-pin-shaft",
+          "interface_type": "technic_friction_pin",
+          "position_mm": [
+            0,
+            0,
+            0
+          ],
+          "axis_vector": [
+            1,
+            0,
+            0
+          ],
+          "nominal_diameter_mm": 4.9,
+          "evidence_status": "source_derived_nominal_geometry",
+          "source_primitive": "p/confric5.dat"
+        }
+      ],
       "source": {
         "file": "parts/2780.dat",
         "revision": "UPDATE 2009-02",
