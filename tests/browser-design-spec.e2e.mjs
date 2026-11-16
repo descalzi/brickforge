@@ -49,8 +49,29 @@ try {
     const brief = fixtures.specifications.find(item => item.design_id === "small-house");
     const validation = validateDesignSpec(brief);
     const assembly = constructDesign(brief, catalogue);
+    const openingBrief = fixtures.specifications.find(item => item.design_id === "box-with-opening");
+    const openingAssembly = constructDesign(openingBrief, catalogue);
+    const openingOccupied = new Set();
+    for (const part of openingAssembly.parts) {
+      const profile = openingAssembly.profile_dimensions[part.part_id];
+      const rotated = Math.abs(part.matrix[0]) < 0.5;
+      const width = rotated ? profile.footprint_studs_z : profile.footprint_studs_x;
+      const depth = rotated ? profile.footprint_studs_x : profile.footprint_studs_z;
+      const x0 = Math.round(part.translation_ldu[0] / 20 + 2 - width / 2);
+      const z0 = Math.round(part.translation_ldu[2] / 20 + 2 - depth / 2);
+      const course = Math.round(-part.translation_ldu[1] / 24);
+      for (let x = x0; x < x0 + width; x += 1) {
+        for (let z = z0; z < z0 + depth; z += 1) openingOccupied.add(x + "," + z + "," + course);
+      }
+    }
+    const openingVoidPreserved = [0, 1].every(course =>
+      [1, 2].every(x => [1, 2].every(z => !openingOccupied.has(x + "," + z + "," + course))));
     return {
       valid: validation.valid,
+      openingVoidPreserved,
+      openingOccupiedCellCount: openingOccupied.size,
+      openingConnectionCount: openingAssembly.connections.length,
+      openingVoidCellCount: openingAssembly.design_diagnostics.negative_space_coverage[0].cells_removed,
       cataloguePartCount: partIndex.parts.length,
       wheelCandidateCount: wheelDiscovery.candidate_count,
       wheelPlannerReadyCount: wheelDiscovery.planner_ready_count,
@@ -63,6 +84,10 @@ try {
     };
   });
   assert.equal(result.valid, true);
+  assert.equal(result.openingVoidPreserved, true);
+  assert.equal(result.openingOccupiedCellCount, 24);
+  assert.ok(result.openingConnectionCount > 0);
+  assert.equal(result.openingVoidCellCount, 8);
   assert.ok(result.cataloguePartCount > 10000);
   assert.ok(result.wheelCandidateCount > 0);
   assert.ok(result.wheelPlannerReadyCount <= result.wheelCandidateCount);
