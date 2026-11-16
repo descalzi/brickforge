@@ -58,6 +58,7 @@ test("uses the best axis permutation when scoring part envelope suitability", ()
 test("rejects unpinned geometry sources and invalid target envelopes", () => {
   assert.throws(() => createLDrawGeometryResolver({ source: { geometry_base_url: "https://example.com/ldraw/" } }), /pinned/);
   assert.throws(() => scoreGeometrySuitability({ dimensions_mm: [1, 2, 3] }, [1, 0, 3]), /positive dimensions/);
+  assert.throws(() => scoreGeometrySuitability({ dimensions_mm: [1, 2, 3] }, [1,2,3], { orientationPermutation: [0,0,2] }), /permutation/);
 });
 
 test("detects cyclic nested references instead of recursing indefinitely", async () => {
