@@ -94,9 +94,9 @@ test("ranks Technic candidates against source-derived pin-hole requirements", as
       description: "Technic Brick 1 x 4 with Holes",
       dimensions_mm: [32, 9.6, 8],
       nominal_connection_interfaces: [
-        { interface_id: "pin-hole-1", interface_type: "technic_pin_hole", nominal_diameter_mm: 4.8, axis_vector: [0,0,1] },
-        { interface_id: "pin-hole-2", interface_type: "technic_pin_hole", nominal_diameter_mm: 4.8, axis_vector: [0,0,1] },
-        { interface_id: "pin-hole-3", interface_type: "technic_pin_hole", nominal_diameter_mm: 4.8, axis_vector: [0,0,1] },
+        { interface_id: "pin-hole-1", interface_type: "round_opening", nominal_diameter_mm: 4.8, axis_vector: [0,0,1] },
+        { interface_id: "pin-hole-2", interface_type: "round_opening", nominal_diameter_mm: 4.8, axis_vector: [0,0,1] },
+        { interface_id: "pin-hole-3", interface_type: "round_opening", nominal_diameter_mm: 4.8, axis_vector: [0,0,1] },
       ],
     }],
   };
@@ -108,7 +108,7 @@ test("ranks Technic candidates against source-derived pin-hole requirements", as
     { async resolvePart() { return { part_id: "3701", dimensions_mm: [32, 9.6, 8] }; } },
     { parts: technicParts },
     [32, 9.6, 8],
-    { requiredInterfaces: [{ interface_type: "technic_pin_hole", diameter_mm: 4.8, axis_vector: [0,0,1], count: 3 }] },
+    { requiredInterfaces: [{ interface_type: "round_opening", diameter_mm: 4.8, axis_vector: [0,0,1], count: 3 }] },
   );
   assert.equal(ranked.candidates[0].specialised_interface_candidate, true);
   assert.equal(ranked.candidates[0].nominal_placement_candidate, false);
@@ -118,10 +118,10 @@ test("ranks Technic candidates against source-derived pin-hole requirements", as
 test("ranks real part candidates directly from a semantic design component", async () => {
   const component = {
     id: "technic-beam",
-    role: "technic",
+    role: "beam",
     geometry: { type: "orthogonal_prism", width_studs: 4, depth_studs: 1 },
     height_courses: 1,
-    required_interfaces: [{ interface_type: "technic_pin_hole", diameter_mm: 4.8, axis_vector: [0,0,1], count: 3 }],
+    required_interfaces: [{ interface_type: "round_opening", diameter_mm: 4.8, axis_vector: [0,0,1], count: 3 }],
   };
   const partIndex = { parts: [
     { part_id: "3701", name: "Technic Brick 1 x 4 with Holes", category: "Technic", keywords: ["technic", "brick"] },
@@ -129,9 +129,9 @@ test("ranks real part candidates directly from a semantic design component", asy
   const specialisedCatalogue = { profiles: [{
     part_id: "3701",
     nominal_connection_interfaces: [
-      { interface_id: "h1", interface_type: "technic_pin_hole", nominal_diameter_mm: 4.8, axis_vector: [0,0,1] },
-      { interface_id: "h2", interface_type: "technic_pin_hole", nominal_diameter_mm: 4.8, axis_vector: [0,0,1] },
-      { interface_id: "h3", interface_type: "technic_pin_hole", nominal_diameter_mm: 4.8, axis_vector: [0,0,1] },
+      { interface_id: "h1", interface_type: "round_opening", nominal_diameter_mm: 4.8, axis_vector: [0,0,1] },
+      { interface_id: "h2", interface_type: "round_opening", nominal_diameter_mm: 4.8, axis_vector: [0,0,1] },
+      { interface_id: "h3", interface_type: "round_opening", nominal_diameter_mm: 4.8, axis_vector: [0,0,1] },
     ],
   }] };
   const result = await rankDesignComponentCandidates(
@@ -149,18 +149,18 @@ test("chooses a dimension-equivalent orientation that aligns a required interfac
     part_id: "square-beam",
     nominal_connection_interfaces: [{
       interface_id: "pin-hole",
-      interface_type: "technic_pin_hole",
+      interface_type: "round_opening",
       nominal_diameter_mm: 4.8,
       axis_vector: [1,0,0],
     }],
   }] };
-  const discovery = discoverPartsForRole("technic", partList, connections, { specialisedCatalogue: special });
+  const discovery = discoverPartsForRole("beam", partList, connections, { specialisedCatalogue: special });
   const ranked = await rankPartCandidatesWithGeometry(
     discovery,
     { async resolvePart() { return { part_id: "square-beam", dimensions_mm: [10,10,8] }; } },
     { parts: partList },
     [10,10,8],
-    { requiredInterfaces: [{ interface_type: "technic_pin_hole", diameter_mm: 4.8, axis_vector: [0,1,0], count: 1 }] },
+    { requiredInterfaces: [{ interface_type: "round_opening", diameter_mm: 4.8, axis_vector: [0,1,0], count: 1 }] },
   );
   assert.equal(ranked.candidates[0].specialised_interface_candidate, true);
   assert.deepEqual(ranked.candidates[0].geometry_fit.orientation_permutation, [1,0,2]);
