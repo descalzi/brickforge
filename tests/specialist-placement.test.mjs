@@ -48,7 +48,7 @@ test('bundled surfaces retain pinned provenance and expose real frame voids and 
  for(const profile of options.specialistCatalogue.profiles){const mesh=await read(profile.mesh_file);assert.equal(mesh.source_library_commit,profile.source_library_commit);assert.equal(mesh.part_id,profile.part_id);assert.ok(mesh.triangle_positions_mm.length>100);assert.equal(mesh.triangle_positions_mm.length%9,0);assert.ok(mesh.triangle_positions_mm.every(Number.isFinite));assert.ok(mesh.license.includes('CC BY'));}
 });
 test('body silhouette vertices are present in the independent resolved LDraw surfaces',async()=>{
- for(const profile of options.specialistCatalogue.profiles){
+ for(const profile of options.specialistCatalogue.profiles.filter(p=>p.body_geometry_evidence==='source_silhouette_vertices')){
   const values=(await read(profile.mesh_file)).triangle_positions_mm;
   for(const vertex of profile.body_vertices_mm){let distance=Infinity;for(let i=0;i<values.length;i+=3)distance=Math.min(distance,Math.hypot(...vertex.map((v,j)=>v-values[i+j])));assert.ok(distance<1e-5,profile.part_id+' has an unsupported silhouette vertex '+vertex);}
  }

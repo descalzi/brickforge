@@ -1,65 +1,66 @@
 # Product: BrickForge
 
-## Platform
+BrickForge aims to turn an object description into a coherent model built from
+real plastic-brick elements, with a parts inventory and building instructions.
 
-Browser first. The hosted site is static; the visitor's browser runs the construction engine using local processing.
+## Product pipeline
 
-## Stack
+1. Interpret descriptive text into a catalogue-independent object specification.
+2. Decompose the object into components, geometry, dimensions, relationships,
+   required features, functions and explicit empty spaces.
+3. Discover and fit source-backed elements and compatible small assemblies.
+4. Validate the realised geometry and nominal connection graph.
+5. Inspect, revise and export the canonical model, inventory and instructions.
 
-Public site: static HTML, CSS and JavaScript in `/docs`, published with GitHub Pages (and portable to Cloudflare Pages). Construction engine: browser-native JavaScript modules. Three.js provides the 3D preview. Published JSON profiles provide the initial part connection data. Python, Trimesh and NumPy remain available for reference implementations, offline tooling and regression checks. The source repository is public; never commit secrets, credentials, or private user project data.
+The deterministic construction engine is browser JavaScript, served as static
+files from `docs/` through GitHub Pages. Python supports offline source ingestion,
+independent fixtures and geometry audits; it is not a parallel product engine.
 
-The end-user product runs on the visitor's computer. It does not require a construction server, Python installation, account or model upload. The static host serves application files and versioned data only.
+## Current surfaces
 
-## Users and scene
+| Surface | Purpose |
+| --- | --- |
+| `index.html` | Explain the object-first workflow, link working proofs and state limits |
+| `designer.html` | Main workbench: briefs, component edits, planning, evidence, sequence, revisions and exports |
+| `tools.html` | Supporting catalogue, mesh and construction-research tools |
+| `parts.html` | Search metadata and inspect source parts; discovery is not placement certification |
+| `inspector.html` | Optional STL/OBJ reference and geometry diagnostics |
+| `builder.html` | Legacy footprint/course-tiling research |
+| `fixtures.html` | Reference mesh validator gallery |
 
-Primary user: a builder or designer who has an object in mind and wants a physically buildable construction made from genuine L-brick elements.
+## Language and privacy boundary
 
-Physical scene: a desk with a computer for describing a model, inspecting a 3D preview, reviewing the parts inventory and following build instructions. Theme: light by default, with a carefully designed dark alternative if the application later needs it.
+No hosted language service is bundled. The studio can export a provider-neutral
+interpretation request or POST it to a gateway the visitor explicitly configures.
+The request includes their description, interpretation instructions and the
+response schema. Browser credentials are omitted; API keys belong behind the
+gateway. Its authentication, cost policy and real-model evaluation remain open.
+Construction itself runs locally. Saved revisions are brief snapshots stored on
+the visitor's browser, not cloud projects or automatic backups.
 
-## What it does and why it's different
+## Evidence boundary
 
-BrickForge aims to convert natural-language descriptions, reference images and 3D geometry into models made from real L-brick elements. It will validate physical connections and construction constraints, then derive the 3D model, bill of materials and step-by-step instructions from one canonical assembly. Its scope is any shape, not a fixed set of object categories. AI interprets intent; deterministic geometry, part and constraint systems perform and validate construction.
+The eligible catalogue is curated. Nominal source profiles cover selected real
+elements and a tyre/rim assembly, not the whole searchable parts library. The
+planner can refuse unsupported shapes, poses, sizes, mechanisms and functions.
 
-## Surfaces and modes
+A source mesh, matched connector or support projection is not physical proof.
+The studio reports body-envelope checks, a uniform-volume support proxy and
+straight approach tests separately from unverified clutch, strength, insertion
+and structural stability. PDF instructions expose this boundary too.
 
-| Surface | Mode | Primary action |
-|---|---|---|
-| `/` (project page) | Persuade | Understand the project and follow its progress |
-| `/builder.html` | Operate | Generate, inspect and export a constrained rectangular block |
-| `/engineering` (planned) | Read | Understand the geometry, parts and validation approach |
-| `/app` (future) | Operate | Refine arbitrary models and connect mesh input to construction |
+## Product decisions
 
-## Real assets and facts
-
-- Logo / brand assets: original wordmark and geometric mark authored for this project.
-- Real proof: the repository contains the public mesh inspector, STL/OBJ mesh inspection, LDraw metadata and geometry parsers, and a recursive LDraw sub-file resolver. A browser-native rectangular block engine is now online, with local 3D preview, nominal connection and body-envelope checks, and LDraw/JSON downloads. Arbitrary mesh-to-model construction is not implemented yet.
-- Part geometry source under evaluation: the LDraw.org Parts Library. Parts are authored by contributors and have per-author licensing and attribution requirements; retain headers and audit licences before redistribution.
-- Connection metadata: not yet selected as a production source. BrickLink Studio uses separate connection files, but their reuse terms must be checked. Initial metadata may be authored in-house for a small, tested set of parts.
-- Must not claim: that automatic L-brick construction, physical stability guarantees, instruction generation or purchasing are already implemented.
-
-## Terminology
-
-Use generic project terminology throughout user-facing pages, documentation, scripts and UI copy: **L-brick**, **brick**, **plate**, **element**, **block**, and **construction**. Do not use the name of the well-known third-party brick brand in project-authored copy. Keep original third-party source headers and licence notices unchanged.
-
-## Brand commitments
-
-- Product name: BrickForge.
-- Creative direction: engineered precision with an approachable builder's spirit.
-- Primary visual language: Infrastructure style, Blueprint & Safety Orange palette.
-- Show real mechanisms and authored technical visuals rather than generic feature-card layouts.
-- Distinguish implemented work from planned capabilities.
-
-## Constraints
-
-- Responsive, mobile-first, accessible semantic HTML.
-- WCAG 2.2 AA contrast targets.
-- Keyboard-operable controls, visible focus and reduced-motion support.
-- Do not bundle large third-party part libraries into Git history.
-- Preserve attribution and applicable licences for all third-party data and assets.
-
-## Open decisions
-
-- Approved source and format for part-connection metadata.
-- Initial part subset and colour catalogue.
-- Whether the eventual browser editor uses Three.js or another renderer.
-- Which deployment and storage services should be used for the future application.
+- Test the construction engine with ideal authored specifications before relying
+  on an LLM. Those specifications contain no part IDs or construction recipes.
+- Preserve intent, features, proportions and voids; reject unsupported essentials.
+- Exact dimensions remain exact unless a component explicitly permits a bounded
+  dimension tolerance.
+- Select specialised elements by function and geometry rather than replacing
+  every object feature with a rectangular block.
+- Preserve useful view direction across rebuilds; provide explicit front/top/fit
+  controls and visible progress/cancellation.
+- Use generic public terminology: bricks, plates, elements and construction.
+- Preserve source authors, revision and licence notices. No secrets in the repo.
+- Keep the existing engineered visual language, accessible controls and responsive
+  layout; the studio is the primary entry point.

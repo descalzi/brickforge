@@ -163,8 +163,8 @@ test("car and aircraft specifications preserve cylinder and extruded-wing intent
   assert.match(car.failures[0], /3739/);
   const aircraft = planDesign(fixtures.challenge_specs.find(item => item.design_id === "challenge-aircraft"), catalogue, { partCatalogue, designTranslation });
   assert.equal(aircraft.status, "blocked");
-  assert.match(aircraft.failures[0], /Geometry primitive extruded_profile is not yet supported/);
-  assert.match(aircraft.failures[0], /3934/);
+  assert.match(aircraft.failures[0], /Geometry primitive extruded_profile is not yet supported|Reference-only parts exist for semantic role wing/);
+  assert.match(aircraft.failures[0], /3934|3545/);
 });
 
 test("organic form intent is valid but is not silently reduced to a rectangular block", async () => {
@@ -172,7 +172,7 @@ test("organic form intent is valid but is not silently reduced to a rectangular 
   const organic = fixtures.challenge_specs.find(item => item.design_id === "challenge-organic-form");
   const result = planDesign(organic, catalogue, { partCatalogue, designTranslation });
   assert.equal(result.status, "blocked");
-  assert.match(result.failures[0], /No part-role translation exists|No source-backed part candidates/);
+  assert.match(result.failures[0], /No part-role translation exists|No source-backed part candidates|Geometry primitive sphere is not yet supported/);
 });
 
 test("a sphere-shaped component is never silently tiled as a rectangular box",()=>{

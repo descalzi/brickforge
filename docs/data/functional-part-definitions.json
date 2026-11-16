@@ -1,0 +1,2050 @@
+{
+  "schema_version": 1,
+  "definitions": [
+    {
+      "id": "4600",
+      "roles": [
+        "wheel_mount"
+      ],
+      "capabilities": [
+        "wheel_pin_mount",
+        "top_studs",
+        "underside_stud_receivers"
+      ],
+      "supported_geometry": [
+        "rectangular_prism"
+      ],
+      "width": 16,
+      "depth": 16,
+      "height": 3.2,
+      "features": [
+        {
+          "feature_id": "stud-0-0",
+          "kind": "stud",
+          "position_ldu": [
+            -10.0,
+            0,
+            -10.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-0-0",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10.0,
+            8.0,
+            -10.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-0-1",
+          "kind": "stud",
+          "position_ldu": [
+            -10.0,
+            0,
+            10.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-0-1",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10.0,
+            8.0,
+            10.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-1-0",
+          "kind": "stud",
+          "position_ldu": [
+            10.0,
+            0,
+            -10.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-1-0",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10.0,
+            8.0,
+            -10.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-1-1",
+          "kind": "stud",
+          "position_ldu": [
+            10.0,
+            0,
+            10.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-1-1",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10.0,
+            8.0,
+            10.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "wheel-pin-left",
+          "kind": "wheel_pin",
+          "position_ldu": [
+            -30.0,
+            5.0,
+            0.0
+          ],
+          "axis": [
+            -1,
+            0,
+            0
+          ]
+        },
+        {
+          "feature_id": "wheel-pin-right",
+          "kind": "wheel_pin",
+          "position_ldu": [
+            30.0,
+            5.0,
+            0.0
+          ],
+          "axis": [
+            1,
+            0,
+            0
+          ]
+        }
+      ],
+      "body_vertices_mm": [
+        [
+          -8.0,
+          0,
+          -8.0
+        ],
+        [
+          -8.0,
+          0,
+          8.0
+        ],
+        [
+          -8.0,
+          3.2,
+          -8.0
+        ],
+        [
+          -8.0,
+          3.2,
+          8.0
+        ],
+        [
+          8.0,
+          0,
+          -8.0
+        ],
+        [
+          8.0,
+          0,
+          8.0
+        ],
+        [
+          8.0,
+          3.2,
+          -8.0
+        ],
+        [
+          8.0,
+          3.2,
+          8.0
+        ]
+      ]
+    },
+    {
+      "id": "4624",
+      "roles": [
+        "wheel_rim"
+      ],
+      "capabilities": [
+        "wheel_rim",
+        "wheel_pin_bore"
+      ],
+      "supported_geometry": [],
+      "width": 8,
+      "depth": 6.4,
+      "height": 8,
+      "features": [
+        {
+          "feature_id": "seat",
+          "kind": "rim_seat",
+          "position_ldu": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "axis": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "feature_id": "wheel-bore",
+          "kind": "wheel_bore",
+          "position_ldu": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "axis": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "body_vertices_mm": [
+        [
+          4,
+          0,
+          -3.2
+        ],
+        [
+          4,
+          0,
+          3.2
+        ],
+        [
+          -4,
+          0,
+          -3.2
+        ],
+        [
+          -4,
+          0,
+          3.2
+        ],
+        [
+          0,
+          4,
+          -3.2
+        ],
+        [
+          0,
+          4,
+          3.2
+        ],
+        [
+          0,
+          -4,
+          -3.2
+        ],
+        [
+          0,
+          -4,
+          3.2
+        ]
+      ],
+      "cylinder_axis_ldraw": "z"
+    },
+    {
+      "id": "3641",
+      "roles": [
+        "tyre"
+      ],
+      "capabilities": [
+        "tyre"
+      ],
+      "supported_geometry": [],
+      "width": 14.4,
+      "depth": 6.4,
+      "height": 14.4,
+      "features": [
+        {
+          "feature_id": "seat",
+          "kind": "tyre_seat",
+          "position_ldu": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "axis": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "body_vertices_mm": [
+        [
+          7.2,
+          0,
+          -3.2
+        ],
+        [
+          7.2,
+          0,
+          3.2
+        ],
+        [
+          -7.2,
+          0,
+          -3.2
+        ],
+        [
+          -7.2,
+          0,
+          3.2
+        ],
+        [
+          0,
+          7.2,
+          -3.2
+        ],
+        [
+          0,
+          7.2,
+          3.2
+        ],
+        [
+          0,
+          -7.2,
+          -3.2
+        ],
+        [
+          0,
+          -7.2,
+          3.2
+        ]
+      ],
+      "cylinder_axis_ldraw": "z"
+    },
+    {
+      "id": "60596",
+      "roles": [
+        "door"
+      ],
+      "capabilities": [
+        "door_frame",
+        "top_studs",
+        "underside_stud_receivers"
+      ],
+      "supported_geometry": [
+        "rectangular_prism"
+      ],
+      "width": 32,
+      "depth": 8,
+      "height": 57.6,
+      "features": [
+        {
+          "feature_id": "stud-0-0",
+          "kind": "stud",
+          "position_ldu": [
+            -30.0,
+            0,
+            0.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-0-0",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -30.0,
+            144.0,
+            0.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-1-0",
+          "kind": "stud",
+          "position_ldu": [
+            -10.0,
+            0,
+            0.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-1-0",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10.0,
+            144.0,
+            0.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-2-0",
+          "kind": "stud",
+          "position_ldu": [
+            10.0,
+            0,
+            0.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-2-0",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10.0,
+            144.0,
+            0.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-3-0",
+          "kind": "stud",
+          "position_ldu": [
+            30.0,
+            0,
+            0.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-3-0",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            30.0,
+            144.0,
+            0.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        }
+      ],
+      "body_vertices_mm": [
+        [
+          -16.0,
+          0,
+          -4.0
+        ],
+        [
+          -16.0,
+          0,
+          4.0
+        ],
+        [
+          -16.0,
+          57.6,
+          -4.0
+        ],
+        [
+          -16.0,
+          57.6,
+          4.0
+        ],
+        [
+          16.0,
+          0,
+          -4.0
+        ],
+        [
+          16.0,
+          0,
+          4.0
+        ],
+        [
+          16.0,
+          57.6,
+          -4.0
+        ],
+        [
+          16.0,
+          57.6,
+          4.0
+        ]
+      ]
+    },
+    {
+      "id": "3062b",
+      "roles": [
+        "structural",
+        "organic_form",
+        "support"
+      ],
+      "capabilities": [
+        "round_column",
+        "curved_surface",
+        "top_studs",
+        "underside_stud_receivers"
+      ],
+      "supported_geometry": [
+        "cylinder"
+      ],
+      "width": 8,
+      "depth": 8,
+      "height": 9.6,
+      "features": [
+        {
+          "feature_id": "stud-0-0",
+          "kind": "stud",
+          "position_ldu": [
+            0.0,
+            0,
+            0.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-0-0",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            0.0,
+            23.999999999999996,
+            0.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        }
+      ],
+      "body_vertices_mm": [
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          4,
+          9.6,
+          0
+        ],
+        [
+          -4,
+          0,
+          0
+        ],
+        [
+          -4,
+          9.6,
+          0
+        ],
+        [
+          0,
+          0,
+          4
+        ],
+        [
+          0,
+          9.6,
+          4
+        ],
+        [
+          0,
+          0,
+          -4
+        ],
+        [
+          0,
+          9.6,
+          -4
+        ]
+      ],
+      "cylinder_axis_ldraw": "y"
+    },
+    {
+      "id": "30367",
+      "roles": [
+        "organic_form",
+        "cap"
+      ],
+      "capabilities": [
+        "domed_surface",
+        "curved_surface",
+        "top_studs",
+        "underside_stud_receivers"
+      ],
+      "supported_geometry": [
+        "domed_cylinder"
+      ],
+      "width": 16,
+      "depth": 16,
+      "height": 9.6,
+      "features": [
+        {
+          "feature_id": "stud-0-0",
+          "kind": "stud",
+          "position_ldu": [
+            -10.0,
+            0,
+            -10.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-0-0",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10.0,
+            23.999999999999996,
+            -10.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-0-1",
+          "kind": "stud",
+          "position_ldu": [
+            -10.0,
+            0,
+            10.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-0-1",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10.0,
+            23.999999999999996,
+            10.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-1-0",
+          "kind": "stud",
+          "position_ldu": [
+            10.0,
+            0,
+            -10.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-1-0",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10.0,
+            23.999999999999996,
+            -10.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-1-1",
+          "kind": "stud",
+          "position_ldu": [
+            10.0,
+            0,
+            10.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-1-1",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10.0,
+            23.999999999999996,
+            10.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        }
+      ],
+      "body_vertices_mm": [
+        [
+          8,
+          0,
+          0
+        ],
+        [
+          8,
+          9.6,
+          0
+        ],
+        [
+          -8,
+          0,
+          0
+        ],
+        [
+          -8,
+          9.6,
+          0
+        ],
+        [
+          0,
+          0,
+          8
+        ],
+        [
+          0,
+          9.6,
+          8
+        ],
+        [
+          0,
+          0,
+          -8
+        ],
+        [
+          0,
+          9.6,
+          -8
+        ]
+      ],
+      "cylinder_axis_ldraw": "y"
+    },
+    {
+      "id": "3933",
+      "roles": [
+        "wing"
+      ],
+      "capabilities": [
+        "tapered_surface",
+        "top_studs",
+        "underside_stud_receivers"
+      ],
+      "supported_geometry": [
+        "planar_profile"
+      ],
+      "width": 31.484,
+      "depth": 64,
+      "height": 3.2,
+      "features": [
+        {
+          "feature_id": "stud-0",
+          "kind": "stud",
+          "position_ldu": [
+            -30.0,
+            0,
+            70.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-0",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -30.0,
+            8,
+            70.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-2",
+          "kind": "stud",
+          "position_ldu": [
+            -10.0,
+            0,
+            70.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-2",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10.0,
+            8,
+            70.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-4",
+          "kind": "stud",
+          "position_ldu": [
+            10.0,
+            0,
+            70.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-4",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10.0,
+            8,
+            70.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-6",
+          "kind": "stud",
+          "position_ldu": [
+            -30.0,
+            0,
+            50.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-6",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -30.0,
+            8,
+            50.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-8",
+          "kind": "stud",
+          "position_ldu": [
+            -10.0,
+            0,
+            50.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-8",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10.0,
+            8,
+            50.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-10",
+          "kind": "stud",
+          "position_ldu": [
+            10.0,
+            0,
+            50.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-10",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10.0,
+            8,
+            50.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-12",
+          "kind": "stud",
+          "position_ldu": [
+            -30.0,
+            0,
+            30.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-12",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -30.0,
+            8,
+            30.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-14",
+          "kind": "stud",
+          "position_ldu": [
+            -10.0,
+            0,
+            30.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-14",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10.0,
+            8,
+            30.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-16",
+          "kind": "stud",
+          "position_ldu": [
+            10.0,
+            0,
+            30.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-16",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10.0,
+            8,
+            30.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-18",
+          "kind": "stud",
+          "position_ldu": [
+            -30.0,
+            0,
+            10.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-18",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -30.0,
+            8,
+            10.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-20",
+          "kind": "stud",
+          "position_ldu": [
+            -10.0,
+            0,
+            10.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-20",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10.0,
+            8,
+            10.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-22",
+          "kind": "stud",
+          "position_ldu": [
+            10.0,
+            0,
+            10.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-22",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10.0,
+            8,
+            10.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-24",
+          "kind": "stud",
+          "position_ldu": [
+            -30.0,
+            0,
+            -10.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-24",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -30.0,
+            8,
+            -10.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-26",
+          "kind": "stud",
+          "position_ldu": [
+            -10.0,
+            0,
+            -10.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-26",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10.0,
+            8,
+            -10.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-28",
+          "kind": "stud",
+          "position_ldu": [
+            -30.0,
+            0,
+            -30.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-28",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -30.0,
+            8,
+            -30.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-30",
+          "kind": "stud",
+          "position_ldu": [
+            -10.0,
+            0,
+            -30.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-30",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10.0,
+            8,
+            -30.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-32",
+          "kind": "stud",
+          "position_ldu": [
+            -30.0,
+            0,
+            -50.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-32",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -30.0,
+            8,
+            -50.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-34",
+          "kind": "stud",
+          "position_ldu": [
+            -30.0,
+            0,
+            -70.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-34",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -30.0,
+            8,
+            -70.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        }
+      ],
+      "body_vertices_mm": [
+        [
+          -16,
+          0,
+          -32
+        ],
+        [
+          -16,
+          3.2,
+          -32
+        ],
+        [
+          -8,
+          0,
+          -32
+        ],
+        [
+          -8,
+          3.2,
+          -32
+        ],
+        [
+          15.484,
+          0,
+          22.8
+        ],
+        [
+          15.484,
+          3.2,
+          22.8
+        ],
+        [
+          15.484,
+          0,
+          24
+        ],
+        [
+          15.484,
+          3.2,
+          24
+        ],
+        [
+          8,
+          0,
+          32
+        ],
+        [
+          8,
+          3.2,
+          32
+        ],
+        [
+          -16,
+          0,
+          32
+        ],
+        [
+          -16,
+          3.2,
+          32
+        ]
+      ],
+      "extrusion_axes_ldraw": [
+        "y"
+      ]
+    },
+    {
+      "id": "3934",
+      "roles": [
+        "wing"
+      ],
+      "capabilities": [
+        "tapered_surface",
+        "top_studs",
+        "underside_stud_receivers"
+      ],
+      "supported_geometry": [
+        "planar_profile"
+      ],
+      "width": 31.484,
+      "depth": 64,
+      "height": 3.2,
+      "features": [
+        {
+          "feature_id": "stud-0",
+          "kind": "stud",
+          "position_ldu": [
+            -10.0,
+            0,
+            70.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-0",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10.0,
+            8,
+            70.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-2",
+          "kind": "stud",
+          "position_ldu": [
+            10.0,
+            0,
+            70.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-2",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10.0,
+            8,
+            70.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-4",
+          "kind": "stud",
+          "position_ldu": [
+            30.0,
+            0,
+            70.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-4",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            30.0,
+            8,
+            70.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-6",
+          "kind": "stud",
+          "position_ldu": [
+            -10.0,
+            0,
+            50.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-6",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10.0,
+            8,
+            50.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-8",
+          "kind": "stud",
+          "position_ldu": [
+            10.0,
+            0,
+            50.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-8",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10.0,
+            8,
+            50.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-10",
+          "kind": "stud",
+          "position_ldu": [
+            30.0,
+            0,
+            50.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-10",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            30.0,
+            8,
+            50.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-12",
+          "kind": "stud",
+          "position_ldu": [
+            -10.0,
+            0,
+            30.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-12",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10.0,
+            8,
+            30.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-14",
+          "kind": "stud",
+          "position_ldu": [
+            10.0,
+            0,
+            30.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-14",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10.0,
+            8,
+            30.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-16",
+          "kind": "stud",
+          "position_ldu": [
+            30.0,
+            0,
+            30.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-16",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            30.0,
+            8,
+            30.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-18",
+          "kind": "stud",
+          "position_ldu": [
+            -10.0,
+            0,
+            10.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-18",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10.0,
+            8,
+            10.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-20",
+          "kind": "stud",
+          "position_ldu": [
+            10.0,
+            0,
+            10.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-20",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10.0,
+            8,
+            10.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-22",
+          "kind": "stud",
+          "position_ldu": [
+            30.0,
+            0,
+            10.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-22",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            30.0,
+            8,
+            10.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-24",
+          "kind": "stud",
+          "position_ldu": [
+            10.0,
+            0,
+            -10.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-24",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10.0,
+            8,
+            -10.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-26",
+          "kind": "stud",
+          "position_ldu": [
+            30.0,
+            0,
+            -10.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-26",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            30.0,
+            8,
+            -10.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-28",
+          "kind": "stud",
+          "position_ldu": [
+            10.0,
+            0,
+            -30.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-28",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10.0,
+            8,
+            -30.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-30",
+          "kind": "stud",
+          "position_ldu": [
+            30.0,
+            0,
+            -30.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-30",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            30.0,
+            8,
+            -30.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-32",
+          "kind": "stud",
+          "position_ldu": [
+            30.0,
+            0,
+            -50.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-32",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            30.0,
+            8,
+            -50.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-34",
+          "kind": "stud",
+          "position_ldu": [
+            30.0,
+            0,
+            -70.0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-34",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            30.0,
+            8,
+            -70.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        }
+      ],
+      "body_vertices_mm": [
+        [
+          -15.484,
+          0,
+          22.8
+        ],
+        [
+          -15.484,
+          3.2,
+          22.8
+        ],
+        [
+          8,
+          0,
+          -32
+        ],
+        [
+          8,
+          3.2,
+          -32
+        ],
+        [
+          16,
+          0,
+          -32
+        ],
+        [
+          16,
+          3.2,
+          -32
+        ],
+        [
+          16,
+          0,
+          32
+        ],
+        [
+          16,
+          3.2,
+          32
+        ],
+        [
+          -8,
+          0,
+          32
+        ],
+        [
+          -8,
+          3.2,
+          32
+        ],
+        [
+          -15.484,
+          0,
+          24
+        ],
+        [
+          -15.484,
+          3.2,
+          24
+        ]
+      ],
+      "extrusion_axes_ldraw": [
+        "y"
+      ]
+    }
+  ],
+  "assemblies": [
+    {
+      "assembly_id": "small-wheel-and-tyre",
+      "roles": [
+        "wheel"
+      ],
+      "capabilities": [
+        "wheel",
+        "rotating_element"
+      ],
+      "geometry": "cylinder",
+      "cylinder_axis_ldraw": "z",
+      "body_vertices_mm": [
+        [
+          7.2,
+          0,
+          -3.2
+        ],
+        [
+          7.2,
+          0,
+          3.2
+        ],
+        [
+          -7.2,
+          0,
+          -3.2
+        ],
+        [
+          -7.2,
+          0,
+          3.2
+        ],
+        [
+          0,
+          7.2,
+          -3.2
+        ],
+        [
+          0,
+          7.2,
+          3.2
+        ],
+        [
+          0,
+          -7.2,
+          -3.2
+        ],
+        [
+          0,
+          -7.2,
+          3.2
+        ]
+      ],
+      "children": [
+        {
+          "part_id": "4624",
+          "colour_code": 7
+        },
+        {
+          "part_id": "3641",
+          "colour_code": 0
+        }
+      ],
+      "evidence": "Nominal 8 mm rim seat with matching 6/50 x 8 tyre, and wheel-pin bore. Rotation clearance, clutch and force are not physically tested."
+    }
+  ]
+}

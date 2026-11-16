@@ -1,77 +1,54 @@
 # BrickForge
 
-The primary product is **description → structured object specification → browser-based brick assembly**. The [Design Studio](https://descalzi.github.io/brickforge/designer.html?fixture=windowed-pavilion&run=1) now combines ordinary structural parts with profiled real slopes and an open window frame. It provides nominal connection checks, source-surface specialist previews, an inspectable assembly sequence and LDraw/BOM/report exports. The language adapter and general specialised-part fitting remain unfinished. See [engine architecture](docs/architecture/design-spec-engine.md) for current evidence and limitations.
+An object-first, browser-based brick construction engine.
 
-**BrickForge** is a design-first system for turning natural-language descriptions into buildable models made from real L-brick elements, with validated parts inventories and step-by-step building instructions. The primary workflow starts with a catalogue-independent structured design specification; STL/OBJ import is an optional reference and validation tool, not the source of the design.
+**Description → structured object specification → source-backed elements → assembly → instructions.**
 
-The long-term goal is to support arbitrary object categories rather than a fixed catalogue of model types.
+[Open the Design Studio](https://descalzi.github.io/brickforge/designer.html?fixture=small-road-car&run=1)
 
-## Product goals
+## What works
 
-- Accept natural-language descriptions and, eventually, photographs and existing 3D files.
-- Produce visually faithful constructions from genuine L-brick elements.
-- Validate geometric fit, connections, assembly order, and practical buildability.
-- Optimise across visual fidelity, part count, cost, stability, and ease of assembly.
-- Export an editable LDraw model, a parts inventory, and illustrated instructions.
+- Versioned millimetre briefs with semantic components, shape requirements,
+  relationships, explicit empty spaces and optional bounded dimension tolerance.
+- Structural tiling and profiled specialised-part placement, including slopes,
+  open frames, mirrored wings, round elements, wheel mounts and tyre/rim assembly.
+- Bounded global search with direct-attachment pruning and nominal mating edges.
+- Placed-body checks, support projection proxy and nominal straight approaches,
+  with physical clutch, stability, insertion and strength kept unverified.
+- Interactive inspection, editable components, browser-local brief revisions,
+  LDraw STEP export, BOM/report JSON and vector instruction PDF.
+- A provider-neutral text interpretation contract and optional HTTPS gateway
+  adapter. No hosted model service, API key or default provider is bundled.
 
-## Architecture
+The catalogue and geometry solver are curated and bounded. These proofs are not
+an arbitrary-object generator or a physical buildability certification. See the
+[current roadmap](docs/roadmap.md) and [engine architecture](docs/architecture/design-spec-engine.md).
 
-BrickForge is organised as independent subsystems:
+## Run and verify
 
-1. **AI interface** — interprets intent and produces a structured design brief.
-2. **Geometry** — imports, analyses, and represents target shapes.
-3. **Parts catalogue** — indexes part geometry, colours, connection types, and availability.
-4. **Construction** — maps target geometry to compatible L-brick elements.
-5. **Validation** — checks collisions, connectivity, support, and assembly feasibility.
-6. **Optimisation** — searches for better constructions against configurable objectives.
-7. **Instructions and application** — sequences the build and presents/export deliverables.
+Serve `docs/` with any static HTTP server, for example:
 
-The AI must not directly author arbitrary per-brick placements as the source of truth. Construction decisions belong to deterministic, testable geometry and constraint-solving components.
-
-## Initial technical direction
-
-- Static HTML, CSS and JavaScript, published with GitHub Pages (Cloudflare Pages is also compatible).
-- Browser-native construction and validation, using the visitor's CPU and memory.
-- Three.js for local 3D preview and interaction.
-- LDraw as the canonical model interchange and download format.
-- Browser JavaScript is the authoritative product implementation; the visitor's browser performs mesh processing, construction, validation and preview.
-- Python is retained for offline analysis, library audits and selected independent engineering checks; new product features are browser-first.
-- Node's built-in test runner is the primary test runner for browser algorithms; pytest covers the supporting Python tools.
-
-The intended user-facing design-to-construction flow does not require a Python installation, application server or model-upload service. The browser fetches versioned specifications, part metadata and connection profiles; candidate search, assembly planning, validation, preview and downloads are computed locally. The new design engine is being developed independently of the earlier STL-led prototype.
-
-## Development status
-
-The project now has a public mesh inspector for STL and OBJ files. It can voxelise closed meshes locally in a background browser worker, display the approximate interior grid and triangle-intersecting boundary cells, and report per-course occupancy. It can also pass the different course footprints to a second background worker, search for a connected variable-course arrangement using the currently profiled rectangular brick or plate families, validate nominal body bounds and connection-graph connectivity, render a target-aligned simplified part-envelope preview alongside the ghosted source mesh, and download LDraw, assembly graph and BOM files. The versioned target-grid representation and BVH-accelerated browser voxeliser are supporting reference tools; Python mesh voxelisation remains a supporting engineering reference. Closed-mesh topology diagnostics record connected components, Euler characteristic and handle/tunnel counts independently of coarse occupancy. Sampled orthogonal mesh cross-sections now locate and estimate the size and shape of nested openings, including per-slice minimum/maximum dimensions that preserve taper and countersink evidence; the Inspector lists those measurements. Stable axis-aligned openings are conservatively represented as grid-cell clearance tunnels using sampled cross-sections and measured local axial intervals, including holes smaller than one course cell. Where principal-axis sampling is sparse, a two-slice candidate is accepted only when its count exactly matches the independently computed topological tunnel count. Paired oblique section candidates can also be reconciled into an axis-aligned estimate when their centres group to the exact tunnel count and their combined directions agree with a grid axis; ambiguous cases remain blocked. These clearances can enlarge an opening to the size of intersected grid cells, so the Inspector reports the method and requires review of the voxel and construction previews. This is a coarse preservation constraint, not a specialised-part fit or proof of exact surface fidelity. A Chromium end-to-end regression now loads the published solid, single-hole, two-hole and three-hole STL fixtures through the actual Inspector and workers, then verifies exact tunnel mapping and that a connected candidate can be generated. This does **not** yet prove that the generated model preserves the source opening shapes; the M-shaped two-hole result exposed that gap. A first closed-loop golden regression now authors a real 3001 brick assembly, derives a watertight voxel-reference STL from its resolved LDraw triangles, uploads that STL to the actual Inspector in headless Chromium, voxelises it and generates a construction. A separate two-opening regression verifies that the solid-reference conversion preserves both through-holes at the declared pitch. This validates the single-brick baseline and conversion method, not yet multi-part assemblies or the original M-shaped two-hole construction. The browser test runs in CI alongside the unit and Python suites. This is the first mesh-to-construction hand-off, not yet a surface-fitted construction or a specialised-part selection system. The site also has a browser-based part explorer with a searchable index of the official LDraw library. A generated compressed metadata catalogue is published with the site; the browser fetches only a selected part and its nested geometry dependencies, composes transforms, applies inherited colours and the LDraw colour table, and shows source-header attribution. BrickForge has its authored nominal connection profiles for eleven standard bricks and twelve plates, plus a deterministic stud-to-receiver datum matcher. These are candidate geometric alignments, not physical clutch or stability validation. The Python package also inspects target meshes, parses LDraw part metadata and geometry records, and recursively resolves sub-file references into transformed primitives. The resolver is regression-tested with a verbatim LDraw 3001 part/dependency fixture and audited against the complete version-pinned official archive: 24,983 of 24,985 top-level parts resolved (99.992%). The two unresolved decorated variants reference absent upstream dependency files; these exceptions remain visible in the retained audit report.
-
-A canonical assembly graph is implemented, with unique part instances, LDraw transforms, nominal connection edges, conservative body-envelope overlap checks, connected-graph validation, LDraw export, and a BOM derived from the same placements. A deterministic rectangular-block strategy alternates 2 x 4 brick orientation between courses to bridge seams. It generates a 4 x 4-stud, two-course block from four 3001 parts: four graph edges and 16 nominal mating pairs.
-
-A new offline reference exporter is being added for golden-model validation: it resolves the actual LDraw triangles and quads at the canonical assembly transforms and writes an STL plus a JSON sidecar with units, bounds, source-assembly hash and BOM. It deliberately concatenates part shells rather than pretending to perform a boolean union. The first verbatim 3001 source test revealed inconsistent raw winding in the resolved LDraw surface. The exporter now repairs adjacent-face orientation with a dependency-free pass and records both raw and repaired diagnostics. Its regression re-imports the generated STL and confirms that the voxeliser blocks it because the resolved 3001 display surface is still non-watertight. That is expected to be fixed by a separate, explicit solid-reference generation step—not by silently filling the part's real openings. Multi-part composition and comparison of a reconstructed assembly against the original are still outstanding. See [golden-model round-trip benchmarks](docs/architecture/golden-roundtrip.md). Standard LEGO elements are the default target catalogue; Technic parts are optional candidates, not a required dependency.
-
-The same constrained construction engine now runs in the browser at the [Block builder](https://descalzi.github.io/brickforge/builder.html). It reads the published connection catalogue, creates the placements and graph, checks connections and nominal body bounds, previews the result in 3D, and downloads LDraw, assembly JSON and BOM files. **No Python installation, account, backend or model upload is required.** Its browser-native implementation is regression-tested against the Python reference output.
-
-Alongside the rectangular generator, an experimental footprint strategy accepts small connected 2D stud grids. It searches exact covers using 2 x 10, 2 x 8, 2 x 4, 2 x 3, 2 x 2, 1 x 8, 1 x 6, 1 x 4, 1 x 3, 1 x 2 and 1 x 1 brick profiles. For smaller footprints, it searches connected two-course pairs in increasing combined part count. For larger footprints, it samples deterministic alternative tilings, favours larger elements, and compares a bounded set of alternatives to improve the part count. It prefers two alternating course tilings with a connected cross-course graph; when a two-layout pair is insufficient, it can also find a repeating three-layout cycle that connects the requested stack height. The browser builder exposes this through an editable #/. occupancy grid; tested examples include L-shaped, stepped U-shaped, enclosed-ring, T-shaped (two, three and four courses), and more complex concave or branching footprints. Search is deliberately bounded (64 occupied cells, 1,000,000 search nodes, 100,000 candidate tilings, 5,000,000 tiling-pair checks and 250,000 three-layout sequence checks), so some otherwise tileable shapes may be rejected. This is an initial orthogonal-footprint capability, not a general arbitrary-shape generator. The two-brick stack and interlocked block examples remain under [examples](examples/), with versioned [assembly graph](schemas/assembly-graph-v1.schema.json) and [BOM](schemas/bom-v1.schema.json) JSON schemas.
-
-For local engineering checks only, install the development package with `python -m pip install -e ".[dev]"`, then run `brickforge-demo-assembly` or `brickforge-demo-block`. These commands are not required by website users.
-
-This is an early constrained construction engine, not yet an arbitrary-shape L-brick generator. The rectangular strategy supports one-axis and two-axis staggered courses, using 2 x 4 and 1 x 2 parts to bridge joints and close perimeter strips; tested layouts include 12 x 4 x 2 and 12 x 8 x 2. The experimental footprint strategy supports only those orthogonal shapes for which the bounded search finds a connected pair of course tilings. The layered strategy now consumes the mesh inspector's voxelised STL/OBJ target grid and permits different footprints at different heights. Collision checks use conservative body bounds, and physical stability, build sequencing and instructions remain future work.
-
-See [Architecture](docs/architecture/overview.md), [Assembly graph](docs/architecture/assembly-graph.md), [Roadmap](docs/roadmap.md), [Decision log](docs/decisions/0001-product-and-engineering-principles.md), [LDraw geometry ingestion](docs/architecture/ldraw-geometry.md), [nominal connection profiles](docs/architecture/connection-profiles.md), and [parts data-source notes](docs/parts-data-sources.md).
-
-## Local LDraw parts library
-
-The project uses the community-maintained LDraw Parts Library as its initial part-geometry source candidate. Download it locally with:
-
-```bash
-python scripts/fetch_ldraw_library.py
+```sh
+python -m http.server 8000 --directory docs
+node --test tests/*.test.mjs
+python scripts/stamp_browser_modules.py --check
 ```
 
-The archive is extracted to `data/vendor/ldraw/`, which is intentionally ignored by Git. Original part files, headers and licence/readme notices are retained. Read [the data-source notes](docs/parts-data-sources.md) before redistributing any part data.
+After source or data changes, run `python scripts/stamp_browser_modules.py` before
+committing. It versions native module URLs and the studio's data release without
+a JavaScript bundler. Chromium CI exercises real pages, workers, downloads and
+mobile layout. The Python package and Inspector regressions are supporting
+source/geometry audits, not the production construction runtime.
 
-## Project website
+## Source data and engineering tools
 
-The public project page is published from `docs/` using GitHub Pages, and the source repository is public. Visit the [project site](https://descalzi.github.io/brickforge/), try the [mesh inspector](https://descalzi.github.io/brickforge/inspector.html), generate a block in the [browser builder](https://descalzi.github.io/brickforge/builder.html), or explore [LDraw parts](https://descalzi.github.io/brickforge/parts.html).
+The [tools hub](https://descalzi.github.io/brickforge/tools.html) retains the part
+explorer, optional mesh inspector, footprint builder and reference gallery.
+LDraw geometry is pinned to a source revision. Curated display surfaces retain
+recursive attribution under `docs/data/part-meshes/`; the broader library remains
+lazy-loaded rather than bundled into the repository. Three.js and the embedded
+PDF font retain their licences under `docs/assets/vendor/`.
 
-## Scope and compatibility
-
-BrickForge is an independent project. External part libraries and third-party catalogues remain subject to their own licences and terms.
+The previous mesh-first programme is archived in
+[the research roadmap](docs/roadmap-mesh-archive.md). Mesh input does not supply
+object intent and is not the main product pipeline.

@@ -1,7 +1,7 @@
 const finite = (value) => typeof value === "number" && Number.isFinite(value);
 const RELATIONSHIPS = new Set(["above","below","left_of","right_of","in_front_of","behind","attached_to","aligned_with","symmetric_to"]);
 const ROOT_KEYS = new Set(["schema_version","design_id","name","units","components","relationships","constraints","appearance","assumptions","negative_spaces"]);
-const COMPONENT_KEYS = new Set(["id","label","role","function","geometry","geometry_parameters","dimensions_mm","position_mm","priority","required_features","forbidden_features","colour","confidence"]);
+const COMPONENT_KEYS = new Set(["id","label","role","function","geometry","geometry_parameters","dimensions_mm","position_mm","priority","required_features","forbidden_features","colour","confidence","fit_tolerance_mm"]);
 const hasOnlyKeys = (value, allowed) => Object.keys(value || {}).filter(key => !allowed.has(key));
 
 export function validateDesignSpec(spec) {
@@ -22,9 +22,9 @@ export function validateDesignSpec(spec) {
     else if (ids.has(component.id)) errors.push(path + ".id must be unique.");
     else ids.add(component.id);
     if (typeof component.role !== "string" || !component.role.trim()) errors.push(path + ".role is required.");
-    if (!["rectangular_prism","cylinder","sphere","extruded_profile"].includes(component.geometry)) errors.push(path + ".geometry is unsupported by design-spec v1.");
+    if (!["rectangular_prism","cylinder","sphere","extruded_profile","planar_profile","domed_cylinder"].includes(component.geometry)) errors.push(path + ".geometry is unsupported by design-spec v1.");
     const shape=component.geometry_parameters;
-    if (component.geometry==="cylinder") {
+    if (["cylinder","domed_cylinder"].includes(component.geometry)) {
       if (!shape || !["x","y","z"].includes(shape.axis) || !finite(shape.diameter_mm) || shape.diameter_mm<=0) errors.push(path + ".geometry_parameters must define a cylinder axis and positive diameter_mm.");
       else {
         const radialAxes=shape.axis==="x"?["depth","height"]:shape.axis==="y"?["width","depth"]:["width","height"];
@@ -43,6 +43,10 @@ export function validateDesignSpec(spec) {
         if (component.dimensions_mm && (Math.abs(width-component.dimensions_mm.width)>0.1 || Math.abs(height-component.dimensions_mm.height)>0.1 || Math.abs(shape.depth_mm-component.dimensions_mm.depth)>0.1)) errors.push(path + ".dimensions_mm must match the extruded outline bounds and depth.");
       }
     }
+    if(component.geometry==='planar_profile'){
+      if(!shape||!Array.isArray(shape.outline_mm)||shape.outline_mm.length<3||shape.outline_mm.some(p=>!Array.isArray(p)||p.length!==2||!p.every(finite)))errors.push(path+'.geometry_parameters requires an X/Z outline.');
+      else {const xs=shape.outline_mm.map(p=>p[0]),zs=shape.outline_mm.map(p=>p[1]);if(Math.abs(Math.max(...xs)-Math.min(...xs)-component.dimensions_mm?.width)>.1||Math.abs(Math.max(...zs)-Math.min(...zs)-component.dimensions_mm?.depth)>.1)errors.push(path+'.dimensions_mm must match the planar outline.');}
+    }
     if (shape && hasOnlyKeys(shape,new Set(["axis","diameter_mm","radius_mm","depth_mm","outline_mm"])).length) errors.push(path + ".geometry_parameters contains unknown properties.");
     for (const axis of ["width", "depth", "height"]) {
       if (!finite(component.dimensions_mm?.[axis]) || component.dimensions_mm[axis] <= 0) errors.push(path + ".dimensions_mm." + axis + " must be positive and finite.");
@@ -56,6 +60,7 @@ export function validateDesignSpec(spec) {
     for (const key of ["function","required_features","forbidden_features"]) {
       if (component[key] !== undefined && (!Array.isArray(component[key]) || component[key].some(value => typeof value !== "string" || !value.trim()))) errors.push(path + "." + key + " must be an array of non-empty strings.");
     }
+    if(component.fit_tolerance_mm!==undefined&&(!finite(component.fit_tolerance_mm)||component.fit_tolerance_mm<0||component.fit_tolerance_mm>4))errors.push(path+'.fit_tolerance_mm must be between 0 and 4 mm.');
     if (component.colour !== undefined && (!Number.isInteger(component.colour) || component.colour < 0)) errors.push(path + ".colour must be a non-negative integer.");
     if (component.confidence !== undefined && !["explicit","inferred","uncertain"].includes(component.confidence)) errors.push(path + ".confidence is invalid.");
   }
@@ -86,7 +91,7 @@ export function validateDesignSpec(spec) {
     if (hasOnlyKeys(spec.constraints,new Set(["require_connected","allow_intersections","max_parts","max_search_nodes","course_type"])).length) errors.push("constraints contains unknown properties.");
     if (spec.constraints.max_parts !== undefined && (!Number.isInteger(spec.constraints.max_parts)||spec.constraints.max_parts<1||spec.constraints.max_parts>10000)) errors.push("constraints.max_parts must be an integer from 1 to 10000.");
     if (spec.constraints.max_search_nodes !== undefined && (!Number.isInteger(spec.constraints.max_search_nodes)||spec.constraints.max_search_nodes<100||spec.constraints.max_search_nodes>1000000)) errors.push("constraints.max_search_nodes must be an integer from 100 to 1000000.");
-    if (spec.constraints.course_type !== undefined && !["brick","plate"].includes(spec.constraints.course_type)) errors.push("constraints.course_type must be brick or plate.");
+    if (spec.constraints.course_type !== undefined && !["brick","plate","auto"].includes(spec.constraints.course_type)) errors.push("constraints.course_type must be brick, plate or auto.");
   }
   if (spec.appearance !== undefined) {
     if (!spec.appearance || typeof spec.appearance !== "object" || Array.isArray(spec.appearance)) errors.push("appearance must be an object.");
