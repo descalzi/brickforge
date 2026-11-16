@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "description": "Hand-authored catalogue-independent design specifications for deterministic engine validation.",
+  "fixtures": [
+    {
+      "schema_version": 1,
+      "design_id": "interlocked-structural-body",
+      "name": "Interlocked structural body",
+      "units": "mm",
+      "components": [
+        {
+          "id": "body",
+          "label": "Main structural body",
+          "role": "chassis",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 32,
+            "depth": 32,
+            "height": 19.2
+          },
+          "position_mm": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "priority": "essential",
+          "function": [
+            "supports an upper structure"
+          ],
+          "confidence": "explicit"
+        }
+      ],
+      "relationships": [],
+      "constraints": {
+        "require_connected": true,
+        "allow_intersections": false,
+        "max_parts": 40,
+        "max_search_nodes": 100000,
+        "course_type": "brick"
+      },
+      "appearance": {
+        "preferred_colours": [
+          4
+        ]
+      },
+      "assumptions": [
+        "Dimensions are exact nominal dimensions in millimetres.",
+        "Only standard brick connection profiles currently have verified nominal interface datums."
+      ]
+    }
+  ]
+}
