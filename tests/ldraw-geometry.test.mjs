@@ -37,6 +37,8 @@ test("resolves nested LDraw part and primitive geometry into transformed dimensi
   assert.equal(report.part_id, "testpart");
   assert.equal(report.triangle_count, 2);
   assert.deepEqual(report.dimensions_mm, [4, 4, 4]);
+  assert.equal(report.bounding_box_volume_mm3, 64);
+  assert.equal(report.surface_area_mm2, 16);
   assert.equal(report.geometry_status, "resolved_ldraw_surface");
   assert.equal(report.triangle_positions_mm.length, 18);
   assert.ok(fetchImpl.requested.some((url) => url.endsWith("/p/primitive.dat")));
