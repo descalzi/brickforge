@@ -141,3 +141,30 @@ test("planner distinguishes semantic candidates from parts with verified placeme
   assert.match(result.failures[0], /Semantic candidates exist for beam/);
   assert.match(result.failures[0], /3701/);
 });
+
+test("hand-authored car, house, aircraft and organic specifications are valid intent inputs", async () => {
+  const fixtures = JSON.parse(await readFile(new URL("../docs/data/design-spec-fixtures.json", import.meta.url), "utf8"));
+  assert.equal(fixtures.challenge_specs.length, 4);
+  for (const challenge of fixtures.challenge_specs) {
+    const validation = validateDesignSpec(challenge);
+    assert.equal(validation.valid, true, challenge.design_id + ": " + validation.errors.join("; "));
+  }
+});
+
+test("car and aircraft specifications preserve cylinder and extruded-wing intent and refuse unsupported construction", async () => {
+  const fixtures = JSON.parse(await readFile(new URL("../docs/data/design-spec-fixtures.json", import.meta.url), "utf8"));
+  const car = planDesign(fixtures.challenge_specs.find(item => item.design_id === "challenge-car"), catalogue, { partCatalogue, designTranslation });
+  assert.equal(car.status, "blocked");
+  assert.match(car.failures[0], /Reference-only parts exist for semantic role wheel/);
+  const aircraft = planDesign(fixtures.challenge_specs.find(item => item.design_id === "challenge-aircraft"), catalogue, { partCatalogue, designTranslation });
+  assert.equal(aircraft.status, "blocked");
+  assert.match(aircraft.failures[0], /Reference-only parts exist for semantic role wing/);
+});
+
+test("organic form intent is valid but is not silently reduced to a rectangular block", async () => {
+  const fixtures = JSON.parse(await readFile(new URL("../docs/data/design-spec-fixtures.json", import.meta.url), "utf8"));
+  const organic = fixtures.challenge_specs.find(item => item.design_id === "challenge-organic-form");
+  const result = planDesign(organic, catalogue, { partCatalogue, designTranslation });
+  assert.equal(result.status, "blocked");
+  assert.match(result.failures[0], /No part-role translation exists|No source-backed part candidates/);
+});
