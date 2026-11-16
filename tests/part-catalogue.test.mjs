@@ -12,7 +12,7 @@ test("source-backed part capability catalogue validates with unique identities",
 });
 
 test("semantic discovery finds the exact Technic beam for a beam requirement",()=>{
- const result=discoverPartCandidates({role:"beam",required_capabilities:["technic_pin_holes"],dimensions_mm:{width:32,depth:8,height:9.6}},catalogue,{maxDimensionErrorMm:0.01});
+ const result=discoverPartCandidates({role:"beam",required_capabilities:["technic_pin_holes"],dimensions_mm:{width:32,depth:8,height:11.2}},catalogue,{maxDimensionErrorMm:0.01});
  assert.equal(result.status,"candidates_found");
  assert.equal(result.candidates[0].part_id,"3701");
  assert.equal(result.candidates[0].dimension_error_mm,0);
@@ -36,9 +36,9 @@ test("reference-only parts are excluded unless explicitly requested",()=>{
 });
 
 test("dimension limits and required capabilities constrain discovery",()=>{
- const tooSmall=discoverPartCandidates({role:"beam",dimensions_mm:{width:32,depth:8,height:9.6}},catalogue,{maxDimensionErrorMm:0.01});
+ const tooSmall=discoverPartCandidates({role:"beam",dimensions_mm:{width:32,depth:8,height:11.2}},catalogue,{maxDimensionErrorMm:0.01});
  assert.equal(tooSmall.candidates[0].part_id,"3701");
- const unsupported=discoverPartCandidates({role:"beam",required_capabilities:["rotating_wheel"],dimensions_mm:{width:32,depth:8,height:9.6}},catalogue);
+ const unsupported=discoverPartCandidates({role:"beam",required_capabilities:["rotating_wheel"],dimensions_mm:{width:32,depth:8,height:11.2}},catalogue);
  assert.equal(unsupported.status,"no_candidates");
 });
 
