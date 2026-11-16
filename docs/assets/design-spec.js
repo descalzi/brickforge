@@ -28,19 +28,19 @@ export function validateDesignSpec(spec) {
       if (!shape || !["x","y","z"].includes(shape.axis) || !finite(shape.diameter_mm) || shape.diameter_mm<=0) errors.push(path + ".geometry_parameters must define a cylinder axis and positive diameter_mm.");
       else {
         const radialAxes=shape.axis==="x"?["depth","height"]:shape.axis==="y"?["width","depth"]:["width","height"];
-        if (radialAxes.some(axis=>Math.abs(component.dimensions_mm[axis]-shape.diameter_mm)>0.1)) errors.push(path + ".dimensions_mm must agree with the cylinder diameter and axis.");
+        if (component.dimensions_mm && radialAxes.some(axis=>Math.abs(component.dimensions_mm[axis]-shape.diameter_mm)>0.1)) errors.push(path + ".dimensions_mm must agree with the cylinder diameter and axis.");
       }
     }
     if (component.geometry==="sphere") {
       if (!shape || !finite(shape.radius_mm) || shape.radius_mm<=0) errors.push(path + ".geometry_parameters must define a positive sphere radius_mm.");
-      else if (["width","depth","height"].some(axis=>Math.abs(component.dimensions_mm[axis]-2*shape.radius_mm)>0.1)) errors.push(path + ".dimensions_mm must equal the sphere diameter on all axes.");
+      else if (component.dimensions_mm && ["width","depth","height"].some(axis=>Math.abs(component.dimensions_mm[axis]-2*shape.radius_mm)>0.1)) errors.push(path + ".dimensions_mm must equal the sphere diameter on all axes.");
     }
     if (component.geometry==="extruded_profile") {
       if (!shape || !finite(shape.depth_mm) || shape.depth_mm<=0 || !Array.isArray(shape.outline_mm) || shape.outline_mm.length<3 || shape.outline_mm.some(point=>!Array.isArray(point)||point.length!==2||!point.every(finite))) errors.push(path + ".geometry_parameters must define a 2D outline and positive extrusion depth_mm.");
       else {
         const xs=shape.outline_mm.map(point=>point[0]),ys=shape.outline_mm.map(point=>point[1]);
         const width=Math.max(...xs)-Math.min(...xs),height=Math.max(...ys)-Math.min(...ys);
-        if (Math.abs(width-component.dimensions_mm.width)>0.1 || Math.abs(height-component.dimensions_mm.height)>0.1 || Math.abs(shape.depth_mm-component.dimensions_mm.depth)>0.1) errors.push(path + ".dimensions_mm must match the extruded outline bounds and depth.");
+        if (component.dimensions_mm && (Math.abs(width-component.dimensions_mm.width)>0.1 || Math.abs(height-component.dimensions_mm.height)>0.1 || Math.abs(shape.depth_mm-component.dimensions_mm.depth)>0.1)) errors.push(path + ".dimensions_mm must match the extruded outline bounds and depth.");
       }
     }
     if (shape && hasOnlyKeys(shape,new Set(["axis","diameter_mm","radius_mm","depth_mm","outline_mm"])).length) errors.push(path + ".geometry_parameters contains unknown properties.");
