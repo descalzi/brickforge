@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { discoverPartsForRole, supportedSemanticPartRoles } from "../docs/assets/part-discovery.js";
+import { discoverPartsForRole, rankPartCandidatesWithGeometry, supportedSemanticPartRoles } from "../docs/assets/part-discovery.js";
 
 const parts = [
   { part_id: "3001", name: "Brick 2 x 4", category: "Brick", keywords: ["building"] },
@@ -42,4 +42,38 @@ test("rejects invalid discovery inputs", () => {
   assert.throws(() => discoverPartsForRole("", parts, connections), /non-empty/);
   assert.throws(() => discoverPartsForRole("wheel", {}, connections), /array/);
   assert.throws(() => discoverPartsForRole("wheel", parts, connections, { limit: 0 }), /positive integer/);
+});
+
+test("combines semantic discovery, measured dimensions and connection-profile readiness", async () => {
+  const discovery = discoverPartsForRole("brick", parts, connections);
+  const geometryResolver = {
+    async resolvePart(partId) {
+      if (partId === "3001") return { part_id: partId, dimensions_mm: [32, 11.2, 16] };
+      throw new Error("geometry source unavailable");
+    },
+  };
+  const ranked = await rankPartCandidatesWithGeometry(
+    discovery, geometryResolver, { parts }, [32, 11.2, 16],
+  );
+  assert.equal(ranked.geometry_resolved_count, 1);
+  assert.equal(ranked.nominal_placement_candidate_count, 1);
+  assert.equal(ranked.candidates[0].part_id, "3001");
+  assert.equal(ranked.candidates[0].nominal_placement_candidate, true);
+  assert.equal(ranked.candidates[0].requires_connection_validation, true);
+});
+
+test("keeps geometry fetch failures as explicit candidate diagnostics", async () => {
+  const discovery = discoverPartsForRole("wheel", parts, connections);
+  const ranked = await rankPartCandidatesWithGeometry(
+    discovery, { async resolvePart() { throw new Error("network unavailable"); } },
+    { parts }, [12, 12, 8],
+  );
+  assert.equal(ranked.geometry_resolved_count, 0);
+  assert.ok(ranked.candidates.every((candidate) => candidate.suitability_status === "geometry_unavailable"));
+});
+
+test("rejects invalid geometry ranking controls", async () => {
+  const discovery = discoverPartsForRole("brick", parts, connections);
+  const resolver = { async resolvePart() { return { dimensions_mm: [1, 2, 3] }; } };
+  await assert.rejects(() => rankPartCandidatesWithGeometry(discovery, resolver, { parts }, [1,2,3], { concurrency: 0 }), /positive integers/);
 });
