@@ -73,3 +73,22 @@ test("rejects an unsatisfied hard spatial relationship before placement", async 
   separated.relationships = [{ type: "attached_to", from: "body", to: "chassis", required: true }];
   assert.throws(() => constructDesign(separated, catalogue), /Spatial relationship attached_to is not satisfied/);
 });
+
+test("does not silently ignore functional component requirements", async () => {
+  const catalogue = JSON.parse(await readFile(new URL("../docs/data/connection-profiles/basic-bricks.json", import.meta.url), "utf8"));
+  const functional = structuredClone(carBrief);
+  functional.components[0].functional_requirements = ["rotates"];
+  assert.throws(() => constructDesign(functional, catalogue), /specialised-part planner/);
+});
+
+test("does not silently merge different semantic component colours", async () => {
+  const catalogue = JSON.parse(await readFile(new URL("../docs/data/connection-profiles/basic-bricks.json", import.meta.url), "utf8"));
+  const coloured = structuredClone(carBrief);
+  coloured.components[0].colour_code = 4;
+  coloured.components.push({
+    id: "body", name: "Body", role: "body",
+    geometry: { type: "orthogonal_prism", width_studs: 4, depth_studs: 2 },
+    origin_studs: [0, 4], height_courses: 2, colour_code: 1,
+  });
+  assert.throws(() => constructDesign(coloured, catalogue), /per-component colours/);
+});
