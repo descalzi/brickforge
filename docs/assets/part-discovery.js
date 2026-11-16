@@ -213,8 +213,9 @@ export async function rankPartCandidatesWithGeometry(discovery, geometryResolver
             + (permutation[0] > permutation[2] ? 1 : 0)
             + (permutation[1] > permutation[2] ? 1 : 0);
           const parity = inversions % 2 ? -1 : 1;
-          for (const sx of [-1, 1]) for (const sy of [-1, 1]) for (const sz of [-1, 1]) {
-            if (sx * sy * sz === parity) orientationTransforms.push({ permutation, signs: [sx,sy,sz] });
+          const signOptions = [[1,1,1],[-1,-1,1],[-1,1,-1],[1,-1,-1],[-1,1,1],[1,-1,1],[1,1,-1],[-1,-1,-1]];
+          for (const signs of signOptions) {
+            if (signs[0] * signs[1] * signs[2] === parity) orientationTransforms.push({ permutation, signs });
           }
         }
         let best = null;
