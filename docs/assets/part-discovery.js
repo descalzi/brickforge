@@ -104,3 +104,82 @@ export function discoverPartsForRole(role, partCatalogue, connectionCatalogue, o
 export function supportedSemanticPartRoles() {
   return Object.keys(ROLE_TERMS);
 }
+
+/**
+ * Resolve and rank a bounded set of semantic candidates against measured target
+ * dimensions. This is still candidate generation: a profile and size match must
+ * be followed by full mating-interface and assembly validation.
+ */
+export async function rankPartCandidatesWithGeometry(discovery, geometryResolver, partIndex, targetDimensionsMm, options = {}) {
+  if (!discovery || !Array.isArray(discovery.candidates)) {
+    throw new TypeError("discovery must contain a candidate array.");
+  }
+  if (!geometryResolver || typeof geometryResolver.resolvePart !== "function") {
+    throw new TypeError("geometryResolver must expose resolvePart().");
+  }
+  const maxCandidates = options.maxCandidates ?? 12;
+  const concurrency = options.concurrency ?? 4;
+  if (!Number.isInteger(maxCandidates) || maxCandidates < 1
+      || !Number.isInteger(concurrency) || concurrency < 1) {
+    throw new RangeError("maxCandidates and concurrency must be positive integers.");
+  }
+  const selected = discovery.candidates.slice(0, maxCandidates);
+  const results = new Array(selected.length);
+  let nextIndex = 0;
+  async function worker() {
+    while (true) {
+      const index = nextIndex++;
+      if (index >= selected.length) return;
+      const candidate = selected[index];
+      try {
+        const geometry = await geometryResolver.resolvePart(candidate.part_id, partIndex);
+        const fit = scoreGeometrySuitability(geometry, targetDimensionsMm, options);
+        const semanticScore = discovery.candidates[0]?.score
+          ? 100 * candidate.score / discovery.candidates[0].score
+          : 0;
+        const combinedScore = fit.score * 0.75 + semanticScore * 0.25;
+        results[index] = {
+          ...candidate,
+          geometry_status: "resolved",
+          geometry_dimensions_mm: geometry.dimensions_mm,
+          geometry_fit: fit,
+          combined_score: combinedScore,
+          nominal_placement_candidate: candidate.connection_profile_available
+            && fit.within_dimension_tolerance,
+          requires_connection_validation: true,
+          suitability_status: candidate.connection_profile_available && fit.within_dimension_tolerance
+            ? "dimensions_fit_profile_available_requires_interface_validation"
+            : candidate.connection_profile_available
+              ? "profile_available_but_dimensions_outside_tolerance"
+              : "geometry_ranked_only_not_yet_plannable",
+        };
+      } catch (error) {
+        results[index] = {
+          ...candidate,
+          geometry_status: "unavailable",
+          geometry_error: error instanceof Error ? error.message : String(error),
+          combined_score: 0,
+          nominal_placement_candidate: false,
+          requires_connection_validation: true,
+          suitability_status: "geometry_unavailable",
+        };
+      }
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(concurrency, selected.length) }, worker));
+  results.sort((a, b) => b.combined_score - a.combined_score
+    || a.part_id.localeCompare(b.part_id, undefined, { numeric: true }));
+  return {
+    role: discovery.role,
+    target_dimensions_mm: [...targetDimensionsMm],
+    candidate_count: selected.length,
+    geometry_resolved_count: results.filter((item) => item.geometry_status === "resolved").length,
+    nominal_placement_candidate_count: results.filter((item) => item.nominal_placement_candidate).length,
+    candidates: results,
+    limitations: [
+      "Semantic and bounding-dimension ranking narrows candidates; it does not establish surface-shape equivalence.",
+      "Nominal placement candidates still require exact connection-interface validation and global assembly planning.",
+      "A part with a connection profile may still be unsuitable in the required orientation or structural context.",
+    ],
+  };
+}
