@@ -49,7 +49,10 @@ export function validateDesignSpec(spec) {
       fail(at + ".colour_code must be a non-negative integer.");
     }
   }
-  if (spec.relationships !== undefined && !Array.isArray(spec.relationships)) {\n    fail("relationships must be an array.");\n  }\n  for (const [index, relation] of (Array.isArray(spec.relationships) ? spec.relationships : []).entries()) {
+  if (spec.relationships !== undefined && !Array.isArray(spec.relationships)) {
+    fail("relationships must be an array.");
+  }
+  for (const [index, relation] of (Array.isArray(spec.relationships) ? spec.relationships : []).entries()) {
     if (!relation || typeof relation !== "object"
         || !ids.has(relation.from) || !ids.has(relation.to) || relation.from === relation.to) {
       fail("relationships[" + index + "] must reference two different known components.");
