@@ -1,7 +1,8 @@
-import { layoutTranslationProposals } from './layout-fitting.js?v=895538efbf38';
-import { featureCompatibility, axesCompatible } from './connection-types.js?v=895538efbf38';
-import { transformVector } from './specialist-placement.js?v=895538efbf38';
-import { partBodyBounds, bodiesOverlap } from './assembly-analysis.js?v=895538efbf38';
+import {nominalBodyIntersectsBox} from './nominal-collision.js?v=9b57eca72db0';
+import { layoutTranslationProposals } from './layout-fitting.js?v=9b57eca72db0';
+import { featureCompatibility, axesCompatible } from './connection-types.js?v=9b57eca72db0';
+import { transformVector } from './specialist-placement.js?v=9b57eca72db0';
+import { partBodyBounds } from './assembly-analysis.js?v=9b57eca72db0';
 /** Propagate relation- and connector-derived translations only inside explicitly uncertain
  * component positions. Orientations and geometry come from catalogue candidates;
  * no fixture or object-category recipe participates in the search. */
@@ -19,7 +20,7 @@ export function fitAttachmentPoses(spec,sets,profiles,{maxAlternatives=48,maxAtt
   if(!tolerance||offset.some(v=>Math.abs(v*.4)>tolerance+1e-6))return false;
   const placed={...candidate,pose_offset_ldu:offset,parts:candidate.parts.map(p=>({...p,translation_ldu:p.translation_ldu.map((v,i)=>v+delta[i])}))};
   const key=signature(placed);if(seen[moving].has(key))return false;
-  if(placed.parts.some(p=>keepouts.some(k=>bodiesOverlap(partBodyBounds(p,profiles.get(p.part_id)),k))))return false;
+  if(placed.parts.some(p=>keepouts.some(k=>nominalBodyIntersectsBox(p,profiles.get(p.part_id),k))))return false;
   seen[moving].add(key);result[moving].push(placed);generated++;return true;
  };
  const bounds=c=>{const bs=c.parts.map(p=>partBodyBounds(p,profiles.get(p.part_id)));return {min:[0,1,2].map(i=>Math.min(...bs.map(b=>b.min[i]))),max:[0,1,2].map(i=>Math.max(...bs.map(b=>b.max[i])))};};

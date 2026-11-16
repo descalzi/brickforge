@@ -1,4 +1,5 @@
-import { transformVector } from './specialist-placement.js?v=895538efbf38';
+import {nominalBodiesIntersect} from './nominal-collision.js?v=9b57eca72db0';
+import { transformVector } from './specialist-placement.js?v=9b57eca72db0';
 export function partBodyBounds(part,profile){
  const vertices=profile.body_vertices_mm||[-1,1].flatMap(x=>[0,profile.body_height_ldu*.4].flatMap(y=>[-1,1].map(z=>[x*profile.footprint_studs_x*4,y,z*profile.footprint_studs_z*4])));
  const points=vertices.map(p=>transformVector(part.matrix,p).map((v,i)=>(v+part.translation_ldu[i]*.4)*(i===0?1:-1)));
@@ -22,10 +23,13 @@ export function createSupportTracker(profiles){
   return this.snapshot();
  },snapshot(){const centre=weighted.map(n=>n/(volume||1)),inside=supportHull.length>=3&&supportHull.every((p,i)=>cross(p,supportHull[(i+1)%supportHull.length],[centre[0],centre[2]])>=-1e-5);return {floor_mm:floor,contact_hull_xz_mm:supportHull.map(p=>[...p]),uniform_envelope_volume_centre_mm:centre,projection_inside_support_hull:inside,evidence:'Bounding-volume, uniform-density proxy only; hollow parts, material density, bending, clutch and physical stability are not simulated.'};}};
 }
-export function analyzeAssembly(parts,connections,profiles){
- const bounds=new Map(parts.map(p=>[p.instance_id,partBodyBounds(p,profiles.get(p.part_id))]));
+export function findBodyCollisions(parts,connections,profiles,firstOnly=false){
  const collisions=[],coupled=new Set(connections.filter(e=>e.mating_pairs?.some(p=>p.connection_type==='rim_tyre_seat')).map(e=>[e.instance_a,e.instance_b].sort().join('|')));
- for(let i=0;i<parts.length;i++)for(let j=i+1;j<parts.length;j++)if(bodiesOverlap(bounds.get(parts[i].instance_id),bounds.get(parts[j].instance_id))&&!coupled.has([parts[i].instance_id,parts[j].instance_id].sort().join('|')))collisions.push([parts[i].instance_id,parts[j].instance_id]);
+ for(let i=0;i<parts.length;i++)for(let j=i+1;j<parts.length;j++)if(!coupled.has([parts[i].instance_id,parts[j].instance_id].sort().join('|'))&&nominalBodiesIntersect(parts[i],profiles.get(parts[i].part_id),parts[j],profiles.get(parts[j].part_id))){collisions.push([parts[i].instance_id,parts[j].instance_id]);if(firstOnly)return collisions;}
+ return collisions;
+}
+export function analyzeAssembly(parts,connections,profiles){
+ const bounds=new Map(parts.map(p=>[p.instance_id,partBodyBounds(p,profiles.get(p.part_id))])),collisions=findBodyCollisions(parts,connections,profiles);
  const tracker=createSupportTracker(profiles);for(const part of parts)tracker.add(part);const support=tracker.snapshot();
  const min=[0,1,2].map(i=>Math.min(...[...bounds.values()].map(b=>b.min[i]))),max=[0,1,2].map(i=>Math.max(...[...bounds.values()].map(b=>b.max[i])));
  return {nominal_dimensions_mm:{width:max[0]-min[0],height:max[1]-min[1],depth:max[2]-min[2]},body_envelope_collisions:collisions,support};
