@@ -119,6 +119,9 @@ function componentCandidates(component,catalogue,options) {
   if ((component.required_features || []).length) {
     return {error:"Required semantic features are not yet represented in the verified connection catalogue: " + component.required_features.join(", ") + "."};
   }
+  if ((component.forbidden_features || []).length) {
+    return {error:"The current catalogue cannot prove the absence of forbidden semantic features: " + component.forbidden_features.join(", ") + "."};
+  }
   const width=component.dimensions_mm.width/STUD_PITCH_MM;
   const depth=component.dimensions_mm.depth/STUD_PITCH_MM;
   const height=component.dimensions_mm.height;
@@ -197,6 +200,7 @@ function evaluateRelationships(spec) {
 
 export function planDesign(spec,catalogue,overrides={}) {
   assertValidDesignSpec(spec);
+  if(spec.constraints.allow_intersections) throw new Error("allow_intersections=true is not supported by the physical assembly planner; interpenetrating part placements are never accepted.");
   if(!catalogue||catalogue.schema_version!==1||!Array.isArray(catalogue.profiles)) throw new TypeError("A version-1 connection profile catalogue is required.");
   const options={
     courseType:spec.constraints.course_type||"brick",
@@ -255,6 +259,9 @@ export function planDesign(spec,catalogue,overrides={}) {
   const ldraw=["0 "+(spec.name||spec.design_id),"0 Name: "+spec.design_id,"0 BrickForge deterministic design planner"];
   for(const part of parts) ldraw.push("1 "+part.colour_code+" "+part.translation_ldu.join(" ")+" "+part.matrix.join(" ")+" "+part.part_id+".dat");
   const warnings=[...new Set([...(catalogue.limitations||[]),...relationshipReport.warnings])];
+  if(spec.components.some(component=>(component.function||[]).length)) warnings.push("Component function annotations are retained as design intent but are not yet physically simulated or verified.");
+  if(spec.components.some(component=>component.priority!=="essential")) warnings.push("Component priority is descriptive in v1; all listed components are currently treated as required.");
+  if(spec.appearance?.symmetry&&spec.appearance.symmetry!=="none") warnings.push("The requested global symmetry is not yet an optimisation constraint and has not been verified.");
   warnings.push("Connection edges represent nominal stud/receiver datum alignment only; clutch force, stability and structural strength are not verified.");
   const validation={checks:[
     {id:"design_spec",status:"passed",detail:"The catalogue-independent design specification is valid."},
