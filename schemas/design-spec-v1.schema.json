@@ -200,7 +200,8 @@
             "properties": {
               "interface_type": {
                 "type": "string",
-                "minLength": 1
+                "minLength": 1,
+                "description": "Catalogue-independent functional interface intent, for example round_opening; concrete LEGO interface families are selected by the part-matching stage."
               },
               "count": {
                 "type": "integer",
