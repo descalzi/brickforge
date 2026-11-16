@@ -41,20 +41,31 @@ function mergeSpecialisedPartRecords(partCatalogue, specialisedCatalogue) {
     .map((part) => [String(part.part_id), part]));
   for (const profile of specialisedCatalogue?.profiles || []) {
     const partId = String(profile.part_id || "");
-    if (!partId || byId.has(partId)) continue;
+    if (!partId) continue;
     const sourceFile = profile.source_file;
     if (typeof sourceFile !== "string" || !sourceFile.startsWith("parts/")
         || sourceFile.includes(String.fromCharCode(92))
         || sourceFile.split("/").some((segment) => !segment || segment === "." || segment === "..")) continue;
-    byId.set(partId, {
-      part_id: partId,
-      name: profile.description || partId,
-      description: profile.description || "",
-      category: "Technic",
-      keywords: ["technic", "specialised", "connection-interface"],
-      filename: sourceFile,
-      source: "pinned-specialised-part-catalogue",
-    });
+    const existing = byId.get(partId);
+    if (existing) {
+      byId.set(partId, {
+        ...existing,
+        name: existing.name || profile.description || partId,
+        description: existing.description || profile.description || "",
+        filename: existing.filename || sourceFile,
+        source: existing.source || "ldraw-part-index",
+      });
+    } else {
+      byId.set(partId, {
+        part_id: partId,
+        name: profile.description || partId,
+        description: profile.description || "",
+        category: "Technic",
+        keywords: ["technic", "specialised", "connection-interface"],
+        filename: sourceFile,
+        source: "pinned-specialised-part-catalogue",
+      });
+    }
   }
   return [...byId.values()];
 }
