@@ -101,3 +101,44 @@ test("does not silently merge different semantic component colours", async () =>
   });
   assert.throws(() => constructDesign(coloured, catalogue), /per-component colours/);
 });
+
+test("preserves an authored through-opening in every generated course", async () => {
+  const catalogue = JSON.parse(await readFile(new URL("../docs/data/connection-profiles/basic-bricks.json", import.meta.url), "utf8"));
+  const fixtures = JSON.parse(await readFile(new URL("../docs/data/design-spec-fixtures.json", import.meta.url), "utf8"));
+  const brief = fixtures.specifications.find((item) => item.design_id === "box-with-opening");
+  const result = constructDesign(brief, catalogue);
+  assert.equal(result.design_diagnostics.negative_space_coverage[0].cells_removed, 8);
+  assert.ok(result.connections.length > 0);
+  const occupied = new Set();
+  const pitch = 20;
+  const courseHeight = 24;
+  for (const part of result.parts) {
+    const profile = result.profile_dimensions[part.part_id];
+    const rotated = Math.abs(part.matrix[0]) < 0.5;
+    const width = rotated ? profile.footprint_studs_z : profile.footprint_studs_x;
+    const depth = rotated ? profile.footprint_studs_x : profile.footprint_studs_z;
+    const x0 = Math.round(part.translation_ldu[0] / pitch + 2 - width / 2);
+    const z0 = Math.round(part.translation_ldu[2] / pitch + 2 - depth / 2);
+    const course = Math.round(-part.translation_ldu[1] / courseHeight);
+    for (let x = x0; x < x0 + width; x += 1) {
+      for (let z = z0; z < z0 + depth; z += 1) occupied.add(x + "," + z + "," + course);
+    }
+  }
+  for (let course = 0; course < 2; course += 1) {
+    for (let x = 1; x <= 2; x += 1) {
+      for (let z = 1; z <= 2; z += 1) assert.equal(occupied.has(x + "," + z + "," + course), false);
+    }
+  }
+  assert.equal(occupied.size, 24);
+});
+
+test("rejects negative space outside the positive design volume", async () => {
+  const catalogue = JSON.parse(await readFile(new URL("../docs/data/connection-profiles/basic-bricks.json", import.meta.url), "utf8"));
+  const invalid = structuredClone(carBrief);
+  invalid.negative_spaces = [{
+    id: "outside", name: "Outside void",
+    geometry: { type: "orthogonal_prism", width_studs: 2, depth_studs: 2 },
+    origin_studs: [3, 3], height_courses: 2,
+  }];
+  assert.throws(() => constructDesign(invalid, catalogue), /extends outside the positive design/);
+});
