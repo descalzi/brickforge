@@ -272,12 +272,6 @@ export function constructDesign(spec, catalogue, options = {}) {
   if (spec.components.some((component) => (component.required_interfaces || []).length)) {
     throw new Error("Required functional interfaces can be ranked against curated part profiles, but specialised-part placement and assembly are not yet implemented.");
   }
-  const componentColours = [...new Set(spec.components
-    .map((component) => component.colour_code)
-    .filter(Number.isInteger))];
-  if (componentColours.length > 1) {
-    throw new Error("Different per-component colours cannot yet be preserved across the layered semantic component occupancy.");
-  }
   const relationshipWarnings = validateRelationships(spec);
   const layerCount = Math.max(...spec.components.map((component) =>
     (component.base_course ?? 0) + component.height_courses));
@@ -352,9 +346,23 @@ export function constructDesign(spec, catalogue, options = {}) {
   if (unsupportedRoles.length) {
     throw new Error("Required semantic roles have no component definition: " + unsupportedRoles.join(", "));
   }
-  const colourCodes = options.colourCodes
+  const preferredColours = options.colourCodes
     || spec.preferences?.colours
-    || (componentColours.length ? componentColours : [4, 1]);
+    || [options.defaultColourCode ?? 4, 1];
+  if (!Array.isArray(preferredColours) || preferredColours.length === 0
+      || !preferredColours.every((code) => Number.isInteger(code) && code >= 0)) {
+    throw new RangeError("The preferred colour palette must contain non-negative LDraw colour codes.");
+  }
+  const courseColourCodes = layerCells.map((cells, course) => {
+    const explicitColours = [...new Set([...cells.values()]
+      .map((component) => component.colour_code)
+      .filter(Number.isInteger))];
+    if (explicitColours.length > 1) {
+      throw new Error("Course " + (course + 1)
+        + " contains multiple explicit component colours; the current course planner supports one colour per course.");
+    }
+    return explicitColours[0] ?? preferredColours[course % preferredColours.length];
+  });
   const optimisation = spec.preferences?.optimisation ?? "balanced";
   const optimizationProfile = {
     "part-count": "economy",
@@ -366,7 +374,7 @@ export function constructDesign(spec, catalogue, options = {}) {
     throw new Error("The fidelity optimisation objective is not yet implemented; choose balanced, part-count, simplicity or interlock.");
   }
   const result = buildLayeredFootprintBlock(layerFootprints, catalogue, {
-    colourCodes: colourCodes.length ? colourCodes : [options.defaultColourCode ?? 4],
+    colourCodes: courseColourCodes,
     maxParts: spec.preferences?.max_parts ?? options.maxParts ?? 200,
     maxAlternatives: options.maxAlternatives ?? 3,
     optimizationProfile,
@@ -375,6 +383,7 @@ export function constructDesign(spec, catalogue, options = {}) {
   const componentCoverage = spec.components.map((component) => ({
     component_id: component.id,
     role: component.role,
+    colour_code: component.colour_code ?? null,
     priority: component.priority ?? "essential",
     footprint_cells: footprintFor(component).length,
     base_course: component.base_course ?? 0,
@@ -385,6 +394,7 @@ export function constructDesign(spec, catalogue, options = {}) {
     strategy: "variable-course-footprint",
     fidelity_scope: "stud-grid-occupancy-and-course-height",
     component_coverage: componentCoverage,
+    course_colour_codes: courseColourCodes,
     negative_space_coverage: negativeSpaceCoverage,
     relationship_warnings: relationshipWarnings,
     relationship_validation: "semantic component spatial bounds only; direct physical subassembly attachment is not yet mapped",
@@ -397,6 +407,7 @@ export function constructDesign(spec, catalogue, options = {}) {
       "Only the profiled rectangular brick/plate course families selected by the construction strategy are eligible.",
       "Nominal stud/receiver alignment and body-envelope checks are not proof of clutch force, physical strength, stability or legal building technique.",
       "Curved/sloped geometry, specialised part placement, Technic mechanisms, non-rectangular negative-space boundaries and physical assembly accessibility are not yet solved.",
+      "The current layered course planner supports one explicit colour per course; distinct colours within the same course are rejected rather than merged.",
     ],
   };
   const alternatives = (result.alternatives || []).map((alternative) => ({
