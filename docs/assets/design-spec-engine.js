@@ -122,7 +122,7 @@ export function validateDesignSpec(spec) {
         fail("preferences.max_parts must be a positive integer.");
       }
       if (preferences.optimisation !== undefined
-          && !["fidelity", "part-count", "balanced"].includes(preferences.optimisation)) {
+          && !["fidelity", "part-count", "balanced", "simplicity", "interlock"].includes(preferences.optimisation)) {
         fail("preferences.optimisation is unsupported.");
       }
     }
@@ -219,7 +219,7 @@ export function constructDesign(spec, catalogue, options = {}) {
     .map((component) => component.colour_code)
     .filter(Number.isInteger))];
   if (componentColours.length > 1) {
-    throw new Error("Different per-component colours cannot yet be preserved when semantic components are fused into one shared footprint.");
+    throw new Error("Different per-component colours cannot yet be preserved across the layered semantic component occupancy.");
   }
   const relationshipWarnings = validateRelationships(spec);
   const layerCount = Math.max(...spec.components.map((component) =>
