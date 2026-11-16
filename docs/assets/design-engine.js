@@ -1,5 +1,6 @@
 import { assertValidDesignSpec } from "./design-spec.js";
 import { discoverPartCandidates, validatePartCapabilityCatalogue } from "./part-catalogue.js";
+import { translateComponentRequirements } from "./design-translation.js";
 
 const LDU_TO_MM = 0.4;
 const STUD_PITCH_MM = 8;
@@ -22,11 +23,9 @@ function candidateProfiles(catalogue, component, courseType, candidateIds, candi
     && profile.features?.some(feature => feature.kind === "stud")
     && profile.features?.some(feature => feature.kind === "stud_receiver")
   ).map(profile => {
-    const roleText = (component.role + " " + (component.label || "") + " " + (component.function || []).join(" ")).toLowerCase();
     const family = profile.description.toLowerCase().includes("plate") ? "plate" : "brick";
-    const preferred = (component.preferred_families || []).some(value => roleText.includes(value.toLowerCase()) || family === value.toLowerCase());
-    return { profile, family, preferred, semanticScore:candidateScores.get(profile.part_id)||0, area: profile.footprint_studs_x * profile.footprint_studs_z };
-  }).sort((a,b) => Number(b.preferred)-Number(a.preferred) || b.semanticScore-a.semanticScore || b.area-a.area || compare(a.profile.part_id,b.profile.part_id));
+    return { profile, family, semanticScore:candidateScores.get(profile.part_id)||0, area: profile.footprint_studs_x * profile.footprint_studs_z };
+  }).sort((a,b) => b.semanticScore-a.semanticScore || b.area-a.area || compare(a.profile.part_id,b.profile.part_id));
 }
 
 function enumerateTilings(width, depth, candidates, maxResults, maxNodes) {
@@ -119,7 +118,7 @@ function assemble(parts, profileMap, requireConnected) {
   return {connections,connected};
 }
 
-function componentCandidates(component,catalogue,options,partCatalogue) {
+function componentCandidates(component,catalogue,options,partCatalogue,designTranslation) {
   const supportedRoles = new Set(["structural","chassis","body","wall","floor","base","platform","support","beam","block","solid","roof-support"]);
   if (!supportedRoles.has(component.role.toLowerCase())) {
     return {error:"The current verified catalogue cannot yet build the semantic role \"" + component.role + "\". It contains standard brick/plate geometry, not verified wheel, window, hinge, clip or other specialised capabilities."};
@@ -135,7 +134,7 @@ function componentCandidates(component,catalogue,options,partCatalogue) {
     required_capabilities:component.required_features||[],
     dimensions_mm:component.dimensions_mm
   },partCatalogue);
-  if(semanticSearch.status==="no_candidates") return {error:"No source-backed catalogue candidates satisfy semantic role "+component.role+(component.required_features?.length?" and required features "+component.required_features.join(", "):"")+"."};
+  if(semanticSearch.status==="no_candidates") return {error:"No source-backed part candidates satisfy semantic role "+component.role+(component.required_features?.length?" and required design features "+component.required_features.join(", "):"")+"."};
   const candidateIds=new Set(semanticSearch.candidates.map(candidate=>candidate.part_id));
   const candidateScores=new Map(semanticSearch.candidates.map(candidate=>[candidate.part_id,candidate.score]));
   const width=component.dimensions_mm.width/STUD_PITCH_MM;
@@ -221,6 +220,8 @@ export function planDesign(spec,catalogue,overrides={}) {
   const partCatalogue=overrides.partCatalogue;
   const partCatalogueValidation=validatePartCapabilityCatalogue(partCatalogue);
   if(!partCatalogueValidation.valid) throw new TypeError("A valid version-1 semantic part catalogue is required: "+partCatalogueValidation.errors.join(" "));
+  const designTranslation=overrides.designTranslation;
+  if(!designTranslation||designTranslation.schema_version!==1) throw new TypeError("A version-1 design-to-catalogue translation map is required.");
   const options={
     courseType:spec.constraints.course_type||"brick",
     maxParts:spec.constraints.max_parts||500,
@@ -243,7 +244,7 @@ export function planDesign(spec,catalogue,overrides={}) {
   const profileMap=new Map(catalogue.profiles.map(profile=>[profile.part_id,profile]));
   const componentReports=[],candidateSets=[];
   for(const component of spec.components) {
-    const result=componentCandidates(component,catalogue,options,partCatalogue);
+    const result=componentCandidates(component,catalogue,options,partCatalogue,designTranslation);
     if(result.error) return {status:"blocked",design_id:spec.design_id,failures:[result.error],warnings:[],parts:[],connections:[],component_reports:[{component_id:component.id,status:"blocked",reason:result.error}]};
     candidateSets.push(result.alternatives);
     componentReports.push({component_id:component.id,status:"planned",semantic_candidate_count:result.semantic_candidates.length,top_part_candidates:result.semantic_candidates.slice(0,5).map(candidate=>({part_id:candidate.part_id,description:candidate.description,score:candidate.score,dimension_error_mm:candidate.dimension_error_mm})),candidate_layouts:result.alternatives.length,search_nodes:result.search_nodes,combinations_examined:result.combinations});
