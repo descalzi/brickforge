@@ -138,7 +138,9 @@ test("ranks real part candidates directly from a semantic design component", asy
   assert.deepEqual(result.target_dimensions_mm, [32, 9.6, 8]);
   assert.equal(result.discovery.candidates[0].source, "pinned-specialised-part-catalogue");
   assert.equal(result.ranking.candidates[0].specialised_interface_candidate, true);
-  assert.equal(result.assembly_status, "candidate_ranking_only_not_placed");
+  assert.equal(result.assembly_status, "component_candidates_ranked_and_locally_aligned_not_assembled");
+  assert.equal(result.ranking.candidates[0].component_placement_candidate, true);
+  assert.equal(result.ranking.candidates[0].part_local_transform.coordinate_frame, "component-centred-millimetres");
 });
 
 test("chooses a dimension-equivalent orientation that aligns a required interface axis", async () => {
