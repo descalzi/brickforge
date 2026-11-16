@@ -1,13 +1,13 @@
-import { evaluateDesignRelationships as evaluateRelationships } from "./design-relations.js?v=72fddf3032b8";
-import { featureCompatibility, axesCompatible } from "./connection-types.js?v=72fddf3032b8";
-import { fitAttachmentPoses } from "./attachment-fitting.js?v=72fddf3032b8";
-import { assertValidDesignSpec } from "./design-spec.js?v=72fddf3032b8";
-import { discoverPartCandidates, validatePartCapabilityCatalogue } from "./part-catalogue.js?v=72fddf3032b8";
-import { translateComponentRequirements } from "./design-translation.js?v=72fddf3032b8";
-import { planTechnicBeamJoint } from "./technic-planner.js?v=72fddf3032b8";
-import { specialistComponentCandidates } from "./specialist-placement.js?v=72fddf3032b8";
-import { partBodyBounds, analyzeAssembly } from "./assembly-analysis.js?v=72fddf3032b8";
-import { createAssemblyInstructions } from "./assembly-instructions.js?v=72fddf3032b8";
+import { evaluateDesignRelationships as evaluateRelationships } from "./design-relations.js?v=895538efbf38";
+import { featureCompatibility, axesCompatible } from "./connection-types.js?v=895538efbf38";
+import { fitAttachmentPoses } from "./attachment-fitting.js?v=895538efbf38";
+import { assertValidDesignSpec } from "./design-spec.js?v=895538efbf38";
+import { discoverPartCandidates, validatePartCapabilityCatalogue } from "./part-catalogue.js?v=895538efbf38";
+import { translateComponentRequirements } from "./design-translation.js?v=895538efbf38";
+import { planTechnicBeamJoint } from "./technic-planner.js?v=895538efbf38";
+import { specialistComponentCandidates } from "./specialist-placement.js?v=895538efbf38";
+import { partBodyBounds, analyzeAssembly } from "./assembly-analysis.js?v=895538efbf38";
+import { createAssemblyInstructions } from "./assembly-instructions.js?v=895538efbf38";
 
 const LDU_TO_MM = 0.4;
 const STUD_PITCH_MM = 8;
@@ -372,6 +372,7 @@ export function planDesign(spec,catalogue,overrides={}) {
     {id:'semantic_face_orientation',status:'passed',detail:'Declared up/forward faces match source-profile directions after rigid placement. Unsupported semantic frames are rejected.'},
     {id:'placed_body_envelopes',status:'passed',detail:'No overlaps outside explicitly matched rim/tyre seats; connector protrusions and cavity details are excluded.'},
     {id:'support_projection_proxy',status:analysis.support.projection_inside_support_hull?'passed':'not_assessed',detail:analysis.support.evidence},
+    {id:'intermediate_support_guidance',status:instructions.steps.some(s=>s.support_guidance?.status==='hold_recommended')?'warning':'passed',detail:instructions.steps.filter(s=>s.support_guidance?.status==='hold_recommended').length+' stage(s) flagged for hand support by the nominal envelope/volume projection proxy. This is guidance, not physical stability certification.'},
     {id:'nominal_insertion_approaches',status:instructions.steps.every(s=>s.nominal_approach_clear)?'passed':'not_assessed',detail:'Straight connector-axis approaches checked against prior nominal body envelopes. Studs, cavities and deformation are excluded; this is not physical insertion certification.'},
     {id:"negative_space_body_clearance",status:"passed",detail:options.negativeSpaces.length+" rectangular keepouts preserved by exact nominal body tiling; stud protrusions and mesh-level clearance are not assessed."},
     {id:"design_spec",status:"passed",detail:"The catalogue-independent design specification is valid."},

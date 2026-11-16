@@ -136,3 +136,19 @@ Page text and arrows remain vectors; diagrams are embedded RGB images at twice
 their point dimensions. Browser-native deflate compresses image, text and font
 streams. The byte writer computes offsets from actual bytes, not decoded text.
 Exports yield between step pages and discard results if the active plan changes.
+
+### Stage support guidance
+
+Canonical steps carry a support snapshot after each addition. An incremental
+tracker accumulates uniform-envelope volume and centre, updates the lowest
+contact band and its convex hull, and flags projections outside that hull or
+line-only contacts. The Studio step description and PDF recommend hand support
+for flagged stages. The complete model can pass the final proxy while earlier
+stages need holding. The tracker does not repeat all-pairs collision analysis
+for every step. Hollow geometry, density, clutch, loads and real physical
+stability remain unverified; an unflagged stage is not a stability certificate.
+
+Sequence roots prefer a broad, shallow part with a supported nominal projection
+over a loose rolling element. This generic envelope heuristic gives a better
+starting foundation; subsequent additions still follow real graph edges and
+nominal clear approaches. It is not a physical sequence optimisation proof.
