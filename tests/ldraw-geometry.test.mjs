@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { createLDrawGeometryResolver, scoreGeometrySuitability } from "../docs/assets/ldraw-geometry.js";
+import { createLDrawGeometryResolver, createLDrawGeometryResolverFromSpecialisedCatalogue, scoreGeometrySuitability } from "../docs/assets/ldraw-geometry.js";
 
 const sha = "c70360d1c588be894997b2168c61909bc8058c4d";
 const catalogue = { source: { geometry_base_url: "https://raw.githubusercontent.com/kulits/ldraw-parts/" + sha + "/ldraw/" } };
@@ -76,4 +76,14 @@ test("rejects unsafe root catalogue paths before any fetch", async () => {
   const unsafeIndex = { parts: [{ part_id: "testpart", filename: "parts/../../outside.dat" }] };
   await assert.rejects(() => resolver.resolvePart("testpart", unsafeIndex), /safe top-level path/);
   assert.equal(fetchImpl.requested.length, 0);
+});
+
+test("creates geometry resolvers from the exact pinned specialised catalogue source", async () => {
+  const specialised = JSON.parse(await readFile(new URL("../docs/data/specialised-technic-part-catalogue.json", import.meta.url), "utf8"));
+  const resolver = createLDrawGeometryResolverFromSpecialisedCatalogue(specialised, { fetchImpl: fakeFetch({}) });
+  assert.equal(resolver.source_commit, specialised.source_library.commit);
+  assert.equal(resolver.source_base_url, "https://raw.githubusercontent.com/kulits/ldraw-parts/" + specialised.source_library.commit + "/ldraw/");
+  assert.throws(() => createLDrawGeometryResolverFromSpecialisedCatalogue({
+    source_library: { repository: "https://github.com/kulits/ldraw-parts", commit: "bad", base_path: "ldraw/parts/" },
+  }), /pinned/);
 });
