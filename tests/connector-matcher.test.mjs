@@ -1,10 +1,11 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
-import { matchAssemblyConnectors, matchConnectorInterfaces, nominalInterfacesForInstances } from "../docs/assets/connector-matcher.js";
+import { interfacesForPartInstances, matchAssemblyConnectors, matchConnectorInterfaces, nominalInterfacesForInstances } from "../docs/assets/connector-matcher.js";
 
 const catalogue=JSON.parse(await readFile(new URL("../docs/data/connector-compatibility-v1.json",import.meta.url),"utf8"));
 const rules=catalogue.rules;
+const partCatalogue=JSON.parse(await readFile(new URL("../docs/data/part-capabilities-v1.json",import.meta.url),"utf8"));
 const pin={interface_id:"pin-end",interface_type:"technic_friction_pin",position_mm:[0,0,0],axis_vector:[1,0,0],nominal_diameter_mm:4.9};
 const hole={interface_id:"beam-hole",interface_type:"technic_pin_hole",position_mm:[0,0,0],axis_vector:[0,0,1],nominal_diameter_mm:4.8};
 
@@ -61,4 +62,15 @@ test("assembly connector matcher aligns a nominal pin candidate to a source-deri
  assert.equal(matches[0].instance_male,"pin");
  assert.equal(matches[0].instance_female,"beam");
  assert.equal(matches[0].physical_connection_verified,false);
+});
+
+test("actual LDraw Technic beam and friction-pin datums produce a nominal connector match",()=>{
+ const interfaces=interfacesForPartInstances(partCatalogue,[{instance_id:"beam",part_id:"3701"},{instance_id:"pin",part_id:"2780"}]);
+ const rotation=[0,0,1,0,1,0,-1,0,0];
+ const matches=matchAssemblyConnectors(interfaces,rules,{beam:{translation_mm:[0,0,0]},pin:{matrix:rotation,translation_mm:[0,4,0]}});
+ assert.equal(matches.length,1);
+ assert.equal(matches[0].instance_male,"pin");
+ assert.equal(matches[0].instance_female,"beam");
+ assert.equal(matches[0].physical_connection_verified,false);
+ assert.ok(Math.abs(matches[0].diameter_delta_mm-0.1)<1e-9);
 });
