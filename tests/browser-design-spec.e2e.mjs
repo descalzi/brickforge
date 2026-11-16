@@ -26,8 +26,9 @@ try {
     const [
       { constructDesign, validateDesignSpec },
       { decodeCataloguePayload },
-      { discoverPartsForRole },
+      { discoverPartsForRole, rankDesignComponentCandidates },
       { matchRequiredInterfaces },
+      { createLDrawGeometryResolverFromSpecialisedCatalogue },
       catalogueResponse,
       fixturesResponse,
       indexResponse,
@@ -37,6 +38,7 @@ try {
       import("./assets/catalogue-utils.js"),
       import("./assets/part-discovery.js"),
       import("./assets/interface-matcher.js"),
+      import("./assets/ldraw-geometry.js"),
       fetch("./data/connection-profiles/basic-bricks.json"),
       fetch("./data/design-spec-fixtures.json"),
       fetch("./data/ldraw/parts-index.json.gz"),
@@ -56,6 +58,32 @@ try {
       candidate.specialised_interfaces.some(item => item.interface_type === "technic_pin_hole"));
     const technicInterfaceMatches = technicHoleCandidates.filter(candidate =>
       matchRequiredInterfaces([{ interface_type: "round_opening", diameter_mm: 4.8, axis_vector: [0,0,1], count: 1 }], candidate.specialised_interfaces).satisfied);
+    const beamCatalogue = {
+      ...specialisedCatalogue,
+      profiles: specialisedCatalogue.profiles.filter(profile => profile.part_id === "3701"),
+    };
+    const geometryResolver = createLDrawGeometryResolverFromSpecialisedCatalogue(beamCatalogue);
+    const beamComponent = {
+      id: "technic-beam",
+      role: "beam",
+      geometry: { type: "orthogonal_prism", width_studs: 4, depth_studs: 1 },
+      height_courses: 1,
+      required_interfaces: [{
+        interface_type: "round_opening",
+        diameter_mm: 4.8,
+        axis_vector: [0,0,1],
+        count: 3,
+      }],
+    };
+    const beamRanking = await rankDesignComponentCandidates(
+      beamComponent,
+      { ...partIndex, parts: [] },
+      catalogue,
+      beamCatalogue,
+      geometryResolver,
+      { maxCandidates: 1 },
+    );
+    const selectedBeam = beamRanking.ranking.candidates[0];
     const brief = fixtures.specifications.find(item => item.design_id === "small-house");
     const validation = validateDesignSpec(brief);
     const assembly = constructDesign(brief, catalogue);
@@ -90,6 +118,10 @@ try {
       technicSpecialisedProfileCount: technicDiscovery.candidates.filter(candidate => candidate.specialised_interface_profile_available).length,
       technicHoleCandidateCount: technicHoleCandidates.length,
       technicInterfaceMatchCount: technicInterfaceMatches.length,
+      technicGeometryResolvedCount: beamRanking.ranking.geometry_resolved_count,
+      technicBeamPartId: selectedBeam?.part_id,
+      technicBeamInterfaceCandidate: selectedBeam?.specialised_interface_candidate,
+      technicBeamPhysicalConnectionVerified: selectedBeam?.specialised_interface_match?.physical_connection_verified,
       parts: assembly.parts.length,
       edges: assembly.connections.length,
       matingPairs: assembly.total_mating_pairs,
@@ -111,6 +143,10 @@ try {
   assert.ok(result.technicSpecialisedProfileCount > 0);
   assert.ok(result.technicHoleCandidateCount > 0);
   assert.ok(result.technicInterfaceMatchCount > 0);
+  assert.equal(result.technicGeometryResolvedCount, 1);
+  assert.equal(result.technicBeamPartId, "3701");
+  assert.equal(result.technicBeamInterfaceCandidate, true);
+  assert.equal(result.technicBeamPhysicalConnectionVerified, false);
   assert.ok(result.parts > 0);
   assert.ok(result.edges > 0);
   assert.ok(result.matingPairs > 0);
