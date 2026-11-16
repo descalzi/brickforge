@@ -114,6 +114,7 @@ export function discoverPartsForRole(role, partCatalogue, connectionCatalogue, o
     }
     if (!matches.length) continue;
     const hasConnectionProfile = profileIds.has(String(part.part_id));
+    if (specialisedProfile) score += 80;
     ranked.push({
       part_id: part.part_id,
       name: part.name || part.description || specialisedProfile?.description || part.part_id,
@@ -141,6 +142,7 @@ export function discoverPartsForRole(role, partCatalogue, connectionCatalogue, o
     query_terms: [...terms],
     candidate_count: ranked.length,
     profiled_candidate_count: ranked.filter((candidate) => candidate.connection_profile_available || candidate.specialised_interface_profile_available).length,
+    specialised_interface_candidate_count: ranked.filter((candidate) => candidate.specialised_interface_profile_available).length,
     planner_ready_count: 0,
     candidates: ranked.slice(0, limit),
     limitations: [
