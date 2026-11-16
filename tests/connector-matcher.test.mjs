@@ -1,0 +1,43 @@
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+import test from "node:test";
+import { matchConnectorInterfaces } from "../docs/assets/connector-matcher.js";
+
+const catalogue=JSON.parse(await readFile(new URL("../docs/data/connector-compatibility-v1.json",import.meta.url),"utf8"));
+const rules=catalogue.rules;
+const pin={interface_id:"pin-end",interface_type:"technic_friction_pin",position_mm:[0,0,0],axis_vector:[1,0,0],nominal_diameter_mm:4.9};
+const hole={interface_id:"beam-hole",interface_type:"technic_pin_hole",position_mm:[0,0,0],axis_vector:[0,0,1],nominal_diameter_mm:4.8};
+
+test("nominal pin and hole interfaces match after a valid placement rotation",()=>{
+ const rotation=[0,0,1,0,1,0,-1,0,0];
+ const result=matchConnectorInterfaces({interface:pin,placement:{matrix:rotation,translation_mm:[10,0,0]}},{interface:hole,placement:{translation_mm:[10,0,0]}},rules);
+ assert.equal(result.compatible,true);
+ assert.equal(result.status,"nominal_geometry_compatible");
+ assert.equal(result.diameter_delta_mm,0.1);
+ assert.equal(result.physical_connection_verified,false);
+});
+
+test("connector matcher rejects non-coaxial interfaces",()=>{
+ const result=matchConnectorInterfaces({interface:pin},{interface:{...hole,axis_vector:[0,1,0]}},rules);
+ assert.equal(result.compatible,false);
+ assert.equal(result.status,"interface_axis_mismatch");
+});
+
+test("connector matcher rejects a pin that is too large for the nominal hole",()=>{
+ const result=matchConnectorInterfaces({interface:{...pin,nominal_diameter_mm:5.5}},{interface:hole},rules);
+ assert.equal(result.compatible,false);
+ assert.equal(result.status,"interface_diameter_mismatch");
+});
+
+test("connector matcher refuses to guess missing diameter or unknown connector families",()=>{
+ const missing=matchConnectorInterfaces({interface:{...pin,nominal_diameter_mm:null}},{interface:hole},rules);
+ assert.equal(missing.status,"interface_diameter_unknown");
+ const unknown=matchConnectorInterfaces({interface:{...pin,interface_type:"ball" }},{interface:hole},rules);
+ assert.equal(unknown.status,"incompatible_interface_types");
+});
+
+test("invalid connector transforms are reported rather than treated as a match",()=>{
+ const result=matchConnectorInterfaces({interface:pin,placement:{matrix:[1,2],translation_mm:[0,0,0]}},{interface:hole},rules);
+ assert.equal(result.compatible,false);
+ assert.equal(result.status,"invalid_interface_geometry");
+});
