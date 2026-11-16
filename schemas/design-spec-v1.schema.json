@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://descalzi.github.io/brickforge/schemas/design-spec-v1.schema.json",
+  "title": "BrickForge design specification v1",
+  "description": "A catalogue-independent description of the intended object. It deliberately contains no LEGO part IDs, placements or construction choices.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "design_id", "units", "components", "relationships", "constraints"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "design_id": { "type": "string", "minLength": 1 },
+    "name": { "type": "string", "minLength": 1 },
+    "units": { "const": "mm" },
+    "components": {
+      "type": "array", "minItems": 1,
+      "items": { "$ref": "#/$defs/component" }
+    },
+    "relationships": {
+      "type": "array",
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["type", "from", "to"],
+        "properties": {
+          "id": { "type": "string" },
+          "type": { "enum": ["above", "below", "left_of", "right_of", "in_front_of", "behind", "attached_to", "aligned_with", "symmetric_to"] },
+          "from": { "type": "string" }, "to": { "type": "string" },
+          "tolerance_mm": { "type": "number", "minimum": 0 },
+          "required": { "type": "boolean", "default": true }
+        }
+      }
+    },
+    "constraints": {
+      "type": "object", "additionalProperties": false,
+      "required": ["require_connected", "allow_intersections"],
+      "properties": {
+        "require_connected": { "type": "boolean" },
+        "allow_intersections": { "type": "boolean" },
+        "max_parts": { "type": "integer", "minimum": 1, "maximum": 10000 },
+        "max_search_nodes": { "type": "integer", "minimum": 100, "maximum": 1000000 },
+        "course_type": { "enum": ["brick", "plate"] }
+      }
+    },
+    "appearance": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "preferred_colours": { "type": "array", "items": { "type": "integer", "minimum": 0 } },
+        "symmetry": { "enum": ["none", "bilateral", "radial"] }
+      }
+    },
+    "assumptions": { "type": "array", "items": { "type": "string" } }
+  },
+  "$defs": {
+    "component": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "role", "geometry", "dimensions_mm", "position_mm", "priority"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "label": { "type": "string" },
+        "role": { "type": "string", "minLength": 1 },
+        "function": { "type": "array", "items": { "type": "string" } },
+        "geometry": { "enum": ["rectangular_prism"] },
+        "dimensions_mm": {
+          "type": "object", "additionalProperties": false,
+          "required": ["width", "depth", "height"],
+          "properties": {
+            "width": { "type": "number", "exclusiveMinimum": 0 },
+            "depth": { "type": "number", "exclusiveMinimum": 0 },
+            "height": { "type": "number", "exclusiveMinimum": 0 }
+          }
+        },
+        "position_mm": {
+          "type": "object", "additionalProperties": false,
+          "required": ["x", "y", "z"],
+          "properties": {
+            "x": { "type": "number" }, "y": { "type": "number" }, "z": { "type": "number" }
+          }
+        },
+        "priority": { "enum": ["essential", "preferred", "optional"] },
+        "required_features": { "type": "array", "items": { "type": "string" } },
+        "forbidden_features": { "type": "array", "items": { "type": "string" } },
+        "preferred_families": { "type": "array", "items": { "type": "string" } },
+        "colour": { "type": "integer", "minimum": 0 },
+        "confidence": { "enum": ["explicit", "inferred", "uncertain"] }
+      }
+    }
+  }
+}
