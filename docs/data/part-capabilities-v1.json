@@ -74,8 +74,12 @@
       "capabilities": [
         "technic_friction_pin"
       ],
-      "dimensions_mm": null,
-      "candidate_status": "reference_only",
+      "dimensions_mm": {
+        "width": 16,
+        "depth": 6.40042464,
+        "height": 6.2408
+      },
+      "candidate_status": "geometry_measured",
       "interfaces": [
         {
           "interface_id": "friction-pin-shaft",
@@ -101,6 +105,11 @@
         "license": "Licensed under CC BY 2.0 and CC BY 4.0; see CAreadme.txt",
         "author": "Guy Vivan [guyvivan]",
         "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
+      },
+      "geometry_measurement": {
+        "source_library_commit": "c70360d1c588be894997b2168c61909bc8058c4d",
+        "triangle_count": 1504,
+        "method": "recursive_ldraw_surface_bounds"
       }
     },
     {
@@ -145,7 +154,7 @@
       "dimensions_mm": {
         "width": 32,
         "depth": 16,
-        "height": 9.600000000000001
+        "height": 11.2
       },
       "candidate_status": "nominal_connection_profile",
       "interfaces": [
@@ -412,6 +421,11 @@
         "license": "Licensed under CC BY 4.0 : see CAreadme.txt",
         "author": "James Jessiman",
         "library_commit": null
+      },
+      "geometry_measurement": {
+        "source_library_commit": "c70360d1c588be894997b2168c61909bc8058c4d",
+        "triangle_count": 700,
+        "method": "recursive_ldraw_surface_bounds"
       }
     },
     {
@@ -5147,10 +5161,10 @@
       ],
       "dimensions_mm": {
         "width": 32,
-        "height": 9.6,
-        "depth": 8
+        "depth": 8,
+        "height": 11.2
       },
-      "candidate_status": "nominal_geometry_available",
+      "candidate_status": "geometry_measured",
       "interfaces": [
         {
           "interface_id": "pin-hole-1",
@@ -5210,6 +5224,11 @@
         "license": "CC BY 4.0",
         "author": null,
         "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
+      },
+      "geometry_measurement": {
+        "source_library_commit": "c70360d1c588be894997b2168c61909bc8058c4d",
+        "triangle_count": 1386,
+        "method": "recursive_ldraw_surface_bounds"
       }
     },
     {
@@ -5530,8 +5549,12 @@
         "wheel",
         "rotating_element"
       ],
-      "dimensions_mm": null,
-      "candidate_status": "reference_only",
+      "dimensions_mm": {
+        "width": 24,
+        "depth": 43,
+        "height": 43
+      },
+      "candidate_status": "geometry_measured",
       "interfaces": [],
       "source": {
         "file": "parts/3739.dat",
@@ -5539,6 +5562,11 @@
         "license": "Licensed under CC BY 4.0; see CAreadme.txt",
         "author": "Chris Moseley",
         "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
+      },
+      "geometry_measurement": {
+        "source_library_commit": "c70360d1c588be894997b2168c61909bc8058c4d",
+        "triangle_count": 2940,
+        "method": "recursive_ldraw_surface_bounds"
       }
     },
     {
@@ -6663,8 +6691,12 @@
       "capabilities": [
         "airfoil_surface"
       ],
-      "dimensions_mm": null,
-      "candidate_status": "reference_only",
+      "dimensions_mm": {
+        "width": 31.484,
+        "depth": 64,
+        "height": 4.8
+      },
+      "candidate_status": "geometry_measured",
       "interfaces": [],
       "source": {
         "file": "parts/3934.dat",
@@ -6672,6 +6704,11 @@
         "license": "Licensed under CC BY 4.0; see CAreadme.txt",
         "author": "James Jessiman",
         "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
+      },
+      "geometry_measurement": {
+        "source_library_commit": "c70360d1c588be894997b2168c61909bc8058c4d",
+        "triangle_count": 1966,
+        "method": "recursive_ldraw_surface_bounds"
       }
     },
     {
@@ -6726,8 +6763,12 @@
         "transparent_insert_mount",
         "curved_top"
       ],
-      "dimensions_mm": null,
-      "candidate_status": "reference_only",
+      "dimensions_mm": {
+        "width": 32,
+        "depth": 8,
+        "height": 28.8
+      },
+      "candidate_status": "geometry_measured",
       "interfaces": [],
       "source": {
         "file": "parts/5260.dat",
@@ -6735,6 +6776,11 @@
         "license": "Licensed under CC BY 4.0; see CAreadme.txt",
         "author": "Philippe Hurbain [Philo]",
         "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
+      },
+      "geometry_measurement": {
+        "source_library_commit": "c70360d1c588be894997b2168c61909bc8058c4d",
+        "triangle_count": 772,
+        "method": "recursive_ldraw_surface_bounds"
       }
     },
     {
