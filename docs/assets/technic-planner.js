@@ -64,12 +64,20 @@ export function planTechnicBeamJoint(spec,partCatalogue,designTranslation,connec
  const beamRotation=rotationFromTo(centreHole.axis_vector,pinAxis);
  if(!beamRotation)return {status:"blocked",design_id:spec.design_id,failures:["Could not align beam hole axis with the selected pin."],warnings:[],parts:[],connections:[]};
  const pinRotation=IDENTITY;
- const targetA=[0,0,0];
- const pinPlacementTranslation=subtract(targetA,transform(pinRotation,pinA.position_mm));
- const targetB=add(targetA,transform(pinRotation,subtract(pinB.position_mm,pinA.position_mm)));
- const beamOffset=transform(beamRotation,centreHole.position_mm);
- const beamATranslation=subtract(targetA,beamOffset);
- const beamBTranslation=subtract(targetB,beamOffset);
+ const localBounds=beamPart.geometry_measurement?.bounds_mm||[
+  [-beamPart.dimensions_mm.width/2,-beamPart.dimensions_mm.height/2,-beamPart.dimensions_mm.depth/2],
+  [beamPart.dimensions_mm.width/2,beamPart.dimensions_mm.height/2,beamPart.dimensions_mm.depth/2]
+ ];
+ const corners=[];
+ for(const x of [localBounds[0][0],localBounds[1][0]])for(const y of [localBounds[0][1],localBounds[1][1]])for(const z of [localBounds[0][2],localBounds[1][2]])corners.push(transform(beamRotation,[x,y,z]));
+ const rotatedMin=[0,1,2].map(axis=>Math.min(...corners.map(point=>point[axis])));
+ const rotatedMax=[0,1,2].map(axis=>Math.max(...corners.map(point=>point[axis])));
+ const realisedDimensions={width:rotatedMax[0]-rotatedMin[0],depth:rotatedMax[2]-rotatedMin[2],height:rotatedMax[1]-rotatedMin[1]};
+ if(["width","depth","height"].some(axis=>Math.abs(realisedDimensions[axis]-beams[0].dimensions_mm[axis])>0.2)||["width","depth","height"].some(axis=>Math.abs(realisedDimensions[axis]-beams[1].dimensions_mm[axis])>0.2))return {status:"blocked",design_id:spec.design_id,failures:["The selected Technic beam orientation does not preserve the requested component bounding dimensions."],warnings:[],parts:[],connections:[],diagnostics:{realisedDimensions}};
+ const beamATranslation=subtract([beams[0].position_mm.x,beams[0].position_mm.y,beams[0].position_mm.z],rotatedMin);
+ const beamBTranslation=subtract([beams[1].position_mm.x,beams[1].position_mm.y,beams[1].position_mm.z],rotatedMin);
+ const worldHoleA=add(beamATranslation,transform(beamRotation,centreHole.position_mm));
+ const pinPlacementTranslation=subtract(worldHoleA,transform(pinRotation,pinA.position_mm));
  const instances=[
   {instance_id:"beam-a",part_id:beamPart.part_id},
   {instance_id:"beam-b",part_id:beamPartB.part_id},
@@ -106,6 +114,7 @@ export function planTechnicBeamJoint(spec,partCatalogue,designTranslation,connec
   component_reports:beams.map((component,index)=>({component_id:component.id,status:"planned",selected_part_id:index===0?beamPart.part_id:beamPartB.part_id,top_candidates:beamCandidates[index].search.candidates.slice(0,4).map(candidate=>({part_id:candidate.part_id,dimension_error_mm:candidate.dimension_error_mm}))})),
   validation:{status:"passed_with_unverified_physics",connected:true,checks:[
    {id:"semantic_part_discovery",status:"passed",detail:"Beam and pin roles matched source-backed catalogue capabilities"},
+   {id:"component_bounds",status:"passed",detail:"Measured part bounds preserve the requested oriented component dimensions"},
    {id:"connector_alignment",status:"passed",detail:connections.length+" nominal coaxial pin/hole interfaces matched"},
    {id:"assembly_connectivity",status:"passed",detail:"All three part instances belong to one connector graph"},
    {id:"physical_clutch_and_strength",status:"not_assessed",detail:"No physical retention or load testing has been performed"}
