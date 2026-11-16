@@ -136,6 +136,9 @@ export async function rankPartCandidatesWithGeometry(discovery, geometryResolver
     throw new RangeError("maxCandidates and concurrency must be positive integers.");
   }
   scoreGeometrySuitability({ dimensions_mm: [1, 1, 1] }, targetDimensionsMm, options);
+  if (options.requiredInterfaces !== undefined) {
+    matchRequiredInterfaces(options.requiredInterfaces, [], options.interfaceMatchOptions);
+  }
   const selected = discovery.candidates.slice(0, maxCandidates);
   const results = new Array(selected.length);
   let nextIndex = 0;
