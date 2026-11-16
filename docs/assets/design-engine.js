@@ -1,4 +1,5 @@
 import { assertValidDesignSpec } from "./design-spec.js";
+import { discoverPartCandidates, validatePartCapabilityCatalogue } from "./part-catalogue.js";
 
 const LDU_TO_MM = 0.4;
 const STUD_PITCH_MM = 8;
@@ -13,10 +14,11 @@ const dot = (a,b) => a.reduce((sum,value,index)=>sum+value*b[index],0);
 const transform = (m,p) => [m[0]*p[0]+m[1]*p[1]+m[2]*p[2],m[3]*p[0]+m[4]*p[1]+m[5]*p[2],m[6]*p[0]+m[7]*p[1]+m[8]*p[2]];
 const point = (placement, local) => transform(placement.matrix,local).map((v,i)=>v+placement.translation_ldu[i]);
 
-function candidateProfiles(catalogue, component, courseType) {
+function candidateProfiles(catalogue, component, courseType, candidateIds) {
   const allowedHeight = courseType === "plate" ? PLATE_HEIGHT_MM : BRICK_HEIGHT_MM;
   return catalogue.profiles.filter(profile =>
-    close(profile.body_height_ldu * LDU_TO_MM, allowedHeight)
+    candidateIds.has(profile.part_id)
+    && close(profile.body_height_ldu * LDU_TO_MM, allowedHeight)
     && profile.features?.some(feature => feature.kind === "stud")
     && profile.features?.some(feature => feature.kind === "stud_receiver")
   ).map(profile => {
@@ -117,7 +119,7 @@ function assemble(parts, profileMap, requireConnected) {
   return {connections,connected};
 }
 
-function componentCandidates(component,catalogue,options) {
+function componentCandidates(component,catalogue,options,partCatalogue) {
   const supportedRoles = new Set(["structural","chassis","body","wall","floor","base","platform","support","beam","block","solid","roof-support"]);
   if (!supportedRoles.has(component.role.toLowerCase())) {
     return {error:"The current verified catalogue cannot yet build the semantic role \"" + component.role + "\". It contains standard brick/plate geometry, not verified wheel, window, hinge, clip or other specialised capabilities."};
@@ -128,6 +130,13 @@ function componentCandidates(component,catalogue,options) {
   if ((component.forbidden_features || []).length) {
     return {error:"The current catalogue cannot prove the absence of forbidden semantic features: " + component.forbidden_features.join(", ") + "."};
   }
+  const semanticSearch=discoverPartCandidates({
+    role:component.role,
+    required_capabilities:component.required_features||[],
+    dimensions_mm:component.dimensions_mm
+  },partCatalogue);
+  if(semanticSearch.status==="no_candidates") return {error:"No source-backed catalogue candidates satisfy semantic role "+component.role+(component.required_features?.length?" and required features "+component.required_features.join(", "):"")+"."};
+  const candidateIds=new Set(semanticSearch.candidates.map(candidate=>candidate.part_id));
   const width=component.dimensions_mm.width/STUD_PITCH_MM;
   const depth=component.dimensions_mm.depth/STUD_PITCH_MM;
   const height=component.dimensions_mm.height;
@@ -208,6 +217,9 @@ export function planDesign(spec,catalogue,overrides={}) {
   assertValidDesignSpec(spec);
   if(spec.constraints.allow_intersections) throw new Error("allow_intersections=true is not supported by the physical assembly planner; interpenetrating part placements are never accepted.");
   if(!catalogue||catalogue.schema_version!==1||!Array.isArray(catalogue.profiles)) throw new TypeError("A version-1 connection profile catalogue is required.");
+  const partCatalogue=overrides.partCatalogue;
+  const partCatalogueValidation=validatePartCapabilityCatalogue(partCatalogue);
+  if(!partCatalogueValidation.valid) throw new TypeError("A valid version-1 semantic part catalogue is required: "+partCatalogueValidation.errors.join(" "));
   const options={
     courseType:spec.constraints.course_type||"brick",
     maxParts:spec.constraints.max_parts||500,
@@ -230,7 +242,7 @@ export function planDesign(spec,catalogue,overrides={}) {
   const profileMap=new Map(catalogue.profiles.map(profile=>[profile.part_id,profile]));
   const componentReports=[],candidateSets=[];
   for(const component of spec.components) {
-    const result=componentCandidates(component,catalogue,options);
+    const result=componentCandidates(component,catalogue,options,partCatalogue);
     if(result.error) return {status:"blocked",design_id:spec.design_id,failures:[result.error],warnings:[],parts:[],connections:[],component_reports:[{component_id:component.id,status:"blocked",reason:result.error}]};
     candidateSets.push(result.alternatives);
     componentReports.push({component_id:component.id,status:"planned",candidate_layouts:result.alternatives.length,search_nodes:result.search_nodes,combinations_examined:result.combinations});
