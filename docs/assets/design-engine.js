@@ -182,7 +182,7 @@ function componentCandidates(component,catalogue,options,partCatalogue) {
     signatures.add(signature);unique.push(alternative);
     if(unique.length>=options.maxComponentAlternatives) break;
   }
-  return unique.length?{alternatives:unique,search_nodes:nodes,combinations}:{error:"No fully connected course arrangement found for component "+component.id+".",search_nodes:nodes,combinations};
+  return unique.length?{alternatives:unique,semantic_candidates:semanticSearch.candidates,search_nodes:nodes,combinations}:{error:"No fully connected course arrangement found for component "+component.id+".",search_nodes:nodes,combinations};
 }
 
 function componentBounds(component) {
@@ -245,7 +245,7 @@ export function planDesign(spec,catalogue,overrides={}) {
     const result=componentCandidates(component,catalogue,options,partCatalogue);
     if(result.error) return {status:"blocked",design_id:spec.design_id,failures:[result.error],warnings:[],parts:[],connections:[],component_reports:[{component_id:component.id,status:"blocked",reason:result.error}]};
     candidateSets.push(result.alternatives);
-    componentReports.push({component_id:component.id,status:"planned",candidate_layouts:result.alternatives.length,search_nodes:result.search_nodes,combinations_examined:result.combinations});
+    componentReports.push({component_id:component.id,status:"planned",semantic_candidate_count:result.semantic_candidates.length,top_part_candidates:result.semantic_candidates.slice(0,5).map(candidate=>({part_id:candidate.part_id,description:candidate.description,score:candidate.score,dimension_error_mm:candidate.dimension_error_mm})),candidate_layouts:result.alternatives.length,search_nodes:result.search_nodes,combinations_examined:result.combinations});
   }
   let best=null,globalCombinations=0,overBudget=false;
   const chosen=[];
