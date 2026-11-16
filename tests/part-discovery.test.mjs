@@ -94,9 +94,9 @@ test("ranks Technic candidates against source-derived pin-hole requirements", as
       description: "Technic Brick 1 x 4 with Holes",
       dimensions_mm: [32, 9.6, 8],
       nominal_connection_interfaces: [
-        { interface_id: "pin-hole-1", interface_type: "round_opening", nominal_diameter_mm: 4.8, axis_vector: [0,0,1] },
-        { interface_id: "pin-hole-2", interface_type: "round_opening", nominal_diameter_mm: 4.8, axis_vector: [0,0,1] },
-        { interface_id: "pin-hole-3", interface_type: "round_opening", nominal_diameter_mm: 4.8, axis_vector: [0,0,1] },
+        { interface_id: "pin-hole-1", interface_type: "technic_pin_hole", nominal_diameter_mm: 4.8, axis_vector: [0,0,1] },
+        { interface_id: "pin-hole-2", interface_type: "technic_pin_hole", nominal_diameter_mm: 4.8, axis_vector: [0,0,1] },
+        { interface_id: "pin-hole-3", interface_type: "technic_pin_hole", nominal_diameter_mm: 4.8, axis_vector: [0,0,1] },
       ],
     }],
   };
@@ -129,9 +129,9 @@ test("ranks real part candidates directly from a semantic design component", asy
   const specialisedCatalogue = { profiles: [{
     part_id: "3701",
     nominal_connection_interfaces: [
-      { interface_id: "h1", interface_type: "round_opening", nominal_diameter_mm: 4.8, axis_vector: [0,0,1] },
-      { interface_id: "h2", interface_type: "round_opening", nominal_diameter_mm: 4.8, axis_vector: [0,0,1] },
-      { interface_id: "h3", interface_type: "round_opening", nominal_diameter_mm: 4.8, axis_vector: [0,0,1] },
+      { interface_id: "h1", interface_type: "technic_pin_hole", nominal_diameter_mm: 4.8, axis_vector: [0,0,1] },
+      { interface_id: "h2", interface_type: "technic_pin_hole", nominal_diameter_mm: 4.8, axis_vector: [0,0,1] },
+      { interface_id: "h3", interface_type: "technic_pin_hole", nominal_diameter_mm: 4.8, axis_vector: [0,0,1] },
     ],
   }] };
   const result = await rankDesignComponentCandidates(
@@ -149,7 +149,7 @@ test("chooses a dimension-equivalent orientation that aligns a required interfac
     part_id: "square-beam",
     nominal_connection_interfaces: [{
       interface_id: "pin-hole",
-      interface_type: "round_opening",
+      interface_type: "technic_pin_hole",
       nominal_diameter_mm: 4.8,
       axis_vector: [1,0,0],
     }],
