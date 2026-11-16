@@ -58,7 +58,17 @@
         "label": { "type": "string" },
         "role": { "type": "string", "minLength": 1 },
         "function": { "type": "array", "items": { "type": "string" } },
-        "geometry": { "enum": ["rectangular_prism"] },
+        "geometry": { "enum": ["rectangular_prism", "cylinder", "sphere", "extruded_profile"] },
+        "geometry_parameters": {
+          "type": "object", "additionalProperties": false,
+          "properties": {
+            "axis": { "enum": ["x", "y", "z"] },
+            "diameter_mm": { "type": "number", "exclusiveMinimum": 0 },
+            "radius_mm": { "type": "number", "exclusiveMinimum": 0 },
+            "depth_mm": { "type": "number", "exclusiveMinimum": 0 },
+            "outline_mm": { "type": "array", "minItems": 3, "items": { "type": "array", "minItems": 2, "maxItems": 2, "items": { "type": "number" } } }
+          }
+        },
         "dimensions_mm": {
           "type": "object", "additionalProperties": false,
           "required": ["width", "depth", "height"],
