@@ -78,7 +78,8 @@
           "items": {
             "type": "integer",
             "minimum": 0
-          }
+          },
+          "minItems": 1
         },
         "max_parts": {
           "type": "integer",
