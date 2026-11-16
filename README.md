@@ -12,11 +12,14 @@ An object-first, browser-based brick construction engine.
   relationships, explicit empty spaces and optional bounded dimension tolerance.
 - Structural tiling and profiled specialised-part placement, including slopes,
   open frames, mirrored wings, round elements, wheel mounts and tyre/rim assembly.
+- Exact multi-part upright profile composition using source slopes and structural
+  infill, preserving concavities and declared keepouts.
 - Bounded global search with direct-attachment pruning and nominal mating edges.
-- Placed-body checks, support projection proxy and nominal straight approaches,
+- Placed-body checks with analytic box/slope-prism narrow phase, final/stage
+  support projection proxies and nominal straight approaches,
   with physical clutch, stability, insertion and strength kept unverified.
 - Interactive inspection, editable components, browser-local brief revisions,
-  LDraw STEP export, BOM/report JSON and vector instruction PDF.
+  LDraw STEP export, BOM/report JSON and compressed illustrated PDF booklets.
 - A provider-neutral text interpretation contract and optional HTTPS gateway
   adapter. No hosted model service, API key or default provider is bundled.
 

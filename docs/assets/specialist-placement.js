@@ -1,6 +1,7 @@
-import {orientationMatches} from './part-orientation.js?v=895538efbf38';
-import { discoverPartCandidates } from './part-catalogue.js?v=895538efbf38';
-import { translateComponentRequirements } from './design-translation.js?v=895538efbf38';
+import {nominalBodyIntersectsBox} from './nominal-collision.js?v=9b57eca72db0';
+import {orientationMatches} from './part-orientation.js?v=9b57eca72db0';
+import { discoverPartCandidates } from './part-catalogue.js?v=9b57eca72db0';
+import { translateComponentRequirements } from './design-translation.js?v=9b57eca72db0';
 
 const yawRotations = [[1,0,0,0,1,0,0,0,1],[0,0,1,0,1,0,-1,0,0],[-1,0,0,0,1,0,0,0,-1],[0,0,-1,0,1,0,1,0,0]];
 const permutations=[[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]];
@@ -32,7 +33,6 @@ export function worldBodyBounds(part,profile) {
  const points=profile.body_vertices_mm.map(p=>semanticPoint(part.matrix,p).map((v,i)=>v+part.translation_ldu[i]*.4*(i===0?1:-1)));
  return {min:[0,1,2].map(i=>Math.min(...points.map(p=>p[i]))),max:[0,1,2].map(i=>Math.max(...points.map(p=>p[i])))};
 }
-const intersects=(a,b)=>[0,1,2].every(i=>Math.min(a.max[i],b.max[i])-Math.max(a.min[i],b.min[i])>1e-6);
 
 /** Rigid placements independent of object category. Constant-section elements
  * may repeat along an extrusion, whose cross-section must match exactly. */
@@ -83,7 +83,7 @@ export function specialistComponentCandidates(component,options,partCatalogue,ma
     }else parts.push(parent);
    }
    // Conservative envelopes; cavity-aware narrow-phase collision is pending.
-   if(parts.some(part=>(options.negativeSpaces||[]).some(space=>intersects(worldBodyBounds(part,profiles.get(part.part_id)||profile),{min:[space.position_mm.x,space.position_mm.y,space.position_mm.z],max:[space.position_mm.x+space.dimensions_mm.width,space.position_mm.y+space.dimensions_mm.height,space.position_mm.z+space.dimensions_mm.depth]}))))continue;
+   if(parts.some(part=>(options.negativeSpaces||[]).some(space=>nominalBodyIntersectsBox(part,profiles.get(part.part_id)||profile,{min:[space.position_mm.x,space.position_mm.y,space.position_mm.z],max:[space.position_mm.x+space.dimensions_mm.width,space.position_mm.y+space.dimensions_mm.height,space.position_mm.z+space.dimensions_mm.depth]}))))continue;
    alternatives.push({parts,score:parts.length*1000,tiling:[[...parts.map(p=>p.part_id)]],specialist:true,rotation_index:rotationIndex});
   }
  }

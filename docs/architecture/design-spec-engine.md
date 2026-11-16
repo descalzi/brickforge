@@ -152,3 +152,26 @@ Sequence roots prefer a broad, shallow part with a supported nominal projection
 over a loose rolling element. This generic envelope heuristic gives a better
 starting foundation; subsequent additions still follow real graph edges and
 nominal clear approaches. It is not a physical sequence optimisation proof.
+
+### Exact multi-part profile composition
+
+If a complete extruded profile does not match a single source part, the browser
+can pack an upright constant-section profile with structural boxes and measured
+slope prisms. It enumerates source-backed placements on an 8 mm horizontal and
+3.2 mm vertical grid, then partitions the polygon using all placement edges.
+Horizontal bands are split at edge crossings; exact trapezoidal material atoms
+are extended through extrusion slabs. A bounded exact-cover search covers each
+required atom once, checks source-part volume against atom volume, and retains
+concavities and explicit empty spaces. Required capabilities apply to the
+composition; forbidden capabilities exclude every candidate. Actual mating
+edges still gate the whole assembly. There are no roof/object recipes.
+
+Placement, arrangement-size, search-node and alternative limits are explicit.
+A failed bounded search is not a proof of impossibility. Curved surfaces and
+non-right-angle placements are outside this exact prism path.
+
+Nominal material collision uses separating axes for solid structural boxes and
+convex source slope prisms. Other profiles keep conservative envelopes. This
+avoids treating overlap of sloped-part bounding boxes alone as material
+interpenetration. Protruding studs, cavities, friction and physical insertion
+remain outside the nominal body model.

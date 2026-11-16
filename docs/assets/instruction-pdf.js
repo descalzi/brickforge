@@ -1,6 +1,6 @@
-import {rasterizeInstructionFaces} from './instruction-rasterizer.js?v=895538efbf38';
+import {rasterizeInstructionFaces} from './instruction-rasterizer.js?v=9b57eca72db0';
 // Browser-native vector booklet. Diagrams and inventory share the canonical plan.
-import { transformVector } from './specialist-placement.js?v=895538efbf38';
+import { transformVector } from './specialist-placement.js?v=9b57eca72db0';
 const palette=new Map([[0,'#26343b'],[1,'#1e5aa8'],[2,'#00852b'],[4,'#b40000'],[7,'#8a928d'],[14,'#f2cd37'],[15,'#eeeeee'],[19,'#e4cd9e'],[25,'#d66b24']]);
 const colourNames=new Map([[0,'Black'],[1,'Blue'],[2,'Green'],[4,'Red'],[7,'Grey'],[14,'Yellow'],[15,'White'],[19,'Tan'],[25,'Orange']]);
 const clean=s=>String(s).normalize('NFKD').replace(/[^\x20-\x7e]/g,' ').replace(/[\\()]/g,'\\$&');

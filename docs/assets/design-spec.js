@@ -1,4 +1,4 @@
-import {cardinalDirections} from './part-orientation.js?v=895538efbf38';
+import {cardinalDirections} from './part-orientation.js?v=9b57eca72db0';
 const finite = (value) => typeof value === "number" && Number.isFinite(value);
 const RELATIONSHIPS = new Set(["above","below","left_of","right_of","in_front_of","behind","attached_to","aligned_with","symmetric_to","dimension_ratio"]);
 const ROOT_KEYS = new Set(["schema_version","design_id","name","units","components","relationships","constraints","appearance","assumptions","negative_spaces"]);
