@@ -1,7 +1,7 @@
 const finite = (value) => typeof value === "number" && Number.isFinite(value);
 const RELATIONSHIPS = new Set(["above","below","left_of","right_of","in_front_of","behind","attached_to","aligned_with","symmetric_to"]);
 const ROOT_KEYS = new Set(["schema_version","design_id","name","units","components","relationships","constraints","appearance","assumptions"]);
-const COMPONENT_KEYS = new Set(["id","label","role","function","geometry","dimensions_mm","position_mm","priority","required_features","forbidden_features","colour","confidence"]);
+const COMPONENT_KEYS = new Set(["id","label","role","function","geometry","geometry_parameters","dimensions_mm","position_mm","priority","required_features","forbidden_features","colour","confidence"]);
 const hasOnlyKeys = (value, allowed) => Object.keys(value || {}).filter(key => !allowed.has(key));
 
 export function validateDesignSpec(spec) {
@@ -22,7 +22,12 @@ export function validateDesignSpec(spec) {
     else if (ids.has(component.id)) errors.push(path + ".id must be unique.");
     else ids.add(component.id);
     if (typeof component.role !== "string" || !component.role.trim()) errors.push(path + ".role is required.");
-    if (component.geometry !== "rectangular_prism") errors.push(path + ".geometry is unsupported by design-spec v1.");
+    if (!["rectangular_prism","cylinder","sphere","extruded_profile"].includes(component.geometry)) errors.push(path + ".geometry is unsupported by design-spec v1.");
+    const shape=component.geometry_parameters;
+    if (component.geometry==="cylinder" && (!shape || !["x","y","z"].includes(shape.axis) || !finite(shape.diameter_mm) || shape.diameter_mm<=0)) errors.push(path + ".geometry_parameters must define a cylinder axis and positive diameter_mm.");
+    if (component.geometry==="sphere" && (!shape || !finite(shape.radius_mm) || shape.radius_mm<=0)) errors.push(path + ".geometry_parameters must define a positive sphere radius_mm.");
+    if (component.geometry==="extruded_profile" && (!shape || !finite(shape.depth_mm) || shape.depth_mm<=0 || !Array.isArray(shape.outline_mm) || shape.outline_mm.length<3 || shape.outline_mm.some(point=>!Array.isArray(point)||point.length!==2||!point.every(finite)))) errors.push(path + ".geometry_parameters must define a 2D outline and positive extrusion depth_mm.");
+    if (shape && hasOnlyKeys(shape,new Set(["axis","diameter_mm","radius_mm","depth_mm","outline_mm"])).length) errors.push(path + ".geometry_parameters contains unknown properties.");
     for (const axis of ["width", "depth", "height"]) {
       if (!finite(component.dimensions_mm?.[axis]) || component.dimensions_mm[axis] <= 0) errors.push(path + ".dimensions_mm." + axis + " must be positive and finite.");
     }
