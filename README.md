@@ -1,6 +1,6 @@
 # BrickForge
 
-**BrickForge** is an AI-assisted system for turning descriptions, reference images, and 3D geometry into buildable models made from real L-brick elements, with validated parts inventories and step-by-step building instructions.
+**BrickForge** is a design-first system for turning natural-language descriptions into buildable models made from real L-brick elements, with validated parts inventories and step-by-step building instructions. The primary workflow starts with a catalogue-independent structured design specification; STL/OBJ import is an optional reference and validation tool, not the source of the design.
 
 The long-term goal is to support arbitrary object categories rather than a fixed catalogue of model types.
 
@@ -36,7 +36,7 @@ The AI must not directly author arbitrary per-brick placements as the source of 
 - Python is retained for offline analysis, library audits and selected independent engineering checks; new product features are browser-first.
 - Node's built-in test runner is the primary test runner for browser algorithms; pytest covers the supporting Python tools.
 
-The user-facing construction flow does not require a Python installation, application server or model-upload service. The site fetches its published connection catalogue and static scripts; placements, validation, preview assembly and downloads are computed in the browser.
+The intended user-facing design-to-construction flow does not require a Python installation, application server or model-upload service. The browser fetches versioned specifications, part metadata and connection profiles; candidate search, assembly planning, validation, preview and downloads are computed locally. The new design engine is being developed independently of the earlier STL-led prototype.
 
 ## Development status
 
