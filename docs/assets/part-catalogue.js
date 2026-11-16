@@ -23,7 +23,11 @@ export function validatePartCapabilityCatalogue(catalogue){
 }
 function dimensionError(actual,requested){
  if(!dimensions(actual)||!dimensions(requested))return null;
- return Math.sqrt(["width","depth","height"].reduce((sum,key)=>sum+(actual[key]-requested[key])**2,0));
+ const keys=["width","depth","height"],permutations=[[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]];
+ return permutations.map(permutation=>{
+  const error=Math.sqrt(keys.reduce((sum,key,index)=>sum+(actual[keys[permutation[index]]]-requested[key])**2,0));
+  return {error,permutation};
+ }).sort((a,b)=>a.error-b.error)[0];
 }
 export function discoverPartCandidates(requirement,catalogue,options={}){
  if(!requirement||typeof requirement!=="object")throw new TypeError("A semantic part requirement is required.");
@@ -40,12 +44,13 @@ export function discoverPartCandidates(requirement,catalogue,options={}){
   if(roles.length&&!part.roles.some(value=>roles.includes(value.toLowerCase())))continue;
   if([...required].some(capability=>!part.capabilities.includes(capability)))continue;
   if([...forbidden].some(capability=>part.capabilities.includes(capability)))continue;
-  const error=dimensionError(part.dimensions_mm,requirement.dimensions_mm);
+  const dimensionFit=dimensionError(part.dimensions_mm,requirement.dimensions_mm);
+  const error=dimensionFit?.error??null;
   if(error!==null&&error>maxError)continue;
   if(requirement.dimensions_mm&&error===null&&!options.allowUnknownDimensions)continue;
   const preferredCount=[...preferred].filter(capability=>part.capabilities.includes(capability)).length;
   const score=(roles.length?100:0)+required.size*20+preferredCount*5-(error??0)*2+(part.candidate_status==="nominal_connection_profile"?3:0);
-  candidates.push({part_id:part.part_id,description:part.description,roles:part.roles,capabilities:part.capabilities,dimensions_mm:part.dimensions_mm,candidate_status:part.candidate_status,dimension_error_mm:error,score,interfaces:part.interfaces,source:part.source});
+  candidates.push({part_id:part.part_id,description:part.description,roles:part.roles,capabilities:part.capabilities,dimensions_mm:part.dimensions_mm,candidate_status:part.candidate_status,dimension_error_mm:error,dimension_permutation:dimensionFit?.permutation??null,score,interfaces:part.interfaces,source:part.source});
  }
  candidates.sort((a,b)=>b.score-a.score||(a.dimension_error_mm??Infinity)-(b.dimension_error_mm??Infinity)||a.part_id.localeCompare(b.part_id));
  return {status:candidates.length?"candidates_found":"no_candidates",roles,required_capabilities:[...required],forbidden_capabilities:[...forbidden],candidates};
