@@ -217,6 +217,16 @@
               "max_diameter_error_mm": {
                 "type": "number",
                 "minimum": 0
+              },
+              "positions_mm": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/vector3"
+                }
+              },
+              "position_tolerance_mm": {
+                "type": "number",
+                "minimum": 0
               }
             }
           }
