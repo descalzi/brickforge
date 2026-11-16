@@ -26,7 +26,7 @@ test("profiled candidates are distinguished from text-only discoveries", () => {
   assert.equal(result.candidates[0].part_id, "3001");
   assert.equal(result.candidates[0].connection_profile_available, true);
   assert.equal(result.candidates[0].planner_eligible, false);
-  assert.match(result.candidates[0].suitability_status, /requires_geometry/);
+  assert.match(result.candidates[0].suitability_status, /geometry_and_interface/);
 });
 
 test("custom role synonyms and deterministic limits are supported", () => {
