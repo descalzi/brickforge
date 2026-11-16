@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
-import { matchConnectorInterfaces, nominalInterfacesForInstances } from "../docs/assets/connector-matcher.js";
+import { matchAssemblyConnectors, matchConnectorInterfaces, nominalInterfacesForInstances } from "../docs/assets/connector-matcher.js";
 
 const catalogue=JSON.parse(await readFile(new URL("../docs/data/connector-compatibility-v1.json",import.meta.url),"utf8"));
 const rules=catalogue.rules;
@@ -49,4 +49,16 @@ test("source-derived Technic beam interfaces can be lifted into positioned assem
  assert.ok(interfaces.every(item=>item.interface_type==="technic_pin_hole"));
  assert.ok(interfaces.every(item=>item.nominal_diameter_mm===4.8));
  assert.ok(interfaces.every(item=>item.evidence_status==="nominal_geometry_derived"));
+});
+
+test("assembly connector matcher aligns a nominal pin candidate to a source-derived Technic beam hole",async()=>{
+ const specialised=JSON.parse(await readFile(new URL("../docs/data/specialised-technic-part-catalogue.json",import.meta.url),"utf8"));
+ const holes=nominalInterfacesForInstances(specialised,[{instance_id:"beam",part_id:"3701"}]);
+ const pin={instance_id:"pin",part_id:"synthetic-technic-pin",interface_id:"pin-end",interface_type:"technic_friction_pin",position_mm:[0,4,0],axis_vector:[0,0,-1],nominal_diameter_mm:4.9};
+ const placements={pin:{translation_mm:[-8,0,0]}};
+ const matches=matchAssemblyConnectors([...holes,pin],rules,placements);
+ assert.equal(matches.length,1);
+ assert.equal(matches[0].instance_male,"pin");
+ assert.equal(matches[0].instance_female,"beam");
+ assert.equal(matches[0].physical_connection_verified,false);
 });
