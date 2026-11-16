@@ -6,16 +6,16 @@
   <meta name="theme-color" content="#F2F4F6">
   <meta name="description" content="Inspect an STL or OBJ mesh in your browser and measure its dimensions before the BrickForge construction stage.">
   <title>Mesh inspector — BrickForge</title>
-  <link rel="stylesheet" href="./assets/site.css?v=3233205dd5e1">
-  <link rel="stylesheet" href="./assets/inspector.css?v=3233205dd5e1">
+  <link rel="stylesheet" href="./assets/site.css?v=b6ebc6c828d2">
+  <link rel="stylesheet" href="./assets/inspector.css?v=b6ebc6c828d2">
   <link rel="icon" href="./assets/mark.svg" type="image/svg+xml">
   <script type="importmap">
     {
       "imports": {
-        "three": "./assets/vendor/three/three.module.min.js?v=3233205dd5e1",
-        "three/addons/controls/OrbitControls.js": "./assets/vendor/three/OrbitControls.js?v=3233205dd5e1",
-        "three/addons/loaders/STLLoader.js": "./assets/vendor/three/STLLoader.js?v=3233205dd5e1",
-        "three/addons/loaders/OBJLoader.js": "./assets/vendor/three/OBJLoader.js?v=3233205dd5e1"
+        "three": "./assets/vendor/three/three.module.min.js?v=b6ebc6c828d2",
+        "three/addons/controls/OrbitControls.js": "./assets/vendor/three/OrbitControls.js?v=b6ebc6c828d2",
+        "three/addons/loaders/STLLoader.js": "./assets/vendor/three/STLLoader.js?v=b6ebc6c828d2",
+        "three/addons/loaders/OBJLoader.js": "./assets/vendor/three/OBJLoader.js?v=b6ebc6c828d2"
       }
     }
   </script>
@@ -23,21 +23,21 @@
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
   <header class="site-header">
-    <a class="brand" href="./index.html?v=3233205dd5e1" aria-label="BrickForge home">
+    <a class="brand" href="./index.html?v=b6ebc6c828d2" aria-label="BrickForge home">
       <img src="./assets/mark.svg" width="34" height="34" alt="">
       <span>brickforge</span>
     </a>
-    <nav class="main-nav" aria-label="Main navigation"><a href="./designer.html?v=3233205dd5e1">Design studio</a><a href="./tools.html?v=3233205dd5e1">Engineering tools</a>
-      <a href="./index.html?v=3233205dd5e1#method">The method</a>
-      <a href="./index.html?v=3233205dd5e1#engineering">Engineering</a>
-      <a href="./inspector.html?v=3233205dd5e1" aria-current="page">Mesh inspector</a>
-      <a href="./builder.html?v=3233205dd5e1">Block builder</a>
-      <a href="./parts.html?v=3233205dd5e1">Part explorer</a>
+    <nav class="main-nav" aria-label="Main navigation"><a href="./designer.html?v=b6ebc6c828d2">Design studio</a><a href="./tools.html?v=b6ebc6c828d2">Engineering tools</a>
+      <a href="./index.html?v=b6ebc6c828d2#method">The method</a>
+      <a href="./index.html?v=b6ebc6c828d2#engineering">Engineering</a>
+      <a href="./inspector.html?v=b6ebc6c828d2" aria-current="page">Mesh inspector</a>
+      <a href="./builder.html?v=b6ebc6c828d2">Block builder</a>
+      <a href="./parts.html?v=b6ebc6c828d2">Part explorer</a>
     </nav>
   </header>
 
   <main id="main" class="inspector-main">
-    <a class="back-link" href="./index.html?v=3233205dd5e1">Back to project</a>
+    <a class="back-link" href="./index.html?v=b6ebc6c828d2">Back to project</a>
     <section class="inspector-intro">
       <h1>Inspect the shape.<br><span>Know the dimensions.</span></h1>
       <p>Load an STL or OBJ file to preview its geometry and measure its bounding dimensions. This is the first practical step in the BrickForge pipeline — before any parts are selected or placed.</p>
@@ -115,7 +115,7 @@
             <span class="drop-subtitle">STL or OBJ · up to 100 MB</span>
           </label>
           <p class="control-note">The file is read locally in this browser. It is not uploaded to a server.</p>
-          <p class="control-note"><a href="./fixtures.html?v=3233205dd5e1">Browse the STL validation fixture library</a> — includes holes, angled and curved tunnels, branching passages and a car-shaped test model.</p>
+          <p class="control-note"><a href="./fixtures.html?v=b6ebc6c828d2">Browse the STL validation fixture library</a> — includes holes, angled and curved tunnels, branching passages and a car-shaped test model.</p>
           <label class="field-label" for="source-units">Source units</label>
           <select id="source-units" class="field-control" required>
             <option value="mm" selected>Millimetres (mm) — default assumption</option>
@@ -186,7 +186,7 @@
               <label for="construction-price-input">Import a sourced marketplace or supplier price catalogue</label>
               <input id="construction-price-input" type="file" accept=".json,application/json">
               <p class="control-note">BrickForge does not invent prices. Import a dated price file with currency and source attribution; missing prices remain visible and prevent a complete total.</p>
-              <a href="./data/price-catalogue-template.json?v=3233205dd5e1" download>Price catalogue JSON template</a>
+              <a href="./data/price-catalogue-template.json?v=b6ebc6c828d2" download>Price catalogue JSON template</a>
               <p id="construction-cost-status" role="status" aria-live="polite">Import a price catalogue to estimate all connected alternatives.</p>
               <ul id="construction-cost-list"></ul>
             </div>
@@ -206,7 +206,7 @@
             <div class="feature-match-panel">
               <label for="feature-profile-input">Import part feature profiles or a combined catalogue</label>
               <input id="feature-profile-input" type="file" accept=".json,application/json" multiple>
-              <p class="control-note">For openings that need a dedicated element, use the <a href="./parts.html?v=3233205dd5e1">Part Explorer</a> to scan Technic beams, frames and connectors, then import the exported catalogue here.</p>
+              <p class="control-note">For openings that need a dedicated element, use the <a href="./parts.html?v=b6ebc6c828d2">Part Explorer</a> to scan Technic beams, frames and connectors, then import the exported catalogue here.</p>
               <p id="feature-match-status" role="status" aria-live="polite">Export measured part profiles from the Part Explorer, then import them here to compare against target openings.</p>
               <ul id="feature-match-list"></ul>
               <div class="feature-pattern-results">
@@ -233,11 +233,11 @@
   </main>
 
   <footer class="site-footer">
-    <a class="brand footer-brand" href="./index.html?v=3233205dd5e1"><img src="./assets/mark.svg" width="28" height="28" alt=""><span>brickforge</span></a>
+    <a class="brand footer-brand" href="./index.html?v=b6ebc6c828d2"><img src="./assets/mark.svg" width="28" height="28" alt=""><span>brickforge</span></a>
     <p>Independent project.</p>
     <span class="footer-id">BF / MESH-01</span>
   </footer>
 
-  <script type="module" src="./assets/inspector.js?v=3233205dd5e1"></script>
+  <script type="module" src="./assets/inspector.js?v=b6ebc6c828d2"></script>
 </body>
 </html>

@@ -14,7 +14,9 @@ for(const spec of fixtures.fixtures)test("studio brief constructs with actual no
  assert.equal(plan.bom.items.reduce((n,p)=>n+p.quantity,0),plan.parts.length);assert.equal(plan.ldraw.split("\n").filter(line=>line.startsWith("1 ")).length,plan.parts.length);
  for(const part of plan.parts){
   const actual=bounds(part),c=spec.components.find(c=>c.id===part.component_id),p=c.position_mm,d=c.dimensions_mm;
-  const lo=[p.x,p.y,p.z],hi=[p.x+d.width,p.y+d.height,p.z+d.depth];
+  const report=plan.component_reports.find(r=>r.component_id===c.id),shift=report.position_adjustment_mm||[0,0,0];
+  assert.ok(shift.every(v=>Math.abs(v)<=(c.position_tolerance_mm||0)+1e-6),'position adjustment exceeds explicit allowance: '+c.id);
+  const lo=[p.x,p.y,p.z].map((v,i)=>v+shift[i]),hi=lo.map((v,i)=>v+[d.width,d.height,d.depth][i]+(c.fit_tolerance_mm||0));
   assert.ok(actual.min.every((v,i)=>v>=lo[i]-1e-6)&&actual.max.every((v,i)=>v<=hi[i]+1e-6),"part outside semantic volume: "+part.instance_id);
   for(const space of spec.negative_spaces||[]){const p=space.position_mm,d=space.dimensions_mm,lo=[p.x,p.y,p.z],hi=[p.x+d.width,p.y+d.height,p.z+d.depth];assert.ok(![0,1,2].every(i=>Math.min(actual.max[i],hi[i])-Math.max(actual.min[i],lo[i])>1e-6),"part body intersects "+space.id);}
  }

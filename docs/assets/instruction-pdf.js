@@ -1,6 +1,6 @@
 // Dependency-free vector PDF export: no server, external fonts or image service.
 // Geometry and inventory come from the same plan as the browser workbench.
-import { transformVector } from './specialist-placement.js?v=3233205dd5e1';
+import { transformVector } from './specialist-placement.js?v=b6ebc6c828d2';
 const palette=new Map([[0,'#26343b'],[1,'#1e5aa8'],[2,'#00852b'],[4,'#b40000'],[7,'#8a928d'],[14,'#f2cd37'],[15,'#eeeeee'],[19,'#e4cd9e'],[25,'#d66b24']]);
 const clean=s=>String(s).normalize('NFKD').replace(/[^\x20-\x7e]/g,' ').replace(/[\\()]/g,'\\$&');
 const n=v=>Number(v.toFixed(3));

@@ -94,3 +94,15 @@ sizes, collisions, support evidence, canonical sequence/PDF records, gateway
 validation/cancellation, revisions, exports and mobile layout. Original challenge
 briefs remain unmodified acceptance targets; smaller passing examples do not
 silently redefine them.
+
+### Bounded relative placement
+
+Explicit alignment and mirror-plane relations also propose component translations.
+The proposals use the candidate's realised body bounds, combine independent axes
+for a common component pair, and run alongside connector-derived translations.
+Only components with `position_tolerance_mm` can move. Cumulative movement stays
+within the original per-coordinate allowance; negative spaces, complete relation
+checks, body envelopes and actual mating edges still gate the final assembly.
+The shared attempt, round and alternative limits bound propagation. Search reports
+include `layout_candidates_generated`; reached limits are not proofs of infeasibility.
+This does not infer arbitrary symbolic layouts or add new orientations.
