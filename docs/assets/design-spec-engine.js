@@ -149,7 +149,11 @@ function connected(cells) {
 export function constructDesign(spec, catalogue, options = {}) {
   const validation = validateDesignSpec(spec);
   if (!validation.valid) throw new TypeError("Invalid design specification: " + validation.errors.join(" "));
-  if ((spec.requirements?.forbidden_features || []).length) {\n    throw new Error("Feature-level forbidden constraints are not supported by the current solid-footprint planner.");\n  }\n  const relationshipWarnings = validateRelationships(spec);\n  const heights = new Set(spec.components.map((component) => component.height_courses));
+  if ((spec.requirements?.forbidden_features || []).length) {
+    throw new Error("Feature-level forbidden constraints are not supported by the current solid-footprint planner.");
+  }
+  const relationshipWarnings = validateRelationships(spec);
+  const heights = new Set(spec.components.map((component) => component.height_courses));
   if (heights.size !== 1) {
     throw new Error("This construction strategy requires a shared component height; stepped-height planning is not yet supported.");
   }
@@ -189,7 +193,9 @@ export function constructDesign(spec, catalogue, options = {}) {
   const diagnostics = {
     strategy: "connected-orthogonal-footprint",
     fidelity_scope: "footprint-and-course-count",
-    component_coverage: componentCoverage,\n    relationship_warnings: relationshipWarnings,\n    role_validation: "semantic component presence only; catalogue part-role suitability is not yet implemented",
+    component_coverage: componentCoverage,
+    relationship_warnings: relationshipWarnings,
+    role_validation: "semantic component presence only; catalogue part-role suitability is not yet implemented",
     unsupported_required_roles: unsupportedRoles,
     limitations: [
       "v1 supports orthogonal prism components with one shared height and a connected union footprint.",
