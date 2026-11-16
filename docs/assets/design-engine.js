@@ -29,8 +29,9 @@ function candidateProfiles(catalogue, component, courseType, candidateIds, candi
   }).sort((a,b) => b.semanticScore-a.semanticScore || b.area-a.area || compare(a.profile.part_id,b.profile.part_id));
 }
 
-function enumerateTilings(width, depth, candidates, maxResults, maxNodes) {
+function enumerateTilings(width, depth, candidates, maxResults, maxNodes, excluded = []) {
   const occupied = new Uint8Array(width*depth);
+  for (const index of excluded) occupied[index] = 1;
   const results = [];
   let nodes = 0;
   const placed = [];
@@ -80,21 +81,21 @@ function placementFor(item, component, course, colour, instanceId, courseHeightL
     matrix:[...matrix],
     translation_ldu:[
       (origin.x+cx*LDU_TO_MM)/LDU_TO_MM,
-      -(origin.y/LDU_TO_MM)-course*courseHeightLdu,
+      -(origin.y/LDU_TO_MM)-(course+1)*courseHeightLdu,
       -(origin.z+cz*LDU_TO_MM)/LDU_TO_MM
     ],
     component_id:component.id,course_index:course
   };
 }
 
-function matingPairs(profileA, a, profileB, b, tolerance=0.25) {
+function matingPairs(profileA, a, profileB, b, tolerance=0.25, worldA, worldB) {
   const candidates=[];
-  for(const fa of profileA.features) for(const fb of profileB.features) {
+  for(const fa of worldA) for(const fb of worldB) {
     if(fa.kind===fb.kind) continue;
-    const pa=point(a,fa.position_ldu), pb=point(b,fb.position_ldu);
+    const pa=fa.position, pb=fb.position;
     const error=Math.hypot(...pa.map((v,i)=>v-pb[i]));
     if(error>tolerance) continue;
-    const aa=transform(a.matrix,fa.axis), ab=transform(b.matrix,fb.axis);
+    const aa=fa.direction, ab=fb.direction;
     if(dot(aa,ab)>-0.999999) continue;
     candidates.push({feature_a:fa.feature_id,feature_b:fb.feature_id,position_error_ldu:error});
   }
@@ -106,8 +107,11 @@ function matingPairs(profileA, a, profileB, b, tolerance=0.25) {
 
 function assemble(parts, profileMap, requireConnected) {
   const connections=[];
+  const world=parts.map(part=>profileMap.get(part.part_id).features.map(feature=>({...feature,position:point(part,feature.position_ldu),direction:transform(part.matrix,feature.axis)})));
+  const bounds=world.map(features=>({min:[0,1,2].map(axis=>Math.min(...features.map(f=>f.position[axis]))),max:[0,1,2].map(axis=>Math.max(...features.map(f=>f.position[axis])))}));
   for(let i=0;i<parts.length;i++) for(let j=i+1;j<parts.length;j++) {
-    const pairs=matingPairs(profileMap.get(parts[i].part_id),parts[i],profileMap.get(parts[j].part_id),parts[j]);
+    if([0,1,2].some(axis=>bounds[i].min[axis]>bounds[j].max[axis]+0.25 || bounds[j].min[axis]>bounds[i].max[axis]+0.25))continue;
+    const pairs=matingPairs(profileMap.get(parts[i].part_id),parts[i],profileMap.get(parts[j].part_id),parts[j],0.25,world[i],world[j]);
     if(pairs.length) connections.push({instance_a:parts[i].instance_id,instance_b:parts[j].instance_id,mating_pairs:pairs});
   }
   const adjacency=new Map(parts.map(part=>[part.instance_id,new Set()]));
@@ -146,14 +150,38 @@ function componentCandidates(component,catalogue,options,partCatalogue,designTra
   const depth=component.dimensions_mm.depth/STUD_PITCH_MM;
   const height=component.dimensions_mm.height;
   const courseHeight=options.courseType==="plate"?PLATE_HEIGHT_MM:BRICK_HEIGHT_MM;
-  const courses=height/courseHeight;
-  if(!Number.isInteger(width)||!Number.isInteger(depth)||!Number.isInteger(courses)) {
+  const courses=Math.round(height/courseHeight);
+  if(!Number.isInteger(width)||!Number.isInteger(depth)||!close(height, courses*courseHeight, 1e-6)) {
     return {error:"Component "+component.id+" dimensions must align to 8 mm stud pitch and "+courseHeight+" mm "+options.courseType+" courses."};
   }
+  if(width*depth>4096 || courses>128 || width*depth*courses>32768) return {error:"Component "+component.id+" exceeds the browser search envelope (4096 cells per course, 128 courses, 32768 cells total)."};
   const candidates=candidateProfiles(catalogue,component,options.courseType,candidateIds,candidateScores);
   if(!candidates.length) return {error:"Semantic candidates exist for "+component.role+" ("+[...candidateIds].join(", ")+"), but none has a verified course-placement connection profile in the construction catalogue."};
-  const {tilings,nodes}=enumerateTilings(width,depth,candidates,options.maxTilings,options.maxSearchNodes);
-  if(!tilings.length) return {error:"No exact part tiling found for component "+component.id+" ("+width+" × "+depth+" studs)."};
+  const courseTilings=[];
+  let nodes=0, remainingNodes=options.maxSearchNodes;
+  const cached=new Map();
+  for(let course=0;course<courses;course++) {
+    const excluded=[];
+    for(let z=0;z<depth;z++)for(let x=0;x<width;x++) {
+      const cell={min:[component.position_mm.x+x*8,component.position_mm.y+course*courseHeight,component.position_mm.z+z*8],max:[component.position_mm.x+(x+1)*8,component.position_mm.y+(course+1)*courseHeight,component.position_mm.z+(z+1)*8]};
+      for(const space of options.negativeSpaces) {
+        const bounds=componentBounds(space);
+        if(!overlaps(cell,bounds))continue;
+        if(![0,1,2].every(axis=>bounds.min[axis]<=cell.min[axis]+1e-6 && bounds.max[axis]>=cell.max[axis]-1e-6))return {error:"Negative space "+space.id+" cuts a partial grid cell in component "+component.id+"; adjust its bounds to the selected stud/course grid."};
+        excluded.push(z*width+x);break;
+      }
+    }
+    const key=excluded.join(",");
+    let search=cached.get(key);
+    if(!search) {
+      if(remainingNodes<=0)return {error:"Search node budget exhausted while tiling component "+component.id+"."};
+      search=enumerateTilings(width,depth,candidates,options.maxTilings,remainingNodes,excluded);
+      nodes+=search.nodes;remainingNodes-=search.nodes;cached.set(key,search);
+    }
+    if(!search.tilings.length)return {error:"No exact part tiling found for component "+component.id+" course "+(course+1)+" within the search budget."};
+    courseTilings.push(search.tilings);
+  }
+  if(courseTilings.every(tilings=>tilings.every(tiling=>!tiling.length)))return {error:"Negative spaces remove the entire required component "+component.id+"."};
   const profileMap=new Map(catalogue.profiles.map(profile=>[profile.part_id,profile]));
   const alternatives=[];
   let combinations=0;
@@ -172,7 +200,7 @@ function componentCandidates(component,catalogue,options,partCatalogue,designTra
       alternatives.push({parts,graph,score,tiling:chosen.map(layer=>layer.map(item=>item.candidate.profile.part_id))});
       return;
     }
-    for(const tiling of tilings) {
+    for(const tiling of courseTilings[course]) {
       chosen.push(tiling);search(course+1);chosen.pop();
       if(combinations>=options.maxCombinations) break;
     }
@@ -234,6 +262,7 @@ export function planDesign(spec,catalogue,overrides={}) {
     maxTilings:overrides.maxTilings||32,
     maxCombinations:overrides.maxCombinations||20000,
     defaultColour:(spec.appearance?.preferred_colours||[4])[0],
+    negativeSpaces:spec.negative_spaces||[],
   };
   const relationshipReport=evaluateRelationships(spec);
   if(relationshipReport.failures.length) return {status:"blocked",design_id:spec.design_id,failures:relationshipReport.failures,warnings:relationshipReport.warnings,parts:[],connections:[],component_reports:[]};
@@ -244,7 +273,7 @@ export function planDesign(spec,catalogue,overrides={}) {
       }
     }
   }
-  const technicPlan=planTechnicBeamJoint(spec,partCatalogue,designTranslation,overrides.connectorCatalogue);
+  const technicPlan=!(spec.negative_spaces||[]).length && planTechnicBeamJoint(spec,partCatalogue,designTranslation,overrides.connectorCatalogue);
   if(technicPlan)return technicPlan;
   options.maxComponentAlternatives=overrides.maxComponentAlternatives||12;
   options.maxGlobalCombinations=overrides.maxGlobalCombinations||5000;
@@ -266,6 +295,8 @@ export function planDesign(spec,catalogue,overrides={}) {
       if(parts.length>options.maxParts){overBudget=true;return;}
       const graph=assemble(parts,profileMap,spec.constraints.require_connected);
       if(!graph)return;
+      const componentByInstance=new Map(parts.map(part=>[part.instance_id,part.component_id]));
+      if(spec.relationships.some(relation=>relation.type==="attached_to" && relation.required!==false && !graph.connections.some(edge=>new Set([componentByInstance.get(edge.instance_a),componentByInstance.get(edge.instance_b)]).has(relation.from) && new Set([componentByInstance.get(edge.instance_a),componentByInstance.get(edge.instance_b)]).has(relation.to))))return;
       const score=parts.length*1000-graph.connections.length*5-graph.connections.reduce((sum,edge)=>sum+edge.mating_pairs.length,0);
       if(!best||score<best.score)best={parts,graph,score,chosen:chosen.map(item=>item.tiling)};
       return;
@@ -290,7 +321,9 @@ export function planDesign(spec,catalogue,overrides={}) {
   if(spec.components.some(component=>component.priority!=="essential")) warnings.push("Component priority is descriptive in v1; all listed components are currently treated as required.");
   if(spec.appearance?.symmetry&&spec.appearance.symmetry!=="none") warnings.push("The requested global symmetry is not yet an optimisation constraint and has not been verified.");
   warnings.push("Connection edges represent nominal stud/receiver datum alignment only; clutch force, stability and structural strength are not verified.");
+  if(options.negativeSpaces.length) warnings.push("Negative spaces are checked against nominal part bodies; stud protrusions, underside details and insertion clearances are not assessed.");
   const validation={checks:[
+    {id:"negative_space_body_clearance",status:"passed",detail:options.negativeSpaces.length+" rectangular keepouts preserved by exact nominal body tiling; stud protrusions and mesh-level clearance are not assessed."},
     {id:"design_spec",status:"passed",detail:"The catalogue-independent design specification is valid."},
     {id:"part_catalogue_coverage",status:"passed",detail:"Every placed part has a source profile in the supplied catalogue."},
     {id:"semantic_relationships",status:"passed",detail:"All required spatial relationships in the design specification are satisfied."},

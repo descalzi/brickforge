@@ -29,3 +29,6 @@ data/raw/
 data/cache/
 data/vendor/ldraw/
 outputs/
+
+# Local JavaScript dependencies
+node_modules

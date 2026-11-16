@@ -47,6 +47,318 @@
         "Dimensions are exact nominal dimensions in millimetres.",
         "Only standard brick connection profiles currently have verified nominal interface datums."
       ]
+    },
+    {
+      "schema_version": 1,
+      "design_id": "two-opening-wall",
+      "name": "Wall with two preserved openings",
+      "units": "mm",
+      "components": [
+        {
+          "id": "wall",
+          "label": "Wall",
+          "role": "wall",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 64,
+            "depth": 16,
+            "height": 38.4
+          },
+          "position_mm": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "colour": 14
+        }
+      ],
+      "relationships": [],
+      "constraints": {
+        "require_connected": true,
+        "allow_intersections": false,
+        "max_parts": 200,
+        "max_search_nodes": 100000,
+        "course_type": "brick"
+      },
+      "negative_spaces": [
+        {
+          "id": "left-opening",
+          "dimensions_mm": {
+            "width": 16,
+            "depth": 16,
+            "height": 19.2
+          },
+          "position_mm": {
+            "x": 8,
+            "y": 9.6,
+            "z": 0
+          }
+        },
+        {
+          "id": "right-opening",
+          "dimensions_mm": {
+            "width": 16,
+            "depth": 16,
+            "height": 19.2
+          },
+          "position_mm": {
+            "x": 40,
+            "y": 9.6,
+            "z": 0
+          }
+        }
+      ]
+    },
+    {
+      "schema_version": 1,
+      "design_id": "table",
+      "name": "Four-legged table",
+      "units": "mm",
+      "components": [
+        {
+          "id": "leg-front-left",
+          "label": "Leg Front Left",
+          "role": "support",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 8,
+            "depth": 8,
+            "height": 19.2
+          },
+          "position_mm": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "colour": 0
+        },
+        {
+          "id": "leg-front-right",
+          "label": "Leg Front Right",
+          "role": "support",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 8,
+            "depth": 8,
+            "height": 19.2
+          },
+          "position_mm": {
+            "x": 24,
+            "y": 0,
+            "z": 0
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "colour": 0
+        },
+        {
+          "id": "leg-back-left",
+          "label": "Leg Back Left",
+          "role": "support",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 8,
+            "depth": 8,
+            "height": 19.2
+          },
+          "position_mm": {
+            "x": 0,
+            "y": 0,
+            "z": 24
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "colour": 0
+        },
+        {
+          "id": "leg-back-right",
+          "label": "Leg Back Right",
+          "role": "support",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 8,
+            "depth": 8,
+            "height": 19.2
+          },
+          "position_mm": {
+            "x": 24,
+            "y": 0,
+            "z": 24
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "colour": 0
+        },
+        {
+          "id": "top",
+          "label": "Top",
+          "role": "platform",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 32,
+            "depth": 32,
+            "height": 19.2
+          },
+          "position_mm": {
+            "x": 0,
+            "y": 19.2,
+            "z": 0
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "colour": 15
+        }
+      ],
+      "relationships": [],
+      "constraints": {
+        "require_connected": true,
+        "allow_intersections": false,
+        "max_parts": 200,
+        "max_search_nodes": 100000,
+        "course_type": "brick"
+      },
+      "negative_spaces": []
+    },
+    {
+      "schema_version": 1,
+      "design_id": "stepped-platform",
+      "name": "Two-tone stepped platform",
+      "units": "mm",
+      "components": [
+        {
+          "id": "base",
+          "label": "Base",
+          "role": "base",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 32,
+            "depth": 32,
+            "height": 19.2
+          },
+          "position_mm": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "colour": 1
+        },
+        {
+          "id": "upper",
+          "label": "Upper",
+          "role": "platform",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 16,
+            "depth": 16,
+            "height": 9.6
+          },
+          "position_mm": {
+            "x": 8,
+            "y": 19.2,
+            "z": 8
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "colour": 14
+        }
+      ],
+      "relationships": [],
+      "constraints": {
+        "require_connected": true,
+        "allow_intersections": false,
+        "max_parts": 200,
+        "max_search_nodes": 100000,
+        "course_type": "brick"
+      },
+      "negative_spaces": []
+    },
+    {
+      "schema_version": 1,
+      "design_id": "open-courtyard",
+      "name": "Open courtyard with a doorway",
+      "units": "mm",
+      "components": [
+        {
+          "id": "foundation",
+          "label": "Foundation",
+          "role": "base",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 48,
+            "depth": 48,
+            "height": 9.6
+          },
+          "position_mm": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "colour": 7
+        },
+        {
+          "id": "walls",
+          "label": "Walls",
+          "role": "wall",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 48,
+            "depth": 48,
+            "height": 19.2
+          },
+          "position_mm": {
+            "x": 0,
+            "y": 9.6,
+            "z": 0
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "colour": 15
+        }
+      ],
+      "relationships": [],
+      "constraints": {
+        "require_connected": true,
+        "allow_intersections": false,
+        "max_parts": 200,
+        "max_search_nodes": 100000,
+        "course_type": "brick"
+      },
+      "negative_spaces": [
+        {
+          "id": "interior",
+          "dimensions_mm": {
+            "width": 32,
+            "depth": 32,
+            "height": 19.2
+          },
+          "position_mm": {
+            "x": 8,
+            "y": 9.6,
+            "z": 8
+          }
+        },
+        {
+          "id": "doorway",
+          "dimensions_mm": {
+            "width": 16,
+            "depth": 8,
+            "height": 19.2
+          },
+          "position_mm": {
+            "x": 16,
+            "y": 9.6,
+            "z": 0
+          }
+        }
+      ]
     }
   ],
   "challenge_specs": [

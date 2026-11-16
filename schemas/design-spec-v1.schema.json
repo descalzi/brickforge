@@ -7,6 +7,67 @@
   "additionalProperties": false,
   "required": ["schema_version", "design_id", "units", "components", "relationships", "constraints"],
   "properties": {
+    "negative_spaces": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "dimensions_mm",
+          "position_mm"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "dimensions_mm": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "width",
+              "depth",
+              "height"
+            ],
+            "properties": {
+              "width": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "depth": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "height": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              }
+            }
+          },
+          "position_mm": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "x",
+              "y",
+              "z"
+            ],
+            "properties": {
+              "x": {
+                "type": "number"
+              },
+              "y": {
+                "type": "number"
+              },
+              "z": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      }
+    },
     "schema_version": { "const": 1 },
     "design_id": { "type": "string", "minLength": 1 },
     "name": { "type": "string", "minLength": 1 },

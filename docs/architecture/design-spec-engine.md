@@ -65,3 +65,13 @@ Node tests exercise validation, scale rejection, global interlocking, multi-comp
 4. Expand the global planner to joint component placement, support graphs, stability, collision and build sequence constraints.
 5. Add multi-objective optimisation and instruction generation.
 6. Only after the engine's input/output contract is stable, integrate an LLM adapter that produces this specification.
+
+## Design studio milestone
+
+`designer.html` is the main interactive engine workbench. It provides five passing, editable object briefs, separate unresolved challenge briefs, component highlighting, orbit/zoom and course inspection, JSON import/save, URL-fragment brief sharing, and LDraw/BOM/full-report exports. Geometry is explicitly a nominal profile preview. A software-projected 3D viewer supports environments without WebGL; the bundled Three.js viewer is used where available. Third-party code and its MIT notice are pinned under `docs/assets/vendor/three`.
+
+Planning runs in a disposable module worker with cancellation and a 30-second UI timeout. Edits, imports and fixture changes invalidate previous geometry and downloads. No language-model service is represented as implemented.
+
+The millimetre specification now accepts `negative_spaces`, each with an ID, position and rectangular dimensions. The planner excludes fully covered grid cells per component/course and refuses partial-cell cuts. It searches layouts around those keepouts and checks nominal graph connectivity. Keepouts apply to nominal part bodies; studs, underside geometry, physical clearances and mesh-level collision are not verified. Course and cell envelopes bound browser memory. `attached_to` additionally requires a direct mating edge between the named components.
+
+Course placement uses the LDraw top-face datum: a body with semantic lower Y bound `y` and height `h` is translated to `-(y+h)/0.4` LDU. Tests independently recover body bounds from exported transforms and check component containment and keepout exclusion. The course slider uses global physical elevations, including components that begin above the foundation, and is not presented as a proven build order.

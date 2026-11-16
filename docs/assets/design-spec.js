@@ -1,6 +1,6 @@
 const finite = (value) => typeof value === "number" && Number.isFinite(value);
 const RELATIONSHIPS = new Set(["above","below","left_of","right_of","in_front_of","behind","attached_to","aligned_with","symmetric_to"]);
-const ROOT_KEYS = new Set(["schema_version","design_id","name","units","components","relationships","constraints","appearance","assumptions"]);
+const ROOT_KEYS = new Set(["schema_version","design_id","name","units","components","relationships","constraints","appearance","assumptions","negative_spaces"]);
 const COMPONENT_KEYS = new Set(["id","label","role","function","geometry","geometry_parameters","dimensions_mm","position_mm","priority","required_features","forbidden_features","colour","confidence"]);
 const hasOnlyKeys = (value, allowed) => Object.keys(value || {}).filter(key => !allowed.has(key));
 
@@ -14,7 +14,7 @@ export function validateDesignSpec(spec) {
   if (spec.units !== "mm") errors.push("units must be mm.");
   if (!Array.isArray(spec.components) || !spec.components.length) errors.push("At least one component is required.");
   const ids = new Set();
-  for (const [index, component] of (spec.components || []).entries()) {
+  for (const [index, component] of (Array.isArray(spec.components) ? spec.components : []).entries()) {
     const path = "components[" + index + "]";
     if (!component || typeof component !== "object" || Array.isArray(component)) { errors.push(path + " must be an object."); continue; }
     for (const key of hasOnlyKeys(component, COMPONENT_KEYS)) errors.push(path + " has unknown property " + key + ".");
@@ -59,12 +59,24 @@ export function validateDesignSpec(spec) {
     if (component.colour !== undefined && (!Number.isInteger(component.colour) || component.colour < 0)) errors.push(path + ".colour must be a non-negative integer.");
     if (component.confidence !== undefined && !["explicit","inferred","uncertain"].includes(component.confidence)) errors.push(path + ".confidence is invalid.");
   }
+  if (spec.negative_spaces !== undefined) {
+    if (!Array.isArray(spec.negative_spaces)) errors.push("negative_spaces must be an array.");
+    else for (const [index, space] of spec.negative_spaces.entries()) {
+      const path="negative_spaces["+index+"]";
+      if(!space || typeof space!=="object" || Array.isArray(space)) {errors.push(path+" must be an object.");continue;}
+      if(hasOnlyKeys(space,new Set(["id","dimensions_mm","position_mm"])).length)errors.push(path+" contains unknown properties.");
+      if(typeof space.id!=="string" || !space.id.trim() || ids.has(space.id))errors.push(path+" requires a unique id.");
+      else ids.add(space.id);
+      if(!space.dimensions_mm || hasOnlyKeys(space.dimensions_mm,new Set(["width","depth","height"])).length || ["width","depth","height"].some(axis=>!finite(space.dimensions_mm[axis])||space.dimensions_mm[axis]<=0))errors.push(path+" dimensions must be positive and finite.");
+      if(!space.position_mm || hasOnlyKeys(space.position_mm,new Set(["x","y","z"])).length || ["x","y","z"].some(axis=>!finite(space.position_mm[axis])))errors.push(path+" position must be finite.");
+    }
+  }
   if (!Array.isArray(spec.relationships)) errors.push("relationships must be an array.");
   else for (const [index, relationship] of spec.relationships.entries()) {
     if (!relationship || typeof relationship !== "object" || Array.isArray(relationship)) { errors.push("relationships[" + index + "] must be an object."); continue; }
     if (hasOnlyKeys(relationship,new Set(["id","type","from","to","tolerance_mm","required"])).length) errors.push("relationships[" + index + "] contains unknown properties.");
     if (!RELATIONSHIPS.has(relationship.type)) errors.push("relationships[" + index + "].type is unsupported.");
-    if (!ids.has(relationship.from) || !ids.has(relationship.to)) errors.push("relationships[" + index + "] references an unknown component.");
+    if (!(Array.isArray(spec.components)?spec.components:[]).some(c=>c?.id===relationship.from) || !(Array.isArray(spec.components)?spec.components:[]).some(c=>c?.id===relationship.to)) errors.push("relationships[" + index + "] references an unknown component.");
     if (relationship.from === relationship.to) errors.push("relationships[" + index + "] cannot relate a component to itself.");
     if (relationship.tolerance_mm !== undefined && (!finite(relationship.tolerance_mm) || relationship.tolerance_mm < 0)) errors.push("relationships[" + index + "].tolerance_mm must be non-negative.");
     if (relationship.required !== undefined && typeof relationship.required !== "boolean") errors.push("relationships[" + index + "].required must be boolean.");
