@@ -229,14 +229,14 @@ export function planDesign(spec,catalogue,overrides={}) {
     candidateSets.push(result.alternatives);
     componentReports.push({component_id:component.id,status:"planned",candidate_layouts:result.alternatives.length,search_nodes:result.search_nodes,combinations_examined:result.combinations});
   }
-  let best=null,globalCombinations=0;
+  let best=null,globalCombinations=0,overBudget=false;
   const chosen=[];
   function chooseComponent(index) {
     if(globalCombinations>=options.maxGlobalCombinations)return;
     if(index===candidateSets.length) {
       globalCombinations++;
       const parts=chosen.flatMap(item=>item.parts);
-      if(parts.length>options.maxParts)return;
+      if(parts.length>options.maxParts){overBudget=true;return;}
       const graph=assemble(parts,profileMap,spec.constraints.require_connected);
       if(!graph)return;
       const score=parts.length*1000-graph.connections.length*5-graph.connections.reduce((sum,edge)=>sum+edge.mating_pairs.length,0);
@@ -249,7 +249,7 @@ export function planDesign(spec,catalogue,overrides={}) {
     }
   }
   chooseComponent(0);
-  if(!best) return {status:"blocked",design_id:spec.design_id,failures:["No globally connected arrangement satisfies the complete design and part budget."],warnings:[],parts:[],connections:[],component_reports:componentReports};
+  if(!best) return {status:"blocked",design_id:spec.design_id,failures:[overBudget?"No arrangement satisfies the max_parts budget of "+options.maxParts+".":"No globally connected arrangement satisfies the complete design."],warnings:[],parts:[],connections:[],component_reports:componentReports};
   const parts=best.parts,graph=best.graph;
   componentReports.forEach((report,index)=>{report.selected_course_layouts=best.chosen[index];});
   if(parts.length>options.maxParts) return {status:"blocked",design_id:spec.design_id,failures:["The plan exceeds the max_parts constraint."],warnings:[],parts:[],connections:[],component_reports:componentReports};
