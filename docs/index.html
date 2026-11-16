@@ -53,7 +53,7 @@
 
       <figure class="hero-figure">
         <div class="figure-bar">
-          <span>THE SHAPE-TO-STUD STUDY</span>
+          <span>THE DESIGN-TO-ASSEMBLY STUDY</span>
           <span>ILLUSTRATIVE / NOT A GENERATED BUILD</span>
         </div>
         <svg class="shape-study" viewBox="0 0 900 570" role="img" aria-labelledby="study-title study-desc">
@@ -87,7 +87,7 @@
           <rect width="900" height="570" fill="url(#major-grid)" opacity=".7"/>
 
           <g class="drawing-labels" fill="#5B6B78" font-family="'IBM Plex Mono', monospace" font-size="11" letter-spacing="1">
-            <text x="62" y="62">01 / INPUT GEOMETRY</text>
+            <text x="62" y="62">01 / DESIGN INTENT</text>
             <text x="365" y="62">02 / STUD ALIGNMENT</text>
             <text x="642" y="62">03 / PART ASSEMBLY</text>
           </g>
@@ -200,7 +200,7 @@
           </g>
           <path d="M34 548H866" stroke="#CCD5DD" stroke-width="1"/>
           <g fill="#748391" font-family="'IBM Plex Mono', monospace" font-size="9">
-            <text x="35" y="562">GEOMETRY → CANDIDATE SEARCH → VALIDATED ASSEMBLY</text>
+            <text x="35" y="562">DESIGN → CANDIDATE SEARCH → NOMINAL ASSEMBLY</text>
             <text x="865" y="562" text-anchor="end">BF / 001</text>
           </g>
         </svg>
@@ -209,7 +209,7 @@
     </section>
 
     <section class="intro-strip" aria-label="Project principles">
-      <p>Any shape</p><span aria-hidden="true"></span>
+      <p>Object intent</p><span aria-hidden="true"></span>
       <p>Real elements</p><span aria-hidden="true"></span>
       <p>Buildability first</p>
     </section>
@@ -222,23 +222,23 @@
       <div class="method-list">
         <article class="method-row">
           <div class="method-number">01</div>
-          <div class="method-title"><h3>Understand the shape</h3><p>Interpret the request, inspect the geometry, and identify the surfaces, dimensions and details that matter.</p></div>
-          <div class="method-output"><span>INPUT</span><strong>Mesh + design brief</strong></div>
+          <div class="method-title"><h3>Specify the object</h3><p>Describe components, dimensions, relationships and empty spaces independently of the parts catalogue. Authored specifications test this contract before language-model integration.</p></div>
+          <div class="method-output"><span>INPUT</span><strong>Object specification</strong></div>
         </article>
         <article class="method-row">
           <div class="method-number">02</div>
-          <div class="method-title"><h3>Find the right elements</h3><p>Search real part geometry and candidate placements. Combine volumetric and surface-aware strategies rather than forcing every object into a voxel grid.</p></div>
+          <div class="method-title"><h3>Find the right elements</h3><p>Match roles and required features to catalogue capabilities, then search dimensions, orientations and connected layouts. Unsupported specialist requirements remain visible.</p></div>
           <div class="method-output"><span>SEARCH</span><strong>Parts + transforms</strong></div>
         </article>
         <article class="method-row">
           <div class="method-number">03</div>
-          <div class="method-title"><h3>Prove the construction</h3><p>Check connection compatibility, collisions, connectivity, support and whether the build can be assembled in a sensible order.</p></div>
+          <div class="method-title"><h3>Check the construction</h3><p>Check exact nominal body coverage, empty spaces, spatial requirements and mating datums. Physical strength, stability and assembly accessibility remain unverified.</p></div>
           <div class="method-output"><span>VALIDATION</span><strong>Assembly graph</strong></div>
         </article>
         <article class="method-row">
           <div class="method-number">04</div>
-          <div class="method-title"><h3>Make it buildable by a person</h3><p>Generate a consistent 3D model, parts inventory and illustrated steps from the same validated construction.</p></div>
-          <div class="method-output"><span>OUTPUT</span><strong>Model + BOM + steps</strong></div>
+          <div class="method-title"><h3>Export one consistent assembly</h3><p>Inspect the nominal 3D model and download its LDraw assembly, parts inventory and diagnostic report. Verified build sequences and illustrated instructions are future work.</p></div>
+          <div class="method-output"><span>OUTPUT</span><strong>Model + BOM + report</strong></div>
         </article>
       </div>
     </section>
@@ -249,7 +249,7 @@
         <h2>One construction.<br><span>Every deliverable.</span></h2>
         <p>The model, inventory and instructions must never drift apart. BrickForge is being designed around one canonical assembly graph so every output describes the same set of parts, positions and connections.</p>
       </div>
-      <div class="output-diagram" aria-label="One assembly graph provides the 3D model, parts list and building instructions">
+      <div class="output-diagram" aria-label="One assembly graph provides the 3D model, parts list and diagnostic report">
         <div class="graph-core">
           <svg viewBox="0 0 160 130" role="img" aria-label="Connected nodes representing an assembly graph">
             <g stroke="#A7B7C3" stroke-width="2">
@@ -272,7 +272,7 @@
         <div class="output-branches">
           <div class="output-item"><span class="output-icon" aria-hidden="true">3D</span><div><strong>Model</strong><small>LDraw / interactive preview</small></div></div>
           <div class="output-item"><span class="output-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 6h14M5 12h14M5 18h14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="square"/></svg></span><div><strong>Parts list</strong><small>Quantities / colours / identifiers</small></div></div>
-          <div class="output-item"><span class="output-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 6h4v4H4zM4 14h4v4H4zM10 8h10M16 4l4 4-4 4M10 16h10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="square" stroke-linejoin="miter"/></svg></span><div><strong>Instructions</strong><small>Build order / steps / PDF</small></div></div>
+          <div class="output-item"><span class="output-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 6h4v4H4zM4 14h4v4H4zM10 8h10M16 4l4 4-4 4M10 16h10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="square" stroke-linejoin="miter"/></svg></span><div><strong>Validation report</strong><small>Checks / limitations / diagnostics</small></div></div>
         </div>
       </div>
     </section>
@@ -283,16 +283,16 @@
           
           <h2>Built in layers.<br>Measured at every step.</h2>
         </div>
-        <p class="foundations-intro">The first milestone is deliberately narrow: make geometry and part data reliable before asking AI to generate complete models.</p>
+        <p class="foundations-intro">The current milestone proves an ideal object specification can drive part selection and connected placement. Natural-language interpretation comes after the construction contract is tested.</p>
       </div>
       <div class="progress-table">
-        <div class="progress-row progress-live"><span class="progress-state"><i aria-hidden="true"></i> IN PLACE</span><strong>Project architecture and Python package foundation</strong><small>Repository scaffold, design principles and roadmap.</small></div>
-        <div class="progress-row progress-live"><span class="progress-state"><i aria-hidden="true"></i> IN PLACE</span><strong>Mesh inspection foundation</strong><small>STL / OBJ scene loading, explicit units and dimension reporting.</small></div>
-        <div class="progress-row progress-next"><span class="progress-state"><i aria-hidden="true"></i> NEXT</span><strong>LDraw part library integration</strong><small>Part geometry, file parsing, colour definitions and provenance.</small></div>
-        <div class="progress-row progress-planned"><span class="progress-state"><i aria-hidden="true"></i> PLANNED</span><strong>Connection-aware construction engine</strong><small>Typed connectors, candidate placement and validation.</small></div>
-        <div class="progress-row progress-planned"><span class="progress-state"><i aria-hidden="true"></i> PLANNED</span><strong>Model generation and instructions</strong><small>Optimisation, assembly sequence, BOM and illustrated export.</small></div>
+        <div class="progress-row progress-live"><span class="progress-state"><i aria-hidden="true"></i> IN PLACE</span><strong>Millimetre-first design specification</strong><small>Components, roles, dimensions, relationships and rectangular empty spaces.</small></div>
+        <div class="progress-row progress-live"><span class="progress-state"><i aria-hidden="true"></i> IN PLACE</span><strong>Browser construction studio</strong><small>Five passing briefs, background planning, 3D inspection and exports.</small></div>
+        <div class="progress-row progress-live"><span class="progress-state"><i aria-hidden="true"></i> IN PLACE</span><strong>Source-backed part discovery</strong><small>LDraw geometry resolution, semantic candidates and nominal connector profiles.</small></div>
+        <div class="progress-row progress-next"><span class="progress-state"><i aria-hidden="true"></i> NEXT</span><strong>General specialised-part assembly</strong><small>Wheels, slopes, windows and curved elements in a global fitting search.</small></div>
+        <div class="progress-row progress-planned"><span class="progress-state"><i aria-hidden="true"></i> PLANNED</span><strong>Language interpretation and building instructions</strong><small>Text-to-specification, stability assessment and verified construction sequences.</small></div>
       </div>
-      <p class="progress-note">Status reflects the committed repository foundation, not a claim that the full generator is already working.</p>
+      <p class="progress-note">The studio is a functional structured-design prototype. General arbitrary-object generation and physical buildability are still being developed.</p>
     </section>
 
     <section class="closing-section">
