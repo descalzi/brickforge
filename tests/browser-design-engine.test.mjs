@@ -75,7 +75,8 @@ test("planner refuses to substitute a structural brick for an unverified wheel r
   wheel.components[0].role = "wheel";
   const result = planDesign(wheel, catalogue, { partCatalogue, designTranslation });
   assert.equal(result.status, "blocked");
-  assert.match(result.failures[0], /No source-backed part candidates satisfy semantic role/);
+  assert.match(result.failures[0], /Reference-only parts exist for semantic role wheel/);
+  assert.match(result.failures[0], /3739/);
 });
 
 test("required spatial relationships are evaluated before construction", () => {
