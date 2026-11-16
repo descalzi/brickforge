@@ -65,6 +65,17 @@ export function validateDesignSpec(spec) {
           || !component.functional_requirements.every((item) => typeof item === "string" && item.trim()))) {
       fail(at + ".functional_requirements must be an array of non-empty strings.");
     }
+    if (component.required_interfaces !== undefined
+        && (!Array.isArray(component.required_interfaces)
+          || !component.required_interfaces.every((item) => item && typeof item.interface_type === "string"
+            && item.interface_type.trim()
+            && (item.count === undefined || (Number.isInteger(item.count) && item.count > 0))
+            && (item.diameter_mm === undefined || (Number.isFinite(item.diameter_mm) && item.diameter_mm > 0))
+            && (item.max_diameter_error_mm === undefined || (Number.isFinite(item.max_diameter_error_mm) && item.max_diameter_error_mm >= 0))
+            && (item.axis_vector === undefined || (Array.isArray(item.axis_vector) && item.axis_vector.length === 3
+              && item.axis_vector.every(Number.isFinite) && Math.hypot(...item.axis_vector) > 0))))) {
+      fail(at + ".required_interfaces contains an invalid interface requirement.");
+    }
   }
   if (spec.relationships !== undefined && !Array.isArray(spec.relationships)) {
     fail("relationships must be an array.");
@@ -254,6 +265,9 @@ export function constructDesign(spec, catalogue, options = {}) {
   }
   if (spec.components.some((component) => (component.functional_requirements || []).length)) {
     throw new Error("Functional component requirements need a specialised-part planner and cannot yet be represented by solid footprints.");
+  }
+  if (spec.components.some((component) => (component.required_interfaces || []).length)) {
+    throw new Error("Required functional interfaces can be ranked against curated part profiles, but specialised-part placement and assembly are not yet implemented.");
   }
   const componentColours = [...new Set(spec.components
     .map((component) => component.colour_code)
