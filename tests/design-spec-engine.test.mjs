@@ -55,6 +55,7 @@ test("constructs stepped-height components through variable-course planning", as
     geometry: { type: "orthogonal_prism", width_studs: 2, depth_studs: 2 },
     origin_studs: [1,1], base_course: 1, height_courses: 1,
   });
+  stepped.relationships = [{ type: "above", from: "upper", to: "chassis", required: true }];
   const result = constructDesign(stepped, catalogue);
   assert.equal(result.course_part_counts.length, 2);
   assert.ok(result.connections.length > 0);
