@@ -57,6 +57,11 @@ try{
  assert.ok(pavilion.parts.some(p=>p.part_id==="60592"));assert.ok(pavilion.parts.some(p=>p.part_id==="3037"||p.part_id==="3039"));
  assert.equal(await page.locator("#studio-viewport [data-parts]").getAttribute("data-parts"),String(pavilion.parts.length));
  assert.equal(await page.locator("#viewer-empty").isVisible(),false);
+ // Framing must use placed world geometry, rather than each source mesh at
+ // its local origin. The software viewer computes its own transformed bounds.
+ const canvas=page.locator("#studio-viewport canvas");
+ if(await canvas.count()){const worldBounds=await canvas.getAttribute("data-world-bounds");assert.ok(worldBounds,"WebGL viewer must report the actual fitted bounds");const {min,max}=JSON.parse(worldBounds);assert.ok(Math.abs(min[0])<.1&&Math.abs(min[2])<.1);assert.ok(Math.abs(max[0]-32)<.1&&Math.abs(max[2]-32)<.1);assert.ok(Math.abs(max[1]-49.6)<.1,"source studs and roof must be included in the fitted scene");}
+
  await page.locator("#instruction-slider").evaluate(el=>{el.value="1";el.dispatchEvent(new Event("input",{bubbles:true}));});
  assert.equal(await page.locator("#instruction-value").innerText(),"1/"+pavilion.parts.length);
  assert.match(await page.locator("#instruction-detail").innerText(),/Step 1/);
