@@ -97,3 +97,31 @@ test("overlapping semantic component volumes are blocked", () => {
   assert.equal(result.status, "blocked");
   assert.match(result.failures[0], /overlap in their specified volumes/);
 });
+
+test("planner optimises semantic components together and connects an upper component to the chassis", () => {
+  const design = structuredClone(carBody);
+  design.design_id = "body-with-roof";
+  design.components.push({
+    id: "roof", label: "Upper deck", role: "structural", geometry: "rectangular_prism",
+    dimensions_mm: { width: 32, depth: 32, height: 9.6 },
+    position_mm: { x: 0, y: 19.2, z: 0 }, priority: "essential"
+  });
+  design.relationships = [{ type: "above", from: "roof", to: "body" }];
+  const result = planDesign(design, catalogue);
+  assert.equal(result.status, "planned", result.failures?.join("; "));
+  assert.equal(result.parts.length, 6);
+  assert.equal(result.validation.checks.find(check => check.id === "graph_connectivity").status, "passed");
+  assert.equal(result.component_reports.length, 2);
+});
+
+test("planner refuses individually plausible components that cannot form one global assembly", () => {
+  const design = structuredClone(carBody);
+  design.components.push({
+    id: "remote", role: "structural", geometry: "rectangular_prism",
+    dimensions_mm: { width: 8, depth: 8, height: 9.6 },
+    position_mm: { x: 160, y: 0, z: 0 }, priority: "essential"
+  });
+  const result = planDesign(design, catalogue);
+  assert.equal(result.status, "blocked");
+  assert.match(result.failures[0], /globally connected/);
+});
