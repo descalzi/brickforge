@@ -39,3 +39,15 @@ test("dimension limits and required capabilities constrain discovery",()=>{
  const unsupported=discoverPartCandidates({role:"beam",required_capabilities:["rotating_wheel"],dimensions_mm:{width:32,depth:8,height:9.6}},catalogue);
  assert.equal(unsupported.status,"no_candidates");
 });
+
+test("specialist wheel, window, slope and wing parts are indexed but not promoted to buildable geometry",()=>{
+ const wheels=discoverPartCandidates({role:"wheel"},catalogue,{includeReferenceOnly:true});
+ const windows=discoverPartCandidates({role:"window"},catalogue,{includeReferenceOnly:true});
+ const slopes=discoverPartCandidates({role:"slope"},catalogue,{includeReferenceOnly:true});
+ const wings=discoverPartCandidates({role:"wing"},catalogue,{includeReferenceOnly:true});
+ assert.ok(wheels.candidates.some(part=>part.part_id==="3739"));
+ assert.ok(windows.candidates.some(part=>part.part_id==="5260"));
+ assert.ok(slopes.candidates.some(part=>part.part_id==="3039"));
+ assert.ok(wings.candidates.some(part=>part.part_id==="3934"));
+ assert.ok([...wheels.candidates,...windows.candidates,...slopes.candidates,...wings.candidates].every(part=>part.candidate_status==="reference_only"&&part.dimensions_mm===null));
+});
