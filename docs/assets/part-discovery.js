@@ -80,10 +80,10 @@ export function discoverPartsForRole(role, partCatalogue, connectionCatalogue, o
       score,
       matched_terms: matches,
       connection_profile_available: hasConnectionProfile,
-      planner_eligible: hasConnectionProfile,
+      planner_eligible: false,
       geometry_inspection_required: true,
       suitability_status: hasConnectionProfile
-        ? "profiled_candidate_requires_geometry_and_interface_review"
+        ? "profile_available_geometry_and_interface_checks_required"
         : "catalogue_candidate_only_not_yet_plannable",
     });
   }
@@ -92,7 +92,8 @@ export function discoverPartsForRole(role, partCatalogue, connectionCatalogue, o
     role: key,
     query_terms: [...terms],
     candidate_count: ranked.length,
-    planner_ready_count: ranked.filter((candidate) => candidate.planner_eligible).length,
+    profiled_candidate_count: ranked.filter((candidate) => candidate.connection_profile_available).length,
+    planner_ready_count: 0,
     candidates: ranked.slice(0, limit),
     limitations: [
       "Name/category/keyword matches are discovery evidence, not proof that a part performs the requested function.",
@@ -125,6 +126,7 @@ export async function rankPartCandidatesWithGeometry(discovery, geometryResolver
       || !Number.isInteger(concurrency) || concurrency < 1) {
     throw new RangeError("maxCandidates and concurrency must be positive integers.");
   }
+  scoreGeometrySuitability({ dimensions_mm: [1, 1, 1] }, targetDimensionsMm, options);
   const selected = discovery.candidates.slice(0, maxCandidates);
   const results = new Array(selected.length);
   let nextIndex = 0;
