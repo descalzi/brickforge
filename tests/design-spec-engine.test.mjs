@@ -34,7 +34,7 @@ test("constructs a connected semantic brief into real catalogue placements and e
   assert.equal(result.assembly_graph.parts.length, result.parts.length);
   assert.equal(result.bom.total_parts, result.parts.length);
   assert.match(result.ldraw, /3001\.dat/);
-  assert.equal(result.design_diagnostics.component_coverage[0].status, "represented_in_shared_footprint");
+  assert.equal(result.design_diagnostics.component_coverage[0].status, "represented_in_layer_occupancy");
 });
 
 test("rejects malformed specifications, duplicate IDs and non-array relationships", () => {
@@ -46,12 +46,20 @@ test("rejects malformed specifications, duplicate IDs and non-array relationship
   assert.equal(validateDesignSpec(malformedRelationships).valid, false);
 });
 
-test("does not silently flatten components with different heights", async () => {
+test("constructs stepped-height components through variable-course planning", async () => {
   const catalogue = JSON.parse(await readFile(new URL("../docs/data/connection-profiles/basic-bricks.json", import.meta.url), "utf8"));
   const stepped = structuredClone(carBrief);
   stepped.components[0].height_courses = 1;
-  stepped.components.push({ id: "upper", name: "Upper body", role: "body", geometry: { type: "orthogonal_prism", width_studs: 2, depth_studs: 2 }, origin_studs: [1,1], height_courses: 2 });
-  assert.throws(() => constructDesign(stepped, catalogue), /shared component height/);
+  stepped.components.push({
+    id: "upper", name: "Upper body", role: "body",
+    geometry: { type: "orthogonal_prism", width_studs: 2, depth_studs: 2 },
+    origin_studs: [1,1], base_course: 1, height_courses: 1,
+  });
+  const result = constructDesign(stepped, catalogue);
+  assert.equal(result.course_part_counts.length, 2);
+  assert.ok(result.connections.length > 0);
+  assert.equal(result.dimensions_mm.height, 19.2);
+  assert.equal(result.design_diagnostics.component_coverage[1].base_course, 1);
 });
 
 test("rejects disconnected footprints rather than inventing a bridge", async () => {
@@ -59,7 +67,7 @@ test("rejects disconnected footprints rather than inventing a bridge", async () 
   const disconnected = structuredClone(carBrief);
   disconnected.components[0].origin_studs = [0,0];
   disconnected.components.push({ id: "remote", name: "Remote pod", role: "pod", geometry: { type: "orthogonal_prism", width_studs: 1, depth_studs: 1 }, origin_studs: [8,8], height_courses: 2 });
-  assert.throws(() => constructDesign(disconnected, catalogue), /disconnected solid footprints/);
+  assert.throws(() => constructDesign(disconnected, catalogue), /No fully connected variable-course construction/);
 });
 
 test("rejects an unsatisfied hard spatial relationship before placement", async () => {
