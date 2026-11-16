@@ -198,24 +198,10 @@ function footprintFor(component) {
   return cells;
 }
 
-function connected(cells) {
-  const remaining = new Set(cells.map(([x,z]) => x + "," + z));
-  const first = remaining.values().next().value;
-  const visited = new Set([first]);
-  const pending = [first];
-  while (pending.length) {
-    const [x,z] = pending.pop().split(",").map(Number);
-    for (const key of [[x+1,z],[x-1,z],[x,z+1],[x,z-1]].map(([a,b])=>a+","+b)) {
-      if (remaining.has(key) && !visited.has(key)) { visited.add(key); pending.push(key); }
-    }
-  }
-  return visited.size === remaining.size;
-}
 
 /**
- * First production vertical slice: plans a connected, constant-height orthogonal
- * footprint using real catalogue profiles, then reuses the assembly validator/exporter.
- * It refuses varying-height geometry rather than flattening it silently.
+ * Convert semantic component volumes into per-course target occupancy, then use
+ * the deterministic variable-course LEGO assembly planner and its nominal validators.
  */
 export function constructDesign(spec, catalogue, options = {}) {
   const validation = validateDesignSpec(spec);
@@ -238,6 +224,15 @@ export function constructDesign(spec, catalogue, options = {}) {
   const relationshipWarnings = validateRelationships(spec);
   const layerCount = Math.max(...spec.components.map((component) =>
     (component.base_course ?? 0) + component.height_courses));
+  const maxCourses = options.maxCourses ?? 64;
+  if (!Number.isInteger(maxCourses) || maxCourses < 1 || layerCount > maxCourses) {
+    throw new RangeError("Design height exceeds the configured " + maxCourses + "-course planning limit.");
+  }
+  for (const component of spec.components) {
+    if (component.geometry.width_studs * component.geometry.depth_studs > 256) {
+      throw new RangeError("Each semantic component footprint is limited to 256 stud cells.");
+    }
+  }
   const layerCells = Array.from({ length: layerCount }, () => new Map());
   for (const component of spec.components) {
     const baseCourse = component.base_course ?? 0;
@@ -250,6 +245,9 @@ export function constructDesign(spec, catalogue, options = {}) {
           throw new Error("Component volumes overlap at stud " + key + " in course " + (course + 1) + ".");
         }
         layerCells[course].set(key, component);
+        if (layerCells[course].size > 256) {
+          throw new RangeError("Each occupied course is limited to 256 stud cells in the current browser planner.");
+        }
       }
     }
   }
@@ -284,7 +282,7 @@ export function constructDesign(spec, catalogue, options = {}) {
     maxParts: spec.preferences?.max_parts ?? options.maxParts ?? 200,
     maxAlternatives: options.maxAlternatives ?? 3,
     optimizationProfile,
-    courseType: options.courseType ?? "brick",
+    courseType: "brick",
   });
   const componentCoverage = spec.components.map((component) => ({
     component_id: component.id,
