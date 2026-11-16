@@ -154,6 +154,18 @@
       "source_filename": "parts/3039.dat",
       "source_library_commit": "c70360d1c588be894997b2168c61909bc8058c4d",
       "connection_evidence": "BrickForge-authored nominal stud-grid datums checked against source top studs and underside envelope; physical clutch not verified.",
+      "orientation_frame": {
+        "up": [
+          0,
+          -1,
+          0
+        ],
+        "forward": [
+          0,
+          0,
+          -1
+        ]
+      },
       "body_geometry_evidence": "source_silhouette_vertices"
     },
     {
@@ -392,6 +404,18 @@
       "source_filename": "parts/3037.dat",
       "source_library_commit": "c70360d1c588be894997b2168c61909bc8058c4d",
       "connection_evidence": "BrickForge-authored nominal stud-grid datums checked against source top studs and underside envelope; physical clutch not verified.",
+      "orientation_frame": {
+        "up": [
+          0,
+          -1,
+          0
+        ],
+        "forward": [
+          0,
+          0,
+          -1
+        ]
+      },
       "body_geometry_evidence": "source_silhouette_vertices"
     },
     {
@@ -1129,12 +1153,12 @@
       "description": "~Moved to 30367a",
       "features": [
         {
-          "feature_id": "stud-0-0",
+          "feature_id": "top-centre-stud",
           "kind": "stud",
           "position_ldu": [
-            -10,
             0,
-            -10
+            0,
+            0
           ],
           "axis": [
             0,
@@ -1157,20 +1181,6 @@
           ]
         },
         {
-          "feature_id": "stud-0-1",
-          "kind": "stud",
-          "position_ldu": [
-            -10,
-            0,
-            10
-          ],
-          "axis": [
-            0,
-            -1,
-            0
-          ]
-        },
-        {
           "feature_id": "stud_receiver-0-1",
           "kind": "stud_receiver",
           "position_ldu": [
@@ -1181,20 +1191,6 @@
           "axis": [
             0,
             1,
-            0
-          ]
-        },
-        {
-          "feature_id": "stud-1-0",
-          "kind": "stud",
-          "position_ldu": [
-            10,
-            0,
-            -10
-          ],
-          "axis": [
-            0,
-            -1,
             0
           ]
         },
@@ -1213,26 +1209,26 @@
           ]
         },
         {
-          "feature_id": "stud-1-1",
-          "kind": "stud",
-          "position_ldu": [
-            10,
-            0,
-            10
-          ],
-          "axis": [
-            0,
-            -1,
-            0
-          ]
-        },
-        {
           "feature_id": "stud_receiver-1-1",
           "kind": "stud_receiver",
           "position_ldu": [
             10,
             23.999999999999996,
             10
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "central-tube-receiver",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            0,
+            24,
+            0
           ],
           "axis": [
             0,
@@ -1291,8 +1287,15 @@
       "mesh_file": "part-meshes/30367.json",
       "source_filename": "parts/30367.dat",
       "source_library_commit": "c70360d1c588be894997b2168c61909bc8058c4d",
-      "connection_evidence": "BrickForge-authored nominal stud-grid datums checked against source top studs and underside envelope; physical clutch not verified.",
+      "connection_evidence": "Nominal centre top stud and central underside tube from parts/s/30367as01.dat (stud4a at y=20); four underside grid contacts retained. Physical clutch not verified.",
       "cylinder_axis_ldraw": "y",
+      "orientation_frame": {
+        "up": [
+          0,
+          -1,
+          0
+        ]
+      },
       "body_geometry_evidence": "authored_nominal_envelope"
     },
     {
@@ -2462,6 +2465,323 @@
       "source_library_commit": "c70360d1c588be894997b2168c61909bc8058c4d",
       "connection_evidence": "BrickForge-authored nominal stud-grid datums checked against source top studs and underside envelope; physical clutch not verified.",
       "body_geometry_evidence": "authored_nominal_envelope"
+    },
+    {
+      "part_id": "11212",
+      "description": "Plate  3 x  3",
+      "features": [
+        {
+          "feature_id": "stud--20--20",
+          "kind": "stud",
+          "position_ldu": [
+            -20,
+            0,
+            -20
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver--20--20",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -20,
+            8,
+            -20
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud--20-0",
+          "kind": "stud",
+          "position_ldu": [
+            -20,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver--20-0",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -20,
+            8,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud--20-20",
+          "kind": "stud",
+          "position_ldu": [
+            -20,
+            0,
+            20
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver--20-20",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -20,
+            8,
+            20
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-0--20",
+          "kind": "stud",
+          "position_ldu": [
+            0,
+            0,
+            -20
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-0--20",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            0,
+            8,
+            -20
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-0-0",
+          "kind": "stud",
+          "position_ldu": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-0-0",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            0,
+            8,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-0-20",
+          "kind": "stud",
+          "position_ldu": [
+            0,
+            0,
+            20
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-0-20",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            0,
+            8,
+            20
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-20--20",
+          "kind": "stud",
+          "position_ldu": [
+            20,
+            0,
+            -20
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-20--20",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            20,
+            8,
+            -20
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-20-0",
+          "kind": "stud",
+          "position_ldu": [
+            20,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-20-0",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            20,
+            8,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-20-20",
+          "kind": "stud",
+          "position_ldu": [
+            20,
+            0,
+            20
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-20-20",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            20,
+            8,
+            20
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        }
+      ],
+      "body_vertices_mm": [
+        [
+          -12,
+          0,
+          -12
+        ],
+        [
+          -12,
+          0,
+          12
+        ],
+        [
+          -12,
+          3.2,
+          -12
+        ],
+        [
+          -12,
+          3.2,
+          12
+        ],
+        [
+          12,
+          0,
+          -12
+        ],
+        [
+          12,
+          0,
+          12
+        ],
+        [
+          12,
+          3.2,
+          -12
+        ],
+        [
+          12,
+          3.2,
+          12
+        ]
+      ],
+      "supported_geometry": [
+        "rectangular_prism"
+      ],
+      "extrusion_axes_ldraw": [],
+      "body_height_ldu": 8,
+      "mesh_file": "part-meshes/11212.json",
+      "source_filename": "parts/11212.dat",
+      "source_library_commit": "c70360d1c588be894997b2168c61909bc8058c4d",
+      "connection_evidence": "Nominal 3x3 top stud grid from stug-3x3.dat in 11212.dat. The central stud is at x=z=0; underside grid datums are nominal.",
+      "orientation_frame": {
+        "up": [
+          0,
+          -1,
+          0
+        ]
+      },
+      "body_geometry_evidence": "authored_nominal_envelope"
     }
   ],
   "assemblies": [
@@ -2533,6 +2853,6 @@
   ],
   "limitations": [
     "Specialist body envelopes and stud datums are nominal. Detailed clutch, insertion paths, strength and cavity clearance are not verified.",
-    "Only explicitly profiled elements and supported yaw orientations are eligible for placement."
+    "Only explicitly profiled elements and proper right-angle orientations are eligible for placement."
   ]
 }

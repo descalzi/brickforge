@@ -1,7 +1,8 @@
+import {cardinalDirections} from './part-orientation.js?v=72fddf3032b8';
 const finite = (value) => typeof value === "number" && Number.isFinite(value);
 const RELATIONSHIPS = new Set(["above","below","left_of","right_of","in_front_of","behind","attached_to","aligned_with","symmetric_to","dimension_ratio"]);
 const ROOT_KEYS = new Set(["schema_version","design_id","name","units","components","relationships","constraints","appearance","assumptions","negative_spaces"]);
-const COMPONENT_KEYS = new Set(["id","label","role","function","geometry","geometry_parameters","dimensions_mm","position_mm","priority","required_features","forbidden_features","colour","confidence","fit_tolerance_mm","position_tolerance_mm"]);
+const COMPONENT_KEYS = new Set(["id","label","role","function","geometry","geometry_parameters","dimensions_mm","position_mm","priority","required_features","forbidden_features","colour","confidence","fit_tolerance_mm","position_tolerance_mm","orientation"]);
 const hasOnlyKeys = (value, allowed) => Object.keys(value || {}).filter(key => !allowed.has(key));
 
 export function validateDesignSpec(spec) {
@@ -23,6 +24,11 @@ export function validateDesignSpec(spec) {
     else ids.add(component.id);
     if (typeof component.role !== "string" || !component.role.trim()) errors.push(path + ".role is required.");
     if (!["rectangular_prism","cylinder","sphere","extruded_profile","planar_profile","domed_cylinder"].includes(component.geometry)) errors.push(path + ".geometry is unsupported by design-spec v1.");
+    if(component.orientation!==undefined){
+      const o=component.orientation;
+      if(!o||typeof o!=='object'||Array.isArray(o)||!Object.keys(o).length||hasOnlyKeys(o,new Set(['up','forward'])).length||Object.values(o).some(v=>!cardinalDirections.includes(v)))errors.push(path+'.orientation requires up and/or forward signed world axes.');
+      else if(o.up&&o.forward&&o.up.slice(1)===o.forward.slice(1))errors.push(path+'.orientation up and forward must be perpendicular.');
+    }
     const shape=component.geometry_parameters;
     if (["cylinder","domed_cylinder"].includes(component.geometry)) {
       if (!shape || !["x","y","z"].includes(shape.axis) || !finite(shape.diameter_mm) || shape.diameter_mm<=0) errors.push(path + ".geometry_parameters must define a cylinder axis and positive diameter_mm.");
@@ -40,14 +46,15 @@ export function validateDesignSpec(spec) {
       else {
         const xs=shape.outline_mm.map(point=>point[0]),ys=shape.outline_mm.map(point=>point[1]);
         const width=Math.max(...xs)-Math.min(...xs),height=Math.max(...ys)-Math.min(...ys);
-        if (component.dimensions_mm && (Math.abs(width-component.dimensions_mm.width)>0.1 || Math.abs(height-component.dimensions_mm.height)>0.1 || Math.abs(shape.depth_mm-component.dimensions_mm.depth)>0.1)) errors.push(path + ".dimensions_mm must match the extruded outline bounds and depth.");
+        if (component.dimensions_mm && (Math.abs(width-component.dimensions_mm[shape.extrusion_axis==='x'?'depth':'width'])>0.1 || Math.abs(height-component.dimensions_mm.height)>0.1 || Math.abs(shape.depth_mm-component.dimensions_mm[shape.extrusion_axis==='x'?'width':'depth'])>0.1)) errors.push(path + ".dimensions_mm must match the extruded outline bounds and depth.");
       }
     }
     if(component.geometry==='planar_profile'){
       if(!shape||!Array.isArray(shape.outline_mm)||shape.outline_mm.length<3||shape.outline_mm.some(p=>!Array.isArray(p)||p.length!==2||!p.every(finite)))errors.push(path+'.geometry_parameters requires an X/Z outline.');
       else {const xs=shape.outline_mm.map(p=>p[0]),zs=shape.outline_mm.map(p=>p[1]);if(Math.abs(Math.max(...xs)-Math.min(...xs)-component.dimensions_mm?.width)>.1||Math.abs(Math.max(...zs)-Math.min(...zs)-component.dimensions_mm?.depth)>.1)errors.push(path+'.dimensions_mm must match the planar outline.');}
     }
-    if (shape && hasOnlyKeys(shape,new Set(["axis","diameter_mm","radius_mm","depth_mm","outline_mm"])).length) errors.push(path + ".geometry_parameters contains unknown properties.");
+    if(shape?.extrusion_axis!==undefined&&(component.geometry!=='extruded_profile'||!['x','z'].includes(shape.extrusion_axis)))errors.push(path+'.extrusion_axis must be x or z on an extruded profile.');
+    if (shape && hasOnlyKeys(shape,new Set(["axis","diameter_mm","radius_mm","depth_mm","outline_mm","extrusion_axis"])).length) errors.push(path + ".geometry_parameters contains unknown properties.");
     for (const axis of ["width", "depth", "height"]) {
       if (!finite(component.dimensions_mm?.[axis]) || component.dimensions_mm[axis] <= 0) errors.push(path + ".dimensions_mm." + axis + " must be positive and finite.");
     }

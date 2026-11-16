@@ -5,10 +5,11 @@ const anchor=(b,i,name)=>name==='min'?b.min[i]:name==='max'?b.max[i]:centre(b,i)
 const close=(a,b,t)=>Math.abs(a-b)<=t+1e-7;
 function mirroredOutlines(a,b,axis,plane,tolerance){
  if(a.geometry!==b.geometry)return false;
+ if(a.geometry==='extruded_profile'&&(a.geometry_parameters.extrusion_axis||'z')!==(b.geometry_parameters.extrusion_axis||'z'))return false;
  if(['cylinder','domed_cylinder'].includes(a.geometry)&&a.geometry_parameters.axis!==b.geometry_parameters.axis)return false;
  if(a.geometry==='domed_cylinder'&&coordinate[a.geometry_parameters.axis]===axis)return false; // A dome is directional along its own axis.
  if(!['extruded_profile','planar_profile'].includes(a.geometry))return true;
- const axes=a.geometry==='planar_profile'?[0,2]:[0,1];
+ const axes=a.geometry==='planar_profile'?[0,2]:a.geometry_parameters.extrusion_axis==='x'?[2,1]:[0,1];
  function worldOutline(c){const outline=c.geometry_parameters.outline_mm,min=[0,1].map(i=>Math.min(...outline.map(p=>p[i]))),origin=[c.position_mm.x,c.position_mm.y,c.position_mm.z];return outline.map(p=>p.map((v,i)=>v-min[i]+origin[axes[i]]));}
  const pa=worldOutline(a).map(p=>p.map((v,i)=>axes[i]===axis?2*plane-v:v)),pb=worldOutline(b);
  const distance=(p,a,b)=>{const d=b.map((v,i)=>v-a[i]),n=d.reduce((s,v)=>s+v*v,0),t=n?Math.max(0,Math.min(1,p.reduce((s,v,i)=>s+(v-a[i])*d[i],0)/n)):0;return Math.hypot(...p.map((v,i)=>v-a[i]-t*d[i]));};

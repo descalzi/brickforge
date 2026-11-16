@@ -1,4 +1,4 @@
-import { ldrawReferenceCandidates } from "./catalogue-utils.js?v=07b56d3093e4";
+import { ldrawReferenceCandidates } from "./catalogue-utils.js?v=72fddf3032b8";
 
 const LDU_TO_MM = 0.4;
 const MAX_REFERENCE_DEPTH = 64;

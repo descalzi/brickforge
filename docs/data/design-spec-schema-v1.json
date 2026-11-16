@@ -948,6 +948,13 @@
                   "type": "number"
                 }
               }
+            },
+            "extrusion_axis": {
+              "enum": [
+                "x",
+                "z"
+              ],
+              "description": "World extrusion axis; defaults to z. Outline coordinates are X/Y when z, Z/Y when x. depth_mm is the extrusion length."
             }
           }
         },
@@ -1035,6 +1042,34 @@
           "minimum": 0,
           "maximum": 8,
           "description": "Explicit per-axis translation uncertainty; compatible interfaces may align within this bound. Zero fixes the position."
+        },
+        "orientation": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": false,
+          "properties": {
+            "up": {
+              "enum": [
+                "+x",
+                "-x",
+                "+y",
+                "-y",
+                "+z",
+                "-z"
+              ]
+            },
+            "forward": {
+              "enum": [
+                "+x",
+                "-x",
+                "+y",
+                "-y",
+                "+z",
+                "-z"
+              ]
+            }
+          },
+          "description": "Required world directions of source-profile semantic up/forward faces. Forward on a slope points downhill. Unsupported frames are rejected."
         }
       }
     }

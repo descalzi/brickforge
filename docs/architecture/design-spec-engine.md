@@ -106,3 +106,33 @@ checks, body envelopes and actual mating edges still gate the final assembly.
 The shared attempt, round and alternative limits bound propagation. Search reports
 include `layout_candidates_generated`; reached limits are not proofs of infeasibility.
 This does not infer arbitrary symbolic layouts or add new orientations.
+
+### Semantic facing and profile rotation
+
+Components may require `orientation.up` and `orientation.forward` using signed
+world axes. Source-backed profiles declare the corresponding local directions;
+slopes define forward as downhill. Candidate rotations must satisfy both the
+shape and this frame. Unknown source directions fail closed.
+`extrusion_axis` defaults to Z (X/Y outline) and can be X (Z/Y outline); the
+profile extrusion length remains `depth_mm`. The editor rotates the outline,
+width/depth and position about the component centre together. These are rigid
+right-angle operations, not a camera change or a dimensional substitution.
+
+The dome profile has one central top stud, four nominal underside grid contacts
+and a central underside tube receiver checked against its source primitives.
+A source-backed 3x3 plate supplies a real central stud for the concentric mushroom.
+
+### Illustrated booklet renderer
+
+The PDF uses the canonical parts, BOM and step order. Cover and completed-model
+views, illustrated inventory and per-step parts trays accompany depth-buffered
+assembly diagrams. New parts retain their colours; previous parts are softened.
+Nominal approach vectors supply exploded offsets and placement arrows, labelled
+as geometric guidance rather than physical insertion certification. Early and
+partial views fit the visible assembly. The pure JavaScript rasterizer tests
+per-pixel depth, including intersecting triangles and hidden crease edges, so
+it does not depend on source BFC winding or whole-triangle painter ordering.
+Page text and arrows remain vectors; diagrams are embedded RGB images at twice
+their point dimensions. Browser-native deflate compresses image, text and font
+streams. The byte writer computes offsets from actual bytes, not decoded text.
+Exports yield between step pages and discard results if the active plan changes.

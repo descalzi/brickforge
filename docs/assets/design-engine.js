@@ -1,13 +1,13 @@
-import { evaluateDesignRelationships as evaluateRelationships } from "./design-relations.js?v=07b56d3093e4";
-import { featureCompatibility, axesCompatible } from "./connection-types.js?v=07b56d3093e4";
-import { fitAttachmentPoses } from "./attachment-fitting.js?v=07b56d3093e4";
-import { assertValidDesignSpec } from "./design-spec.js?v=07b56d3093e4";
-import { discoverPartCandidates, validatePartCapabilityCatalogue } from "./part-catalogue.js?v=07b56d3093e4";
-import { translateComponentRequirements } from "./design-translation.js?v=07b56d3093e4";
-import { planTechnicBeamJoint } from "./technic-planner.js?v=07b56d3093e4";
-import { specialistComponentCandidates } from "./specialist-placement.js?v=07b56d3093e4";
-import { partBodyBounds, analyzeAssembly } from "./assembly-analysis.js?v=07b56d3093e4";
-import { createAssemblyInstructions } from "./assembly-instructions.js?v=07b56d3093e4";
+import { evaluateDesignRelationships as evaluateRelationships } from "./design-relations.js?v=72fddf3032b8";
+import { featureCompatibility, axesCompatible } from "./connection-types.js?v=72fddf3032b8";
+import { fitAttachmentPoses } from "./attachment-fitting.js?v=72fddf3032b8";
+import { assertValidDesignSpec } from "./design-spec.js?v=72fddf3032b8";
+import { discoverPartCandidates, validatePartCapabilityCatalogue } from "./part-catalogue.js?v=72fddf3032b8";
+import { translateComponentRequirements } from "./design-translation.js?v=72fddf3032b8";
+import { planTechnicBeamJoint } from "./technic-planner.js?v=72fddf3032b8";
+import { specialistComponentCandidates } from "./specialist-placement.js?v=72fddf3032b8";
+import { partBodyBounds, analyzeAssembly } from "./assembly-analysis.js?v=72fddf3032b8";
+import { createAssemblyInstructions } from "./assembly-instructions.js?v=72fddf3032b8";
 
 const LDU_TO_MM = 0.4;
 const STUD_PITCH_MM = 8;
@@ -141,6 +141,7 @@ function componentCandidates(component,catalogue,options,partCatalogue,designTra
   }
   const specialised=specialistComponentCandidates(component,options,partCatalogue,designTranslation,options.specialistCatalogue);
   if(specialised)return specialised;
+  if(component.orientation)return {error:'Component '+component.id+' requires a semantic orientation frame that none of its measured specialist candidates supports.'};
   const translated=translateComponentRequirements(component,designTranslation);
   if(!translated.valid)return {error:translated.errors.join(" ")};
   const requirement={
@@ -340,7 +341,7 @@ export function planDesign(spec,catalogue,overrides={}) {
   if(!best) return {status:"blocked",design_id:spec.design_id,failures:[overBudget?"No arrangement found within the search limits and max_parts budget of "+options.maxParts+".":"No globally connected arrangement was found within the configured candidate and search limits."],warnings:[],parts:[],connections:[],search:{...poseStats,global_nodes:globalNodes,global_combinations:globalCombinations,budget_exhausted:poseSearch.budget_exhausted||globalNodes>options.maxSearchNodes||globalCombinations>=options.maxGlobalCombinations},component_reports:componentReports};
   const parts=best.parts,graph=best.graph;
   componentReports.forEach((report,index)=>{
-    report.selected_course_layouts=best.chosen[index];report.pose_alternatives=candidateSets[index].length;const c=spec.components[index],bs=parts.filter(p=>p.component_id===c.id).map(p=>partBodyBounds(p,profileMap.get(p.part_id)));
+    report.selected_course_layouts=best.chosen[index];report.requested_orientation=spec.components[index].orientation||null;report.selected_part_orientations=best.parts.filter(p=>p.component_id===report.component_id).map(p=>({instance_id:p.instance_id,matrix:p.matrix,source_frame:profileMap.get(p.part_id).orientation_frame||null}));report.pose_alternatives=candidateSets[index].length;const c=spec.components[index],bs=parts.filter(p=>p.component_id===c.id).map(p=>partBodyBounds(p,profileMap.get(p.part_id)));
     const min=[0,1,2].map(i=>Math.min(...bs.map(b=>b.min[i]))),max=[0,1,2].map(i=>Math.max(...bs.map(b=>b.max[i])));
     report.realised_dimensions_mm={width:max[0]-min[0],height:max[1]-min[1],depth:max[2]-min[2]};report.requested_dimensions_mm=c.dimensions_mm;report.allowed_deviation_mm=c.fit_tolerance_mm||0;
     report.position_adjustment_mm=best.poses[index].map((v,i)=>v*.4*(i===0?1:-1));report.allowed_position_deviation_mm=c.position_tolerance_mm||0;
@@ -368,6 +369,7 @@ export function planDesign(spec,catalogue,overrides={}) {
     if(index<instructions.steps.length-1)ldraw.push("0 STEP");
   }
   const validation={checks:[
+    {id:'semantic_face_orientation',status:'passed',detail:'Declared up/forward faces match source-profile directions after rigid placement. Unsupported semantic frames are rejected.'},
     {id:'placed_body_envelopes',status:'passed',detail:'No overlaps outside explicitly matched rim/tyre seats; connector protrusions and cavity details are excluded.'},
     {id:'support_projection_proxy',status:analysis.support.projection_inside_support_hull?'passed':'not_assessed',detail:analysis.support.evidence},
     {id:'nominal_insertion_approaches',status:instructions.steps.every(s=>s.nominal_approach_clear)?'passed':'not_assessed',detail:'Straight connector-axis approaches checked against prior nominal body envelopes. Studs, cavities and deformation are excluded; this is not physical insertion certification.'},

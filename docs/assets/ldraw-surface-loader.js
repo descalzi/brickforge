@@ -1,4 +1,4 @@
-import { ldrawReferenceCandidates } from "./catalogue-utils.js?v=07b56d3093e4";
+import { ldrawReferenceCandidates } from "./catalogue-utils.js?v=72fddf3032b8";
 
 const LDU_TO_MM = 0.4;
 const RAW_BASE = "https://raw.githubusercontent.com/kulits/ldraw-parts/c70360d1c588be894997b2168c61909bc8058c4d/ldraw/";

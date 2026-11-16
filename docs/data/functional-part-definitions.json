@@ -652,12 +652,12 @@
       "height": 9.6,
       "features": [
         {
-          "feature_id": "stud-0-0",
+          "feature_id": "top-centre-stud",
           "kind": "stud",
           "position_ldu": [
-            -10.0,
             0,
-            -10.0
+            0,
+            0
           ],
           "axis": [
             0,
@@ -680,20 +680,6 @@
           ]
         },
         {
-          "feature_id": "stud-0-1",
-          "kind": "stud",
-          "position_ldu": [
-            -10.0,
-            0,
-            10.0
-          ],
-          "axis": [
-            0,
-            -1,
-            0
-          ]
-        },
-        {
           "feature_id": "stud_receiver-0-1",
           "kind": "stud_receiver",
           "position_ldu": [
@@ -704,20 +690,6 @@
           "axis": [
             0,
             1,
-            0
-          ]
-        },
-        {
-          "feature_id": "stud-1-0",
-          "kind": "stud",
-          "position_ldu": [
-            10.0,
-            0,
-            -10.0
-          ],
-          "axis": [
-            0,
-            -1,
             0
           ]
         },
@@ -736,26 +708,26 @@
           ]
         },
         {
-          "feature_id": "stud-1-1",
-          "kind": "stud",
-          "position_ldu": [
-            10.0,
-            0,
-            10.0
-          ],
-          "axis": [
-            0,
-            -1,
-            0
-          ]
-        },
-        {
           "feature_id": "stud_receiver-1-1",
           "kind": "stud_receiver",
           "position_ldu": [
             10.0,
             23.999999999999996,
             10.0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "central-tube-receiver",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            0,
+            24,
+            0
           ],
           "axis": [
             0,
@@ -806,7 +778,15 @@
           -8
         ]
       ],
-      "cylinder_axis_ldraw": "y"
+      "cylinder_axis_ldraw": "y",
+      "connection_evidence": "Nominal centre top stud and central underside tube from parts/s/30367as01.dat (stud4a at y=20); four underside grid contacts retained. Physical clutch not verified.",
+      "orientation_frame": {
+        "up": [
+          0,
+          -1,
+          0
+        ]
+      }
     },
     {
       "id": "3933",
@@ -1983,6 +1963,330 @@
       "extrusion_axes_ldraw": [
         "y"
       ]
+    },
+    {
+      "id": "11212",
+      "roles": [
+        "base",
+        "structural",
+        "platform",
+        "floor"
+      ],
+      "capabilities": [
+        "solid_rectangular_volume",
+        "top_studs",
+        "underside_stud_receivers"
+      ],
+      "supported_geometry": [
+        "rectangular_prism"
+      ],
+      "width": 24,
+      "depth": 24,
+      "height": 3.2,
+      "features": [
+        {
+          "feature_id": "stud--20--20",
+          "kind": "stud",
+          "position_ldu": [
+            -20,
+            0,
+            -20
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver--20--20",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -20,
+            8,
+            -20
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud--20-0",
+          "kind": "stud",
+          "position_ldu": [
+            -20,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver--20-0",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -20,
+            8,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud--20-20",
+          "kind": "stud",
+          "position_ldu": [
+            -20,
+            0,
+            20
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver--20-20",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -20,
+            8,
+            20
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-0--20",
+          "kind": "stud",
+          "position_ldu": [
+            0,
+            0,
+            -20
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-0--20",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            0,
+            8,
+            -20
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-0-0",
+          "kind": "stud",
+          "position_ldu": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-0-0",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            0,
+            8,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-0-20",
+          "kind": "stud",
+          "position_ldu": [
+            0,
+            0,
+            20
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-0-20",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            0,
+            8,
+            20
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-20--20",
+          "kind": "stud",
+          "position_ldu": [
+            20,
+            0,
+            -20
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-20--20",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            20,
+            8,
+            -20
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-20-0",
+          "kind": "stud",
+          "position_ldu": [
+            20,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-20-0",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            20,
+            8,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-20-20",
+          "kind": "stud",
+          "position_ldu": [
+            20,
+            0,
+            20
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-20-20",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            20,
+            8,
+            20
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        }
+      ],
+      "body_vertices_mm": [
+        [
+          -12,
+          0,
+          -12
+        ],
+        [
+          -12,
+          0,
+          12
+        ],
+        [
+          -12,
+          3.2,
+          -12
+        ],
+        [
+          -12,
+          3.2,
+          12
+        ],
+        [
+          12,
+          0,
+          -12
+        ],
+        [
+          12,
+          0,
+          12
+        ],
+        [
+          12,
+          3.2,
+          -12
+        ],
+        [
+          12,
+          3.2,
+          12
+        ]
+      ],
+      "orientation_frame": {
+        "up": [
+          0,
+          -1,
+          0
+        ]
+      },
+      "connection_evidence": "Nominal 3x3 top stud grid from stug-3x3.dat in 11212.dat. The central stud is at x=z=0; underside grid datums are nominal."
     }
   ],
   "assemblies": [
