@@ -144,7 +144,7 @@ async function expandDocument(document, matrix, translation, ancestors, depth, o
         const transformed = applyMatrix(matrix, point)
           .map((value, axis) => (value + translation[axis]) * LDU_TO_MM);
         // Match the Part Explorer's LDraw-to-Three Y-up orientation.
-        output.positions.push(transformed[0], -transformed[1], -transformed[2]);
+        output.positions.push(transformed[0] || 0, -transformed[1] || 0, -transformed[2] || 0);
       }
       if (output.positions.length / 9 > MAX_PART_TRIANGLES) {
         throw new RangeError("LDraw part exceeds the detailed surface triangle limit.");

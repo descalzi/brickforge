@@ -1,4 +1,4 @@
-# Development Roadmap
+# Development Roadmap\n\n## Product direction update — design-first engine\n\nThe primary product goal is **description → structured design specification → LEGO construction**. Mesh import is optional reference/validation tooling. The new browser-native engine is being developed against ideal hand-authored specifications before any LLM integration. See [design specification engine](design-spec-engine.md).
 
 This roadmap is intentionally milestone-based. Each milestone should produce a demonstrable, tested result before the next layer is added.
 

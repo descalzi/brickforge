@@ -1,0 +1,26 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://descalzi.github.io/brickforge/schemas/connector-compatibility-v1.schema.json",
+  "title":"BrickForge connector compatibility rules v1",
+  "type":"object","additionalProperties":false,
+  "required":["schema_version","units","rules"],
+  "properties":{
+    "schema_version":{"const":1},"units":{"const":"mm"},
+    "rules":{"type":"array","minItems":1,"items":{
+      "type":"object","additionalProperties":false,
+      "required":["id","male_type","female_type","max_center_offset_mm","min_axis_alignment_cosine","evidence_status","physical_connection_verified"],
+      "properties":{
+        "id":{"type":"string","minLength":1},
+        "male_type":{"type":"string","minLength":1},
+        "female_type":{"type":"string","minLength":1},
+        "max_center_offset_mm":{"type":"number","minimum":0},
+        "min_axis_alignment_cosine":{"type":"number","minimum":0,"maximum":1},
+        "max_diameter_delta_mm":{"type":"number","minimum":0},
+        "require_diameter":{"type":"boolean"},
+        "evidence_status":{"enum":["catalogue_datum","source_derived_nominal_geometry","measured_geometry"]},
+        "physical_connection_verified":{"const":false},
+        "notes":{"type":"string"}
+      }
+    }}
+  }
+}

@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "description": "Maps catalogue-independent object roles and feature requirements to candidate part roles/capabilities. This is a translation layer, not part of the user-authored design specification.",
+  "roles": {
+    "structural": [
+      "structural"
+    ],
+    "chassis": [
+      "chassis",
+      "structural"
+    ],
+    "body": [
+      "body",
+      "structural"
+    ],
+    "wall": [
+      "wall",
+      "structural"
+    ],
+    "floor": [
+      "floor",
+      "structural"
+    ],
+    "base": [
+      "base",
+      "structural"
+    ],
+    "platform": [
+      "platform",
+      "structural"
+    ],
+    "support": [
+      "support",
+      "structural"
+    ],
+    "beam": [
+      "beam"
+    ],
+    "structural_link": [
+      "structural_link"
+    ],
+    "wheel": [
+      "wheel"
+    ],
+    "window": [
+      "window"
+    ],
+    "roof": [
+      "roof",
+      "slope",
+      "structural"
+    ],
+    "wing": [
+      "wing"
+    ],
+    "fuselage": [
+      "fuselage",
+      "structural"
+    ],
+    "cabin": [
+      "cabin",
+      "structural"
+    ],
+    "door": [
+      "door"
+    ],
+    "slope": [
+      "slope"
+    ],
+    "organic_form": [
+      "organic_form"
+    ],
+    "connector_pin": [
+      "connector_pin"
+    ]
+  },
+  "features": {
+    "solid_volume": {
+      "required_capabilities": [
+        "solid_rectangular_volume"
+      ]
+    },
+    "stud_connectable": {
+      "required_capabilities": [
+        "top_studs"
+      ]
+    },
+    "pin_joint": {
+      "required_capabilities": [
+        "technic_pin_holes"
+      ]
+    },
+    "transparent": {
+      "required_capabilities": [
+        "transparent_element"
+      ]
+    },
+    "rotating": {
+      "required_capabilities": [
+        "rotating_element"
+      ]
+    },
+    "wheel": {
+      "required_capabilities": [
+        "wheel"
+      ]
+    },
+    "window": {
+      "required_capabilities": [
+        "window_frame"
+      ]
+    },
+    "sloped": {
+      "required_capabilities": [
+        "sloped_surface"
+      ]
+    },
+    "curved": {
+      "required_capabilities": [
+        "curved_surface"
+      ]
+    },
+    "airfoil": {
+      "required_capabilities": [
+        "airfoil_surface"
+      ]
+    }
+  }
+}

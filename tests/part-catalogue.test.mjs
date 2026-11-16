@@ -1,0 +1,62 @@
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+import test from "node:test";
+import { discoverPartCandidates, validatePartCapabilityCatalogue } from "../docs/assets/part-catalogue.js";
+
+const catalogue=JSON.parse(await readFile(new URL("../docs/data/part-capabilities-v1.json",import.meta.url),"utf8"));
+
+test("source-backed part capability catalogue validates with unique identities",()=>{
+ assert.equal(validatePartCapabilityCatalogue(catalogue).valid,true);
+ const duplicate=structuredClone(catalogue);duplicate.parts.push(structuredClone(duplicate.parts[0]));
+ assert.equal(validatePartCapabilityCatalogue(duplicate).valid,false);
+});
+
+test("semantic discovery finds the exact Technic beam for a beam requirement",()=>{
+ const result=discoverPartCandidates({role:"beam",required_capabilities:["technic_pin_holes"],dimensions_mm:{width:32,depth:8,height:11.2}},catalogue,{maxDimensionErrorMm:0.01});
+ assert.equal(result.status,"candidates_found");
+ assert.equal(result.candidates[0].part_id,"3701");
+ assert.equal(result.candidates[0].dimension_error_mm,0);
+ assert.equal(result.candidates[0].interfaces.length,3);
+});
+
+test("semantic discovery finds a measured wheel part rather than substituting a structural brick",()=>{
+ const result=discoverPartCandidates({role:"wheel"},catalogue);
+ assert.equal(result.status,"candidates_found");
+ assert.equal(result.candidates[0].part_id,"3739");
+ assert.equal(result.candidates[0].candidate_status,"geometry_measured");
+ assert.equal(result.candidates[0].dimensions_mm.width,24);
+});
+
+test("reference-only parts are excluded unless explicitly requested",()=>{
+ const defaultResult=discoverPartCandidates({role:"axle_connector_candidate"},catalogue);
+ assert.equal(defaultResult.status,"no_candidates");
+ const diagnostic=discoverPartCandidates({role:"axle_connector_candidate"},catalogue,{includeReferenceOnly:true});
+ assert.equal(diagnostic.candidates[0].part_id,"32064a");
+ assert.equal(diagnostic.candidates[0].candidate_status,"reference_only");
+});
+
+test("dimension limits and required capabilities constrain discovery",()=>{
+ const tooSmall=discoverPartCandidates({role:"beam",dimensions_mm:{width:32,depth:8,height:11.2}},catalogue,{maxDimensionErrorMm:0.01});
+ assert.equal(tooSmall.candidates[0].part_id,"3701");
+ const unsupported=discoverPartCandidates({role:"beam",required_capabilities:["rotating_wheel"],dimensions_mm:{width:32,depth:8,height:11.2}},catalogue);
+ assert.equal(unsupported.status,"no_candidates");
+});
+
+test("specialist wheel, window, slope and wing parts are indexed but not promoted to buildable geometry",()=>{
+ const wheels=discoverPartCandidates({role:"wheel"},catalogue,{includeReferenceOnly:true});
+ const windows=discoverPartCandidates({role:"window"},catalogue,{includeReferenceOnly:true});
+ const slopes=discoverPartCandidates({role:"slope"},catalogue,{includeReferenceOnly:true});
+ const wings=discoverPartCandidates({role:"wing"},catalogue,{includeReferenceOnly:true});
+ assert.ok(wheels.candidates.some(part=>part.part_id==="3739"&&part.candidate_status==="geometry_measured"));
+ assert.ok(windows.candidates.some(part=>part.part_id==="5260"&&part.candidate_status==="geometry_measured"));
+ assert.ok(slopes.candidates.some(part=>part.part_id==="3039"&&part.candidate_status==="reference_only"));
+ assert.ok(wings.candidates.some(part=>part.part_id==="3934"&&part.candidate_status==="geometry_measured"));
+ assert.ok(slopes.candidates.every(part=>part.dimensions_mm===null));
+});
+
+test("candidate dimensions are compared across orthogonal part orientations",()=>{
+ const result=discoverPartCandidates({role:"beam",dimensions_mm:{width:8,depth:32,height:11.2}},catalogue);
+ assert.equal(result.candidates[0].part_id,"3701");
+ assert.deepEqual(result.candidates[0].dimension_permutation,[1,0,2]);
+ assert.equal(result.candidates[0].dimension_error_mm,0);
+});
