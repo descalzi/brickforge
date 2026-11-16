@@ -89,6 +89,38 @@ export function validateDesignSpec(spec) {
       fail("relationships[" + index + "].tolerance_studs is unsupported for this relationship type.");
     }
   }
+  if (spec.negative_spaces !== undefined && !Array.isArray(spec.negative_spaces)) {
+    fail("negative_spaces must be an array.");
+  }
+  const negativeIds = new Set();
+  for (const [index, negativeSpace] of (Array.isArray(spec.negative_spaces) ? spec.negative_spaces : []).entries()) {
+    const at = "negative_spaces[" + index + "]";
+    if (!negativeSpace || typeof negativeSpace !== "object" || Array.isArray(negativeSpace)) {
+      fail(at + " must be an object."); continue;
+    }
+    if (typeof negativeSpace.id !== "string" || !negativeSpace.id.trim()
+        || ids.has(negativeSpace.id) || negativeIds.has(negativeSpace.id)) {
+      fail(at + ".id must be unique and non-empty.");
+    } else negativeIds.add(negativeSpace.id);
+    if (typeof negativeSpace.name !== "string" || !negativeSpace.name.trim()) fail(at + ".name must be non-empty.");
+    const geometry = negativeSpace.geometry;
+    if (!geometry || geometry.type !== "orthogonal_prism"
+        || !Number.isInteger(geometry.width_studs) || geometry.width_studs < 1
+        || !Number.isInteger(geometry.depth_studs) || geometry.depth_studs < 1) {
+      fail(at + ".geometry must be an orthogonal_prism with positive integer stud dimensions.");
+    }
+    if (!Array.isArray(negativeSpace.origin_studs) || negativeSpace.origin_studs.length !== 2
+        || !negativeSpace.origin_studs.every(Number.isInteger)) {
+      fail(at + ".origin_studs must be an integer [x, z] pair.");
+    }
+    if (!Number.isInteger(negativeSpace.height_courses) || negativeSpace.height_courses < 1) {
+      fail(at + ".height_courses must be a positive integer.");
+    }
+    if (negativeSpace.base_course !== undefined
+        && (!Number.isInteger(negativeSpace.base_course) || negativeSpace.base_course < 0)) {
+      fail(at + ".base_course must be a non-negative integer.");
+    }
+  }
   if (spec.requirements !== undefined) {
     const requirements = spec.requirements;
     if (!requirements || typeof requirements !== "object" || Array.isArray(requirements)) {
@@ -259,10 +291,38 @@ export function constructDesign(spec, catalogue, options = {}) {
       }
     }
   }
+  const negativeSpaceCoverage = [];
+  for (const negativeSpace of spec.negative_spaces || []) {
+    const baseCourse = negativeSpace.base_course ?? 0;
+    const endCourse = baseCourse + negativeSpace.height_courses;
+    if (endCourse > layerCount) {
+      throw new Error("Negative space " + negativeSpace.id + " extends beyond the positive design volume.");
+    }
+    const cells = footprintFor(negativeSpace);
+    let removed = 0;
+    for (let course = baseCourse; course < endCourse; course += 1) {
+      for (const [x, z] of cells) {
+        const key = x + "," + z;
+        if (!layerCells[course].has(key)) {
+          throw new Error("Negative space " + negativeSpace.id + " extends outside the positive design at course " + (course + 1) + ", stud " + key + ".");
+        }
+        layerCells[course].delete(key);
+        removed += 1;
+      }
+    }
+    negativeSpaceCoverage.push({
+      negative_space_id: negativeSpace.id,
+      purpose: negativeSpace.purpose || negativeSpace.name,
+      cells_removed: removed,
+      base_course: baseCourse,
+      top_course_exclusive: endCourse,
+      status: "subtracted_from_target_occupancy",
+    });
+  }
   const layerFootprints = layerCells.map((cells, index) => {
     if (!cells.size) {
       throw new Error("The design has an empty course " + (index + 1)
-        + "; unsupported floating or discontinuous vertical placement was rejected.");
+        + "; unsupported floating or fully voided vertical placement was rejected.");
     }
     return [...cells.keys()].map((key) => key.split(",").map(Number));
   });
@@ -305,6 +365,7 @@ export function constructDesign(spec, catalogue, options = {}) {
     strategy: "variable-course-footprint",
     fidelity_scope: "stud-grid-occupancy-and-course-height",
     component_coverage: componentCoverage,
+    negative_space_coverage: negativeSpaceCoverage,
     relationship_warnings: relationshipWarnings,
     relationship_validation: "semantic component spatial bounds only; direct physical subassembly attachment is not yet mapped",
     role_validation: "semantic component presence only; catalogue part-role suitability is not yet implemented",
@@ -315,7 +376,7 @@ export function constructDesign(spec, catalogue, options = {}) {
       "Semantic components are represented as per-course occupancy annotations, not separate physical subassemblies.",
       "Only the profiled rectangular brick/plate course families selected by the construction strategy are eligible.",
       "Nominal stud/receiver alignment and body-envelope checks are not proof of clutch force, physical strength, stability or legal building technique.",
-      "Curved/sloped geometry, specialised part placement, Technic mechanisms, feature keep-outs and physical assembly accessibility are not yet solved.",
+      "Curved/sloped geometry, specialised part placement, Technic mechanisms, non-rectangular negative-space boundaries and physical assembly accessibility are not yet solved.",
     ],
   };
   const alternatives = (result.alternatives || []).map((alternative) => ({
