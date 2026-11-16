@@ -209,7 +209,10 @@ export function createLDrawGeometryResolver(catalogue, options = {}) {
     return report;
   }
 
+  const sourceCommit = baseUrl.match(/\/([0-9a-f]{40})\/ldraw\/$/)?.[1] || null;
   return {
+    source_base_url: baseUrl,
+    source_commit: sourceCommit,
     resolvePart,
     get cachedDocumentCount() { return documentCache.size; },
   };
@@ -261,4 +264,17 @@ export function scoreGeometrySuitability(geometry, targetDimensionsMm, options =
       "A suitable envelope does not prove the part can connect to the rest of the model.",
     ],
   };
+}
+
+/** Build a resolver from the same pinned official-mirror source as the curated catalogue. */
+export function createLDrawGeometryResolverFromSpecialisedCatalogue(specialisedCatalogue, options = {}) {
+  const source = specialisedCatalogue?.source_library;
+  if (!source || source.repository !== "https://github.com/kulits/ldraw-parts"
+      || typeof source.commit !== "string" || !/^[0-9a-f]{40}$/.test(source.commit)
+      || source.base_path !== "ldraw/parts/") {
+    throw new TypeError("A supported pinned specialised LDraw catalogue source is required.");
+  }
+  const geometryBaseUrl = "https://raw.githubusercontent.com/kulits/ldraw-parts/"
+    + source.commit + "/ldraw/";
+  return createLDrawGeometryResolver({ source: { geometry_base_url: geometryBaseUrl } }, options);
 }
