@@ -37,6 +37,9 @@ test("spec validator rejects duplicate IDs, invalid dimensions and dangling rela
   assert.ok(result.errors.some(message => message.includes("unique")));
   assert.ok(result.errors.some(message => message.includes("positive")));
   assert.ok(result.errors.some(message => message.includes("unknown component")));
+  const legoCoupled = structuredClone(carBody);
+  legoCoupled.components[0].preferred_families = ["Technic"];
+  assert.equal(validateDesignSpec(legoCoupled).valid, false);
 });
 
 test("planner solves a two-course 4x4-stud assembly using globally interlocking layouts", () => {
