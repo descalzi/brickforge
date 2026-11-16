@@ -84,6 +84,10 @@ export function validateDesignSpec(spec) {
         && (!Number.isFinite(relation.tolerance_studs) || relation.tolerance_studs < 0)) {
       fail("relationships[" + index + "].tolerance_studs must be non-negative.");
     }
+    if ((relation?.tolerance_studs ?? 0) > 0
+        && !["attached_to", "above", "below", "aligned_with"].includes(relation?.type)) {
+      fail("relationships[" + index + "].tolerance_studs is unsupported for this relationship type.");
+    }
   }
   if (spec.requirements !== undefined) {
     const requirements = spec.requirements;
@@ -149,21 +153,25 @@ function relationSatisfied(relation, componentsById) {
   const overlapX = Math.min(a.maxX, b.maxX) - Math.max(a.minX, b.minX);
   const overlapY = Math.min(a.maxY, b.maxY) - Math.max(a.minY, b.minY);
   const overlapZ = Math.min(a.maxZ, b.maxZ) - Math.max(a.minZ, b.minZ);
+  const tolerance = relation.tolerance_studs ?? 0;
   switch (relation.type) {
     case "attached_to":
-      return ((a.maxX === b.minX || b.maxX === a.minX) && overlapY > 0 && overlapZ > 0)
-        || ((a.maxY === b.minY || b.maxY === a.minY) && overlapX > 0 && overlapZ > 0)
-        || ((a.maxZ === b.minZ || b.maxZ === a.minZ) && overlapX > 0 && overlapY > 0);
-    case "above": return a.minY >= b.maxY;
-    case "below": return a.maxY <= b.minY;
+      return (Math.abs(a.maxX - b.minX) <= tolerance && overlapY > 0 && overlapZ > 0)
+        || (Math.abs(b.maxX - a.minX) <= tolerance && overlapY > 0 && overlapZ > 0)
+        || (Math.abs(a.maxY - b.minY) <= tolerance && overlapX > 0 && overlapZ > 0)
+        || (Math.abs(b.maxY - a.minY) <= tolerance && overlapX > 0 && overlapZ > 0)
+        || (Math.abs(a.maxZ - b.minZ) <= tolerance && overlapX > 0 && overlapY > 0)
+        || (Math.abs(b.maxZ - a.minZ) <= tolerance && overlapX > 0 && overlapY > 0);
+    case "above": return a.minY >= b.maxY && a.minY - b.maxY <= tolerance;
+    case "below": return a.maxY <= b.minY && b.minY - a.maxY <= tolerance;
     case "left_of": return a.maxX <= b.minX;
     case "right_of": return a.minX >= b.maxX;
     case "in_front_of": return a.maxZ <= b.minZ;
     case "behind": return a.minZ >= b.maxZ;
     case "aligned_with":
-      return (a.minX + a.maxX) === (b.minX + b.maxX)
-        || (a.minY + a.maxY) === (b.minY + b.maxY)
-        || (a.minZ + a.maxZ) === (b.minZ + b.maxZ);
+      return Math.abs((a.minX + a.maxX) - (b.minX + b.maxX)) <= tolerance * 2
+        || Math.abs((a.minY + a.maxY) - (b.minY + b.maxY)) <= tolerance * 2
+        || Math.abs((a.minZ + a.maxZ) - (b.minZ + b.maxZ)) <= tolerance * 2;
     default:
       throw new Error("Relationship type " + relation.type
         + " is not supported by the current 3D footprint planner.");
