@@ -47,3 +47,19 @@ test('assembly sequence covers each part once, connects to an earlier step, and 
 test('bundled surfaces retain pinned provenance and expose real frame voids and slope shape',async()=>{
  for(const profile of options.specialistCatalogue.profiles){const mesh=await read(profile.mesh_file);assert.equal(mesh.source_library_commit,profile.source_library_commit);assert.equal(mesh.part_id,profile.part_id);assert.ok(mesh.triangle_positions_mm.length>100);assert.equal(mesh.triangle_positions_mm.length%9,0);assert.ok(mesh.triangle_positions_mm.every(Number.isFinite));assert.ok(mesh.license.includes('CC BY'));}
 });
+test('body silhouette vertices are present in the independent resolved LDraw surfaces',async()=>{
+ for(const profile of options.specialistCatalogue.profiles){
+  const values=(await read(profile.mesh_file)).triangle_positions_mm;
+  for(const vertex of profile.body_vertices_mm){let distance=Infinity;for(let i=0;i<values.length;i+=3)distance=Math.min(distance,Math.hypot(...vertex.map((v,j)=>v-values[i+j])));assert.ok(distance<1e-5,profile.part_id+' has an unsupported silhouette vertex '+vertex);}
+ }
+});
+test('an open frame retains a clear centre ray in its actual source surface',async()=>{
+ const values=(await read('part-meshes/60592.json')).triangle_positions_mm;
+ let hits=0;const ray=[0,9.6];
+ for(let i=0;i<values.length;i+=9){const a=values.slice(i,i+3),b=values.slice(i+3,i+6),c=values.slice(i+6,i+9),denom=(b[1]-c[1])*(a[0]-c[0])+(c[0]-b[0])*(a[1]-c[1]);if(Math.abs(denom)<1e-8)continue;const u=((b[1]-c[1])*(ray[0]-c[0])+(c[0]-b[0])*(ray[1]-c[1]))/denom,v=((c[1]-a[1])*(ray[0]-c[0])+(a[0]-c[0])*(ray[1]-c[1]))/denom;if(u>=0&&v>=0&&u+v<=1)hits++;}
+ assert.equal(hits,0,'window centre must remain empty in the preview surface');
+});
+test('a half-stud shift cannot pass solely because component bodies touch',()=>{
+ const spec=specimen('sloped-canopy');spec.components[1].position_mm.x+=4;
+ const plan=planDesign(spec,catalogue,options);assert.equal(plan.status,'blocked');assert.match(plan.failures[0],/connected arrangement/);
+});

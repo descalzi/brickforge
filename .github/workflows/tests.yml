@@ -44,6 +44,16 @@ jobs:
         run: node --test tests/specialist-placement.test.mjs tests/design-studio.test.mjs tests/browser-ldraw-surface-loader.test.mjs tests/design-intent.test.mjs tests/browser-design-engine.test.mjs tests/connector-matcher.test.mjs tests/part-catalogue.test.mjs tests/design-translation.test.mjs tests/interface-matcher.test.mjs tests/ldraw-geometry.test.mjs tests/part-discovery.test.mjs tests/browser-construction.test.mjs tests/browser-footprint-corpus.test.mjs tests/browser-camera.test.mjs tests/browser-catalogue.test.mjs tests/browser-target-grid.test.mjs tests/browser-mesh-voxelizer.test.mjs tests/browser-feature-matcher.test.mjs tests/browser-construction-preview.test.mjs tests/browser-surface-fit.test.mjs
       - name: Test design specification engine in headless Chromium
         run: node tests/browser-design-engine.e2e.mjs
+      - name: Retain design studio browser screenshots
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: design-studio-browser-previews
+          path: |
+            /tmp/brickforge-studio.png
+            /tmp/brickforge-pavilion.png
+          if-no-files-found: ignore
+          retention-days: 7
       - name: Measure real LDraw parts in headless Chromium
         run: node tests/browser-part-geometry.e2e.mjs
       - name: Lint geometry, connection and assembly implementation and tests
