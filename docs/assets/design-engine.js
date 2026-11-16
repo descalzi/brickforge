@@ -132,7 +132,8 @@ function componentCandidates(component,catalogue,options) {
   const {tilings,nodes}=enumerateTilings(width,depth,candidates,options.maxTilings,options.maxSearchNodes);
   if(!tilings.length) return {error:"No exact part tiling found for component "+component.id+" ("+width+" × "+depth+" studs)."};
   const profileMap=new Map(catalogue.profiles.map(profile=>[profile.part_id,profile]));
-  let best=null, combinations=0;
+  const alternatives=[];
+  let combinations=0;
   const chosen=[];
   function search(course) {
     if(combinations>=options.maxCombinations) return;
@@ -145,7 +146,7 @@ function componentCandidates(component,catalogue,options) {
       const graph=assemble(parts,profileMap,true);
       if(!graph) return;
       const score=parts.length*1000-graph.connections.length*5-graph.connections.reduce((sum,edge)=>sum+edge.mating_pairs.length,0);
-      if(!best||score<best.score) best={parts,graph,score,tiling:chosen.map(layer=>layer.map(item=>item.candidate.profile.part_id))};
+      alternatives.push({parts,graph,score,tiling:chosen.map(layer=>layer.map(item=>item.candidate.profile.part_id))});
       return;
     }
     for(const tiling of tilings) {
@@ -154,7 +155,16 @@ function componentCandidates(component,catalogue,options) {
     }
   }
   search(0);
-  return best?{...best,search_nodes:nodes,combinations}:{error:"No fully connected course arrangement found for component "+component.id+".",search_nodes:nodes,combinations};
+  alternatives.sort((a,b)=>a.score-b.score||a.tiling.flat().join(",").localeCompare(b.tiling.flat().join(",")));
+  const unique=[];
+  const signatures=new Set();
+  for(const alternative of alternatives) {
+    const signature=alternative.parts.map(part=>[part.part_id,part.translation_ldu.join(","),part.matrix.join(",")].join("@")).sort().join("|");
+    if(signatures.has(signature)) continue;
+    signatures.add(signature);unique.push(alternative);
+    if(unique.length>=options.maxComponentAlternatives) break;
+  }
+  return unique.length?{alternatives:unique,search_nodes:nodes,combinations}:{error:"No fully connected course arrangement found for component "+component.id+".",search_nodes:nodes,combinations};
 }
 
 function componentBounds(component) {
@@ -205,17 +215,40 @@ export function planDesign(spec,catalogue,overrides={}) {
       }
     }
   }
+  options.maxComponentAlternatives=overrides.maxComponentAlternatives||12;
+  options.maxGlobalCombinations=overrides.maxGlobalCombinations||5000;
   const profileMap=new Map(catalogue.profiles.map(profile=>[profile.part_id,profile]));
-  const parts=[],componentReports=[];
+  const componentReports=[],candidateSets=[];
   for(const component of spec.components) {
     const result=componentCandidates(component,catalogue,options);
     if(result.error) return {status:"blocked",design_id:spec.design_id,failures:[result.error],warnings:[],parts:[],connections:[],component_reports:[{component_id:component.id,status:"blocked",reason:result.error}]};
-    parts.push(...result.parts);
-    componentReports.push({component_id:component.id,status:"planned",part_count:result.parts.length,course_layouts:result.tiling,search_nodes:result.search_nodes,combinations_examined:result.combinations});
+    candidateSets.push(result.alternatives);
+    componentReports.push({component_id:component.id,status:"planned",candidate_layouts:result.alternatives.length,search_nodes:result.search_nodes,combinations_examined:result.combinations});
   }
+  let best=null,globalCombinations=0;
+  const chosen=[];
+  function chooseComponent(index) {
+    if(globalCombinations>=options.maxGlobalCombinations)return;
+    if(index===candidateSets.length) {
+      globalCombinations++;
+      const parts=chosen.flatMap(item=>item.parts);
+      if(parts.length>options.maxParts)return;
+      const graph=assemble(parts,profileMap,spec.constraints.require_connected);
+      if(!graph)return;
+      const score=parts.length*1000-graph.connections.length*5-graph.connections.reduce((sum,edge)=>sum+edge.mating_pairs.length,0);
+      if(!best||score<best.score)best={parts,graph,score,chosen:chosen.map(item=>item.tiling)};
+      return;
+    }
+    for(const candidate of candidateSets[index]) {
+      chosen.push(candidate);chooseComponent(index+1);chosen.pop();
+      if(globalCombinations>=options.maxGlobalCombinations)break;
+    }
+  }
+  chooseComponent(0);
+  if(!best) return {status:"blocked",design_id:spec.design_id,failures:["No globally connected arrangement satisfies the complete design and part budget."],warnings:[],parts:[],connections:[],component_reports:componentReports};
+  const parts=best.parts,graph=best.graph;
+  componentReports.forEach((report,index)=>{report.selected_course_layouts=best.chosen[index];});
   if(parts.length>options.maxParts) return {status:"blocked",design_id:spec.design_id,failures:["The plan exceeds the max_parts constraint."],warnings:[],parts:[],connections:[],component_reports:componentReports};
-  const graph=assemble(parts,profileMap,spec.constraints.require_connected);
-  if(!graph) return {status:"blocked",design_id:spec.design_id,failures:["The complete design is not one connected assembly."],warnings:[],parts,connections:[],component_reports:componentReports};
   const bomMap=new Map();
   for(const part of parts){const key=part.part_id+"|"+part.colour_code;bomMap.set(key,(bomMap.get(key)||0)+1);}
   const bom={schema_version:1,items:[...bomMap].map(([key,quantity])=>{const [part_id,colour]=key.split("|");return {part_id,colour_code:Number(colour),quantity};}).sort((a,b)=>compare(a.part_id,b.part_id)||a.colour_code-b.colour_code)};
