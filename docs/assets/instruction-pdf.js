@@ -1,6 +1,6 @@
-import {rasterizeInstructionFaces} from './instruction-rasterizer.js?v=9b57eca72db0';
+import {rasterizeInstructionFaces} from './instruction-rasterizer.js?v=1dc028710f7c';
 // Browser-native vector booklet. Diagrams and inventory share the canonical plan.
-import { transformVector } from './specialist-placement.js?v=9b57eca72db0';
+import { transformVector } from './specialist-placement.js?v=1dc028710f7c';
 const palette=new Map([[0,'#26343b'],[1,'#1e5aa8'],[2,'#00852b'],[4,'#b40000'],[7,'#8a928d'],[14,'#f2cd37'],[15,'#eeeeee'],[19,'#e4cd9e'],[25,'#d66b24']]);
 const colourNames=new Map([[0,'Black'],[1,'Blue'],[2,'Green'],[4,'Red'],[7,'Grey'],[14,'Yellow'],[15,'White'],[19,'Tan'],[25,'Orange']]);
 const clean=s=>String(s).normalize('NFKD').replace(/[^\x20-\x7e]/g,' ').replace(/[\\()]/g,'\\$&');
@@ -87,7 +87,7 @@ export async function createInstructionPdf(plan,catalogue,spec={}){
  let out=header('BUILDING GUIDE')+text(36,755,10,'DESIGN / ELEMENTS / ASSEMBLY',accent)+lines(36,714,25,title,38)+text(36,637,11,`${plan.parts.length} parts   /   ${steps.length} steps   /   ${items.length} inventory entries`,muted);
  out+=rect(36,257,523,352,paper)+diagram(faces,all,new Set(),{x:48,y:269,w:499,h:328},{bounds,previousFade:0});
  out+=text(36,220,15,'Before you build')+lines(36,196,10,'Gather the illustrated parts. Follow the numbered steps in order. New parts keep their full colour; previous parts are softened for clarity.',83);
- out+=lines(36,141,9,'Placement arrows show a nominal approach direction, not a certified insertion path. Check real connections, hand access and support as you build.',92,muted)+footer(1,'Engine preview / nominal geometry / physical fit remains unverified');streams.push(out);
+ out+=lines(36,141,9,'Placement arrows show a nominal approach direction, not a certified insertion path. Check real connections, hand access and support as you build.',92,muted);const approximations=plan.component_reports?.filter(r=>r.approximation)||[];if(approximations.length)out+=lines(36,100,8,'Stepped rounded shape: declared radial allowance '+approximations.map(r=>r.approximation.shape_tolerance_mm+' mm').join(', ')+'. Inner/outer bounds are recorded in the full report.',96,accent);out+=footer(1,'Engine preview / nominal geometry / physical fit remains unverified');streams.push(out);
  // Illustrated inventory, grouped by the exact part and colour instances.
  for(let start=0;start<items.length;start+=12){out=header('PARTS INVENTORY')+text(36,757,23,'Parts inventory')+text(36,735,10,'Match the part shape, identifier, colour and quantity before starting.',muted);
   items.slice(start,start+12).forEach((item,i)=>{const x=36+(i%3)*177,y=562-Math.floor(i/3)*155,part=plan.parts.find(p=>p.part_id===item.part_id&&(p.colour_code??p.colour)===item.colour_code),ids=new Set([part.instance_id]),pf=faces.filter(f=>ids.has(f.id));out+=rect(x,y,169,144,paper)+diagram(pf,ids,new Set(),{x:x+12,y:y+48,w:145,h:86},{bounds:diagramBounds(pf),previousFade:0});out+=text(x+10,y+120,12,`${item.quantity}x`,accent)+text(x+10,y+32,12,item.part_id)+text(x+10,y+16,9,colourNames.get(item.colour_code)||'Colour '+item.colour_code,muted);});

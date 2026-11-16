@@ -175,3 +175,21 @@ convex source slope prisms. Other profiles keep conservative envelopes. This
 avoids treating overlap of sloped-part bounding boxes alone as material
 interpenetration. Protruding studs, cavities, friction and physical insertion
 remain outside the nominal body model.
+
+### Explicit rounded-shape approximation
+
+A sphere or cylinder with positive `shape_tolerance_mm` can opt into stepped
+structural composition. Zero remains exact. Kept stud/course cells fit within
+the allowed outer radius; every cell touching the required inner core is kept
+unless removed by an explicit void. Reported outer-excess and missing-inner-band
+bounds are computed from cell corners and nearest points. Bounds, required
+source features and empty spaces remain separate constraints. A smooth-curve
+requirement is not satisfied by structural boxes, and a grid that erases the
+rounded silhouette into a full box is rejected. Partial-cell voids fail closed.
+
+Cross-course beam search ranks component contacts and preserves root-layout
+diversity across all layers. It avoids spending a depth-first combination budget
+on variants of only the last layers. Source-profile mating and final material
+checks still validate selected assemblies. Beam/node limits are exposed; a good
+candidate is not an optimality proof. These stepped models do not implement
+general smooth curved-part packing.

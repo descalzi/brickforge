@@ -1,8 +1,8 @@
-import {orientationMatches} from './part-orientation.js?v=9b57eca72db0';
-import {transformVector} from './specialist-placement.js?v=9b57eca72db0';
-import {translateComponentRequirements} from './design-translation.js?v=9b57eca72db0';
-import {discoverPartCandidates} from './part-catalogue.js?v=9b57eca72db0';
-import {convexHull,polygonArea,pointInPolygon,clipConvex,triangulatePolygon} from './polygon-geometry.js?v=9b57eca72db0';
+import {orientationMatches} from './part-orientation.js?v=1dc028710f7c';
+import {transformVector} from './specialist-placement.js?v=1dc028710f7c';
+import {translateComponentRequirements} from './design-translation.js?v=1dc028710f7c';
+import {discoverPartCandidates} from './part-catalogue.js?v=1dc028710f7c';
+import {convexHull,polygonArea,pointInPolygon,clipConvex,triangulatePolygon} from './polygon-geometry.js?v=1dc028710f7c';
 const EPS=1e-6,yaws=[[1,0,0,0,1,0,0,0,1],[0,0,1,0,1,0,-1,0,0],[-1,0,0,0,1,0,0,0,-1],[0,0,-1,0,1,0,1,0,0]];
 const unique=values=>[...new Set(values.map(v=>+v.toFixed(7)))].sort((a,b)=>a-b);
 const rect=(x0,y0,x1,y1)=>[[x0,y0],[x1,y0],[x1,y1],[x0,y1]];

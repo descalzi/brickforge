@@ -2327,6 +2327,55 @@
           }
         }
       ]
+    },
+    {
+      "schema_version": 1,
+      "design_id": "stepped-rounded-body",
+      "name": "Rounded body \u00b7 explicit stepped shape allowance",
+      "units": "mm",
+      "relationships": [],
+      "constraints": {
+        "require_connected": true,
+        "allow_intersections": false,
+        "max_parts": 200,
+        "max_search_nodes": 100000,
+        "course_type": "auto"
+      },
+      "appearance": {
+        "preferred_colours": [
+          4
+        ]
+      },
+      "components": [
+        {
+          "id": "body",
+          "role": "organic_form",
+          "geometry": "sphere",
+          "dimensions_mm": {
+            "width": 48,
+            "height": 48,
+            "depth": 48
+          },
+          "position_mm": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "geometry_parameters": {
+            "radius_mm": 24
+          },
+          "function": [
+            "organic silhouette"
+          ],
+          "shape_tolerance_mm": 6.4,
+          "label": "Rounded body"
+        }
+      ],
+      "assumptions": [
+        "The solid body permits a stepped brick approximation with a 6.4 mm radial shape allowance. Smooth curved source surfaces are not required."
+      ]
     }
   ],
   "challenge_specs": [
