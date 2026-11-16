@@ -67,6 +67,55 @@ export function validateDesignSpec(spec) {
   return { valid: errors.length === 0, errors };
 }
 
+function componentBounds(component) {
+  const [x, z] = component.origin_studs;
+  return {
+    minX: x,
+    maxX: x + component.geometry.width_studs,
+    minZ: z,
+    maxZ: z + component.geometry.depth_studs,
+  };
+}
+
+function relationSatisfied(relation, componentsById) {
+  const a = componentBounds(componentsById.get(relation.from));
+  const b = componentBounds(componentsById.get(relation.to));
+  const overlapX = Math.min(a.maxX, b.maxX) - Math.max(a.minX, b.minX);
+  const overlapZ = Math.min(a.maxZ, b.maxZ) - Math.max(a.minZ, b.minZ);
+  switch (relation.type) {
+    case "attached_to":
+      return ((a.maxX === b.minX || b.maxX === a.minX) && overlapZ > 0)
+        || ((a.maxZ === b.minZ || b.maxZ === a.minZ) && overlapX > 0);
+    case "left_of": return a.maxX <= b.minX;
+    case "right_of": return a.minX >= b.maxX;
+    case "in_front_of": return a.maxZ <= b.minZ;
+    case "behind": return a.minZ >= b.maxZ;
+    case "aligned_with":
+      return (a.minX + a.maxX) === (b.minX + b.maxX)
+        || (a.minZ + a.maxZ) === (b.minZ + b.maxZ);
+    default:
+      throw new Error("Relationship type " + relation.type
+        + " is not supported by the current 2D footprint planner.");
+  }
+}
+
+function validateRelationships(spec) {
+  const byId = new Map(spec.components.map((component) => [component.id, component]));
+  const failures = [];
+  const warnings = [];
+  for (const relation of spec.relationships || []) {
+    const passed = relationSatisfied(relation, byId);
+    if (!passed) {
+      const message = "Spatial relationship " + relation.type + " is not satisfied between "
+        + relation.from + " and " + relation.to + ".";
+      if (relation.required === false) warnings.push(message);
+      else failures.push(message);
+    }
+  }
+  if (failures.length) throw new Error(failures.join(" "));
+  return warnings;
+}
+
 function footprintFor(component) {
   const [originX, originZ] = component.origin_studs;
   const cells = [];
@@ -100,7 +149,7 @@ function connected(cells) {
 export function constructDesign(spec, catalogue, options = {}) {
   const validation = validateDesignSpec(spec);
   if (!validation.valid) throw new TypeError("Invalid design specification: " + validation.errors.join(" "));
-  const heights = new Set(spec.components.map((component) => component.height_courses));
+  if ((spec.requirements?.forbidden_features || []).length) {\n    throw new Error("Feature-level forbidden constraints are not supported by the current solid-footprint planner.");\n  }\n  const relationshipWarnings = validateRelationships(spec);\n  const heights = new Set(spec.components.map((component) => component.height_courses));
   if (heights.size !== 1) {
     throw new Error("This construction strategy requires a shared component height; stepped-height planning is not yet supported.");
   }
@@ -140,7 +189,7 @@ export function constructDesign(spec, catalogue, options = {}) {
   const diagnostics = {
     strategy: "connected-orthogonal-footprint",
     fidelity_scope: "footprint-and-course-count",
-    component_coverage: componentCoverage,
+    component_coverage: componentCoverage,\n    relationship_warnings: relationshipWarnings,\n    role_validation: "semantic component presence only; catalogue part-role suitability is not yet implemented",
     unsupported_required_roles: unsupportedRoles,
     limitations: [
       "v1 supports orthogonal prism components with one shared height and a connected union footprint.",
