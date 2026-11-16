@@ -143,7 +143,7 @@ function componentCandidates(component,catalogue,options) {
       for(let level=0;level<chosen.length;level++) chosen[level].forEach((item,index)=>{
         parts.push(placementFor(item,component,level,component.colour??options.defaultColour,""+component.id+"-"+level+"-"+index,courseHeight/LDU_TO_MM));
       });
-      const graph=assemble(parts,profileMap,true);
+      const graph=assemble(parts,profileMap,false);
       if(!graph) return;
       const score=parts.length*1000-graph.connections.length*5-graph.connections.reduce((sum,edge)=>sum+edge.mating_pairs.length,0);
       alternatives.push({parts,graph,score,tiling:chosen.map(layer=>layer.map(item=>item.candidate.profile.part_id))});
