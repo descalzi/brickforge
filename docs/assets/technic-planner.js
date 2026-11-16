@@ -65,7 +65,7 @@ export function planTechnicBeamJoint(spec,partCatalogue,designTranslation,connec
  if(!beamRotation)return {status:"blocked",design_id:spec.design_id,failures:["Could not align beam hole axis with the selected pin."],warnings:[],parts:[],connections:[]};
  const pinRotation=IDENTITY;
  const targetA=[0,0,0];
- const pinTranslation=subtract(targetA,transform(pinRotation,pinA.position_mm));
+ const pinPlacementTranslation=subtract(targetA,transform(pinRotation,pinA.position_mm));
  const targetB=add(targetA,transform(pinRotation,subtract(pinB.position_mm,pinA.position_mm)));
  const beamOffset=transform(beamRotation,centreHole.position_mm);
  const beamATranslation=subtract(targetA,beamOffset);
@@ -78,7 +78,7 @@ export function planTechnicBeamJoint(spec,partCatalogue,designTranslation,connec
  const placements={
   "beam-a":{matrix:beamRotation,translation_mm:beamATranslation},
   "beam-b":{matrix:beamRotation,translation_mm:beamBTranslation},
-  pin:{matrix:pinRotation,translation_mm:pinTranslation}
+  pin:{matrix:pinRotation,translation_mm:pinPlacementTranslation}
  };
  const interfaces=interfacesForPartInstances(partCatalogue,instances);
  const matches=matchAssemblyConnectors(interfaces,connectorCatalogue.rules,placements);
