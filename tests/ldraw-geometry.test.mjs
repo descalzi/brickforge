@@ -66,3 +66,11 @@ test("detects cyclic nested references instead of recursing indefinitely", async
   const resolver = createLDrawGeometryResolver(catalogue, { fetchImpl });
   await assert.rejects(() => resolver.resolvePart("testpart", partIndex), /Cyclic LDraw reference/);
 });
+
+test("rejects unsafe root catalogue paths before any fetch", async () => {
+  const fetchImpl = fakeFetch({});
+  const resolver = createLDrawGeometryResolver(catalogue, { fetchImpl });
+  const unsafeIndex = { parts: [{ part_id: "testpart", filename: "parts/../../outside.dat" }] };
+  await assert.rejects(() => resolver.resolvePart("testpart", unsafeIndex), /safe top-level path/);
+  assert.equal(fetchImpl.requested.length, 0);
+});
