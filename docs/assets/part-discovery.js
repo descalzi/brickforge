@@ -329,16 +329,24 @@ export async function rankPartCandidatesWithGeometry(discovery, geometryResolver
  * This selects candidates only; it deliberately does not claim to place or assemble them.
  */
 export async function rankDesignComponentCandidates(component, partIndex, connectionCatalogue, specialisedCatalogue, geometryResolver, options = {}) {
-  if (!component || typeof component.role !== "string" || !component.geometry
-      || component.geometry.type !== "orthogonal_prism") {
-    throw new TypeError("A semantic component with an orthogonal_prism geometry is required.");
+  const geometry = component?.geometry;
+  const hasStudGeometry = geometry && typeof geometry === "object"
+    && geometry.type === "orthogonal_prism"
+    && Number.isInteger(geometry.width_studs) && Number.isInteger(geometry.depth_studs)
+    && Number.isInteger(component.height_courses);
+  const hasMillimetreGeometry = geometry === "rectangular_prism"
+    && component.dimensions_mm
+    && ["width", "depth", "height"].every((key) => Number.isFinite(component.dimensions_mm[key])
+      && component.dimensions_mm[key] > 0);
+  if (!component || typeof component.role !== "string" || (!hasStudGeometry && !hasMillimetreGeometry)) {
+    throw new TypeError("A semantic component with supported orthogonal geometry is required.");
   }
   if (!Array.isArray(partIndex?.parts)) throw new TypeError("partIndex.parts must be an array.");
-  const targetDimensionsMm = options.targetDimensionsMm || [
-    component.geometry.width_studs * 8,
-    component.height_courses * 9.6,
-    component.geometry.depth_studs * 8,
-  ];
+  // The millimetre-first design contract is canonical. The stud-based form is
+  // accepted only as a compatibility adapter for authored fixtures from v1.
+  const targetDimensionsMm = options.targetDimensionsMm || (hasMillimetreGeometry
+    ? [component.dimensions_mm.width, component.dimensions_mm.height, component.dimensions_mm.depth]
+    : [component.geometry.width_studs * 8, component.height_courses * 9.6, component.geometry.depth_studs * 8]);
   const specialisedCommit = specialisedCatalogue?.source_library?.commit;
   if (geometryResolver.source_commit && specialisedCommit
       && geometryResolver.source_commit !== specialisedCommit) {
