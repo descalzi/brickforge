@@ -9,7 +9,7 @@ optional reference tool. The old mesh-first programme is retained in the
 
 | Milestone | Implemented evidence | Remaining exit work |
 | --- | --- | --- |
-| Object specification | Versioned millimetre contract, components, shapes, relations, empty spaces, explicit dimension tolerance, visual position/colour edits | Relative/proportional design constraints and unrestricted component pose synthesis |
+| Object specification | Versioned millimetre contract, components, shapes, relations, empty spaces, explicit dimension tolerance, visual position/colour edits, dimension ratios, axis/anchor alignment and mirror-plane constraints | Unrestricted relative-layout and component pose synthesis |
 | Part discovery and composition | Curated source-backed structural elements, slopes, open frames, mirrored wings, round elements, wheel-pin mounts and tyre/rim composition; export uses real part instances | Wider family coverage, glazing/hinged doors, clips, hinges, axles and richer multi-part mechanisms |
 | Global fitting | Exact structural tiling, profile matching, all 24 proper right-angle rotations, repeated extrusions, mixed component course heights, direct-attachment constraint pruning and bounded connector-derived pose fitting | General multi-element curved/profile packing and automatic shape/pose redesign; the original challenge briefs are still independent acceptance targets |
 | Validation | Contract and realised relation checks, nominal mating graph, placed body envelopes with explicit rim/tyre seat exceptions, support projection proxy and straight approach envelope checks | Measured clutch, detailed mesh collision/insertion, hand access, intermediate support, loads and physical stability; none is certified by nominal checks |

@@ -1,12 +1,13 @@
-import { featureCompatibility, axesCompatible } from "./connection-types.js?v=c37e3f51f3b7";
-import { fitAttachmentPoses } from "./attachment-fitting.js?v=c37e3f51f3b7";
-import { assertValidDesignSpec } from "./design-spec.js?v=c37e3f51f3b7";
-import { discoverPartCandidates, validatePartCapabilityCatalogue } from "./part-catalogue.js?v=c37e3f51f3b7";
-import { translateComponentRequirements } from "./design-translation.js?v=c37e3f51f3b7";
-import { planTechnicBeamJoint } from "./technic-planner.js?v=c37e3f51f3b7";
-import { specialistComponentCandidates } from "./specialist-placement.js?v=c37e3f51f3b7";
-import { partBodyBounds, analyzeAssembly } from "./assembly-analysis.js?v=c37e3f51f3b7";
-import { createAssemblyInstructions } from "./assembly-instructions.js?v=c37e3f51f3b7";
+import { evaluateDesignRelationships as evaluateRelationships } from "./design-relations.js?v=3233205dd5e1";
+import { featureCompatibility, axesCompatible } from "./connection-types.js?v=3233205dd5e1";
+import { fitAttachmentPoses } from "./attachment-fitting.js?v=3233205dd5e1";
+import { assertValidDesignSpec } from "./design-spec.js?v=3233205dd5e1";
+import { discoverPartCandidates, validatePartCapabilityCatalogue } from "./part-catalogue.js?v=3233205dd5e1";
+import { translateComponentRequirements } from "./design-translation.js?v=3233205dd5e1";
+import { planTechnicBeamJoint } from "./technic-planner.js?v=3233205dd5e1";
+import { specialistComponentCandidates } from "./specialist-placement.js?v=3233205dd5e1";
+import { partBodyBounds, analyzeAssembly } from "./assembly-analysis.js?v=3233205dd5e1";
+import { createAssemblyInstructions } from "./assembly-instructions.js?v=3233205dd5e1";
 
 const LDU_TO_MM = 0.4;
 const STUD_PITCH_MM = 8;
@@ -241,26 +242,6 @@ function componentBounds(component) {
 function overlaps(a,b) {
   return [0,1,2].every(axis=>Math.min(a.max[axis],b.max[axis])-Math.max(a.min[axis],b.min[axis])>1e-6);
 }
-function evaluateRelationships(spec) {
-  const byId=new Map(spec.components.map(component=>[component.id,component]));
-  const failures=[],warnings=[];
-  for(const relation of spec.relationships) {
-    const a=componentBounds(byId.get(relation.from)),b=componentBounds(byId.get(relation.to));
-    const tolerance=relation.tolerance_mm??0.5;
-    let passed=true;
-    if(relation.type==="above") passed=a.min[1]>=b.max[1]-tolerance;
-    else if(relation.type==="below") passed=a.max[1]<=b.min[1]+tolerance;
-    else if(relation.type==="left_of") passed=a.max[0]<=b.min[0]+tolerance;
-    else if(relation.type==="right_of") passed=a.min[0]>=b.max[0]-tolerance;
-    else if(relation.type==="in_front_of") passed=a.max[2]<=b.min[2]+tolerance;
-    else if(relation.type==="behind") passed=a.min[2]>=b.max[2]-tolerance;
-    else if(relation.type==="aligned_with") passed=[0,1,2].some(axis=>Math.abs(a.min[axis]-b.min[axis])<=tolerance);
-    else if(relation.type==="symmetric_to") passed=close(a.min[0]+a.max[0],-(b.min[0]+b.max[0]),tolerance);
-    else if(relation.type==="attached_to") passed=true; // Verified against actual mating edges after placement, including connector spans.
-    if(!passed) (relation.required===false?warnings:failures).push("Relationship "+relation.type+" between "+relation.from+" and "+relation.to+" is not satisfied.");
-  }
-  return {failures,warnings};
-}
 
 export function planDesign(spec,catalogue,overrides={}) {
   assertValidDesignSpec(spec);
@@ -282,7 +263,7 @@ export function planDesign(spec,catalogue,overrides={}) {
     specialistCatalogue:overrides.specialistCatalogue,
   };
   const relationshipReport=evaluateRelationships(spec);
-  if(relationshipReport.failures.length&&!spec.components.some(c=>c.position_tolerance_mm)) return {status:"blocked",design_id:spec.design_id,failures:relationshipReport.failures,warnings:relationshipReport.warnings,parts:[],connections:[],component_reports:[]};
+  if(relationshipReport.failures.length&&!spec.components.some(c=>c.position_tolerance_mm||c.fit_tolerance_mm)) return {status:"blocked",design_id:spec.design_id,failures:relationshipReport.failures,warnings:relationshipReport.warnings,parts:[],connections:[],component_reports:[]};
   if(!spec.constraints.allow_intersections) {
     for(let i=0;i<spec.components.length;i++) for(let j=i+1;j<spec.components.length;j++) {
       if(overlaps(componentBounds(spec.components[i]),componentBounds(spec.components[j]))&&!spec.components[i].position_tolerance_mm&&!spec.components[j].position_tolerance_mm&&!spec.components[i].fit_tolerance_mm&&!spec.components[j].fit_tolerance_mm) {
@@ -330,14 +311,19 @@ export function planDesign(spec,catalogue,overrides={}) {
         const min=[0,1,2].map(i=>Math.min(...bs.map(b=>b.min[i]))),max=[0,1,2].map(i=>Math.max(...bs.map(b=>b.max[i])));
         return {...c,position_mm:{x:min[0],y:min[1],z:min[2]},dimensions_mm:{width:max[0]-min[0],height:max[1]-min[1],depth:max[2]-min[2]}};
       });
-      if(evaluateRelationships({...spec,components:realisedComponents}).failures.length)return;
+      const realisedRelationships=evaluateRelationships({...spec,components:realisedComponents});
+      if(realisedRelationships.failures.length)return;
       for(let a=0;a<realisedComponents.length;a++)for(let b=a+1;b<realisedComponents.length;b++)if(overlaps(componentBounds(realisedComponents[a]),componentBounds(realisedComponents[b])))return;
       const graph=assemble(parts,profileMap,spec.constraints.require_connected);
       if(!graph)return;
       const componentByInstance=new Map(parts.map(part=>[part.instance_id,part.component_id]));
       if(spec.relationships.some(relation=>relation.type==="attached_to" && relation.required!==false && !graph.connections.some(edge=>new Set([componentByInstance.get(edge.instance_a),componentByInstance.get(edge.instance_b)]).has(relation.from) && new Set([componentByInstance.get(edge.instance_a),componentByInstance.get(edge.instance_b)]).has(relation.to))))return;
+      for(const check of realisedRelationships.checks)if(check.type==='attached_to'){
+        const matched=graph.connections.some(e=>new Set([componentByInstance.get(e.instance_a),componentByInstance.get(e.instance_b)]).has(check.from)&&new Set([componentByInstance.get(e.instance_a),componentByInstance.get(e.instance_b)]).has(check.to));
+        check.status=matched?'passed':check.required?'failed':'warning';if(!matched&&!check.required)realisedRelationships.warnings.push('Optional attachment between '+check.from+' and '+check.to+' was not realised.');
+      }
       const score=parts.length*1000-graph.connections.length*5-graph.connections.reduce((sum,edge)=>sum+edge.mating_pairs.length,0);
-      if(!best||score<best.score)best={parts,graph,score,chosen:chosen.map(item=>item.tiling),poses:chosen.map(item=>item.pose_offset_ldu||[0,0,0])};
+      if(!best||score<best.score)best={parts,graph,score,chosen:chosen.map(item=>item.tiling),poses:chosen.map(item=>item.pose_offset_ldu||[0,0,0]),relationship_report:realisedRelationships};
       return;
     }
     const component=order[index];
@@ -364,7 +350,7 @@ export function planDesign(spec,catalogue,overrides={}) {
   const bom={schema_version:1,items:[...bomMap].map(([key,quantity])=>{const [part_id,colour]=key.split("|");return {part_id,colour_code:Number(colour),quantity};}).sort((a,b)=>compare(a.part_id,b.part_id)||a.colour_code-b.colour_code)};
   const ldraw=["0 "+(spec.name||spec.design_id),"0 Name: "+spec.design_id,"0 BrickForge deterministic design planner"];
 
-  const warnings=[...new Set([...(catalogue.limitations||[]),...relationshipReport.warnings])];
+  const warnings=[...new Set([...(catalogue.limitations||[]),...best.relationship_report.warnings])];
   if(spec.components.some(component=>(component.function||[]).length)) warnings.push("Component function annotations are retained as design intent but are not yet physically simulated or verified.");
   if(spec.components.some(component=>component.priority!=="essential")) warnings.push("Component priority is descriptive in v1; all listed components are currently treated as required.");
   if(spec.appearance?.symmetry&&spec.appearance.symmetry!=="none") warnings.push("The requested global symmetry is not yet an optimisation constraint and has not been verified.");
@@ -395,7 +381,7 @@ export function planDesign(spec,catalogue,overrides={}) {
     {id:"physical_clutch_strength",status:"not_assessed",detail:"The available catalogue contains nominal datums, not measured clutch geometry or force."},
     {id:"structural_stability",status:"not_assessed",detail:"No load, bending, tipping or material model is available."}
   ]};
-  return {status:"planned",design_id:spec.design_id,parts,connections:graph.connections,search:{pose_attempts:poseSearch.attempts,pose_candidates_generated:poseSearch.generated,pose_budget_exhausted:poseSearch.budget_exhausted,global_combinations:globalCombinations,global_nodes:globalNodes,budget_exhausted:globalNodes>options.maxSearchNodes||globalCombinations>=options.maxGlobalCombinations},total_mating_pairs:graph.connections.reduce((sum,edge)=>sum+edge.mating_pairs.length,0),bom,ldraw:ldraw.join("\n")+"\n",instructions,analysis,component_reports:componentReports,validation,warnings,dimensions_mm:analysis.nominal_dimensions_mm,requested_dimensions_mm:designBounds(spec)};
+  return {status:"planned",design_id:spec.design_id,parts,connections:graph.connections,search:{pose_attempts:poseSearch.attempts,pose_candidates_generated:poseSearch.generated,pose_budget_exhausted:poseSearch.budget_exhausted,global_combinations:globalCombinations,global_nodes:globalNodes,budget_exhausted:globalNodes>options.maxSearchNodes||globalCombinations>=options.maxGlobalCombinations},total_mating_pairs:graph.connections.reduce((sum,edge)=>sum+edge.mating_pairs.length,0),bom,ldraw:ldraw.join("\n")+"\n",instructions,analysis,component_reports:componentReports,validation,warnings,relationship_checks:best.relationship_report.checks,dimensions_mm:analysis.nominal_dimensions_mm,requested_dimensions_mm:designBounds(spec)};
 }
 
 function designBounds(spec) {

@@ -1,9 +1,9 @@
-import { ASSET_VERSION } from "./release-version.js?v=c37e3f51f3b7";
-import { buildInterpretationRequest, interpretDescription, endpointProvider } from "./text-design.js?v=c37e3f51f3b7";
-import { createInstructionPdf } from "./instruction-pdf.js?v=c37e3f51f3b7";
-import { partBodyBounds } from "./assembly-analysis.js?v=c37e3f51f3b7";
-import { validateDesignSpec } from "./design-spec.js?v=c37e3f51f3b7";
-import { createDesignViewer, colours } from "./design-viewer.js?v=c37e3f51f3b7";
+import { ASSET_VERSION } from "./release-version.js?v=3233205dd5e1";
+import { buildInterpretationRequest, interpretDescription, endpointProvider } from "./text-design.js?v=3233205dd5e1";
+import { createInstructionPdf } from "./instruction-pdf.js?v=3233205dd5e1";
+import { partBodyBounds } from "./assembly-analysis.js?v=3233205dd5e1";
+import { validateDesignSpec } from "./design-spec.js?v=3233205dd5e1";
+import { createDesignViewer, colours } from "./design-viewer.js?v=3233205dd5e1";
 const $=id=>document.getElementById(id);
 const editor=$("design-spec"),status=$("engine-status"),runButton=$("run-design"),selector=$("fixture-select");
 const downloads=[$("download-ldraw"),$("download-bom"),$("download-report"),$("download-instructions"),$("download-pdf")];
@@ -41,6 +41,7 @@ function loadExample(id){
 function showEvidence(plan){
   $("validation-list").replaceChildren();$("warning-list").replaceChildren();
   for(const check of plan.validation?.checks||[]){const row=document.createElement("div");row.className="check";row.dataset.state=check.status;const name=document.createElement("strong"),detail=document.createElement("small");name.textContent=check.id.replaceAll("_"," ");detail.textContent=check.detail;row.append(name,detail);$("validation-list").append(row);}
+  for(const check of plan.relationship_checks||[]){if(check.type==='attached_to')continue;const row=document.createElement('div');row.className='check';row.dataset.state=check.status;const name=document.createElement('strong'),detail=document.createElement('small');name.textContent=check.detail;detail.textContent=check.measured_mm===null?'Realised shape and layout checked.':`Measured ${+check.measured_mm.toFixed(3)} mm; target ${+check.expected_mm.toFixed(3)} mm ± ${check.tolerance_mm} mm`;row.append(name,detail);$('validation-list').append(row);}
   const list=document.createElement("ul");for(const message of [...plan.failures||[],...plan.warnings||[]]){const li=document.createElement("li");li.textContent=message;list.append(li);}$("warning-list").append(list);
   $("engine-report").textContent=JSON.stringify(plan,null,2);
 }
@@ -48,7 +49,7 @@ function run(){
   invalidate("Validating design specification…");
   let spec;try{spec=JSON.parse(editor.value);const validation=validateDesignSpec(spec);if(!validation.valid)throw new Error(validation.errors.join(" "));}catch(error){setStatus(error.message,"blocked");$("engine-report").textContent=error.message;return;}
   components(spec);activeSpec=spec;runButton.disabled=true;$("cancel-design").hidden=false;setStatus("Searching catalogue parts and connected layouts…","planning");
-  const started=performance.now();worker=new Worker(new URL("./design-worker.js?v=c37e3f51f3b7",import.meta.url),{type:"module"});
+  const started=performance.now();worker=new Worker(new URL("./design-worker.js?v=3233205dd5e1",import.meta.url),{type:"module"});
   worker.onmessage=({data})=>{
     finishWorker();if(data.error){setStatus(data.error,"blocked");$("engine-report").textContent=data.error;return;}
     result=data.result;showEvidence(result);components(spec,result);

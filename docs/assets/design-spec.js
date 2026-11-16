@@ -1,5 +1,5 @@
 const finite = (value) => typeof value === "number" && Number.isFinite(value);
-const RELATIONSHIPS = new Set(["above","below","left_of","right_of","in_front_of","behind","attached_to","aligned_with","symmetric_to"]);
+const RELATIONSHIPS = new Set(["above","below","left_of","right_of","in_front_of","behind","attached_to","aligned_with","symmetric_to","dimension_ratio"]);
 const ROOT_KEYS = new Set(["schema_version","design_id","name","units","components","relationships","constraints","appearance","assumptions","negative_spaces"]);
 const COMPONENT_KEYS = new Set(["id","label","role","function","geometry","geometry_parameters","dimensions_mm","position_mm","priority","required_features","forbidden_features","colour","confidence","fit_tolerance_mm","position_tolerance_mm"]);
 const hasOnlyKeys = (value, allowed) => Object.keys(value || {}).filter(key => !allowed.has(key));
@@ -80,11 +80,22 @@ export function validateDesignSpec(spec) {
   if (!Array.isArray(spec.relationships)) errors.push("relationships must be an array.");
   else for (const [index, relationship] of spec.relationships.entries()) {
     if (!relationship || typeof relationship !== "object" || Array.isArray(relationship)) { errors.push("relationships[" + index + "] must be an object."); continue; }
-    if (hasOnlyKeys(relationship,new Set(["id","type","from","to","tolerance_mm","required"])).length) errors.push("relationships[" + index + "] contains unknown properties.");
+    if (hasOnlyKeys(relationship,new Set(["id","type","from","to","tolerance_mm","required","axis","anchor","from_anchor","to_anchor","offset_mm","plane_mm","ratio","from_axis","to_axis"])).length) errors.push("relationships[" + index + "] contains unknown properties.");
     if (!RELATIONSHIPS.has(relationship.type)) errors.push("relationships[" + index + "].type is unsupported.");
     if (!(Array.isArray(spec.components)?spec.components:[]).some(c=>c?.id===relationship.from) || !(Array.isArray(spec.components)?spec.components:[]).some(c=>c?.id===relationship.to)) errors.push("relationships[" + index + "] references an unknown component.");
     if (relationship.from === relationship.to) errors.push("relationships[" + index + "] cannot relate a component to itself.");
     if (relationship.tolerance_mm !== undefined && (!finite(relationship.tolerance_mm) || relationship.tolerance_mm < 0)) errors.push("relationships[" + index + "].tolerance_mm must be non-negative.");
+    const optionalFields=relationship.type==='dimension_ratio'?['ratio','from_axis','to_axis']:relationship.type==='aligned_with'?['axis','anchor','from_anchor','to_anchor','offset_mm']:relationship.type==='symmetric_to'?['axis','plane_mm']:[];
+    for(const field of ['axis','anchor','from_anchor','to_anchor','offset_mm','plane_mm','ratio','from_axis','to_axis'])if(relationship[field]!==undefined&&!optionalFields.includes(field))errors.push('relationships['+index+'].'+field+' is not used by '+relationship.type+'.');
+    if(relationship.axis!==undefined&&!['x','y','z'].includes(relationship.axis))errors.push('relationships['+index+'].axis must be x, y or z.');
+    for(const field of ['anchor','from_anchor','to_anchor'])if(relationship[field]!==undefined&&!['min','max','center'].includes(relationship[field]))errors.push('relationships['+index+'].'+field+' must be min, max or center.');
+    for(const field of ['plane_mm','offset_mm'])if(relationship[field]!==undefined&&!finite(relationship[field]))errors.push('relationships['+index+'].'+field+' must be finite.');
+    if(relationship.type==='dimension_ratio'){
+      if(!finite(relationship.ratio)||relationship.ratio<=0)errors.push('relationships['+index+'].ratio must be positive.');
+      for(const field of ['from_axis','to_axis'])if(!['width','depth','height'].includes(relationship[field]))errors.push('relationships['+index+'].'+field+' is required.');
+    }
+    if(relationship.type==='aligned_with'&&!relationship.axis&&['anchor','from_anchor','to_anchor','offset_mm'].some(field=>relationship[field]!==undefined))errors.push('relationships['+index+'] requires an axis for explicit anchors or an offset.');
+    if(relationship.type==='symmetric_to'&&relationship.plane_mm!==undefined&&!relationship.axis)errors.push('relationships['+index+'] requires an axis for an explicit mirror plane.');
     if (relationship.required !== undefined && typeof relationship.required !== "boolean") errors.push("relationships[" + index + "].required must be boolean.");
   }
   if (!spec.constraints || typeof spec.constraints !== "object" || typeof spec.constraints.require_connected !== "boolean" || typeof spec.constraints.allow_intersections !== "boolean") errors.push("constraints must define require_connected and allow_intersections.");
