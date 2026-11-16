@@ -25,7 +25,7 @@ export function translateComponentRequirements(component,mapping){
  for(const feature of component.forbidden_features||[]){
   const entry=mapping.features[String(feature).toLowerCase()];
   if(!entry)errors.push("No catalogue translation exists for forbidden design feature "+feature+".");
-  else forbiddenCapabilities.push(...(entry.forbidden_capabilities||[]));
+  else forbiddenCapabilities.push(...(entry.required_capabilities||[]),...(entry.forbidden_capabilities||[]));
  }
  return {valid:errors.length===0,errors,warnings,part_roles:partRoles||[],required_capabilities:[...new Set(requiredCapabilities)],forbidden_capabilities:[...new Set(forbiddenCapabilities)]};
 }
