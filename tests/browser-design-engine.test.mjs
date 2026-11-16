@@ -73,9 +73,12 @@ test("planner enforces the complete-design part budget", () => {
 test("planner refuses to substitute a structural brick for an unverified wheel role", () => {
   const wheel = structuredClone(carBody);
   wheel.components[0].role = "wheel";
+  wheel.components[0].geometry = "cylinder";
+  wheel.components[0].geometry_parameters = { axis: "z", diameter_mm: 16 };
+  wheel.components[0].dimensions_mm = { width: 16, depth: 8, height: 16 };
   const result = planDesign(wheel, catalogue, { partCatalogue, designTranslation });
   assert.equal(result.status, "blocked");
-  assert.match(result.failures[0], /Reference-only parts exist for semantic role wheel/);
+  assert.match(result.failures[0], /geometry primitive cylinder is not yet supported/);
   assert.match(result.failures[0], /3739/);
 });
 
@@ -155,10 +158,12 @@ test("car and aircraft specifications preserve cylinder and extruded-wing intent
   const fixtures = JSON.parse(await readFile(new URL("../docs/data/design-spec-fixtures.json", import.meta.url), "utf8"));
   const car = planDesign(fixtures.challenge_specs.find(item => item.design_id === "challenge-car"), catalogue, { partCatalogue, designTranslation });
   assert.equal(car.status, "blocked");
-  assert.match(car.failures[0], /Reference-only parts exist for semantic role wheel/);
+  assert.match(car.failures[0], /geometry primitive cylinder is not yet supported/);
+  assert.match(car.failures[0], /3739/);
   const aircraft = planDesign(fixtures.challenge_specs.find(item => item.design_id === "challenge-aircraft"), catalogue, { partCatalogue, designTranslation });
   assert.equal(aircraft.status, "blocked");
-  assert.match(aircraft.failures[0], /Reference-only parts exist for semantic role wing/);
+  assert.match(aircraft.failures[0], /geometry primitive extruded_profile is not yet supported/);
+  assert.match(aircraft.failures[0], /3934/);
 });
 
 test("organic form intent is valid but is not silently reduced to a rectangular block", async () => {
