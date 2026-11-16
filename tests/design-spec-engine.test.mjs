@@ -162,6 +162,6 @@ test("preserves different component colours across separate vertical courses", a
   const twoTone = fixtureData.specifications.find((item) => item.design_id === "two-tone-building");
   const result = constructDesign(twoTone, catalogue);
   assert.deepEqual(result.course_colour_codes, [4,4,1]);
-  assert.deepEqual([...new Set(result.parts.map(part => part.colour))].sort(), [1,4]);
+  assert.deepEqual([...new Set(result.parts.map(part => part.colour_code))].sort(), [1,4]);
   assert.ok(result.component_coverage.every(component => Number.isInteger(component.colour_code)));
 });
