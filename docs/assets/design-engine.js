@@ -1,6 +1,7 @@
 import { assertValidDesignSpec } from "./design-spec.js";
 import { discoverPartCandidates, validatePartCapabilityCatalogue } from "./part-catalogue.js";
 import { translateComponentRequirements } from "./design-translation.js";
+import { planTechnicBeamJoint } from "./technic-planner.js";
 
 const LDU_TO_MM = 0.4;
 const STUD_PITCH_MM = 8;
@@ -238,6 +239,8 @@ export function planDesign(spec,catalogue,overrides={}) {
       }
     }
   }
+  const technicPlan=planTechnicBeamJoint(spec,partCatalogue,designTranslation,overrides.connectorCatalogue);
+  if(technicPlan)return technicPlan;
   options.maxComponentAlternatives=overrides.maxComponentAlternatives||12;
   options.maxGlobalCombinations=overrides.maxGlobalCombinations||5000;
   const profileMap=new Map(catalogue.profiles.map(profile=>[profile.part_id,profile]));
