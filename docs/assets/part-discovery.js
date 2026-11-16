@@ -133,8 +133,9 @@ export function discoverPartsForRole(role, partCatalogue, connectionCatalogue, o
     candidates: ranked.slice(0, limit),
     limitations: [
       "Name/category/keyword matches are discovery evidence, not proof that a part performs the requested function.",
-      "The searchable index does not contain resolved 3D geometry or complete connection interfaces.",
-      "Only candidates with an authored connection profile can enter the current nominal placement engine.",
+      "The searchable index itself does not contain resolved 3D geometry; a pinned LDraw resolver fetches it separately.",
+      "Only a small curated Technic subset has source-derived nominal functional interfaces; most catalogue parts still lack them.",
+      "Only candidates with an authored stud/receiver connection profile can enter the current nominal placement engine; specialised interface profiles are not yet physical placement profiles.",
       "A connection profile does not certify clutch force, strength, stability or legal building technique.",
     ],
   };
