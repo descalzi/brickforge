@@ -306,6 +306,7 @@ export function constructDesign(spec, catalogue, options = {}) {
     fidelity_scope: "stud-grid-occupancy-and-course-height",
     component_coverage: componentCoverage,
     relationship_warnings: relationshipWarnings,
+    relationship_validation: "semantic component spatial bounds only; direct physical subassembly attachment is not yet mapped",
     role_validation: "semantic component presence only; catalogue part-role suitability is not yet implemented",
     unsupported_required_roles: unsupportedRoles,
     search: result.search,
