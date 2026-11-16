@@ -119,19 +119,12 @@ function assemble(parts, profileMap, requireConnected) {
 }
 
 function componentCandidates(component,catalogue,options,partCatalogue,designTranslation) {
-  const supportedRoles = new Set(["structural","chassis","body","wall","floor","base","platform","support","beam","block","solid","roof-support"]);
-  if (!supportedRoles.has(component.role.toLowerCase())) {
-    return {error:"The current verified catalogue cannot yet build the semantic role \"" + component.role + "\". It contains standard brick/plate geometry, not verified wheel, window, hinge, clip or other specialised capabilities."};
-  }
-  if ((component.required_features || []).length) {
-    return {error:"Required semantic features are not yet represented in the verified connection catalogue: " + component.required_features.join(", ") + "."};
-  }
-  if ((component.forbidden_features || []).length) {
-    return {error:"The current catalogue cannot prove the absence of forbidden semantic features: " + component.forbidden_features.join(", ") + "."};
-  }
+  const translated=translateComponentRequirements(component,designTranslation);
+  if(!translated.valid)return {error:translated.errors.join(" ")};
   const semanticSearch=discoverPartCandidates({
-    role:component.role,
-    required_capabilities:component.required_features||[],
+    roles:translated.part_roles,
+    required_capabilities:translated.required_capabilities,
+    forbidden_capabilities:translated.forbidden_capabilities,
     dimensions_mm:component.dimensions_mm
   },partCatalogue);
   if(semanticSearch.status==="no_candidates") return {error:"No source-backed part candidates satisfy semantic role "+component.role+(component.required_features?.length?" and required design features "+component.required_features.join(", "):"")+"."};
