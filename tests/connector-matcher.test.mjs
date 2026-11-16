@@ -65,12 +65,12 @@ test("assembly connector matcher aligns a nominal pin candidate to a source-deri
 });
 
 test("actual LDraw Technic beam and friction-pin datums produce a nominal connector match",()=>{
- const interfaces=interfacesForPartInstances(partCatalogue,[{instance_id:"beam",part_id:"3701"},{instance_id:"pin",part_id:"2780"}]);
+ const interfaces=interfacesForPartInstances(partCatalogue,[{instance_id:"beam-a",part_id:"3701"},{instance_id:"beam-b",part_id:"3701"},{instance_id:"pin",part_id:"2780"}]);
  const rotation=[0,0,1,0,1,0,-1,0,0];
- const matches=matchAssemblyConnectors(interfaces,rules,{beam:{translation_mm:[0,0,0]},pin:{matrix:rotation,translation_mm:[0,4,0]}});
- assert.equal(matches.length,1);
- assert.equal(matches[0].instance_male,"pin");
- assert.equal(matches[0].instance_female,"beam");
- assert.equal(matches[0].physical_connection_verified,false);
- assert.ok(Math.abs(matches[0].diameter_delta_mm-0.1)<1e-9);
+ const matches=matchAssemblyConnectors(interfaces,rules,{ "beam-a":{matrix:rotation,translation_mm:[0,0,0]},"beam-b":{matrix:rotation,translation_mm:[8,0,0]},pin:{translation_mm:[4,4,0]}});
+ assert.equal(matches.length,2);
+ assert.ok(matches.every(match=>match.instance_male==="pin"));
+ assert.deepEqual(new Set(matches.map(match=>match.instance_female)),new Set(["beam-a","beam-b"]));
+ assert.ok(matches.every(match=>match.physical_connection_verified===false));
+ assert.ok(matches.every(match=>Math.abs(match.diameter_delta_mm-0.1)<1e-9));
 });
