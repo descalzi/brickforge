@@ -54,7 +54,8 @@ export function discoverPartsForRole(role, partCatalogue, connectionCatalogue, o
   const ranked = [];
   for (const part of partCatalogue) {
     if (!part || typeof part.part_id !== "string") continue;
-    const fields = partText(part);
+    const specialisedProfile = specialisedProfiles.get(String(part.part_id)) || null;
+    const fields = [...partText(part), normalise(specialisedProfile?.description)];
     const matches = [];
     let score = 0;
     for (const termValue of terms) {
@@ -62,7 +63,7 @@ export function discoverPartsForRole(role, partCatalogue, connectionCatalogue, o
       if (!term) continue;
       const exactCategory = normalise(part.category) === term;
       const exactKeyword = (part.keywords || []).some((keyword) => normalise(keyword) === term);
-      const nameMatch = [part.name, part.description].some((value) => {
+      const nameMatch = [part.name, part.description, specialisedProfile?.description].some((value) => {
         const text = normalise(value);
         return text === term || text.startsWith(term + " ") || text.includes(term);
       });
@@ -76,11 +77,10 @@ export function discoverPartsForRole(role, partCatalogue, connectionCatalogue, o
       matches.push({ term, exact_category: exactCategory, exact_keyword: exactKeyword, name_match: nameMatch });
     }
     if (!matches.length) continue;
-    const hasConnectionProfile = profileIds.has(part.part_id);
-    const specialisedProfile = specialisedProfiles.get(part.part_id) || null;
+    const hasConnectionProfile = profileIds.has(String(part.part_id));
     ranked.push({
       part_id: part.part_id,
-      name: part.name || part.description || part.part_id,
+      name: part.name || part.description || specialisedProfile?.description || part.part_id,
       category: part.category || null,
       filename: part.filename || null,
       score,
