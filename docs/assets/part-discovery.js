@@ -44,6 +44,7 @@ function mergeSpecialisedPartRecords(partCatalogue, specialisedCatalogue) {
     if (!partId || byId.has(partId)) continue;
     const sourceFile = profile.source_file;
     if (typeof sourceFile !== "string" || !sourceFile.startsWith("parts/")
+        || sourceFile.includes(String.fromCharCode(92))
         || sourceFile.split("/").some((segment) => !segment || segment === "." || segment === "..")) continue;
     byId.set(partId, {
       part_id: partId,
