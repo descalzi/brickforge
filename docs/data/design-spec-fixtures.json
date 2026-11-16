@@ -279,6 +279,74 @@
         "max_parts": 8,
         "optimisation": "balanced"
       }
+    },
+    {
+      "schema_version": 1,
+      "design_id": "two-tone-building",
+      "name": "Two-tone building massing",
+      "description": "A simple connected building mass with a contrasting upper course block.",
+      "units": "studs-and-brick-courses",
+      "components": [
+        {
+          "id": "lower",
+          "name": "Lower body",
+          "role": "body",
+          "geometry": {
+            "type": "orthogonal_prism",
+            "width_studs": 4,
+            "depth_studs": 4
+          },
+          "origin_studs": [
+            0,
+            0
+          ],
+          "base_course": 0,
+          "height_courses": 2,
+          "colour_code": 4,
+          "priority": "essential"
+        },
+        {
+          "id": "upper",
+          "name": "Upper body",
+          "role": "roof",
+          "geometry": {
+            "type": "orthogonal_prism",
+            "width_studs": 4,
+            "depth_studs": 4
+          },
+          "origin_studs": [
+            0,
+            0
+          ],
+          "base_course": 2,
+          "height_courses": 1,
+          "colour_code": 1,
+          "priority": "essential"
+        }
+      ],
+      "relationships": [
+        {
+          "type": "above",
+          "from": "upper",
+          "to": "lower",
+          "required": true
+        }
+      ],
+      "requirements": {
+        "required_roles": [
+          "body",
+          "roof"
+        ],
+        "require_connected": true
+      },
+      "preferences": {
+        "colours": [
+          4,
+          1
+        ],
+        "max_parts": 80,
+        "optimisation": "balanced"
+      }
     }
   ]
 }
