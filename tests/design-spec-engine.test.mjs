@@ -51,7 +51,7 @@ test("does not silently flatten components with different heights", async () => 
   const stepped = structuredClone(carBrief);
   stepped.components[0].height_courses = 1;
   stepped.components.push({ id: "upper", name: "Upper body", role: "body", geometry: { type: "orthogonal_prism", width_studs: 2, depth_studs: 2 }, origin_studs: [1,1], height_courses: 2 });
-  assert.throws(() => constructDesign(stepped, catalogue), /shared height/);
+  assert.throws(() => constructDesign(stepped, catalogue), /shared component height/);
 });
 
 test("rejects disconnected footprints rather than inventing a bridge", async () => {
