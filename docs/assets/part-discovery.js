@@ -278,7 +278,9 @@ export async function rankDesignComponentCandidates(component, partIndex, connec
     component.height_courses * 9.6,
     component.geometry.depth_studs * 8,
   ];
-  const discovery = discoverPartsForRole(component.role, partIndex.parts, connectionCatalogue, {
+  const enrichedParts = mergeSpecialisedPartRecords(partIndex.parts, specialisedCatalogue);
+  const enrichedPartIndex = { ...partIndex, parts: enrichedParts };
+  const discovery = discoverPartsForRole(component.role, enrichedParts, connectionCatalogue, {
     specialisedCatalogue,
     synonyms: options.synonyms,
     limit: options.discoveryLimit ?? options.maxCandidates ?? 30,
