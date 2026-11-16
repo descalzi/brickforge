@@ -87,6 +87,7 @@ try {
       wheelPlannerReadyCount: wheelDiscovery.planner_ready_count,
       technicCandidateCount: technicDiscovery.candidate_count,
       technicInterfaceProfileCount: technicDiscovery.profiled_candidate_count,
+      technicSpecialisedProfileCount: technicDiscovery.candidates.filter(candidate => candidate.specialised_interface_profile_available).length,
       technicHoleCandidateCount: technicHoleCandidates.length,
       technicInterfaceMatchCount: technicInterfaceMatches.length,
       parts: assembly.parts.length,
@@ -107,6 +108,7 @@ try {
   assert.ok(result.wheelPlannerReadyCount <= result.wheelCandidateCount);
   assert.ok(result.technicCandidateCount > 0);
   assert.ok(result.technicInterfaceProfileCount > 0);
+  assert.ok(result.technicSpecialisedProfileCount > 0);
   assert.ok(result.technicHoleCandidateCount > 0);
   assert.ok(result.technicInterfaceMatchCount > 0);
   assert.ok(result.parts > 0);
