@@ -4,6 +4,14 @@ function normaliseAxis(axis) {
   return length > 1e-9 ? axis.map((value) => value / length) : null;
 }
 
+function interfaceTypeMatches(requiredType, candidate) {
+  if (requiredType === "round_opening") {
+    return /(?:hole|opening)/i.test(candidate.interface_type || "")
+      && Number.isFinite(candidate.nominal_diameter_mm);
+  }
+  return candidate.interface_type === requiredType;
+}
+
 function dot(left, right) {
   return left.reduce((sum, value, index) => sum + value * right[index], 0);
 }
@@ -49,7 +57,7 @@ export function matchRequiredInterfaces(requiredInterfaces, candidateInterfaces,
   });
   const matches = requirements.map((requirement) => {
     const candidates = candidateInterfaces.filter((candidate) => {
-      if (candidate.interface_type !== requirement.interface_type) return false;
+      if (!interfaceTypeMatches(requirement.interface_type, candidate)) return false;
       if (requirement.diameter_mm !== undefined) {
         if (!Number.isFinite(candidate.nominal_diameter_mm)) return false;
         const tolerance = requirement.max_diameter_error_mm ?? defaultDiameterTolerance;
