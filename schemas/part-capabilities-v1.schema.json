@@ -1,0 +1,23 @@
+{
+ "$schema":"https://json-schema.org/draft/2020-12/schema",
+ "$id":"https://descalzi.github.io/brickforge/schemas/part-capabilities-v1.schema.json",
+ "title":"BrickForge semantic part capability catalogue v1",
+ "type":"object","additionalProperties":false,
+ "required":["schema_version","units","parts"],
+ "properties":{"schema_version":{"const":1},"units":{"const":"mm"},"parts":{"type":"array","minItems":1,"items":{"$ref":"#/$defs/part"}}},
+ "$defs":{
+  "vector":{"type":"array","items":{"type":"number"},"minItems":3,"maxItems":3},
+  "part":{"type":"object","additionalProperties":false,
+   "required":["part_id","description","roles","capabilities","dimensions_mm","candidate_status","interfaces","source"],
+   "properties":{
+    "part_id":{"type":"string","minLength":1},"description":{"type":"string","minLength":1},
+    "roles":{"type":"array","items":{"type":"string"},"uniqueItems":true},
+    "capabilities":{"type":"array","items":{"type":"string"},"uniqueItems":true},
+    "dimensions_mm":{"oneOf":[{"type":"null"},{"type":"object","additionalProperties":false,"required":["width","depth","height"],"properties":{"width":{"type":"number","exclusiveMinimum":0},"depth":{"type":"number","exclusiveMinimum":0},"height":{"type":"number","exclusiveMinimum":0}}}]},
+    "candidate_status":{"enum":["nominal_connection_profile","nominal_geometry_available","reference_only"]},
+    "interfaces":{"type":"array","items":{"type":"object","additionalProperties":false,"required":["interface_id","interface_type","position_mm","axis_vector","nominal_diameter_mm","evidence_status"],"properties":{"interface_id":{"type":"string"},"interface_type":{"type":"string"},"position_mm":{"$ref":"#/$defs/vector"},"axis_vector":{"$ref":"#/$defs/vector"},"nominal_diameter_mm":{"type":["number","null"],"minimum":0},"evidence_status":{"type":"string"},"source_primitive":{"type":"string"}}}},
+    "source":{"type":"object","additionalProperties":false,"required":["file","revision","license","author","library_commit"],"properties":{"file":{"type":"string"},"revision":{"type":["string","null"]},"license":{"type":"string"},"author":{"type":["string","null"]},"library_commit":{"type":["string","null"]}}}
+   }
+  }
+ }
+}
