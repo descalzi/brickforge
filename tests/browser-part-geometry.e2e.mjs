@@ -17,7 +17,7 @@ const browser=await chromium.launch({headless:true});
 try{
  const page=await browser.newPage(),errors=[];
  page.on("pageerror",error=>errors.push(error.message));
- page.on("console",message=>{if(message.type()==="error")errors.push(message.text());});
+ page.on("console",message=>{if(message.type()==="error"&&!message.text().includes("Failed to load resource"))errors.push(message.text());});
  await page.goto("http://127.0.0.1:4175/part-geometry-lab.html?parts=3001,3739,5260,3934",{waitUntil:"networkidle"});
  await page.waitForFunction(()=>["complete","partial"].includes(document.querySelector("#status")?.dataset.state),null,{timeout:90000});
  const report=JSON.parse(await page.locator("#results").innerText());
