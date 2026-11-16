@@ -72,6 +72,9 @@ export function validateDesignSpec(spec) {
             && (item.count === undefined || (Number.isInteger(item.count) && item.count > 0))
             && (item.diameter_mm === undefined || (Number.isFinite(item.diameter_mm) && item.diameter_mm > 0))
             && (item.max_diameter_error_mm === undefined || (Number.isFinite(item.max_diameter_error_mm) && item.max_diameter_error_mm >= 0))
+            && (item.position_tolerance_mm === undefined || (Number.isFinite(item.position_tolerance_mm) && item.position_tolerance_mm >= 0))
+            && (item.positions_mm === undefined || (Array.isArray(item.positions_mm) && item.positions_mm.every((position) => Array.isArray(position)
+              && position.length === 3 && position.every(Number.isFinite)) && (item.count === undefined || item.count === item.positions_mm.length)))
             && (item.axis_vector === undefined || (Array.isArray(item.axis_vector) && item.axis_vector.length === 3
               && item.axis_vector.every(Number.isFinite) && Math.hypot(...item.axis_vector) > 0))))) {
       fail(at + ".required_interfaces contains an invalid interface requirement.");
