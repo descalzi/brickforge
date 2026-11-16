@@ -53,9 +53,9 @@ This is a deliberately small but end-to-end vertical slice. It proves a hand-aut
 
 ## Browser workbench and regression
 
-Open [the Design Engine workbench](../designer.html). The authored fixture in `docs/data/design-spec-fixtures.json` is intentionally LEGO-agnostic. The page fetches the catalogue, runs the deterministic planner in the browser, displays a footprint preview and exposes LDraw, BOM and assembly-report downloads.
+Open [the Design Engine workbench](../designer.html). The authored fixtures in `docs/data/design-spec-fixtures.json` are intentionally LEGO-agnostic. Alongside the passing interlocked-body fixture, they include car, house, aircraft and organic-form challenge specifications. These are valid intent inputs; the planner is expected to explain current catalogue/geometry blockers rather than fabricate builds. The page fetches the catalogue, runs the deterministic planner in the browser, displays a footprint preview and exposes LDraw, BOM and assembly-report downloads.
 
-Node tests exercise validation, scale rejection, global interlocking, role refusal, relationship constraints and part budgets. A separate headless Chromium regression opens the actual workbench URL and verifies the generated result and diagnostics.
+Node tests exercise validation, scale rejection, global interlocking, multi-component designs, car/house/aircraft/organic intent, role refusal, relationship constraints and part budgets. A separate headless Chromium regression opens the actual workbench URL and verifies the generated result and diagnostics.
 
 ## Production/runtime boundary\n\nThe construction planner and browser workbench are JavaScript modules and run in the browser. Python is not a parallel production engine. Python may remain for offline LDraw ingestion, catalogue generation and independent audit/test tooling where it provides a clear advantage.\n\n## Next engineering layers
 
