@@ -35,6 +35,29 @@ function partText(part) {
   ].map(normalise).filter(Boolean);
 }
 
+function mergeSpecialisedPartRecords(partCatalogue, specialisedCatalogue) {
+  const byId = new Map(partCatalogue
+    .filter((part) => part && typeof part.part_id === "string")
+    .map((part) => [String(part.part_id), part]));
+  for (const profile of specialisedCatalogue?.profiles || []) {
+    const partId = String(profile.part_id || "");
+    if (!partId || byId.has(partId)) continue;
+    const sourceFile = profile.source_file;
+    if (typeof sourceFile !== "string" || !sourceFile.startsWith("parts/")
+        || sourceFile.split("/").some((segment) => !segment || segment === "." || segment === "..")) continue;
+    byId.set(partId, {
+      part_id: partId,
+      name: profile.description || partId,
+      description: profile.description || "",
+      category: "Technic",
+      keywords: ["technic", "specialised", "connection-interface"],
+      filename: sourceFile,
+      source: "pinned-specialised-part-catalogue",
+    });
+  }
+  return [...byId.values()];
+}
+
 /**
  * Discovers catalogue candidates for a semantic role without confusing a text
  * match with geometric or physical suitability. Only parts with an authored
@@ -44,6 +67,7 @@ export function discoverPartsForRole(role, partCatalogue, connectionCatalogue, o
   if (typeof role !== "string" || !role.trim()) throw new TypeError("role must be a non-empty string.");
   if (!Array.isArray(partCatalogue)) throw new TypeError("partCatalogue must be an array.");
   const key = normalise(role);
+  const enrichedPartCatalogue = mergeSpecialisedPartRecords(partCatalogue, options.specialisedCatalogue);
   const terms = options.synonyms || ROLE_TERMS[key] || [key];
   const profileIds = new Set((connectionCatalogue?.profiles || []).map((profile) => String(profile.part_id)));
   const specialisedProfiles = new Map((options.specialisedCatalogue?.profiles || [])
@@ -52,7 +76,7 @@ export function discoverPartsForRole(role, partCatalogue, connectionCatalogue, o
   if (!Number.isInteger(limit) || limit < 1) throw new RangeError("limit must be a positive integer.");
 
   const ranked = [];
-  for (const part of partCatalogue) {
+  for (const part of enrichedPartCatalogue) {
     if (!part || typeof part.part_id !== "string") continue;
     const specialisedProfile = specialisedProfiles.get(String(part.part_id)) || null;
     const fields = [...partText(part), normalise(specialisedProfile?.description)];
@@ -262,7 +286,7 @@ export async function rankDesignComponentCandidates(component, partIndex, connec
   const ranking = await rankPartCandidatesWithGeometry(
     discovery,
     geometryResolver,
-    partIndex,
+    enrichedPartIndex,
     targetDimensionsMm,
     {
       ...options,
