@@ -79,7 +79,7 @@ test("planner refuses to substitute a structural brick for an unverified wheel r
   wheel.components[0].dimensions_mm = { width: 16, depth: 8, height: 16 };
   const result = planDesign(wheel, catalogue, { partCatalogue, designTranslation });
   assert.equal(result.status, "blocked");
-  assert.match(result.failures[0], /geometry primitive cylinder is not yet supported/);
+  assert.match(result.failures[0], /Geometry primitive cylinder is not yet supported/);
   assert.match(result.failures[0], /3739/);
 });
 
@@ -159,11 +159,11 @@ test("car and aircraft specifications preserve cylinder and extruded-wing intent
   const fixtures = JSON.parse(await readFile(new URL("../docs/data/design-spec-fixtures.json", import.meta.url), "utf8"));
   const car = planDesign(fixtures.challenge_specs.find(item => item.design_id === "challenge-car"), catalogue, { partCatalogue, designTranslation });
   assert.equal(car.status, "blocked");
-  assert.match(car.failures[0], /geometry primitive cylinder is not yet supported/);
+  assert.match(car.failures[0], /Geometry primitive cylinder is not yet supported/);
   assert.match(car.failures[0], /3739/);
   const aircraft = planDesign(fixtures.challenge_specs.find(item => item.design_id === "challenge-aircraft"), catalogue, { partCatalogue, designTranslation });
   assert.equal(aircraft.status, "blocked");
-  assert.match(aircraft.failures[0], /geometry primitive extruded_profile is not yet supported/);
+  assert.match(aircraft.failures[0], /Geometry primitive extruded_profile is not yet supported/);
   assert.match(aircraft.failures[0], /3934/);
 });
 
@@ -182,7 +182,7 @@ test("a sphere-shaped component is never silently tiled as a rectangular box",()
  sphere.components[0].dimensions_mm={width:32,depth:32,height:32};
  const result=planDesign(sphere,catalogue,{partCatalogue,designTranslation});
  assert.equal(result.status,"blocked");
- assert.match(result.failures[0],/geometry primitive sphere is not yet supported/);
+ assert.match(result.failures[0],/Geometry primitive sphere is not yet supported/);
  assert.match(result.failures[0],/no rectangular-block substitution/);
 });
 
