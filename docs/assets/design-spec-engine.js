@@ -198,6 +198,18 @@ export function constructDesign(spec, catalogue, options = {}) {
   if ((spec.requirements?.forbidden_features || []).length) {
     throw new Error("Feature-level forbidden constraints are not supported by the current solid-footprint planner.");
   }
+  if (spec.requirements?.require_connected === false) {
+    throw new Error("The current assembly planner only supports a single connected construction.");
+  }
+  if (spec.components.some((component) => (component.functional_requirements || []).length)) {
+    throw new Error("Functional component requirements need a specialised-part planner and cannot yet be represented by solid footprints.");
+  }
+  const componentColours = [...new Set(spec.components
+    .map((component) => component.colour_code)
+    .filter(Number.isInteger))];
+  if (componentColours.length > 1) {
+    throw new Error("Different per-component colours cannot yet be preserved when semantic components are fused into one shared footprint.");
+  }
   const relationshipWarnings = validateRelationships(spec);
   const heights = new Set(spec.components.map((component) => component.height_courses));
   if (heights.size !== 1) {
