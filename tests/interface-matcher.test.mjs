@@ -7,9 +7,9 @@ import { matchRequiredInterfaces } from "../docs/assets/interface-matcher.js";
 const technicProfile = {
   part_id: "3701",
   nominal_connection_interfaces: [
-    { interface_id: "pin-hole-1", interface_type: "round_opening", nominal_diameter_mm: 4.8, axis_vector: [0,0,1], source_primitive: "p/peghole.dat", status: "nominal_geometry_derived" },
-    { interface_id: "pin-hole-2", interface_type: "round_opening", nominal_diameter_mm: 4.8, axis_vector: [0,0,1], source_primitive: "p/peghole.dat", status: "nominal_geometry_derived" },
-    { interface_id: "pin-hole-3", interface_type: "round_opening", nominal_diameter_mm: 4.8, axis_vector: [0,0,1], source_primitive: "p/peghole.dat", status: "nominal_geometry_derived" },
+    { interface_id: "pin-hole-1", interface_type: "technic_pin_hole", nominal_diameter_mm: 4.8, axis_vector: [0,0,1], source_primitive: "p/peghole.dat", status: "nominal_geometry_derived" },
+    { interface_id: "pin-hole-2", interface_type: "technic_pin_hole", nominal_diameter_mm: 4.8, axis_vector: [0,0,1], source_primitive: "p/peghole.dat", status: "nominal_geometry_derived" },
+    { interface_id: "pin-hole-3", interface_type: "technic_pin_hole", nominal_diameter_mm: 4.8, axis_vector: [0,0,1], source_primitive: "p/peghole.dat", status: "nominal_geometry_derived" },
   ],
 };
 
