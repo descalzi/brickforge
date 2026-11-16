@@ -59,3 +59,24 @@ export function matchAssemblyConnectors(interfaces,rules,placementsByInstance={}
  for(const match of matches){const key=[match.instance_male,match.interface_male,match.instance_female,match.interface_female].join("|");if(seen.has(key))continue;seen.add(key);unique.push(match);}
  return unique;
 }
+
+/** Convert the source-derived Technic catalogue interfaces into assembly instances. */
+export function nominalInterfacesForInstances(catalogue,instances){
+ if(!catalogue||catalogue.schema_version!==1||!Array.isArray(catalogue.profiles)||!Array.isArray(instances))throw new TypeError("A version-1 specialised part catalogue and instance list are required.");
+ const profiles=new Map(catalogue.profiles.map(profile=>[profile.part_id,profile]));
+ const interfaces=[];
+ for(const instance of instances){
+  const profile=profiles.get(instance.part_id);
+  if(!profile)continue;
+  for(const iface of profile.nominal_connection_interfaces||[]){
+   if(!finiteVector(iface.centre_mm)||!finiteVector(iface.axis_vector))continue;
+   interfaces.push({
+    instance_id:instance.instance_id,part_id:instance.part_id,interface_id:iface.interface_id,
+    interface_type:iface.interface_type,position_mm:iface.centre_mm,axis_vector:iface.axis_vector,
+    nominal_diameter_mm:iface.nominal_diameter_mm,evidence_status:iface.status,
+    source_file:profile.source_file,source_revision:profile.source_revision
+   });
+  }
+ }
+ return interfaces;
+}
