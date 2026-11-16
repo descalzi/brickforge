@@ -134,7 +134,12 @@ function componentCandidates(component,catalogue,options,partCatalogue,designTra
     if(referenceSearch.candidates.length) return {error:"Reference-only parts exist for semantic role "+component.role+" ("+referenceSearch.candidates.map(candidate=>candidate.part_id).join(", ")+"), but their geometry and connector interfaces are not yet measured; they cannot be placed safely."};
     return {error:"No source-backed part candidates satisfy semantic role "+component.role+(component.required_features?.length?" and required design features "+component.required_features.join(", "):"")+"."};
   }
-  if(component.geometry!=="rectangular_prism") return {error:"Source-backed candidates exist for "+component.role+" ("+semanticSearch.candidates.map(candidate=>candidate.part_id).join(", ")+"), but geometry primitive "+component.geometry+" is not yet supported by the placement solver; no rectangular-block substitution is attempted."};
+  if(component.geometry!=="rectangular_prism") {
+    const nearest=semanticSearch.candidates[0];
+    const dims=value=>value?value.width+"×"+value.depth+"×"+value.height+" mm":"unknown dimensions";
+    const error=nearest.dimension_error_mm===null?"":"; bounding-dimension error "+nearest.dimension_error_mm.toFixed(1)+" mm";
+    return {error:"Source-backed candidates exist for "+component.role+" ("+semanticSearch.candidates.slice(0,5).map(candidate=>candidate.part_id).join(", ")+"). Nearest measured candidate "+nearest.part_id+" is "+dims(nearest.dimensions_mm)+" versus requested "+dims(component.dimensions_mm)+error+". Geometry primitive "+component.geometry+" is not yet supported by the placement solver; no rectangular-block substitution is attempted."};
+  }
   const candidateIds=new Set(semanticSearch.candidates.map(candidate=>candidate.part_id));
   const candidateScores=new Map(semanticSearch.candidates.map(candidate=>[candidate.part_id,candidate.score]));
   const width=component.dimensions_mm.width/STUD_PITCH_MM;
