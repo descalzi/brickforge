@@ -188,6 +188,37 @@
         "base_course": {
           "type": "integer",
           "minimum": 0
+        },
+        "required_interfaces": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "interface_type"
+            ],
+            "properties": {
+              "interface_type": {
+                "type": "string",
+                "minLength": 1
+              },
+              "count": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "diameter_mm": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "axis_vector": {
+                "$ref": "#/$defs/vector3"
+              },
+              "max_diameter_error_mm": {
+                "type": "number",
+                "minimum": 0
+              }
+            }
+          }
         }
       }
     },
