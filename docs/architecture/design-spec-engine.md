@@ -57,7 +57,7 @@ Open [the Design Engine workbench](../designer.html). The authored fixture in `d
 
 Node tests exercise validation, scale rejection, global interlocking, role refusal, relationship constraints and part budgets. A separate headless Chromium regression opens the actual workbench URL and verifies the generated result and diagnostics.
 
-## Next engineering layers
+## Production/runtime boundary\n\nThe construction planner and browser workbench are JavaScript modules and run in the browser. Python is not a parallel production engine. Python may remain for offline LDraw ingestion, catalogue generation and independent audit/test tooling where it provides a clear advantage.\n\n## Next engineering layers
 
 1. Enrich the part catalogue with semantic roles, measured geometry descriptors, orientation constraints and source provenance.
 2. Add specialised interfaces (Technic pins/axles, clips/bars, hinges, wheels/tyres, windows and other families) with compatibility evidence and confidence levels.
