@@ -78,3 +78,34 @@ test("rejects invalid geometry ranking controls", async () => {
   const resolver = { async resolvePart() { return { dimensions_mm: [1, 2, 3] }; } };
   await assert.rejects(() => rankPartCandidatesWithGeometry(discovery, resolver, { parts }, [1,2,3], { concurrency: 0 }), /positive integers/);
 });
+
+test("ranks Technic candidates against source-derived pin-hole requirements", async () => {
+  const technicParts = [
+    { part_id: "3701", name: "Technic Brick 1 x 4 with Holes", category: "Technic", keywords: ["technic", "brick", "pin hole"] },
+  ];
+  const specialisedCatalogue = {
+    profiles: [{
+      part_id: "3701",
+      description: "Technic Brick 1 x 4 with Holes",
+      dimensions_mm: [32, 9.6, 8],
+      nominal_connection_interfaces: [
+        { interface_id: "pin-hole-1", interface_type: "technic_pin_hole", nominal_diameter_mm: 4.8, axis_vector: [0,0,1] },
+        { interface_id: "pin-hole-2", interface_type: "technic_pin_hole", nominal_diameter_mm: 4.8, axis_vector: [0,0,1] },
+        { interface_id: "pin-hole-3", interface_type: "technic_pin_hole", nominal_diameter_mm: 4.8, axis_vector: [0,0,1] },
+      ],
+    }],
+  };
+  const discovery = discoverPartsForRole("technic", technicParts, connections, { specialisedCatalogue });
+  assert.equal(discovery.candidates[0].specialised_interface_profile_available, true);
+  assert.equal(discovery.candidates[0].connection_profile_available, false);
+  const ranked = await rankPartCandidatesWithGeometry(
+    discovery,
+    { async resolvePart() { return { part_id: "3701", dimensions_mm: [32, 9.6, 8] }; } },
+    { parts: technicParts },
+    [32, 9.6, 8],
+    { requiredInterfaces: [{ interface_type: "technic_pin_hole", diameter_mm: 4.8, axis_vector: [0,0,1], count: 3 }] },
+  );
+  assert.equal(ranked.candidates[0].specialised_interface_candidate, true);
+  assert.equal(ranked.candidates[0].nominal_placement_candidate, false);
+  assert.equal(ranked.candidates[0].specialised_interface_match.physical_connection_verified, false);
+});
