@@ -15,7 +15,7 @@ The JSON Schema is `schemas/design-spec-v1.schema.json`; the JavaScript entry po
 - `relationships` between semantic components;
 - hard `requirements` and soft `preferences`.
 
-Component priority and provenance distinguish essential, preferred and optional/inferred details. The contract is versioned and provider-independent.
+Component priority and provenance distinguish essential, preferred and optional/inferred details. Required interface positions are expressed in the component-centred coordinate frame, not as LEGO part coordinates. The contract is versioned and provider-independent.
 
 ## Current implemented construction slice
 
