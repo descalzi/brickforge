@@ -20,7 +20,10 @@ try{
  page.on("pageerror",error=>errors.push(error.message));
  page.on("console",message=>{if(message.type()==="error")errors.push(message.text());});
  await page.goto("http://127.0.0.1:4174/designer.html?fixture=stacked-body&run=1",{waitUntil:"networkidle"});
- await page.waitForFunction(()=>document.querySelector("#engine-status")?.dataset.state==="planned",{timeout:30000});
+ await page.waitForFunction(()=>["planned","blocked"].includes(document.querySelector("#engine-status")?.dataset.state),null,{timeout:30000});
+ const state=await page.locator("#engine-status").getAttribute("data-state");
+ const message=await page.locator("#engine-status").innerText();
+ assert.equal(state,"planned","Workbench did not produce a plan: "+message+"; browser errors: "+errors.join(" | "));
  assert.equal(await page.locator("#engine-parts").innerText(),"4");
  assert.equal(await page.locator("#engine-connections").innerText(),"4");
  assert.equal(await page.locator("#engine-pairs").innerText(),"16");
