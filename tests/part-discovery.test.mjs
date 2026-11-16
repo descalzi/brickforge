@@ -123,11 +123,11 @@ test("ranks real part candidates directly from a semantic design component", asy
     height_courses: 1,
     required_interfaces: [{ interface_type: "round_opening", diameter_mm: 4.8, axis_vector: [0,0,1], count: 3, positions_mm: [[-8,0,0],[0,0,0],[8,0,0]] }],
   };
-  const partIndex = { parts: [
-    { part_id: "3701", name: "Brick 1 x 4 with Holes", category: "Brick", keywords: ["brick"] },
-  ] };
+  const partIndex = { parts: [] };
   const specialisedCatalogue = { profiles: [{
     part_id: "3701",
+    description: "Technic Brick 1 x 4 with Holes",
+    source_file: "parts/3701.dat",
     nominal_connection_interfaces: [
       { interface_id: "h1", interface_type: "technic_pin_hole", nominal_diameter_mm: 4.8, axis_vector: [0,0,1], centre_mm: [-8,4,0] },
       { interface_id: "h2", interface_type: "technic_pin_hole", nominal_diameter_mm: 4.8, axis_vector: [0,0,1], centre_mm: [0,4,0] },
@@ -139,6 +139,7 @@ test("ranks real part candidates directly from a semantic design component", asy
     { async resolvePart() { return { part_id: "3701", dimensions_mm: [32, 9.6, 8] }; } },
   );
   assert.deepEqual(result.target_dimensions_mm, [32, 9.6, 8]);
+  assert.equal(result.discovery.candidates[0].source, "pinned-specialised-part-catalogue");
   assert.equal(result.ranking.candidates[0].specialised_interface_candidate, true);
   assert.equal(result.assembly_status, "candidate_ranking_only_not_placed");
 });
