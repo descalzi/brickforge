@@ -36,7 +36,7 @@ try {
     const assembly = constructDesign(brief, catalogue);
     return {
       valid: validation.valid,
-      parts: assembly.parts.length,
+      cataloguePartCount: partIndex.parts.length,\n      wheelCandidateCount: wheelDiscovery.candidate_count,\n      wheelPlannerReadyCount: wheelDiscovery.planner_ready_count,\n      parts: assembly.parts.length,
       edges: assembly.connections.length,
       matingPairs: assembly.total_mating_pairs,
       bomParts: assembly.bom.total_parts,
@@ -45,7 +45,7 @@ try {
     };
   });
   assert.equal(result.valid, true);
-  assert.ok(result.parts > 0);
+  assert.ok(result.cataloguePartCount > 10000);\n  assert.ok(result.wheelCandidateCount > 0);\n  assert.ok(result.wheelPlannerReadyCount <= result.wheelCandidateCount);\n  assert.ok(result.parts > 0);
   assert.ok(result.edges > 0);
   assert.ok(result.matingPairs > 0);
   assert.equal(result.bomParts, result.parts);
