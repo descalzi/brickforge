@@ -116,6 +116,8 @@ try {
       technicCandidateCount: technicDiscovery.candidate_count,
       technicInterfaceProfileCount: technicDiscovery.profiled_candidate_count,
       technicSpecialisedProfileCount: technicDiscovery.candidates.filter(candidate => candidate.specialised_interface_profile_available).length,
+      technicCandidatesDebug: technicDiscovery.candidates.map(candidate => ({ part_id: candidate.part_id, name: candidate.name, specialised: candidate.specialised_interface_profile_available, interfaceCount: candidate.specialised_interfaces.length, filename: candidate.filename })),
+      specialisedProfileIds: specialisedCatalogue.profiles.map(profile => profile.part_id),
       technicHoleCandidateCount: technicHoleCandidates.length,
       technicInterfaceMatchCount: technicInterfaceMatches.length,
       technicGeometryResolvedCount: beamRanking.ranking.geometry_resolved_count,
@@ -140,7 +142,7 @@ try {
   assert.ok(result.wheelPlannerReadyCount <= result.wheelCandidateCount);
   assert.ok(result.technicCandidateCount > 0);
   assert.ok(result.technicInterfaceProfileCount > 0);
-  assert.ok(result.technicSpecialisedProfileCount > 0);
+  assert.ok(result.technicSpecialisedProfileCount > 0, JSON.stringify({ candidates: result.technicCandidatesDebug, profiles: result.specialisedProfileIds }));
   assert.ok(result.technicHoleCandidateCount > 0);
   assert.ok(result.technicInterfaceMatchCount > 0);
   assert.equal(result.technicGeometryResolvedCount, 1);
