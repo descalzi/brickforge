@@ -29,11 +29,12 @@ This is a first end-to-end vertical slice, not the finished arbitrary-object eng
 
 - each component is currently an orthogonal rectangular prism on an integer stud grid with an integer base course and height;
 - the per-course occupancy must be non-empty and the complete selected part graph must be connected;
-- component volumes may not overlap; the current planner is bounded to 64 courses and 256 occupied cells per course;
+- component volumes may not overlap; explicit rectangular negative-space volumes are subtracted before planning; the current planner is bounded to 64 courses and 256 occupied cells per course;
 - semantic component boundaries are retained as annotations, but the current variable-course strategy does not yet create separate physical subassemblies;
 - the published connection catalogue currently provides authored nominal profiles for a limited set of rectangular brick/plate families; the broader 25k-part index is searchable and its real LDraw geometry can be resolved, but most results are not yet planner-eligible;
+- negative spaces must lie inside positive component volumes and currently use rectangular stud-grid footprints; arbitrary/curved keep-outs are not supported;
 - the current matcher verifies nominal stud/receiver datum alignment, not physical clutch force, strength or stability;
-- selecting and placing specialised parts such as windows, wheels, curved/sloped surfaces and Technic interfaces is not yet implemented; catalogue text discovery alone is not a substitute; negative-space/keep-out semantics, support analysis, build sequence and instruction generation are also outstanding.
+- selecting and placing specialised parts such as windows, wheels, curved/sloped surfaces and Technic interfaces is not yet implemented; catalogue text discovery alone is not a substitute; non-rectangular negative-space/keep-out semantics, support analysis, build sequence and instruction generation are also outstanding.
 
 Unsupported geometry is rejected rather than silently flattened or claimed as solved.
 
@@ -47,7 +48,7 @@ Unsupported geometry is rejected rather than silently flattened or claimed as so
 
 1. Catalogue enrichment: semantic part roles, measured geometry descriptors, dimensions, connection interfaces, orientations, colour and availability metadata. The first browser geometry resolver is implemented; richer descriptors and profile coverage remain.
 2. Candidate generation: role-aware part discovery and geometric/functional suitability scoring. The first semantic-plus-envelope ranking pipeline is implemented; exact interface compatibility and feature-aware geometry scoring remain.
-3. General geometry: arbitrary non-orthogonal shapes, explicit negative space and keep-outs, openings, curved and sloped surfaces.
+3. General geometry: arbitrary non-orthogonal shapes, non-rectangular keep-outs, curved and sloped surfaces.
 4. Assembly planning: global constraint search over candidate parts and poses, not independent greedy substitutions.
 5. Physical validation: detailed collision, interface compatibility, support/stability and assembly-order checks with explicit confidence levels.
 6. Optimisation and outputs: fidelity/part-count/cost trade-offs, BOM, LDraw and build instructions.
