@@ -50,7 +50,7 @@ export function discoverPartCandidates(requirement,catalogue,options={}){
   if(requirement.dimensions_mm&&error===null&&!options.allowUnknownDimensions)continue;
   const preferredCount=[...preferred].filter(capability=>part.capabilities.includes(capability)).length;
   const score=(roles.length?100:0)+required.size*20+preferredCount*5-(error??0)*2+(part.candidate_status==="nominal_connection_profile"?3:0);
-  candidates.push({part_id:part.part_id,description:part.description,roles:part.roles,capabilities:part.capabilities,dimensions_mm:part.dimensions_mm,candidate_status:part.candidate_status,dimension_error_mm:error,dimension_permutation:dimensionFit?.permutation??null,score,interfaces:part.interfaces,source:part.source});
+  candidates.push({part_id:part.part_id,description:part.description,roles:part.roles,capabilities:part.capabilities,dimensions_mm:part.dimensions_mm,candidate_status:part.candidate_status,dimension_error_mm:error,dimension_permutation:dimensionFit?.permutation??null,geometry_measurement:part.geometry_measurement||null,score,interfaces:part.interfaces,source:part.source});
  }
  candidates.sort((a,b)=>b.score-a.score||(a.dimension_error_mm??Infinity)-(b.dimension_error_mm??Infinity)||a.part_id.localeCompare(b.part_id));
  return {status:candidates.length?"candidates_found":"no_candidates",roles,required_capabilities:[...required],forbidden_capabilities:[...forbidden],candidates};
