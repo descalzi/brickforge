@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { readFile } from "node:fs/promises";
 
 import { matchRequiredInterfaces } from "../docs/assets/interface-matcher.js";
 
@@ -43,4 +44,15 @@ test("requires enough distinct nominal interfaces for the requested count", () =
 test("rejects malformed requirements and invalid tolerance controls", () => {
   assert.throws(() => matchRequiredInterfaces([{ interface_type: "pin", count: 0 }], []), /positive count/);
   assert.throws(() => matchRequiredInterfaces([], [], { minimumAxisAlignmentCosine: 1.2 }), /valid ranges/);
+});
+
+test("matches real curated Technic catalogue interfaces", async () => {
+  const catalogue = JSON.parse(await readFile(new URL("../docs/data/specialised-technic-part-catalogue.json", import.meta.url), "utf8"));
+  const profile = catalogue.profiles.find((item) => item.part_id === "3700");
+  assert.ok(profile);
+  const result = matchRequiredInterfaces([
+    { interface_type: "technic_pin_hole", diameter_mm: 4.8, axis_vector: [0,0,1], count: 2 },
+  ], profile.nominal_connection_interfaces);
+  assert.equal(result.satisfied, true);
+  assert.equal(result.requirements[0].matched_count, 2);
 });
