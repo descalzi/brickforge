@@ -19,7 +19,7 @@ Component priority and provenance distinguish essential, preferred and optional/
 
 ## Current implemented construction slice
 
-`docs/assets/design-spec-engine.js` validates this contract and converts connected orthogonal-prism footprints into the existing browser assembly pipeline. The construction step uses the published connection-profile catalogue, the deterministic interlocking footprint search, nominal stud/receiver matching, body-envelope collision checks, graph connectivity, LDraw export and BOM generation.
+`docs/assets/design-spec-engine.js` validates this contract and converts connected orthogonal-prism footprints into the existing browser assembly pipeline. The construction step uses the published connection-profile catalogue, the deterministic interlocking footprint search, nominal stud/receiver matching, body-envelope collision checks, graph connectivity, LDraw export and BOM generation. A separate role-aware catalogue discovery module searches the full LDraw name/category/keyword index for wheel, window, axle, slope and other semantic roles. It clearly distinguishes text-only discoveries from candidates with authored connection profiles; discovery is not mistaken for physical suitability.
 
 The hand-authored fixtures in `docs/data/design-spec-fixtures.json` are examples of ideal structured output. They do not specify any LEGO solution.
 
@@ -31,9 +31,9 @@ This is a first end-to-end vertical slice, not the finished arbitrary-object eng
 - all components in one construction must share a height in brick courses;
 - their union must be connected and non-overlapping;
 - semantic component boundaries are retained as annotations, but the current solid-footprint strategy does not yet create separate physical subassemblies;
-- the published connection catalogue currently provides authored nominal profiles for a limited set of rectangular brick/plate families;
+- the published connection catalogue currently provides authored nominal profiles for a limited set of rectangular brick/plate families; the broader 25k-part index is searchable, but most results are not yet planner-eligible;
 - the current matcher verifies nominal stud/receiver datum alignment, not physical clutch force, strength or stability;
-- windows, wheels, curved/sloped surfaces, Technic interfaces, vertical variation, support analysis, build sequence and instruction generation are not yet implemented by this strategy.
+- selecting and placing specialised parts such as windows, wheels, curved/sloped surfaces and Technic interfaces is not yet implemented; catalogue text discovery alone is not a substitute; vertical variation, support analysis, build sequence and instruction generation are also outstanding.
 
 Unsupported geometry is rejected rather than silently flattened or claimed as solved.
 
