@@ -136,7 +136,12 @@ export function discoverPartsForRole(role, partCatalogue, connectionCatalogue, o
           : "catalogue_candidate_only_not_yet_plannable",
     });
   }
-  ranked.sort((a, b) => b.score - a.score || a.part_id.localeCompare(b.part_id, undefined, { numeric: true }));
+  ranked.sort((a, b) => {
+    const readinessA = a.specialised_interface_profile_available ? 2 : a.connection_profile_available ? 1 : 0;
+    const readinessB = b.specialised_interface_profile_available ? 2 : b.connection_profile_available ? 1 : 0;
+    return readinessB - readinessA || b.score - a.score
+      || a.part_id.localeCompare(b.part_id, undefined, { numeric: true });
+  });
   return {
     role: key,
     query_terms: [...terms],
