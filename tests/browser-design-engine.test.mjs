@@ -64,3 +64,36 @@ test("planner enforces the complete-design part budget", () => {
   assert.equal(result.status, "blocked");
   assert.match(result.failures[0], /max_parts/);
 });
+
+test("planner refuses to substitute a structural brick for an unverified wheel role", () => {
+  const wheel = structuredClone(carBody);
+  wheel.components[0].role = "wheel";
+  const result = planDesign(wheel, catalogue);
+  assert.equal(result.status, "blocked");
+  assert.match(result.failures[0], /cannot yet build the semantic role/);
+});
+
+test("required spatial relationships are evaluated before construction", () => {
+  const related = structuredClone(carBody);
+  related.components.push({
+    id: "roof", role: "structural", geometry: "rectangular_prism",
+    dimensions_mm: { width: 32, depth: 32, height: 9.6 },
+    position_mm: { x: 0, y: 19.2, z: 0 }, priority: "essential"
+  });
+  related.relationships = [{ type: "above", from: "roof", to: "body" }];
+  const result = planDesign(related, catalogue);
+  assert.equal(result.status, "blocked");
+  assert.match(result.failures[0], /not satisfied/);
+});
+
+test("overlapping semantic component volumes are blocked", () => {
+  const overlapping = structuredClone(carBody);
+  overlapping.components.push({
+    id: "overlap", role: "structural", geometry: "rectangular_prism",
+    dimensions_mm: { width: 8, depth: 8, height: 9.6 },
+    position_mm: { x: 8, y: 0, z: 8 }, priority: "essential"
+  });
+  const result = planDesign(overlapping, catalogue);
+  assert.equal(result.status, "blocked");
+  assert.match(result.failures[0], /overlap in their specified volumes/);
+});
