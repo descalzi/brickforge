@@ -59,6 +59,7 @@ jobs:
           python -m json.tool schemas/connector-compatibility-v1.schema.json > /dev/null &&
           python -m json.tool schemas/part-capabilities-v1.schema.json > /dev/null &&
           python -m json.tool docs/data/design-translation-v1.json > /dev/null &&
+          python -m json.tool schemas/design-translation-v1.schema.json > /dev/null &&
           python -m json.tool docs/data/design-intent-contracts.json > /dev/null &&
           python -m json.tool docs/data/design-spec-fixtures.json > /dev/null &&
           python -m json.tool docs/data/connector-compatibility-v1.json > /dev/null &&
