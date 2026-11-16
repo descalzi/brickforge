@@ -94,6 +94,12 @@
           ]
         }
       }
+    },
+    "negative_spaces": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/negativeSpace"
+      }
     }
   },
   "$defs": {
@@ -219,6 +225,82 @@
         "tolerance_studs": {
           "type": "number",
           "minimum": 0
+        }
+      }
+    },
+    "negativeSpace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "geometry",
+        "origin_studs",
+        "height_courses"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_-]{0,47}$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "purpose": {
+          "type": "string"
+        },
+        "geometry": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "width_studs",
+            "depth_studs"
+          ],
+          "properties": {
+            "type": {
+              "const": "orthogonal_prism"
+            },
+            "width_studs": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "depth_studs": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        },
+        "origin_studs": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {
+            "type": "integer"
+          }
+        },
+        "base_course": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "height_courses": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "priority": {
+          "enum": [
+            "essential",
+            "preferred",
+            "optional"
+          ]
+        },
+        "provenance": {
+          "enum": [
+            "explicit",
+            "inferred",
+            "uncertain"
+          ]
         }
       }
     }
