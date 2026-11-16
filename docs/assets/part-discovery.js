@@ -247,11 +247,34 @@ export async function rankPartCandidatesWithGeometry(discovery, geometryResolver
           }
         }
         const { fit, interfaceMatch, specialisedInterfaceCandidate, combinedScore } = best;
+        const geometryCenterMm = geometry.bounds_mm?.minimum && geometry.bounds_mm?.maximum
+          ? geometry.bounds_mm.minimum.map((value, axis) => (value + geometry.bounds_mm.maximum[axis]) / 2)
+          : [0, 0, 0];
+        const rotationMatrix = [0, 1, 2].map((targetAxis) => {
+          const row = [0, 0, 0];
+          row[fit.orientation_permutation[targetAxis]] = fit.orientation_signs[targetAxis];
+          return row;
+        });
+        const translationMm = fit.orientation_permutation.map((sourceAxis, targetAxis) =>
+          -fit.orientation_signs[targetAxis] * geometryCenterMm[sourceAxis]);
+        const partLocalTransform = {
+          coordinate_frame: "component-centred-millimetres",
+          rotation_matrix: rotationMatrix,
+          translation_mm: translationMm,
+        };
+        const componentEnvelopeFit = fit.within_dimension_tolerance;
+        const componentPlacementCandidate = componentEnvelopeFit
+          && (specialisedInterfaceCandidate || candidate.connection_profile_available);
         results[index] = {
           ...candidate,
           geometry_status: "resolved",
           geometry_dimensions_mm: geometry.dimensions_mm,
+          geometry_bounds_mm: geometry.bounds_mm || null,
+          geometry_center_mm: geometryCenterMm,
           geometry_fit: fit,
+          part_local_transform: partLocalTransform,
+          component_envelope_fit: componentEnvelopeFit,
+          component_placement_candidate: componentPlacementCandidate,
           specialised_interface_match: interfaceMatch,
           specialised_interface_candidate: specialisedInterfaceCandidate,
           combined_score: combinedScore,
@@ -259,14 +282,16 @@ export async function rankPartCandidatesWithGeometry(discovery, geometryResolver
             && fit.within_dimension_tolerance,
           requires_connection_validation: true,
           suitability_status: specialisedInterfaceCandidate
-            ? "geometry_and_specialised_interfaces_match_requires_assembly_validation"
+            ? "component_envelope_and_required_interfaces_match_assembly_validation_required"
             : candidate.connection_profile_available && fit.within_dimension_tolerance
-              ? "dimensions_fit_profile_available_requires_interface_validation"
+              ? "component_envelope_match_profile_available_connection_validation_required"
               : candidate.connection_profile_available
                 ? "profile_available_but_dimensions_outside_tolerance"
                 : interfaceMatch && !interfaceMatch.satisfied
                   ? "required_specialised_interfaces_not_satisfied"
-                  : "geometry_ranked_only_not_yet_plannable",
+                  : componentEnvelopeFit
+                    ? "component_envelope_match_only_not_assembly_ready"
+                    : "geometry_ranked_only_not_yet_plannable",
         };
       } catch (error) {
         results[index] = {
@@ -342,6 +367,6 @@ export async function rankDesignComponentCandidates(component, partIndex, connec
     target_dimensions_mm: targetDimensionsMm,
     discovery,
     ranking,
-    assembly_status: "candidate_ranking_only_not_placed",
+    assembly_status: "component_candidates_ranked_and_locally_aligned_not_assembled",
   };
 }
