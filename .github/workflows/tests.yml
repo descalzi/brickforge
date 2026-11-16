@@ -55,9 +55,11 @@ jobs:
           python -m json.tool data/connection-profiles/basic-bricks.json > /dev/null &&
           python -m json.tool docs/data/connection-profiles/basic-bricks.json > /dev/null &&
           python -m json.tool schemas/design-intent-v1.schema.json > /dev/null &&
-          python -m json.tool schemas/design-spec-v1.schema.json > /dev/null &&\n          python -m json.tool schemas/connector-compatibility-v1.schema.json > /dev/null &&
+          python -m json.tool schemas/design-spec-v1.schema.json > /dev/null 
+          python -m json.tool schemas/connector-compatibility-v1.schema.json > /dev/null &&
           python -m json.tool docs/data/design-intent-contracts.json > /dev/null &&
-          python -m json.tool docs/data/design-spec-fixtures.json > /dev/null &&\n          python -m json.tool docs/data/connector-compatibility-v1.json > /dev/null &&
+          python -m json.tool docs/data/design-spec-fixtures.json > /dev/null 
+          python -m json.tool docs/data/connector-compatibility-v1.json > /dev/null &&
           python -m json.tool schemas/connection-profiles-v1.schema.json > /dev/null &&
           python -m json.tool schemas/assembly-graph-v1.schema.json > /dev/null &&
           python -m json.tool schemas/bom-v1.schema.json > /dev/null &&
