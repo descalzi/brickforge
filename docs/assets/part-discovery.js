@@ -168,6 +168,10 @@ export async function rankPartCandidatesWithGeometry(discovery, geometryResolver
             ? matchRequiredInterfaces(options.requiredInterfaces, candidate.specialised_interfaces || [], {
               ...(options.interfaceMatchOptions || {}),
               orientationPermutation: fit.orientation_permutation,
+              geometryCenterMm: options.interfaceMatchOptions?.geometryCenterMm
+                || (geometry.bounds_mm?.minimum && geometry.bounds_mm?.maximum
+                  ? geometry.bounds_mm.minimum.map((value, axis) => (value + geometry.bounds_mm.maximum[axis]) / 2)
+                  : [0, 0, 0]),
             })
             : null;
           const specialisedInterfaceCandidate = Boolean(
