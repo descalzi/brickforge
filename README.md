@@ -16,13 +16,15 @@ The long-term goal is to support arbitrary object categories rather than a fixed
 
 BrickForge is organised as independent subsystems:
 
-1. **AI interface** — interprets intent and produces a structured design brief.
-2. **Geometry** — imports, analyses, and represents target shapes.
-3. **Parts catalogue** — indexes part geometry, colours, connection types, and availability.
-4. **Construction** — maps target geometry to compatible L-brick elements.
-5. **Validation** — checks collisions, connectivity, support, and assembly feasibility.
-6. **Optimisation** — searches for better constructions against configurable objectives.
-7. **Instructions and application** — sequences the build and presents/export deliverables.
+1. **Design specification** — a provider-independent semantic description of the intended object and its constraints.
+2. **Design intelligence** — interprets natural language into that specification; LLM integration is intentionally deferred until the deterministic engine contract is proven.
+3. **Parts catalogue** — indexes real part geometry, semantic roles, colours, connection interfaces and availability.
+4. **Candidate discovery and matching** — finds suitable parts for each functional/geometric requirement.
+5. **Assembly planning** — globally plans placements and connections across the complete design.
+6. **Validation and optimisation** — checks geometry, interfaces, connectivity, stability and trade-offs.
+7. **Instructions and application** — derives the BOM, LDraw model and build sequence from the validated assembly graph.
+
+The versioned input contract and current implementation limits are documented in [Design specification v1](docs/architecture/design-specification.md). The first browser construction adapter is a deliberately limited orthogonal-footprint vertical slice; it does not yet claim support for arbitrary objects.
 
 The AI must not directly author arbitrary per-brick placements as the source of truth. Construction decisions belong to deterministic, testable geometry and constraint-solving components.
 
