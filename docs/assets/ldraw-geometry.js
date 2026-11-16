@@ -101,9 +101,9 @@ function descriptor(partId, sourceFilename, positions, triangleCount) {
     ];
     surfaceArea += Math.hypot(...cross) * 0.5;
   }
-  const dimensions = maximum.map((value, axis) => (value - minimum[axis]) * LDU_TO_MM);
-  const minMm = minimum.map((value) => value * LDU_TO_MM);
-  const maxMm = maximum.map((value) => value * LDU_TO_MM);
+  const dimensions = maximum.map((value, axis) => value - minimum[axis]);
+  const minMm = [...minimum];
+  const maxMm = [...maximum];
   return {
     part_id: partId,
     source_filename: sourceFilename,
@@ -112,7 +112,7 @@ function descriptor(partId, sourceFilename, positions, triangleCount) {
     bounds_mm: { minimum: minMm, maximum: maxMm },
     dimensions_mm: dimensions,
     bounding_box_volume_mm3: dimensions[0] * dimensions[1] * dimensions[2],
-    surface_area_mm2: surfaceArea * LDU_TO_MM * LDU_TO_MM,
+    surface_area_mm2: surfaceArea,
     limitations: [
       "Dimensions and surface area are measured from the resolved display surface.",
       "Bounding-box volume is not a solid-volume measurement.",
