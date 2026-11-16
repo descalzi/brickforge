@@ -312,6 +312,11 @@ export async function rankDesignComponentCandidates(component, partIndex, connec
     component.height_courses * 9.6,
     component.geometry.depth_studs * 8,
   ];
+  const specialisedCommit = specialisedCatalogue?.source_library?.commit;
+  if (geometryResolver.source_commit && specialisedCommit
+      && geometryResolver.source_commit !== specialisedCommit) {
+    throw new Error("The geometry resolver and specialised catalogue must use the same pinned LDraw commit.");
+  }
   const enrichedParts = mergeSpecialisedPartRecords(partIndex.parts, specialisedCatalogue);
   const enrichedPartIndex = { ...partIndex, parts: enrichedParts };
   const discovery = discoverPartsForRole(component.role, enrichedParts, connectionCatalogue, {
