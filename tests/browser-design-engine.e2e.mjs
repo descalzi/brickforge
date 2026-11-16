@@ -65,6 +65,7 @@ try{
  const seqStream=await sequence.createReadStream(),seqChunks=[];for await(const chunk of seqStream)seqChunks.push(chunk);
  assert.equal(JSON.parse(Buffer.concat(seqChunks).toString()).steps.length,pavilion.parts.length);
  await page.locator("#instruction-slider").evaluate(el=>{el.value=el.max;el.dispatchEvent(new Event("input",{bubbles:true}));});
+ await page.click("#view-iso");
  await page.screenshot({path:process.env.SPECIALIST_SCREENSHOT||"/tmp/brickforge-pavilion.png",fullPage:true});
  await page.selectOption("#fixture-select","challenge-car");await page.click("#run-design");await page.waitForFunction(()=>document.querySelector("#engine-status").dataset.state==="blocked");assert.equal(await page.locator("#download-ldraw").isEnabled(),false);
  await page.locator("#spec-details").evaluate(el=>el.open=true);await page.locator("#design-spec").fill("{");await page.click("#run-design");assert.equal(await page.locator("#engine-status").getAttribute("data-state"),"blocked");

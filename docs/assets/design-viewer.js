@@ -23,7 +23,7 @@ export function createDesignViewer(viewport) {
     model.traverse(object=>{object.geometry?.dispose();if(object.material)object.material.dispose();});scene.remove(model);model=new THREE.Group();scene.add(model);delete renderer.domElement.dataset.parts;delete renderer.domElement.dataset.visibleParts;
   }
   function fit(view="iso") {
-    const direction=view==="top"?new THREE.Vector3(.001,1,0):view==="front"?new THREE.Vector3(0,.12,1):new THREE.Vector3(1,.8,1.2);
+    const direction=view==="top"?new THREE.Vector3(.001,1,0):view==="front"?new THREE.Vector3(0,.12,-1):new THREE.Vector3(1,.8,-1.2);
     const distance=radius/Math.sin(THREE.MathUtils.degToRad(camera.fov)/2)*1.2/Math.min(1,camera.aspect);
     camera.position.copy(centre).add(direction.normalize().multiplyScalar(distance));controls.target.copy(centre);camera.near=Math.max(.1,distance/1000);camera.far=Math.max(10000,distance*10);camera.updateProjectionMatrix();controls.update();fitted=true;
   }
