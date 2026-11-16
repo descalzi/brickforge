@@ -116,10 +116,19 @@ test("ranks Technic candidates against source-derived pin-hole requirements", as
   assert.equal(ranked.candidates[0].specialised_interface_match.physical_connection_verified, false);
 });
 
-test("ranks real part candidates directly from a semantic design component", async () => {
-  const fixtureData = JSON.parse(await readFile(new URL("../docs/data/design-spec-fixtures.json", import.meta.url), "utf8"));
-  const brief = fixtureData.specifications.find((item) => item.design_id === "technic-beam-with-round-openings");
-  const component = brief.components[0];
+test("ranks real part candidates directly from a millimetre-first semantic design component", async () => {
+  const component = {
+    id: "beam-main",
+    role: "beam",
+    geometry: "rectangular_prism",
+    dimensions_mm: { width: 32, depth: 8, height: 9.6 },
+    required_interfaces: [{
+      interface_type: "round_opening",
+      diameter_mm: 4.8,
+      axis_vector: [0,0,1],
+      count: 3,
+    }],
+  };
   const partIndex = { parts: [] };
   const specialisedCatalogue = { profiles: [{
     part_id: "3701",
