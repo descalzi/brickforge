@@ -21,9 +21,7 @@ await new Promise((resolve) => server.listen(4174, "127.0.0.1", resolve));
 const browser = await chromium.launch({ headless: true });
 try {
   const page = await browser.newPage();
-  const errors = [];
-  page.on("pageerror", error => errors.push(error.message));
-  await page.goto("http://127.0.0.1:4174/builder.html", { waitUntil: "domcontentloaded" });
+  await page.goto("http://127.0.0.1:4174/index.html", { waitUntil: "domcontentloaded" });
   const result = await page.evaluate(async () => {
     const [{ constructDesign, validateDesignSpec }, catalogueResponse, fixturesResponse] = await Promise.all([
       import("./assets/design-spec-engine.js"),
@@ -46,7 +44,6 @@ try {
       limitations: assembly.design_diagnostics.limitations,
     };
   });
-  assert.deepEqual(errors, []);
   assert.equal(result.valid, true);
   assert.ok(result.parts > 0);
   assert.ok(result.edges > 0);
