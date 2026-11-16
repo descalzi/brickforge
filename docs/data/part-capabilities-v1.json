@@ -3,6 +3,341 @@
   "units": "mm",
   "parts": [
     {
+      "part_id": "11212",
+      "description": "Plate  3 x  3",
+      "roles": [
+        "base",
+        "structural",
+        "platform",
+        "floor"
+      ],
+      "capabilities": [
+        "solid_rectangular_volume",
+        "top_studs",
+        "underside_stud_receivers"
+      ],
+      "dimensions_mm": {
+        "width": 24,
+        "depth": 24,
+        "height": 3.2
+      },
+      "candidate_status": "geometry_measured",
+      "interfaces": [
+        {
+          "interface_id": "stud--20--20",
+          "interface_type": "stud",
+          "position_mm": [
+            -8,
+            0,
+            -8
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "stud_receiver--20--20",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -8,
+            3.2,
+            -8
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "stud--20-0",
+          "interface_type": "stud",
+          "position_mm": [
+            -8,
+            0,
+            0
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "stud_receiver--20-0",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -8,
+            3.2,
+            0
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "stud--20-20",
+          "interface_type": "stud",
+          "position_mm": [
+            -8,
+            0,
+            8
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "stud_receiver--20-20",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -8,
+            3.2,
+            8
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "stud-0--20",
+          "interface_type": "stud",
+          "position_mm": [
+            0,
+            0,
+            -8
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "stud_receiver-0--20",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            0,
+            3.2,
+            -8
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "stud-0-0",
+          "interface_type": "stud",
+          "position_mm": [
+            0,
+            0,
+            0
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "stud_receiver-0-0",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            0,
+            3.2,
+            0
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "stud-0-20",
+          "interface_type": "stud",
+          "position_mm": [
+            0,
+            0,
+            8
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "stud_receiver-0-20",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            0,
+            3.2,
+            8
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "stud-20--20",
+          "interface_type": "stud",
+          "position_mm": [
+            8,
+            0,
+            -8
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "stud_receiver-20--20",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            8,
+            3.2,
+            -8
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "stud-20-0",
+          "interface_type": "stud",
+          "position_mm": [
+            8,
+            0,
+            0
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "stud_receiver-20-0",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            8,
+            3.2,
+            0
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "stud-20-20",
+          "interface_type": "stud",
+          "position_mm": [
+            8,
+            0,
+            8
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "stud_receiver-20-20",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            8,
+            3.2,
+            8
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        }
+      ],
+      "source": {
+        "file": "parts/11212.dat",
+        "revision": "2012-03",
+        "license": "Licensed under CC BY 4.0 : see CAreadme.txt",
+        "author": "Rolf Osterthun [Rolf]",
+        "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
+      },
+      "geometry_measurement": {
+        "source_library_commit": "c70360d1c588be894997b2168c61909bc8058c4d",
+        "triangle_count": 844,
+        "method": "recursive_ldraw_surface_bounds",
+        "bounds_mm": [
+          [
+            -12,
+            -1.6,
+            -12
+          ],
+          [
+            12,
+            3.2,
+            12
+          ]
+        ]
+      }
+    },
+    {
       "part_id": "2493b",
       "description": "Window 1 x 4 x 5 with Hollow Studs",
       "roles": [
@@ -4283,12 +4618,12 @@
       "candidate_status": "geometry_measured",
       "interfaces": [
         {
-          "interface_id": "stud-0-0",
+          "interface_id": "top-centre-stud",
           "interface_type": "stud",
           "position_mm": [
-            -4,
             0,
-            -4
+            0,
+            0
           ],
           "axis_vector": [
             0,
@@ -4315,22 +4650,6 @@
           "evidence_status": "authored_nominal_grid_from_ldraw"
         },
         {
-          "interface_id": "stud-0-1",
-          "interface_type": "stud",
-          "position_mm": [
-            -4,
-            0,
-            4
-          ],
-          "axis_vector": [
-            0,
-            -1,
-            0
-          ],
-          "nominal_diameter_mm": null,
-          "evidence_status": "authored_nominal_grid_from_ldraw"
-        },
-        {
           "interface_id": "stud_receiver-0-1",
           "interface_type": "stud_receiver",
           "position_mm": [
@@ -4341,22 +4660,6 @@
           "axis_vector": [
             0,
             1,
-            0
-          ],
-          "nominal_diameter_mm": null,
-          "evidence_status": "authored_nominal_grid_from_ldraw"
-        },
-        {
-          "interface_id": "stud-1-0",
-          "interface_type": "stud",
-          "position_mm": [
-            4,
-            0,
-            -4
-          ],
-          "axis_vector": [
-            0,
-            -1,
             0
           ],
           "nominal_diameter_mm": null,
@@ -4379,28 +4682,28 @@
           "evidence_status": "authored_nominal_grid_from_ldraw"
         },
         {
-          "interface_id": "stud-1-1",
-          "interface_type": "stud",
-          "position_mm": [
-            4,
-            0,
-            4
-          ],
-          "axis_vector": [
-            0,
-            -1,
-            0
-          ],
-          "nominal_diameter_mm": null,
-          "evidence_status": "authored_nominal_grid_from_ldraw"
-        },
-        {
           "interface_id": "stud_receiver-1-1",
           "interface_type": "stud_receiver",
           "position_mm": [
             4,
             9.6,
             4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "central-tube-receiver",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            0,
+            9.600000000000001,
+            0
           ],
           "axis_vector": [
             0,

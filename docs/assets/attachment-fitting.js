@@ -1,7 +1,7 @@
-import { layoutTranslationProposals } from './layout-fitting.js?v=07b56d3093e4';
-import { featureCompatibility, axesCompatible } from './connection-types.js?v=07b56d3093e4';
-import { transformVector } from './specialist-placement.js?v=07b56d3093e4';
-import { partBodyBounds, bodiesOverlap } from './assembly-analysis.js?v=07b56d3093e4';
+import { layoutTranslationProposals } from './layout-fitting.js?v=72fddf3032b8';
+import { featureCompatibility, axesCompatible } from './connection-types.js?v=72fddf3032b8';
+import { transformVector } from './specialist-placement.js?v=72fddf3032b8';
+import { partBodyBounds, bodiesOverlap } from './assembly-analysis.js?v=72fddf3032b8';
 /** Propagate relation- and connector-derived translations only inside explicitly uncertain
  * component positions. Orientations and geometry come from catalogue candidates;
  * no fixture or object-category recipe participates in the search. */

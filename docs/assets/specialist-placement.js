@@ -1,5 +1,6 @@
-import { discoverPartCandidates } from './part-catalogue.js?v=07b56d3093e4';
-import { translateComponentRequirements } from './design-translation.js?v=07b56d3093e4';
+import {orientationMatches} from './part-orientation.js?v=72fddf3032b8';
+import { discoverPartCandidates } from './part-catalogue.js?v=72fddf3032b8';
+import { translateComponentRequirements } from './design-translation.js?v=72fddf3032b8';
 
 const yawRotations = [[1,0,0,0,1,0,0,0,1],[0,0,1,0,1,0,-1,0,0],[-1,0,0,0,1,0,0,0,-1],[0,0,-1,0,1,0,1,0,0]];
 const permutations=[[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]];
@@ -50,28 +51,31 @@ export function specialistComponentCandidates(component,options,partCatalogue,ma
   const profile=profiles.get(candidate.part_id);
   if(!profile.supported_geometry.includes(component.geometry))continue;
   for(const [rotationIndex,matrix] of rotations.entries()) {
+   if(!orientationMatches(matrix,component.orientation,profile.orientation_frame))continue;
    const vertices=profile.body_vertices_mm.map(p=>semanticPoint(matrix,p));
    const min=[0,1,2].map(i=>Math.min(...vertices.map(p=>p[i]))),max=[0,1,2].map(i=>Math.max(...vertices.map(p=>p[i]))),size=max.map((v,i)=>v-min[i]);
    const d=component.dimensions_mm,tolerance=component.fit_tolerance_mm||0;
-   if(Math.abs(size[0]-d.width)>tolerance+1e-5||Math.abs(size[1]-d.height)>tolerance+1e-5)continue;
-   const repeats=component.geometry==='extruded_profile'?Math.round(d.depth/size[2]):1;
-   if(repeats<1||repeats>options.maxParts||Math.abs(repeats*size[2]-d.depth)>tolerance+1e-5)continue;
+   if(((component.geometry!=='extruded_profile'||component.geometry_parameters?.extrusion_axis!=='x')&&Math.abs(size[0]-d.width)>tolerance+1e-5)||Math.abs(size[1]-d.height)>tolerance+1e-5)continue;
+   if(component.geometry==='extruded_profile'&&component.geometry_parameters?.extrusion_axis==='x'&&Math.abs(size[2]-d.depth)>tolerance+1e-5)continue;
+   const extrusion=component.geometry_parameters?.extrusion_axis==='x'?0:2,extrusionLength=extrusion===0?d.width:d.depth;
+   const repeats=component.geometry==='extruded_profile'?Math.round(extrusionLength/size[extrusion]):1;
+   if(repeats<1||repeats>options.maxParts||Math.abs(repeats*size[extrusion]-extrusionLength)>tolerance+1e-5)continue;
    if(component.geometry==='cylinder'||component.geometry==='domed_cylinder') {
     const sourceAxis=['x','y','z'].indexOf(profile.cylinder_axis_ldraw),targetAxis=['x','y','z'].indexOf(component.geometry_parameters.axis);
     if(sourceAxis<0||Math.abs(matrix[targetAxis*3+sourceAxis])!==1)continue;
    }
    if(component.geometry==='extruded_profile'||component.geometry==='planar_profile') {
     const shape=component.geometry_parameters.outline_mm;
-    const projection=component.geometry==='planar_profile'?[0,2]:[0,1];
+    const projection=component.geometry==='planar_profile'?[0,2]:extrusion===0?[2,1]:[0,1];
     const shapeMin=[0,1].map(i=>Math.min(...shape.map(p=>p[i])));
     if(!polygonMatches(shape.map(p=>p.map((v,i)=>v-shapeMin[i])),vertices.map(p=>projection.map(axis=>p[axis]-min[axis])),tolerance))continue;
-    const extrusionRow=component.geometry==='planar_profile'?1:2;
+    const extrusionRow=component.geometry==='planar_profile'?1:extrusion;
     const sourceAxis=['x','y','z'][matrix.slice(extrusionRow*3,extrusionRow*3+3).findIndex(v=>Math.abs(v)===1)];
     if(!profile.extrusion_axes_ldraw?.includes(sourceAxis))continue;
    }
    const parts=[];
    for(let i=0;i<repeats;i++) {
-    const origin=[component.position_mm.x,component.position_mm.y,component.position_mm.z+i*size[2]];
+    const origin=[component.position_mm.x,component.position_mm.y,component.position_mm.z];origin[extrusion]+=i*size[extrusion];
     const translation=origin.map((v,axis)=>v-min[axis]);
     const parent={instance_id:`${component.id}-special-${i}`,component_id:component.id,part_id:profile.part_id,colour_code:component.colour??options.defaultColour,matrix:[...matrix],translation_ldu:translation.map((v,axis)=>v/.4*(axis===0?1:-1)),course_index:0};
     if(profile.children){
@@ -83,6 +87,7 @@ export function specialistComponentCandidates(component,options,partCatalogue,ma
    alternatives.push({parts,score:parts.length*1000,tiling:[[...parts.map(p=>p.part_id)]],specialist:true,rotation_index:rotationIndex});
   }
  }
+ if(!alternatives.length&&component.geometry==='rectangular_prism'&&search.candidates.some(c=>c.candidate_status==='nominal_connection_profile'))return null;
  if(!alternatives.length)return {error:`Measured specialist candidates exist for ${component.id} (${candidates.map(c=>c.part_id).join(', ')}), but none preserves its dimensions, cross-section, extrusion direction and empty-space constraints. No bounding-box substitution was made.`};
  return {alternatives,semantic_candidates:candidates,search_nodes:0,combinations:alternatives.length};
 }

@@ -1,0 +1,2 @@
+import {inflateSync} from 'node:zlib';
+export function pdfContentStreams(bytes){const buffer=Buffer.from(bytes),source=buffer.toString('latin1'),contents=[];for(const match of source.matchAll(/<<[^>]*\/Length (\d+)[^>]*>>\nstream\n/g)){const offset=match.index+match[0].length,raw=buffer.subarray(offset,offset+Number(match[1])),data=match[0].includes('/FlateDecode')?inflateSync(raw):raw;contents.push(data.toString('latin1'));}return contents;}

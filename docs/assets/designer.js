@@ -1,9 +1,10 @@
-import { ASSET_VERSION } from "./release-version.js?v=07b56d3093e4";
-import { buildInterpretationRequest, interpretDescription, endpointProvider } from "./text-design.js?v=07b56d3093e4";
-import { createInstructionPdf } from "./instruction-pdf.js?v=07b56d3093e4";
-import { partBodyBounds } from "./assembly-analysis.js?v=07b56d3093e4";
-import { validateDesignSpec } from "./design-spec.js?v=07b56d3093e4";
-import { createDesignViewer, colours } from "./design-viewer.js?v=07b56d3093e4";
+import {reorientExtrudedComponent} from './part-orientation.js?v=72fddf3032b8';
+import { ASSET_VERSION } from "./release-version.js?v=72fddf3032b8";
+import { buildInterpretationRequest, interpretDescription, endpointProvider } from "./text-design.js?v=72fddf3032b8";
+import { createInstructionPdf } from "./instruction-pdf.js?v=72fddf3032b8";
+import { partBodyBounds } from "./assembly-analysis.js?v=72fddf3032b8";
+import { validateDesignSpec } from "./design-spec.js?v=72fddf3032b8";
+import { createDesignViewer, colours } from "./design-viewer.js?v=72fddf3032b8";
 const $=id=>document.getElementById(id);
 const editor=$("design-spec"),status=$("engine-status"),runButton=$("run-design"),selector=$("fixture-select");
 const downloads=[$("download-ldraw"),$("download-bom"),$("download-report"),$("download-instructions"),$("download-pdf")];
@@ -49,7 +50,7 @@ function run(){
   invalidate("Validating design specification…");
   let spec;try{spec=JSON.parse(editor.value);const validation=validateDesignSpec(spec);if(!validation.valid)throw new Error(validation.errors.join(" "));}catch(error){setStatus(error.message,"blocked");$("engine-report").textContent=error.message;return;}
   components(spec);activeSpec=spec;runButton.disabled=true;$("cancel-design").hidden=false;setStatus("Searching catalogue parts and connected layouts…","planning");
-  const started=performance.now();worker=new Worker(new URL("./design-worker.js?v=07b56d3093e4",import.meta.url),{type:"module"});
+  const started=performance.now();worker=new Worker(new URL("./design-worker.js?v=72fddf3032b8",import.meta.url),{type:"module"});
   worker.onmessage=({data})=>{
     finishWorker();if(data.error){setStatus(data.error,"blocked");$("engine-report").textContent=data.error;return;}
     result=data.result;showEvidence(result);components(spec,result);
@@ -111,17 +112,18 @@ $("course-slider").addEventListener("input",()=>{const input=$("course-slider");
 initialise();
 
 $("download-pdf").addEventListener("click",async()=>{
- if(!result)return;const plan=result,specification=activeSpec;
- try{if(!displayCatalogue.pdf_font){const font=await fetch(`./data/pdf-font-v1.json?v=${ASSET_VERSION}`);if(!font.ok)throw new Error("Could not load the instruction font.");displayCatalogue.pdf_font=await font.json();}if(result!==plan)return;download(plan.design_id+".instructions.pdf",createInstructionPdf(plan,displayCatalogue,specification),"application/pdf");}catch(error){if(result===plan)setStatus(error.message,"blocked");}
+ if(!result)return;const plan=result,specification=activeSpec,message=status.textContent;$("download-pdf").disabled=true;setStatus('Preparing illustrated instruction booklet…','exporting');
+ try{await new Promise(resolve=>setTimeout(resolve,0));if(!displayCatalogue.pdf_font){const font=await fetch(`./data/pdf-font-v1.json?v=${ASSET_VERSION}`);if(!font.ok)throw new Error("Could not load the instruction font.");displayCatalogue.pdf_font=await font.json();}if(result!==plan)return;const bytes=await createInstructionPdf(plan,displayCatalogue,specification);if(result!==plan)return;download(plan.design_id+".instructions.pdf",bytes,"application/pdf");setStatus(message,'planned');}catch(error){if(result===plan)setStatus(error.message,"blocked");}finally{if(result===plan)$("download-pdf").disabled=false;}
 });
 
 function editComponent(c){
  selectedComponent=c?.id||null;$("component-editor").hidden=!c;if(!c)return;$("component-editor").open=true;$("component-editor-name").textContent=c.label||c.id;
  for(const axis of ['x','y','z'])$("component-"+axis).value=c.position_mm[axis];
  for(const axis of ['width','depth','height']){$("component-"+axis).value=c.dimensions_mm[axis];$("component-"+axis).disabled=c.geometry!=='rectangular_prism';}
+ $("component-facing").disabled=c.geometry!=='extruded_profile';$("component-facing").value=c.orientation?.forward||'';
  $("component-colour").value=c.colour??4;$("component-tolerance").value=c.fit_tolerance_mm||0;$("component-position-tolerance").value=c.position_tolerance_mm||0;
 }
-$("apply-component").addEventListener('click',()=>{try{const spec=JSON.parse(editor.value),c=spec.components.find(c=>c.id===selectedComponent);if(!c)throw new Error('Select a component.');for(const a of ['x','y','z'])c.position_mm[a]=Number($("component-"+a).value);if(c.geometry==='rectangular_prism')for(const a of ['width','depth','height'])c.dimensions_mm[a]=Number($("component-"+a).value);c.colour=Number($("component-colour").value);c.fit_tolerance_mm=Number($("component-tolerance").value);c.position_tolerance_mm=Number($("component-position-tolerance").value);const check=validateDesignSpec(spec);if(!check.valid)throw new Error(check.errors.join(' '));editor.value=JSON.stringify(spec,null,2);invalidate('Component changed. Plan again to check its fit.');components(spec);editComponent(c);}catch(error){setStatus(error.message,'blocked');}});
+$("apply-component").addEventListener('click',()=>{try{const spec=JSON.parse(editor.value),c=spec.components.find(c=>c.id===selectedComponent);if(!c)throw new Error('Select a component.');for(const a of ['x','y','z'])c.position_mm[a]=Number($("component-"+a).value);if(c.geometry==='rectangular_prism')for(const a of ['width','depth','height'])c.dimensions_mm[a]=Number($("component-"+a).value);c.colour=Number($("component-colour").value);c.fit_tolerance_mm=Number($("component-tolerance").value);c.position_tolerance_mm=Number($("component-position-tolerance").value);if(c.geometry==='extruded_profile'){const facing=$('component-facing').value;if(facing)Object.assign(c,reorientExtrudedComponent(c,facing));else delete c.orientation;}const check=validateDesignSpec(spec);if(!check.valid)throw new Error(check.errors.join(' '));editor.value=JSON.stringify(spec,null,2);invalidate('Component changed. Plan again to check its fit.');components(spec);editComponent(c);}catch(error){setStatus(error.message,'blocked');}});
 $("interpretation-endpoint").addEventListener('input',()=>{$("analyse-description").disabled=!responseSchema||!$("interpretation-endpoint").value.trim();});
 $("analyse-description").addEventListener('click',async()=>{
  invalidate('Analysing the description using your selected gateway…');const generation=analysisGeneration;analysisController=new AbortController();$("analyse-description").disabled=true;$("cancel-interpretation").hidden=false;

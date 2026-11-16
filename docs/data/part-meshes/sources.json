@@ -359,6 +359,11 @@
       "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
     },
     {
+      "file": "p/box5.dat",
+      "author": "James Jessiman",
+      "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
+    },
+    {
       "file": "p/empty.dat",
       "author": "Steffen [Steffen]",
       "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
@@ -469,7 +474,17 @@
       "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
     },
     {
+      "file": "p/stug-3x3.dat",
+      "author": "Steve Bliss [sbliss]",
+      "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
+    },
+    {
       "file": "p/stug2-1x2.dat",
+      "author": "Steffen [Steffen]",
+      "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
+    },
+    {
+      "file": "p/stug4-2x2.dat",
       "author": "Steffen [Steffen]",
       "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
     },
@@ -491,6 +506,11 @@
     {
       "file": "p/wpin2a.dat",
       "author": "Willy Tschager [Holly-Wood]",
+      "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
+    },
+    {
+      "file": "parts/11212.dat",
+      "author": "Rolf Osterthun [Rolf]",
       "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
     },
     {
