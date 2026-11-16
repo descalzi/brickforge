@@ -20,7 +20,7 @@ export function createDesignViewer(viewport) {
   const resize=new ResizeObserver(()=>{const w=viewport.clientWidth,h=viewport.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();});resize.observe(viewport);
   function animate(){requestAnimationFrame(animate);controls.update();renderer.render(scene,camera);}animate();
   function clear(){
-    model.traverse(object=>{object.geometry?.dispose();if(object.material)object.material.dispose();});scene.remove(model);model=new THREE.Group();scene.add(model);delete renderer.domElement.dataset.parts;delete renderer.domElement.dataset.visibleParts;
+    model.traverse(object=>{object.geometry?.dispose();if(object.material)object.material.dispose();});scene.remove(model);model=new THREE.Group();scene.add(model);delete renderer.domElement.dataset.parts;delete renderer.domElement.dataset.visibleParts;delete renderer.domElement.dataset.worldBounds;
   }
   function fit(view="iso") {
     const direction=view==="top"?new THREE.Vector3(.001,1,0):view==="front"?new THREE.Vector3(0,.12,-1):new THREE.Vector3(1,.8,-1.2);
@@ -54,7 +54,9 @@ export function createDesignViewer(viewport) {
       group.matrix.set(m[0],m[1],m[2],t[0],-m[3],-m[4],-m[5],-t[1],-m[6],-m[7],-m[8],-t[2],0,0,0,1);
       model.add(group);
     }
-    const bounds=new THREE.Box3().setFromObject(model);bounds.getCenter(centre);radius=Math.max(12,bounds.getSize(new THREE.Vector3()).length()/2);grid.position.set(centre.x,bounds.min.y-.1,centre.z);
+    model.updateMatrixWorld(true);
+    const bounds=new THREE.Box3().setFromObject(model);
+    renderer.domElement.dataset.worldBounds=JSON.stringify({min:bounds.min.toArray(),max:bounds.max.toArray()});bounds.getCenter(centre);radius=Math.max(12,bounds.getSize(new THREE.Vector3()).length()/2);grid.position.set(centre.x,bounds.min.y-.1,centre.z);
     if(!fitted)fit();else{const delta=centre.clone().sub(previousCentre);camera.position.add(delta);controls.target.add(delta);}
     select(selected);
     renderer.domElement.dataset.parts=String(plan.parts.length);renderer.domElement.dataset.visibleParts=String(plan.parts.length);
