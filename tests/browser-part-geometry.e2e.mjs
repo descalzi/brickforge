@@ -21,6 +21,7 @@ try{
  await page.goto("http://127.0.0.1:4175/part-geometry-lab.html?parts=3001,3739,5260,3934",{waitUntil:"networkidle"});
  await page.waitForFunction(()=>["complete","partial"].includes(document.querySelector("#status")?.dataset.state),null,{timeout:90000});
  const report=JSON.parse(await page.locator("#results").innerText());
+ console.log(JSON.stringify({browser:"Chromium headless",source:report.source,parts:report.results.map(({part_id,dimensions_mm,triangle_count})=>({part_id,dimensions_mm,triangle_count}))}));
  assert.equal(report.results.length,4);
  assert.ok(report.results.every(item=>item.status==="measured"),JSON.stringify(report.results));
  const byId=new Map(report.results.map(item=>[item.part_id,item]));
@@ -29,5 +30,4 @@ try{
  assert.ok(byId.get("5260").dimensions_mm.height>0);
  assert.ok(byId.get("3934").dimensions_mm.depth>0);
  assert.equal(errors.length,0,errors.join(" | "));
- console.log(JSON.stringify({browser:"Chromium headless",source:report.source,parts:report.results.map(({part_id,dimensions_mm,triangle_count})=>({part_id,dimensions_mm,triangle_count}))}));
 }finally{await browser.close();await new Promise(resolve=>server.close(resolve));}
