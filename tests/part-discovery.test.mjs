@@ -141,6 +141,16 @@ test("ranks real part candidates directly from a semantic design component", asy
   assert.equal(result.assembly_status, "component_candidates_ranked_and_locally_aligned_not_assembled");
   assert.equal(result.ranking.candidates[0].component_placement_candidate, true);
   assert.equal(result.ranking.candidates[0].part_local_transform.coordinate_frame, "component-centred-millimetres");
+  const transform = result.ranking.candidates[0].part_local_transform;
+  const centre = [0,4,0];
+  const mappedCentre = transform.rotation_matrix.map((row, axis) =>
+    row.reduce((sum, value, index) => sum + value * centre[index], transform.translation_mm[axis]));
+  assert.ok(mappedCentre.every(value => Math.abs(value) < 1e-9));
+  const [m] = [transform.rotation_matrix];
+  const determinant = m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1])
+    - m[0][1] * (m[1][0] * m[2][2] - m[1][2] * m[2][0])
+    + m[0][2] * (m[1][0] * m[2][1] - m[1][1] * m[2][0]);
+  assert.equal(determinant, 1);
 });
 
 test("chooses a dimension-equivalent orientation that aligns a required interface axis", async () => {
