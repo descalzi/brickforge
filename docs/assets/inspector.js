@@ -3,15 +3,15 @@ let OrbitControls;
 let STLLoader;
 let OBJLoader;
 
-import { BRICK_GRID_PITCH_MM, PLATE_GRID_PITCH_MM, GridSpec, TargetGrid } from "./target-grid.js?v=featuregrid7";
-import { matchFeaturePatterns, matchTargetFeatures } from "./feature-matcher.js?v=featurematch9";
-import { constructionPreviewTransform } from "./construction-preview.js";
-import { refineSurfaceFitPose, scoreSurfaceFit } from "./surface-fit.js?v=surfacefit7";
-import { transformPartPreviewPositions } from "./part-preview.js?v=featurepreview1";
-import { matchNominalConnectionInterfaces, validateSpecialisedSurfaceCandidate } from "./specialised-part-matcher.js?v=specialised3";
-import { estimateBomCost, validatePriceCatalogue } from "./cost-estimator.js?v=costing1";
-import { loadConstructionLDrawSurface } from "./ldraw-surface-loader.js?v=ldrawsurface2";
-import { orientationMatrixToYUp } from "./mesh-orientation.js?v=upaxis1";
+import { BRICK_GRID_PITCH_MM, PLATE_GRID_PITCH_MM, GridSpec, TargetGrid } from "./target-grid.js?v=c37e3f51f3b7";
+import { matchFeaturePatterns, matchTargetFeatures } from "./feature-matcher.js?v=c37e3f51f3b7";
+import { constructionPreviewTransform } from "./construction-preview.js?v=c37e3f51f3b7";
+import { refineSurfaceFitPose, scoreSurfaceFit } from "./surface-fit.js?v=c37e3f51f3b7";
+import { transformPartPreviewPositions } from "./part-preview.js?v=c37e3f51f3b7";
+import { matchNominalConnectionInterfaces, validateSpecialisedSurfaceCandidate } from "./specialised-part-matcher.js?v=c37e3f51f3b7";
+import { estimateBomCost, validatePriceCatalogue } from "./cost-estimator.js?v=c37e3f51f3b7";
+import { loadConstructionLDrawSurface } from "./ldraw-surface-loader.js?v=c37e3f51f3b7";
+import { orientationMatrixToYUp } from "./mesh-orientation.js?v=c37e3f51f3b7";
 
 const MAX_FILE_BYTES = 100 * 1024 * 1024;
 const MILLIMETRES_PER_UNIT = { mm: 1, cm: 10, m: 1000, in: 25.4 };
@@ -118,8 +118,8 @@ const ghostedMaterialStates = new Map();
 
 const VIEW_STAGE_COPY = {
   source: 'Original uploaded STL / OBJ mesh',
-  occupancy: 'LEGO-grid occupancy — no source mesh overlay',
-  construction: 'Generated LEGO parts — final construction only',
+  occupancy: 'Brick-grid occupancy — no source mesh overlay',
+  construction: 'Generated brick parts — final construction only',
 };
 
 function setViewStage(stage) {
@@ -1233,7 +1233,7 @@ function runVoxelisation() {
   voxeliseStatus.dataset.state = 'working';
   setMessage('Voxelising locally. The 3D viewer remains interactive while the worker processes the mesh.');
   try {
-    voxelWorker = new Worker(new URL('./mesh-voxelizer-worker.js?v=featurekeepout13', import.meta.url), { type: 'module' });
+    voxelWorker = new Worker(new URL('./mesh-voxelizer-worker.js?v=c37e3f51f3b7', import.meta.url), { type: 'module' });
   } catch (error) {
     voxeliseButton.disabled = false;
     voxeliseStatus.textContent = error instanceof Error ? error.message : 'Could not start the voxelisation worker.';
@@ -1751,7 +1751,7 @@ function runLayeredConstruction() {
   setMessage('Searching for a connected arrangement across all occupied courses. The viewer remains interactive.');
   try {
     constructionWorker = new Worker(
-      new URL('./layered-construction-worker.js?v=objectives3', import.meta.url),
+      new URL('./layered-construction-worker.js?v=c37e3f51f3b7', import.meta.url),
       { type: 'module' },
     );
   } catch (error) {
@@ -2161,7 +2161,7 @@ async function loadFixtureFromQuery() {
   if (!fixture || !allowedFixtures.has(fixture)) return;
   try {
     setMessage('Loading the selected validation fixture…', 'info');
-    const catalogueResponse = await fetch('./data/validation-fixtures.json');
+    const catalogueResponse = await fetch('./data/validation-fixtures.json?v=c37e3f51f3b7');
     if (!catalogueResponse.ok) throw new Error('Fixture catalogue request failed: ' + catalogueResponse.status);
     const catalogue = await catalogueResponse.json();
     const metadata = catalogue.fixtures?.find((item) => item.file === fixture);

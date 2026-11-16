@@ -72,6 +72,12 @@
     ],
     "connector_pin": [
       "connector_pin"
+    ],
+    "wheel_mount": [
+      "wheel_mount"
+    ],
+    "cap": [
+      "cap"
     ]
   },
   "features": {
@@ -123,6 +129,26 @@
     "airfoil": {
       "required_capabilities": [
         "airfoil_surface"
+      ]
+    },
+    "doorway": {
+      "required_capabilities": [
+        "door_frame"
+      ]
+    },
+    "tapered": {
+      "required_capabilities": [
+        "tapered_surface"
+      ]
+    },
+    "domed": {
+      "required_capabilities": [
+        "domed_surface"
+      ]
+    },
+    "round_column": {
+      "required_capabilities": [
+        "round_column"
       ]
     }
   }

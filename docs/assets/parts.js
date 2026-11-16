@@ -1,6 +1,6 @@
 const DEFAULT_RAW_BASE = 'https://raw.githubusercontent.com/kulits/ldraw-parts/c70360d1c588be894997b2168c61909bc8058c4d/ldraw/';
 let rawBaseUrl = DEFAULT_RAW_BASE;
-import { decodeCataloguePayload, ldrawReferenceCandidates, searchPartCatalogue } from './catalogue-utils.js';
+import { decodeCataloguePayload, ldrawReferenceCandidates, searchPartCatalogue } from './catalogue-utils.js?v=c37e3f51f3b7';
 
 const LDU_TO_MM = 0.4;
 let curatedSpecialisedCatalogue = null;
@@ -171,7 +171,7 @@ function analyseSelectedPartFeatures() {
   setMessage('Sampling principal and oblique cross-sections in a background worker…');
 
   try {
-    partFeatureWorker = new Worker(new URL('./part-feature-worker.js?v=featureprofile8', import.meta.url), { type: 'module' });
+    partFeatureWorker = new Worker(new URL('./part-feature-worker.js?v=c37e3f51f3b7', import.meta.url), { type: 'module' });
   } catch (error) {
     partFeatureAnalyseButton.disabled = false;
     partFeatureBatchButton.disabled = partCatalogue.length === 0;
@@ -237,7 +237,7 @@ function likelyOpeningPartCandidates(limit = 12, query = 'technic beam') {
 
 function analysePositionsInWorker(positions, bounds) {
   return new Promise((resolve, reject) => {
-    const worker = new Worker(new URL('./part-feature-worker.js?v=featureprofile8', import.meta.url), { type: 'module' });
+    const worker = new Worker(new URL('./part-feature-worker.js?v=c37e3f51f3b7', import.meta.url), { type: 'module' });
     batchFeatureWorker = worker;
     worker.addEventListener('message', (event) => {
       if (worker !== batchFeatureWorker) return;
@@ -413,7 +413,7 @@ async function scanCuratedSpecialisedParts() {
   partFeatureCuratedButton.disabled = true;
   try {
     if (!curatedSpecialisedCatalogue) {
-      const response = await fetch('./data/specialised-technic-part-catalogue.json');
+      const response = await fetch('./data/specialised-technic-part-catalogue.json?v=c37e3f51f3b7');
       if (!response.ok) throw new Error('Could not load the source-verified specialised part catalogue.');
       curatedSpecialisedCatalogue = await response.json();
     }
@@ -735,7 +735,7 @@ function parseLDrawText(content, source) {
 
 async function getConnectionProfiles() {
   if (!connectionProfilesPromise) {
-    connectionProfilesPromise = fetch('./data/connection-profiles/basic-bricks.json?v=plateprofiles12', {
+    connectionProfilesPromise = fetch('./data/connection-profiles/basic-bricks.json?v=c37e3f51f3b7', {
       credentials: 'same-origin',
       headers: { Accept: 'application/json' },
     }).then(async (response) => {

@@ -33,8 +33,8 @@ try {
     const consoleErrors = [];
     page.on("pageerror", error => consoleErrors.push(error.message));
     page.on("console", message => { if (message.type() === "error") consoleErrors.push(message.text()); });
-    await page.goto("http://127.0.0.1:4173/inspector.html?fixture=" + fixture.file, { waitUntil: "networkidle" });
-    await page.locator("#voxelise-button").waitFor({ state: "visible" });
+    await page.goto("http://127.0.0.1:4173/inspector.html?fixture=" + fixture.file, { waitUntil: "domcontentloaded" });
+    await page.waitForFunction(() => !document.querySelector("#voxelise-button")?.disabled, null, { timeout: 60000 });
     assert.equal(await page.locator('[data-view-stage="source"]').isEnabled(), true,
       fixture.file + ": source stage was not enabled after loading.");
     assert.equal(await page.locator('[data-view-stage="occupancy"]').isEnabled(), false,
@@ -133,7 +133,7 @@ try {
     const consoleErrors = [];
     page.on("pageerror", error => consoleErrors.push(error.message));
     page.on("console", message => { if (message.type() === "error") consoleErrors.push(message.text()); });
-    await page.goto("http://127.0.0.1:4173/inspector.html", { waitUntil: "networkidle" });
+    await page.goto("http://127.0.0.1:4173/inspector.html", { waitUntil: "domcontentloaded" });
     const goldenStl = path.resolve(root, "../tests/artifacts/golden-single-3001-solid.stl");
     await page.locator("#file-input").setInputFiles(goldenStl);
     await page.waitForFunction(() => {

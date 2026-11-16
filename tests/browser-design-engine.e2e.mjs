@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import http from "node:http";
 import path from "node:path";
 import { createReadStream, existsSync } from "node:fs";
+import { writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { chromium } from "playwright";
 
@@ -19,7 +20,7 @@ try{
  const page=await browser.newPage(),errors=[];
  page.on("pageerror",error=>errors.push(error.message));
  page.on("console",message=>{if(message.type()==="error")errors.push(message.text());});
- await page.goto("http://127.0.0.1:4174/designer.html?fixture=stacked-body&run=1",{waitUntil:"networkidle"});
+ await page.goto("http://127.0.0.1:4174/designer.html?fixture=stacked-body&run=1",{waitUntil:"domcontentloaded"});
  await page.waitForFunction(()=>["planned","blocked"].includes(document.querySelector("#engine-status")?.dataset.state),null,{timeout:30000});
  const state=await page.locator("#engine-status").getAttribute("data-state");
  const message=await page.locator("#engine-status").innerText();
@@ -72,6 +73,32 @@ try{
  await page.locator("#instruction-slider").evaluate(el=>{el.value=el.max;el.dispatchEvent(new Event("input",{bubbles:true}));});
  await page.click("#view-iso");
  await page.screenshot({path:process.env.SPECIALIST_SCREENSHOT||"/tmp/brickforge-pavilion.png",fullPage:true});
+ // New functional families, PDF generation, editing and local revisions.
+ await page.selectOption("#fixture-select","small-road-car");await page.click("#run-design");
+ await page.waitForFunction(()=>document.querySelector("#engine-status").dataset.state==="planned",null,{timeout:30000});
+ const car=JSON.parse(await page.locator("#engine-report").innerText());assert.equal(car.parts.filter(p=>p.part_id==="3641").length,4);assert.equal(car.parts.filter(p=>p.part_id==="4624").length,4);
+ assert.equal(car.connections.flatMap(e=>e.mating_pairs).filter(p=>p.connection_type==="wheel_pin_bore").length,4);
+ assert.equal(await page.locator("#viewer-empty").isVisible(),false);await page.click("#view-fit");
+ await page.screenshot({path:"/tmp/brickforge-car.png",fullPage:true});
+ const pdfPromise=page.waitForEvent("download");await page.click("#download-pdf");const pdf=await pdfPromise,pdfStream=await pdf.createReadStream(),pdfChunks=[];for await(const chunk of pdfStream)pdfChunks.push(chunk);const pdfBytes=Buffer.concat(pdfChunks);assert.ok(pdfBytes.toString('ascii',0,8).startsWith('%PDF-1.4'));assert.ok(pdfBytes.includes(Buffer.from('Parts inventory')));await writeFile('/tmp/brickforge-car.instructions.pdf',pdfBytes);
+ await page.selectOption('#fixture-select','approximate-road-car');await page.click('#run-design');await page.waitForFunction(()=>document.querySelector('#engine-status').dataset.state==='planned');const fitted=JSON.parse(await page.locator('#engine-report').innerText());assert.ok(fitted.search.pose_candidates_generated>0);assert.ok(fitted.component_reports.some(r=>r.position_adjustment_mm?.some(v=>Math.abs(v)>.1)));
+ await page.selectOption('#fixture-select','small-road-car');await page.click('#run-design');await page.waitForFunction(()=>document.querySelector('#engine-status').dataset.state==='planned');
+ await page.locator("#component-list .component-row").filter({hasText:"Chassis"}).click();await page.selectOption("#component-colour","1");await page.click("#apply-component");assert.equal(await page.locator("#download-pdf").isEnabled(),false);assert.equal(JSON.parse(await page.locator("#design-spec").inputValue()).components[0].colour,1);
+ await page.click("#save-revision");const revision=await page.locator("#revision-select option").nth(1).getAttribute('value');assert.ok(revision);
+ await page.selectOption("#fixture-select","tapered-aircraft");await page.click("#run-design");await page.waitForFunction(()=>document.querySelector("#engine-status").dataset.state==="planned");
+ const aircraft=JSON.parse(await page.locator("#engine-report").innerText());assert.ok(['3933','3934'].every(id=>aircraft.parts.some(p=>p.part_id===id)));
+ await page.selectOption("#revision-select",revision);assert.equal(JSON.parse(await page.locator("#design-spec").inputValue()).components[0].colour,1);
+ // A gateway is mocked only as transport/contract evidence, not real LLM quality.
+ await page.locator(".description-panel").evaluate(el=>el.open=true);await page.fill("#description-input","A small vehicle with four rotating wheels.");await page.fill("#interpretation-endpoint","https://brickforge-gateway.example/interpret");
+ const cors={'Access-Control-Allow-Origin':'*','Access-Control-Allow-Methods':'POST, OPTIONS','Access-Control-Allow-Headers':'Content-Type'};
+ const authored=await page.evaluate(async()=>{const r=await fetch('./data/design-spec-fixtures.json');return (await r.json()).fixtures.find(f=>f.design_id==='small-road-car');});
+ await page.route('https://brickforge-gateway.example/interpret',route=>route.fulfill({status:route.request().method()==='OPTIONS'?204:200,headers:cors,contentType:'application/json',body:route.request().method()==='OPTIONS'?'':JSON.stringify({specification:authored})}));
+ await page.click('#analyse-description');await page.waitForFunction(()=>document.querySelector('#engine-status').textContent.startsWith('Interpretation ready'));
+ assert.equal(JSON.parse(await page.locator('#design-spec').inputValue()).design_id,'small-road-car');
+ await page.unroute('https://brickforge-gateway.example/interpret');await page.route('https://brickforge-gateway.example/interpret',route=>route.fulfill({status:200,headers:cors,contentType:'application/json',body:JSON.stringify({schema_version:1,part_id:'fake'})}));
+ await page.click('#analyse-description');await page.waitForFunction(()=>document.querySelector('#engine-status').dataset.state==='blocked');assert.match(await page.locator('#engine-status').innerText(),/does not match the design contract/);
+ await page.fill('#interpretation-endpoint','https://brickforge-gateway.example/slow');await page.route('https://brickforge-gateway.example/slow',async route=>{await new Promise(resolve=>setTimeout(resolve,500));try{await route.fulfill({status:200,headers:cors,contentType:'application/json',body:JSON.stringify(authored)});}catch{}});
+ await page.click('#analyse-description');await page.click('#cancel-interpretation');assert.match(await page.locator('#engine-status').innerText(),/analysis cancelled/);
  await page.selectOption("#fixture-select","challenge-car");await page.click("#run-design");await page.waitForFunction(()=>document.querySelector("#engine-status").dataset.state==="blocked");assert.equal(await page.locator("#download-ldraw").isEnabled(),false);
  await page.locator("#spec-details").evaluate(el=>el.open=true);await page.locator("#design-spec").fill("{");await page.click("#run-design");assert.equal(await page.locator("#engine-status").getAttribute("data-state"),"blocked");
  // URL transport accepts arbitrary authored specifications, independently of fixtures.
@@ -80,6 +107,10 @@ try{
  await page.waitForFunction(()=>document.querySelector("#engine-status").dataset.state==="planned");
  await page.setViewportSize({width:390,height:844});
  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),"mobile layout overflows horizontally");
+ await page.screenshot({path:'/tmp/brickforge-mobile.png',fullPage:true});
+ await page.setViewportSize({width:1280,height:900});await page.goto('http://127.0.0.1:4174/index.html',{waitUntil:'domcontentloaded'});await page.screenshot({path:'/tmp/brickforge-home.png',fullPage:true});
+ await page.getByRole('link',{name:/Open the design studio/}).click();await page.waitForFunction(()=>document.querySelector('#engine-status')?.dataset.state==='planned');assert.equal(await page.locator('#engine-parts').innerText(),'17');
+ await page.getByRole('link',{name:'Engineering tools',exact:true}).click();assert.match(await page.locator('h1').innerText(),/workbench/);
  assert.equal(errors.length,0,errors.join(" | "));
  console.log(JSON.stringify({browser:"Chromium headless",fixture:"interlocked-structural-body",parts:4,connections:4,matingPairs:16,consoleErrors:errors.length}));
 }finally{await browser.close();await new Promise(resolve=>server.close(resolve));}
