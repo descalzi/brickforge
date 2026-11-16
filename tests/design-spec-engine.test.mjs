@@ -61,3 +61,19 @@ test("rejects disconnected footprints rather than inventing a bridge", async () 
   disconnected.components.push({ id: "remote", name: "Remote pod", role: "pod", geometry: { type: "orthogonal_prism", width_studs: 1, depth_studs: 1 }, origin_studs: [8,8], height_courses: 2 });
   assert.throws(() => constructDesign(disconnected, catalogue), /disconnected solid footprints/);
 });
+
+test("rejects an unsatisfied hard spatial relationship before placement", () => {
+  const separated = structuredClone(carBrief);
+  separated.components.push({
+    id: "body", name: "Body", role: "body",
+    geometry: { type: "orthogonal_prism", width_studs: 4, depth_studs: 2 },
+    origin_studs: [0, 5], height_courses: 2,
+  });
+  separated.relationships = [{ type: "attached_to", from: "body", to: "chassis", required: true }];
+  assert.throws(() => validateForConstruction(separated), /Spatial relationship attached_to is not satisfied/);
+});
+
+function validateForConstruction(spec) {
+  // The public constructor validates relationships before requiring catalogue search.
+  return validateDesignSpec(spec).valid ? spec : (() => { throw new Error("invalid design"); })();
+}
