@@ -1,7 +1,7 @@
 const finite = (value) => typeof value === "number" && Number.isFinite(value);
 const RELATIONSHIPS = new Set(["above","below","left_of","right_of","in_front_of","behind","attached_to","aligned_with","symmetric_to"]);
 const ROOT_KEYS = new Set(["schema_version","design_id","name","units","components","relationships","constraints","appearance","assumptions"]);
-const COMPONENT_KEYS = new Set(["id","label","role","function","geometry","dimensions_mm","position_mm","priority","required_features","forbidden_features","preferred_families","colour","confidence"]);
+const COMPONENT_KEYS = new Set(["id","label","role","function","geometry","dimensions_mm","position_mm","priority","required_features","forbidden_features","colour","confidence"]);
 const hasOnlyKeys = (value, allowed) => Object.keys(value || {}).filter(key => !allowed.has(key));
 
 export function validateDesignSpec(spec) {
@@ -32,7 +32,7 @@ export function validateDesignSpec(spec) {
     }
     if (component.position_mm && hasOnlyKeys(component.position_mm, new Set(["x","y","z"])).length) errors.push(path + ".position_mm contains unknown properties.");
     if (!["essential", "preferred", "optional"].includes(component.priority)) errors.push(path + ".priority is invalid.");
-    for (const key of ["function","required_features","forbidden_features","preferred_families"]) {
+    for (const key of ["function","required_features","forbidden_features"]) {
       if (component[key] !== undefined && (!Array.isArray(component[key]) || component[key].some(value => typeof value !== "string" || !value.trim()))) errors.push(path + "." + key + " must be an array of non-empty strings.");
     }
     if (component.colour !== undefined && (!Number.isInteger(component.colour) || component.colour < 0)) errors.push(path + ".colour must be a non-negative integer.");
