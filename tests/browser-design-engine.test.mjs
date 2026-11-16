@@ -7,6 +7,7 @@ import { planDesign } from "../docs/assets/design-engine.js";
 const catalogue = JSON.parse(await readFile(new URL("../data/connection-profiles/basic-bricks.json", import.meta.url), "utf8"));
 const partCatalogue = JSON.parse(await readFile(new URL("../docs/data/part-capabilities-v1.json", import.meta.url), "utf8"));
 const designTranslation = JSON.parse(await readFile(new URL("../docs/data/design-translation-v1.json", import.meta.url), "utf8"));
+const connectorCatalogue = JSON.parse(await readFile(new URL("../docs/data/connector-compatibility-v1.json", import.meta.url), "utf8"));
 const carBody = {
   schema_version: 1, design_id: "stacked-body-test", name: "Stacked body",
   units: "mm",
@@ -193,4 +194,25 @@ test("primitive geometry parameters must agree with declared component bounds",(
  const malformed=structuredClone(cylinder);
  delete malformed.components[0].dimensions_mm;
  assert.equal(validateDesignSpec(malformed).valid,false);
+});
+
+test("two semantic Technic beams are planned with a source-derived friction pin",()=>{
+ const technicSpec={
+  schema_version:1,design_id:"two-beam-pin-joint",name:"Two Technic beams joined by a friction pin",units:"mm",
+  components:[
+   {id:"beam-a",role:"beam",geometry:"rectangular_prism",dimensions_mm:{width:32,depth:8,height:11.2},position_mm:{x:0,y:0,z:0},priority:"essential",required_features:["pin_joint"],confidence:"explicit"},
+   {id:"beam-b",role:"beam",geometry:"rectangular_prism",dimensions_mm:{width:32,depth:8,height:11.2},position_mm:{x:0,y:0,z:8},priority:"essential",required_features:["pin_joint"],confidence:"explicit"}
+  ],
+  relationships:[{type:"attached_to",from:"beam-a",to:"beam-b"}],
+  constraints:{require_connected:true,allow_intersections:false,max_parts:10,max_search_nodes:10000,course_type:"brick"}
+ };
+ const result=planDesign(technicSpec,catalogue,{partCatalogue,designTranslation,connectorCatalogue});
+ assert.equal(result.status,"planned",result.failures?.join("; "));
+ assert.deepEqual(result.bom.map(item=>[item.part_id,item.quantity]),[["2780",1],["3701",2]]);
+ assert.equal(result.parts.length,3);
+ assert.equal(result.connections.length,2);
+ assert.equal(result.validation.connected,true);
+ assert.equal(result.validation.checks.find(check=>check.id==="physical_clutch_and_strength").status,"not_assessed");
+ assert.match(result.ldraw,/2780\.dat/);
+ assert.equal(result.instructions.length,3);
 });
