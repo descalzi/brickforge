@@ -3,27 +3,6 @@
   "units": "mm",
   "parts": [
     {
-      "part_id": "35",
-      "description": "Wheel 8 x 35 with 12 Spokes (Complete)",
-      "roles": [
-        "wheel"
-      ],
-      "capabilities": [
-        "wheel",
-        "rotating_element"
-      ],
-      "dimensions_mm": null,
-      "candidate_status": "reference_only",
-      "interfaces": [],
-      "source": {
-        "file": "parts/35.dat",
-        "revision": "UPDATE 2025-09",
-        "license": "Licensed under CC BY 4.0; see CAreadme.txt",
-        "author": "James Jessiman",
-        "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
-      }
-    },
-    {
       "part_id": "2493b",
       "description": "Window 1 x 4 x 5 with Hollow Studs",
       "roles": [
@@ -4284,22 +4263,400 @@
       }
     },
     {
-      "part_id": "3039",
-      "description": "Slope Brick 45 2 x 2",
+      "part_id": "3037",
+      "description": "Slope Brick 45  2 x  4",
       "roles": [
+        "roof",
         "slope"
       ],
       "capabilities": [
-        "sloped_surface"
+        "sloped_surface",
+        "top_studs",
+        "underside_stud_receivers"
+      ],
+      "dimensions_mm": {
+        "width": 32,
+        "depth": 16,
+        "height": 9.6
+      },
+      "candidate_status": "geometry_measured",
+      "interfaces": [
+        {
+          "interface_id": "receiver-0-0",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -12,
+            9.6,
+            -8
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "receiver-0-1",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -12,
+            9.6,
+            0
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "stud-0-1",
+          "interface_type": "stud",
+          "position_mm": [
+            -12,
+            0,
+            0
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "receiver-1-0",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            9.6,
+            -8
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "receiver-1-1",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            9.6,
+            0
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "stud-1-1",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            0
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "receiver-2-0",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            9.6,
+            -8
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "receiver-2-1",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            9.6,
+            0
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "stud-2-1",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            0
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "receiver-3-0",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            12,
+            9.6,
+            -8
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "receiver-3-1",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            12,
+            9.6,
+            0
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "stud-3-1",
+          "interface_type": "stud",
+          "position_mm": [
+            12,
+            0,
+            0
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        }
+      ],
+      "source": {
+        "file": "parts/3037.dat",
+        "revision": "2009-01",
+        "license": "Licensed under CC BY 4.0 : see CAreadme.txt",
+        "author": "James Jessiman",
+        "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
+      },
+      "geometry_measurement": {
+        "source_library_commit": "c70360d1c588be894997b2168c61909bc8058c4d",
+        "triangle_count": 792,
+        "method": "recursive_ldraw_surface_bounds",
+        "bounds_mm": [
+          [
+            -16,
+            -1.6,
+            -12
+          ],
+          [
+            16,
+            9.600000000000001,
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "part_id": "3039",
+      "description": "Slope Brick 45  2 x  2",
+      "roles": [
+        "roof",
+        "slope"
+      ],
+      "capabilities": [
+        "sloped_surface",
+        "top_studs",
+        "underside_stud_receivers"
+      ],
+      "dimensions_mm": {
+        "width": 16,
+        "depth": 16,
+        "height": 9.6
+      },
+      "candidate_status": "geometry_measured",
+      "interfaces": [
+        {
+          "interface_id": "receiver-0-0",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            9.6,
+            -8
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "receiver-0-1",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            9.6,
+            0
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "stud-0-1",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            0
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "receiver-1-0",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            9.6,
+            -8
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "receiver-1-1",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            9.6,
+            0
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "stud-1-1",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            0
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        }
+      ],
+      "source": {
+        "file": "parts/3039.dat",
+        "revision": "2003-03",
+        "license": "Licensed under CC BY 4.0 : see CAreadme.txt",
+        "author": "James Jessiman",
+        "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
+      },
+      "geometry_measurement": {
+        "source_library_commit": "c70360d1c588be894997b2168c61909bc8058c4d",
+        "triangle_count": 352,
+        "method": "recursive_ldraw_surface_bounds",
+        "bounds_mm": [
+          [
+            -8,
+            -1.6,
+            -12
+          ],
+          [
+            8,
+            9.600000000000001,
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "part_id": "32064a",
+      "description": "Technic Brick 1 x 2 with Axlehole with Open Sides and Stud Blocker",
+      "roles": [
+        "axle_connector_candidate"
+      ],
+      "capabilities": [
+        "technic_axle_cross_hole"
       ],
       "dimensions_mm": null,
       "candidate_status": "reference_only",
       "interfaces": [],
       "source": {
-        "file": "parts/3039.dat",
-        "revision": "UPDATE 2003-03",
-        "license": "Licensed under CC BY 4.0; see CAreadme.txt",
-        "author": "James Jessiman",
+        "file": "parts/32064a.dat",
+        "revision": "UPDATE 2022-02",
+        "license": "CC BY 2.0 and CC BY 4.0",
+        "author": null,
         "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
       }
     },
@@ -4612,6 +4969,27 @@
         "revision": "UPDATE 2023-03",
         "license": "Licensed under CC BY 4.0; see CAreadme.txt",
         "author": "Gerald Lasser [GeraldLasser]",
+        "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
+      }
+    },
+    {
+      "part_id": "35",
+      "description": "Wheel 8 x 35 with 12 Spokes (Complete)",
+      "roles": [
+        "wheel"
+      ],
+      "capabilities": [
+        "wheel",
+        "rotating_element"
+      ],
+      "dimensions_mm": null,
+      "candidate_status": "reference_only",
+      "interfaces": [],
+      "source": {
+        "file": "parts/35.dat",
+        "revision": "UPDATE 2025-09",
+        "license": "Licensed under CC BY 4.0; see CAreadme.txt",
+        "author": "James Jessiman",
         "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
       }
     },
@@ -6729,6 +7107,27 @@
       }
     },
     {
+      "part_id": "39367",
+      "description": "Wheel 14 x 48 with 4 Spokes with Integral Tyre",
+      "roles": [
+        "wheel"
+      ],
+      "capabilities": [
+        "wheel",
+        "rotating_element"
+      ],
+      "dimensions_mm": null,
+      "candidate_status": "reference_only",
+      "interfaces": [],
+      "source": {
+        "file": "parts/39367.dat",
+        "revision": "UPDATE 2025-08",
+        "license": "Licensed under CC BY 4.0; see CAreadme.txt",
+        "author": "Philippe Hurbain [Philo]",
+        "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
+      }
+    },
+    {
       "part_id": "4266",
       "description": "Wheel Rim 20 x 30 Smooth with 6 Pinholes",
       "roles": [
@@ -6798,6 +7197,135 @@
         "source_library_commit": "c70360d1c588be894997b2168c61909bc8058c4d",
         "triangle_count": 772,
         "method": "recursive_ldraw_surface_bounds"
+      }
+    },
+    {
+      "part_id": "60592",
+      "description": "Window  1 x  2 x  2 without Sill",
+      "roles": [
+        "window"
+      ],
+      "capabilities": [
+        "window_frame",
+        "top_studs",
+        "underside_stud_receivers"
+      ],
+      "dimensions_mm": {
+        "width": 16,
+        "depth": 8,
+        "height": 19.2
+      },
+      "candidate_status": "geometry_measured",
+      "interfaces": [
+        {
+          "interface_id": "receiver-0-0",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            19.2,
+            0
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "stud-0-0",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            0
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "receiver-1-0",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            19.2,
+            0
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "stud-1-0",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            0
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        }
+      ],
+      "source": {
+        "file": "parts/60592.dat",
+        "revision": "2012-01",
+        "license": "Licensed under CC BY 4.0 : see CAreadme.txt",
+        "author": "Michael Heidemann [mikeheide]",
+        "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
+      },
+      "geometry_measurement": {
+        "source_library_commit": "c70360d1c588be894997b2168c61909bc8058c4d",
+        "triangle_count": 594,
+        "method": "recursive_ldraw_surface_bounds",
+        "bounds_mm": [
+          [
+            -8,
+            -1.6,
+            -4
+          ],
+          [
+            8,
+            19.200000000000003,
+            4
+          ]
+        ]
+      }
+    },
+    {
+      "part_id": "61345",
+      "description": "Window 1 x 4 x 2 Plane with Single Hole Top and Bottom for Glass",
+      "roles": [
+        "window"
+      ],
+      "capabilities": [
+        "window_frame",
+        "transparent_insert_mount"
+      ],
+      "dimensions_mm": null,
+      "candidate_status": "reference_only",
+      "interfaces": [],
+      "source": {
+        "file": "parts/61345.dat",
+        "revision": "UPDATE 2013-02",
+        "license": "Licensed under CC BY 4.0; see CAreadme.txt",
+        "author": "Michael Heidemann [mikeheide]",
+        "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
       }
     },
     {
@@ -6902,68 +7430,6 @@
         "revision": "UPDATE 2026-03",
         "license": "Licensed under CC BY 4.0; see CAreadme.txt",
         "author": "Jens Brühl [jb70]",
-        "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
-      }
-    },
-    {
-      "part_id": "32064a",
-      "description": "Technic Brick 1 x 2 with Axlehole with Open Sides and Stud Blocker",
-      "roles": [
-        "axle_connector_candidate"
-      ],
-      "capabilities": [
-        "technic_axle_cross_hole"
-      ],
-      "dimensions_mm": null,
-      "candidate_status": "reference_only",
-      "interfaces": [],
-      "source": {
-        "file": "parts/32064a.dat",
-        "revision": "UPDATE 2022-02",
-        "license": "CC BY 2.0 and CC BY 4.0",
-        "author": null,
-        "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
-      }
-    },
-    {
-      "part_id": "39367",
-      "description": "Wheel 14 x 48 with 4 Spokes with Integral Tyre",
-      "roles": [
-        "wheel"
-      ],
-      "capabilities": [
-        "wheel",
-        "rotating_element"
-      ],
-      "dimensions_mm": null,
-      "candidate_status": "reference_only",
-      "interfaces": [],
-      "source": {
-        "file": "parts/39367.dat",
-        "revision": "UPDATE 2025-08",
-        "license": "Licensed under CC BY 4.0; see CAreadme.txt",
-        "author": "Philippe Hurbain [Philo]",
-        "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
-      }
-    },
-    {
-      "part_id": "61345",
-      "description": "Window 1 x 4 x 2 Plane with Single Hole Top and Bottom for Glass",
-      "roles": [
-        "window"
-      ],
-      "capabilities": [
-        "window_frame",
-        "transparent_insert_mount"
-      ],
-      "dimensions_mm": null,
-      "candidate_status": "reference_only",
-      "interfaces": [],
-      "source": {
-        "file": "parts/61345.dat",
-        "revision": "UPDATE 2013-02",
-        "license": "Licensed under CC BY 4.0; see CAreadme.txt",
-        "author": "Michael Heidemann [mikeheide]",
         "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
       }
     }

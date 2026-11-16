@@ -2,8 +2,8 @@ import { validateDesignSpec } from "./design-spec.js";
 import { createDesignViewer, colours } from "./design-viewer.js";
 const $=id=>document.getElementById(id);
 const editor=$("design-spec"),status=$("engine-status"),runButton=$("run-design"),selector=$("fixture-select");
-const downloads=[$("download-ldraw"),$("download-bom"),$("download-report")];
-let catalogue,options,fixtures=[],result=null,activeSpec=null,worker=null,timer=null,viewer=null,currentExample=null;
+const downloads=[$("download-ldraw"),$("download-bom"),$("download-report"),$("download-instructions")];
+let catalogue,displayCatalogue,options,fixtures=[],result=null,activeSpec=null,worker=null,timer=null,viewer=null,currentExample=null;
 try{viewer=createDesignViewer($("studio-viewport"));}catch(error){$("viewer-empty").textContent="3D preview unavailable: "+error.message;}
 function setStatus(message,state="ready"){status.textContent=message;status.dataset.state=state;}
 function finishWorker(){worker?.terminate();worker=null;clearTimeout(timer);$("cancel-design").hidden=true;runButton.disabled=!catalogue;}
@@ -11,7 +11,7 @@ function invalidate(message="Brief changed. Plan again to update the assembly.")
   finishWorker();result=null;activeSpec=null;downloads.forEach(b=>b.disabled=true);$("share-design").disabled=!catalogue;
   for(const id of ["engine-parts","engine-connections","engine-pairs","engine-size"])$(id).textContent="—";
   viewer?.clear();if(viewer){$("viewer-empty").textContent="Plan this brief to inspect its assembly.";$("viewer-empty").hidden=false;}
-  $("course-slider").disabled=true;$("course-value").textContent="—";$("validation-list").replaceChildren();$("warning-list").replaceChildren();$("engine-report").textContent="No current assembly. "+message;$("share-result").hidden=true;setStatus(message);
+  $("instruction-slider").disabled=true;$("instruction-value").textContent="—";$("instruction-detail").textContent="Plan an assembly to inspect its nominal connection sequence.";$("course-slider").disabled=true;$("course-value").textContent="—";$("validation-list").replaceChildren();$("warning-list").replaceChildren();$("engine-report").textContent="No current assembly. "+message;$("share-result").hidden=true;setStatus(message);
 }
 function download(name,data,type="application/json"){
   const url=URL.createObjectURL(new Blob([data],{type})),a=document.createElement("a");a.href=url;a.download=name.replace(/[^a-zA-Z0-9._-]/g,"-");a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
@@ -51,10 +51,13 @@ function run(){
     const d=result.dimensions_mm;$("engine-size").textContent=d?`${+d.width.toFixed(1)} × ${+d.depth.toFixed(1)} × ${+d.height.toFixed(1)}`:"See report";
     const pitch=spec.constraints.course_type==="plate"?3.2:9.6;
     const minY=Math.min(...spec.components.map(c=>c.position_mm.y));
-    const profileMap=new Map(catalogue.profiles.map(p=>[p.part_id,p]));
+    const profileMap=new Map(displayCatalogue.profiles.map(p=>[p.part_id,p]));
     const displayPlan={...result,parts:result.parts.map(part=>({...part,display_course_index:Math.round((-part.translation_ldu[1]*.4-(profileMap.get(part.part_id)?.body_height_ldu||0)*.4-minY)/pitch)}))};
     const courses=Math.max(...displayPlan.parts.map(p=>p.display_course_index))+1;$("course-slider").max=courses;$("course-slider").value=courses;$("course-slider").disabled=false;$("course-value").textContent=`${courses}/${courses}`;
-    if(viewer){try{viewer.show(displayPlan,catalogue);$("viewer-empty").hidden=true;}catch(error){viewer.clear();$("viewer-empty").hidden=false;$("viewer-empty").textContent=error.message;}}
+    if(viewer){try{viewer.show(displayPlan,displayCatalogue);$("viewer-empty").hidden=true;}catch(error){viewer.clear();$("viewer-empty").hidden=false;$("viewer-empty").textContent=error.message;}}
+    const steps=result.instructions?.steps||result.instructions||[];
+    $("instruction-slider").max=steps.length;$("instruction-slider").value=steps.length;$("instruction-slider").disabled=!steps.length;$("instruction-value").textContent=steps.length?`All ${steps.length}`:"—";
+    $("instruction-detail").textContent="Nominal connection order. Use the slider to inspect each addition. Insertion paths and stability are unverified.";
     downloads.forEach(b=>b.disabled=false);setStatus(`Plan found · ${result.parts.length} parts · ${((performance.now()-started)/1000).toFixed(2)} s. Nominal checks passed; physical stability remains unverified.`,"planned");
   };
   worker.onerror=event=>{finishWorker();setStatus("Planner error: "+event.message,"blocked");};
@@ -64,8 +67,10 @@ function run(){
 async function initialise(){
   try{
     const load=async path=>{const response=await fetch("./data/"+path);if(!response.ok)throw new Error("Could not load "+path+" ("+response.status+"). Reload to retry.");return response.json();};
-    const [cat,partCatalogue,designTranslation,connectorCatalogue,briefs]=await Promise.all([load("connection-profiles/basic-bricks.json"),load("part-capabilities-v1.json"),load("design-translation-v1.json"),load("connector-compatibility-v1.json"),load("design-spec-fixtures.json")]);
-    catalogue=cat;options={partCatalogue,designTranslation,connectorCatalogue};fixtures=[...briefs.fixtures,...briefs.challenge_specs||[]];selector.replaceChildren();
+    const [cat,partCatalogue,designTranslation,connectorCatalogue,briefs,specialistCatalogue]=await Promise.all([load("connection-profiles/basic-bricks.json"),load("part-capabilities-v1.json"),load("design-translation-v1.json"),load("connector-compatibility-v1.json"),load("design-spec-fixtures.json"),load("specialist-profiles-v1.json")]);
+    const specialistProfiles=await Promise.all(specialistCatalogue.profiles.map(async profile=>({...profile,preview_triangles_mm:(await load(profile.mesh_file)).triangle_positions_mm})));
+    displayCatalogue={...cat,profiles:[...cat.profiles,...specialistProfiles]};
+    catalogue=cat;options={partCatalogue,designTranslation,connectorCatalogue,specialistCatalogue};fixtures=[...briefs.fixtures,...briefs.challenge_specs||[]];selector.replaceChildren();
     for(const [label,items] of [["Constructible test briefs",briefs.fixtures],["Unresolved challenge briefs",briefs.challenge_specs||[]]]){const group=document.createElement("optgroup");group.label=label;for(const fixture of items){const option=document.createElement("option");option.value=fixture.design_id;option.textContent=fixture.name;group.append(option);}selector.append(group);}
     selector.disabled=false;runButton.disabled=false;$("share-design").disabled=false;
     const params=new URLSearchParams(location.search),hash=new URLSearchParams(location.hash.slice(1));
@@ -81,6 +86,14 @@ $("reset-design").addEventListener("click",()=>loadExample(currentExample?.desig
 $("export-design").addEventListener("click",()=>{try{const spec=JSON.parse(editor.value);download((spec.design_id||"design")+".design.json",JSON.stringify(spec,null,2));}catch(error){setStatus(error.message,"blocked");}});
 $("import-design").addEventListener("change",async event=>{const file=event.target.files[0];if(!file)return;try{if(file.size>131072)throw new Error("Brief exceeds the 128 KiB import limit.");const spec=JSON.parse(await file.text());editor.value=JSON.stringify(spec,null,2);invalidate("Imported brief loaded. Plan to validate it.");selector.selectedIndex=-1;components(spec);}catch(error){setStatus(error.message,"blocked");}event.target.value="";});
 $("download-ldraw").addEventListener("click",()=>result&&download(result.design_id+".ldr",result.ldraw,"text/plain"));
+$("download-instructions").addEventListener("click",()=>result&&download(result.design_id+".instructions.json",JSON.stringify(result.instructions,null,2)));
+$("instruction-slider").addEventListener("input",()=>{
+  if(!result)return;const input=$("instruction-slider"),count=Number(input.value),steps=result.instructions?.steps||result.instructions||[],step=steps[count-1];
+  viewer?.step(steps.slice(0,count).flatMap(s=>s.parts));
+  const course=$("course-slider");course.value=course.max;viewer?.course(Number(course.max));$("course-value").textContent=course.max+"/"+course.max;
+  $("instruction-value").textContent=count+"/"+steps.length;
+  $("instruction-detail").textContent=step?`Step ${count}: ${step.instruction} Nominal alignment only; insertion path unverified.`:"";
+});
 $("download-bom").addEventListener("click",()=>result&&download(result.design_id+".bom.json",JSON.stringify(result.bom,null,2)));
 $("download-report").addEventListener("click",()=>result&&download(result.design_id+".assembly.json",JSON.stringify({specification:activeSpec,...result},null,2)));
 $("share-design").addEventListener("click",async()=>{try{const spec=JSON.parse(editor.value),url=new URL(location.href);url.search="";url.hash=new URLSearchParams({spec:JSON.stringify(spec),run:"1"}).toString();const out=$("share-result");out.replaceChildren();out.hidden=false;try{await navigator.clipboard.writeText(url.href);out.textContent="Brief link copied. It includes the specification; recipients run the planner in their browser.";}catch{const a=document.createElement("a");a.href=url.href;a.textContent="Open this shareable design brief";out.append(a);}}catch(error){setStatus(error.message,"blocked");}});

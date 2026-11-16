@@ -49,6 +49,24 @@ try{
  await page.screenshot({path:process.env.STUDIO_SCREENSHOT||"/tmp/brickforge-studio.png",fullPage:true});
  await page.selectOption("#fixture-select","table");await page.click("#run-design");await page.waitForFunction(()=>document.querySelector("#engine-status").dataset.state==="planned");
  assert.equal(await page.locator("#component-list .component-row").count(),5);
+ // Specialist selection, source-surface previews, and nominal assembly sequence.
+ await page.selectOption("#fixture-select","windowed-pavilion");await page.click("#run-design");
+ await page.waitForFunction(()=>["planned","blocked"].includes(document.querySelector("#engine-status").dataset.state));
+ assert.equal(await page.locator("#engine-status").getAttribute("data-state"),"planned",await page.locator("#engine-status").innerText());
+ const pavilion=JSON.parse(await page.locator("#engine-report").innerText());
+ assert.ok(pavilion.parts.some(p=>p.part_id==="60592"));assert.ok(pavilion.parts.some(p=>p.part_id==="3037"||p.part_id==="3039"));
+ assert.equal(await page.locator("#studio-viewport [data-parts]").getAttribute("data-parts"),String(pavilion.parts.length));
+ assert.equal(await page.locator("#viewer-empty").isVisible(),false);
+ await page.locator("#instruction-slider").evaluate(el=>{el.value="1";el.dispatchEvent(new Event("input",{bubbles:true}));});
+ assert.equal(await page.locator("#instruction-value").innerText(),"1/"+pavilion.parts.length);
+ assert.match(await page.locator("#instruction-detail").innerText(),/Step 1/);
+ assert.equal(await page.locator("#studio-viewport [data-parts]").getAttribute("data-visible-parts"),"1");
+ const sequenceDownload=page.waitForEvent("download");await page.click("#download-instructions");const sequence=await sequenceDownload;
+ const seqStream=await sequence.createReadStream(),seqChunks=[];for await(const chunk of seqStream)seqChunks.push(chunk);
+ assert.equal(JSON.parse(Buffer.concat(seqChunks).toString()).steps.length,pavilion.parts.length);
+ await page.locator("#instruction-slider").evaluate(el=>{el.value=el.max;el.dispatchEvent(new Event("input",{bubbles:true}));});
+ await page.click("#view-iso");
+ await page.screenshot({path:process.env.SPECIALIST_SCREENSHOT||"/tmp/brickforge-pavilion.png",fullPage:true});
  await page.selectOption("#fixture-select","challenge-car");await page.click("#run-design");await page.waitForFunction(()=>document.querySelector("#engine-status").dataset.state==="blocked");assert.equal(await page.locator("#download-ldraw").isEnabled(),false);
  await page.locator("#spec-details").evaluate(el=>el.open=true);await page.locator("#design-spec").fill("{");await page.click("#run-design");assert.equal(await page.locator("#engine-status").getAttribute("data-state"),"blocked");
  // URL transport accepts arbitrary authored specifications, independently of fixtures.

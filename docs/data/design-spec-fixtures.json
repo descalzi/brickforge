@@ -359,6 +359,384 @@
           }
         }
       ]
+    },
+    {
+      "schema_version": 1,
+      "design_id": "windowed-pavilion",
+      "name": "Windowed pavilion \u00b7 real slopes and frame",
+      "units": "mm",
+      "components": [
+        {
+          "id": "foundation",
+          "label": "Foundation",
+          "role": "base",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 32,
+            "depth": 32,
+            "height": 9.6
+          },
+          "position_mm": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "colour": 7
+        },
+        {
+          "id": "front-left-pier",
+          "label": "Front Left Pier",
+          "role": "wall",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 8,
+            "depth": 8,
+            "height": 19.2
+          },
+          "position_mm": {
+            "x": 0,
+            "y": 9.6,
+            "z": 0
+          },
+          "priority": "essential",
+          "confidence": "explicit"
+        },
+        {
+          "id": "front-window",
+          "label": "Front Window",
+          "role": "window",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 16,
+            "depth": 8,
+            "height": 19.2
+          },
+          "position_mm": {
+            "x": 8,
+            "y": 9.6,
+            "z": 0
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "required_features": [
+            "window"
+          ],
+          "colour": 15
+        },
+        {
+          "id": "front-right-pier",
+          "label": "Front Right Pier",
+          "role": "wall",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 8,
+            "depth": 8,
+            "height": 19.2
+          },
+          "position_mm": {
+            "x": 24,
+            "y": 9.6,
+            "z": 0
+          },
+          "priority": "essential",
+          "confidence": "explicit"
+        },
+        {
+          "id": "rear-wall",
+          "label": "Rear Wall",
+          "role": "wall",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 32,
+            "depth": 8,
+            "height": 19.2
+          },
+          "position_mm": {
+            "x": 0,
+            "y": 9.6,
+            "z": 24
+          },
+          "priority": "essential",
+          "confidence": "explicit"
+        },
+        {
+          "id": "left-wall",
+          "label": "Left Wall",
+          "role": "wall",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 8,
+            "depth": 16,
+            "height": 19.2
+          },
+          "position_mm": {
+            "x": 0,
+            "y": 9.6,
+            "z": 8
+          },
+          "priority": "essential",
+          "confidence": "explicit"
+        },
+        {
+          "id": "right-wall",
+          "label": "Right Wall",
+          "role": "wall",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 8,
+            "depth": 16,
+            "height": 19.2
+          },
+          "position_mm": {
+            "x": 24,
+            "y": 9.6,
+            "z": 8
+          },
+          "priority": "essential",
+          "confidence": "explicit"
+        },
+        {
+          "id": "ceiling",
+          "label": "Ceiling",
+          "role": "floor",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 32,
+            "depth": 32,
+            "height": 9.6
+          },
+          "position_mm": {
+            "x": 0,
+            "y": 28.8,
+            "z": 0
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "colour": 15
+        },
+        {
+          "id": "left-roof",
+          "label": "Left Roof",
+          "role": "roof",
+          "geometry": "extruded_profile",
+          "dimensions_mm": {
+            "width": 16,
+            "depth": 32,
+            "height": 9.6
+          },
+          "position_mm": {
+            "x": 0,
+            "y": 38.4,
+            "z": 0
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "colour": 4,
+          "required_features": [
+            "sloped"
+          ],
+          "geometry_parameters": {
+            "depth_mm": 32,
+            "outline_mm": [
+              [
+                0,
+                0
+              ],
+              [
+                16,
+                0
+              ],
+              [
+                16,
+                9.6
+              ],
+              [
+                8,
+                9.6
+              ],
+              [
+                0,
+                1.6
+              ]
+            ]
+          }
+        },
+        {
+          "id": "right-roof",
+          "label": "Right Roof",
+          "role": "roof",
+          "geometry": "extruded_profile",
+          "dimensions_mm": {
+            "width": 16,
+            "depth": 32,
+            "height": 9.6
+          },
+          "position_mm": {
+            "x": 16,
+            "y": 38.4,
+            "z": 0
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "colour": 4,
+          "required_features": [
+            "sloped"
+          ],
+          "geometry_parameters": {
+            "depth_mm": 32,
+            "outline_mm": [
+              [
+                0,
+                0
+              ],
+              [
+                16,
+                0
+              ],
+              [
+                16,
+                1.6
+              ],
+              [
+                8,
+                9.6
+              ],
+              [
+                0,
+                9.6
+              ]
+            ]
+          }
+        }
+      ],
+      "relationships": [
+        {
+          "type": "attached_to",
+          "from": "front-window",
+          "to": "foundation"
+        },
+        {
+          "type": "attached_to",
+          "from": "front-window",
+          "to": "ceiling"
+        },
+        {
+          "type": "attached_to",
+          "from": "left-roof",
+          "to": "ceiling"
+        },
+        {
+          "type": "attached_to",
+          "from": "right-roof",
+          "to": "ceiling"
+        }
+      ],
+      "constraints": {
+        "require_connected": true,
+        "allow_intersections": false,
+        "max_parts": 160,
+        "max_search_nodes": 100000,
+        "course_type": "brick"
+      },
+      "appearance": {
+        "preferred_colours": [
+          19
+        ]
+      },
+      "assumptions": [
+        "Window means an open frame, without glazing.",
+        "The roof has a low sloping edge and a flat upper band, as specified by its cross-sections.",
+        "No interior detail or working door is requested."
+      ]
+    },
+    {
+      "schema_version": 1,
+      "design_id": "sloped-canopy",
+      "name": "Long sloped canopy \u00b7 repeated cross-section",
+      "units": "mm",
+      "components": [
+        {
+          "id": "base",
+          "label": "Base",
+          "role": "base",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 16,
+            "depth": 48,
+            "height": 9.6
+          },
+          "position_mm": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "colour": 7
+        },
+        {
+          "id": "ramp",
+          "label": "Ramp",
+          "role": "roof",
+          "geometry": "extruded_profile",
+          "dimensions_mm": {
+            "width": 16,
+            "depth": 48,
+            "height": 9.6
+          },
+          "position_mm": {
+            "x": 0,
+            "y": 9.6,
+            "z": 0
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "colour": 4,
+          "required_features": [
+            "sloped"
+          ],
+          "geometry_parameters": {
+            "depth_mm": 48,
+            "outline_mm": [
+              [
+                0,
+                0
+              ],
+              [
+                16,
+                0
+              ],
+              [
+                16,
+                9.6
+              ],
+              [
+                8,
+                9.6
+              ],
+              [
+                0,
+                1.6
+              ]
+            ]
+          }
+        }
+      ],
+      "relationships": [],
+      "constraints": {
+        "require_connected": true,
+        "allow_intersections": false,
+        "max_parts": 160,
+        "max_search_nodes": 100000,
+        "course_type": "brick"
+      },
+      "appearance": {
+        "preferred_colours": [
+          19
+        ]
+      }
     }
   ],
   "challenge_specs": [

@@ -75,3 +75,41 @@ Planning runs in a disposable module worker with cancellation and a 30-second UI
 The millimetre specification now accepts `negative_spaces`, each with an ID, position and rectangular dimensions. The planner excludes fully covered grid cells per component/course and refuses partial-cell cuts. It searches layouts around those keepouts and checks nominal graph connectivity. Keepouts apply to nominal part bodies; studs, underside geometry, physical clearances and mesh-level collision are not verified. Course and cell envelopes bound browser memory. `attached_to` additionally requires a direct mating edge between the named components.
 
 Course placement uses the LDraw top-face datum: a body with semantic lower Y bound `y` and height `h` is translated to `-(y+h)/0.4` LDU. Tests independently recover body bounds from exported transforms and check component containment and keepout exclusion. The course slider uses global physical elevations, including components that begin above the foundation, and is not presented as a proven build order.
+
+## Profiled specialised-element milestone
+
+The global planner now accepts `specialistCatalogue` alongside the structural
+connection catalogue. `specialist-placement.js` discovers candidates using the
+same semantic translation/capability search as the course planner. It explores
+four yaw rotations, matches nominal body dimensions, and, for extruded profiles,
+compares the requested convex cross-section with the source-backed profile.
+Matching constant-section elements can repeat along the extrusion. Candidate
+placements enter the same global stud/receiver graph search as ordinary bricks.
+No object names or fixture IDs select a construction recipe.
+
+The first eligible elements are slopes 3039 and 3037 and open window frame
+60592. `scripts/build_specialist_profiles.mjs` resolves their surfaces from the
+pinned LDraw revision, creates static mesh assets and records attribution for all
+38 recursively referenced files. These surfaces are used by both the WebGL and
+software viewers. Nominal connection datums and body silhouettes remain authored
+profiles; source triangles are not proof of clutch or strength. Window glazing
+is not included. Window envelopes cannot receive an overlapping keepout until
+cavity-aware collision is implemented. Concave cross-sections and non-matching
+extrusions are rejected. General polyhedral packing is not implemented.
+
+The windowed-pavilion and long-canopy fixtures exercise mixed structural and
+specialised parts, opposed orientations and repeated extrusion. Regressions
+also change dimensions and cross-sections to ensure a similar envelope cannot
+silently substitute for a different shape.
+
+`assembly-instructions.js` derives a deterministic nominal graph sequence.
+Each new part follows an edge to an earlier step (or starts a new subassembly
+for explicitly disconnected designs). The studio can inspect that sequence,
+export its JSON, and export LDraw `STEP` records in the same order. This is a
+connection-order preview, not a verified insertion path or stability proof.
+
+Next priorities remain wheel/tyre/axle and connector insertion geometry,
+more general multi-element shape fitting, support and access checks, and then
+the natural-language adapter. The original car, aircraft, house and organic
+challenge briefs remain unmodified; passing smaller capability tests does not
+make those challenges solved.

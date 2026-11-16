@@ -2,6 +2,8 @@ import { assertValidDesignSpec } from "./design-spec.js";
 import { discoverPartCandidates, validatePartCapabilityCatalogue } from "./part-catalogue.js";
 import { translateComponentRequirements } from "./design-translation.js";
 import { planTechnicBeamJoint } from "./technic-planner.js";
+import { specialistComponentCandidates } from "./specialist-placement.js";
+import { createAssemblyInstructions } from "./assembly-instructions.js";
 
 const LDU_TO_MM = 0.4;
 const STUD_PITCH_MM = 8;
@@ -124,6 +126,8 @@ function assemble(parts, profileMap, requireConnected) {
 }
 
 function componentCandidates(component,catalogue,options,partCatalogue,designTranslation) {
+  const specialised=specialistComponentCandidates(component,options,partCatalogue,designTranslation,options.specialistCatalogue);
+  if(specialised)return specialised;
   const translated=translateComponentRequirements(component,designTranslation);
   if(!translated.valid)return {error:translated.errors.join(" ")};
   const requirement={
@@ -263,6 +267,7 @@ export function planDesign(spec,catalogue,overrides={}) {
     maxCombinations:overrides.maxCombinations||20000,
     defaultColour:(spec.appearance?.preferred_colours||[4])[0],
     negativeSpaces:spec.negative_spaces||[],
+    specialistCatalogue:overrides.specialistCatalogue,
   };
   const relationshipReport=evaluateRelationships(spec);
   if(relationshipReport.failures.length) return {status:"blocked",design_id:spec.design_id,failures:relationshipReport.failures,warnings:relationshipReport.warnings,parts:[],connections:[],component_reports:[]};
@@ -277,13 +282,14 @@ export function planDesign(spec,catalogue,overrides={}) {
   if(technicPlan)return technicPlan;
   options.maxComponentAlternatives=overrides.maxComponentAlternatives||12;
   options.maxGlobalCombinations=overrides.maxGlobalCombinations||5000;
-  const profileMap=new Map(catalogue.profiles.map(profile=>[profile.part_id,profile]));
+  const allProfiles=[...catalogue.profiles,...(options.specialistCatalogue?.profiles||[])];
+  const profileMap=new Map(allProfiles.map(profile=>[profile.part_id,profile]));
   const componentReports=[],candidateSets=[];
   for(const component of spec.components) {
     const result=componentCandidates(component,catalogue,options,partCatalogue,designTranslation);
     if(result.error) return {status:"blocked",design_id:spec.design_id,failures:[result.error],warnings:[],parts:[],connections:[],component_reports:[{component_id:component.id,status:"blocked",reason:result.error}]};
     candidateSets.push(result.alternatives);
-    componentReports.push({component_id:component.id,status:"planned",semantic_candidate_count:result.semantic_candidates.length,top_part_candidates:result.semantic_candidates.slice(0,5).map(candidate=>({part_id:candidate.part_id,description:candidate.description,score:candidate.score,dimension_error_mm:candidate.dimension_error_mm})),candidate_layouts:result.alternatives.length,search_nodes:result.search_nodes,combinations_examined:result.combinations});
+    componentReports.push({component_id:component.id,status:"planned",semantic_candidate_count:result.semantic_candidates.length,specialist:result.alternatives.some(a=>a.specialist),top_part_candidates:result.semantic_candidates.slice(0,5).map(candidate=>({part_id:candidate.part_id,description:candidate.description,score:candidate.score,dimension_error_mm:candidate.dimension_error_mm})),candidate_layouts:result.alternatives.length,search_nodes:result.search_nodes,combinations_examined:result.combinations});
   }
   let best=null,globalCombinations=0,overBudget=false;
   const chosen=[];
@@ -315,26 +321,33 @@ export function planDesign(spec,catalogue,overrides={}) {
   for(const part of parts){const key=part.part_id+"|"+part.colour_code;bomMap.set(key,(bomMap.get(key)||0)+1);}
   const bom={schema_version:1,items:[...bomMap].map(([key,quantity])=>{const [part_id,colour]=key.split("|");return {part_id,colour_code:Number(colour),quantity};}).sort((a,b)=>compare(a.part_id,b.part_id)||a.colour_code-b.colour_code)};
   const ldraw=["0 "+(spec.name||spec.design_id),"0 Name: "+spec.design_id,"0 BrickForge deterministic design planner"];
-  for(const part of parts) ldraw.push("1 "+part.colour_code+" "+part.translation_ldu.join(" ")+" "+part.matrix.join(" ")+" "+part.part_id+".dat");
+
   const warnings=[...new Set([...(catalogue.limitations||[]),...relationshipReport.warnings])];
   if(spec.components.some(component=>(component.function||[]).length)) warnings.push("Component function annotations are retained as design intent but are not yet physically simulated or verified.");
   if(spec.components.some(component=>component.priority!=="essential")) warnings.push("Component priority is descriptive in v1; all listed components are currently treated as required.");
   if(spec.appearance?.symmetry&&spec.appearance.symmetry!=="none") warnings.push("The requested global symmetry is not yet an optimisation constraint and has not been verified.");
   warnings.push("Connection edges represent nominal stud/receiver datum alignment only; clutch force, stability and structural strength are not verified.");
   if(options.negativeSpaces.length) warnings.push("Negative spaces are checked against nominal part bodies; stud protrusions, underside details and insertion clearances are not assessed.");
+  if(componentReports.some(r=>r.specialist))warnings.push(...options.specialistCatalogue.limitations);
+  const instructions=createAssemblyInstructions(parts,graph.connections,profileMap);
+  const partById=new Map(parts.map(part=>[part.instance_id,part]));
+  for(const [index,step] of instructions.steps.entries()) {
+    for(const id of step.parts){const part=partById.get(id);ldraw.push("1 "+part.colour_code+" "+part.translation_ldu.join(" ")+" "+part.matrix.join(" ")+" "+part.part_id+".dat");}
+    if(index<instructions.steps.length-1)ldraw.push("0 STEP");
+  }
   const validation={checks:[
     {id:"negative_space_body_clearance",status:"passed",detail:options.negativeSpaces.length+" rectangular keepouts preserved by exact nominal body tiling; stud protrusions and mesh-level clearance are not assessed."},
     {id:"design_spec",status:"passed",detail:"The catalogue-independent design specification is valid."},
     {id:"part_catalogue_coverage",status:"passed",detail:"Every placed part has a source profile in the supplied catalogue."},
     {id:"semantic_relationships",status:"passed",detail:"All required spatial relationships in the design specification are satisfied."},
     {id:"component_intersections",status:"passed",detail:"Semantic component volumes do not overlap."},
-    {id:"exact_course_tiling",status:"passed",detail:"Every component course is exactly covered by non-overlapping catalogue footprints."},
+    {id:"exact_course_tiling",status:"passed",detail:"Rectangular components use exact course tiling; specialist components match their declared envelope or convex extruded cross-section without substitution."},
     {id:"nominal_connection_alignment",status:"passed",detail:"Every graph edge has opposing, position-matched stud/receiver datums."},
     {id:"graph_connectivity",status:graph.connected?"passed":"failed",detail:graph.connected?"All part instances belong to one connected graph.":"The assembly contains disconnected components."},
     {id:"physical_clutch_strength",status:"not_assessed",detail:"The available catalogue contains nominal datums, not measured clutch geometry or force."},
     {id:"structural_stability",status:"not_assessed",detail:"No load, bending, tipping or material model is available."}
   ]};
-  return {status:"planned",design_id:spec.design_id,parts,connections:graph.connections,total_mating_pairs:graph.connections.reduce((sum,edge)=>sum+edge.mating_pairs.length,0),bom,ldraw:ldraw.join("\n")+"\n",component_reports:componentReports,validation,warnings,dimensions_mm:designBounds(spec)};
+  return {status:"planned",design_id:spec.design_id,parts,connections:graph.connections,total_mating_pairs:graph.connections.reduce((sum,edge)=>sum+edge.mating_pairs.length,0),bom,ldraw:ldraw.join("\n")+"\n",instructions,component_reports:componentReports,validation,warnings,dimensions_mm:designBounds(spec)};
 }
 
 function designBounds(spec) {

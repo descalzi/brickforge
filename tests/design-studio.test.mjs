@@ -2,12 +2,13 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 import { planDesign } from "../docs/assets/design-engine.js";
+import { worldBodyBounds } from "../docs/assets/specialist-placement.js";
 import { validateDesignSpec } from "../docs/assets/design-spec.js";
 const read=async p=>JSON.parse(await readFile(new URL("../docs/data/"+p,import.meta.url)));
 const catalogue=await read("connection-profiles/basic-bricks.json"),fixtures=await read("design-spec-fixtures.json");
-const options={partCatalogue:await read("part-capabilities-v1.json"),designTranslation:await read("design-translation-v1.json")};
-const profileMap=new Map(catalogue.profiles.map(p=>[p.part_id,p]));
-function bounds(part){const p=profileMap.get(part.part_id),rotated=Math.abs(part.matrix[0])<.5,w=(rotated?p.footprint_studs_z:p.footprint_studs_x)*8,d=(rotated?p.footprint_studs_x:p.footprint_studs_z)*8,h=p.body_height_ldu*.4,[x,y,z]=[part.translation_ldu[0]*.4,-part.translation_ldu[1]*.4,-part.translation_ldu[2]*.4];return {min:[x-w/2,y-h,z-d/2],max:[x+w/2,y,z+d/2]};}
+const options={partCatalogue:await read("part-capabilities-v1.json"),designTranslation:await read("design-translation-v1.json"),specialistCatalogue:await read("specialist-profiles-v1.json")};
+const profileMap=new Map([...catalogue.profiles,...options.specialistCatalogue.profiles].map(p=>[p.part_id,p]));
+function bounds(part){const p=profileMap.get(part.part_id);if(p.body_vertices_mm)return worldBodyBounds(part,p);const rotated=Math.abs(part.matrix[0])<.5,w=(rotated?p.footprint_studs_z:p.footprint_studs_x)*8,d=(rotated?p.footprint_studs_x:p.footprint_studs_z)*8,h=p.body_height_ldu*.4,[x,y,z]=[part.translation_ldu[0]*.4,-part.translation_ldu[1]*.4,-part.translation_ldu[2]*.4];return {min:[x-w/2,y-h,z-d/2],max:[x+w/2,y,z+d/2]};}
 for(const spec of fixtures.fixtures)test("studio brief constructs with actual nominal body clearances: "+spec.design_id,()=>{
  const plan=planDesign(spec,catalogue,options);assert.equal(plan.status,"planned",plan.failures?.join(" "));
  assert.equal(plan.bom.items.reduce((n,p)=>n+p.quantity,0),plan.parts.length);assert.equal(plan.ldraw.split("\n").filter(line=>line.startsWith("1 ")).length,plan.parts.length);
