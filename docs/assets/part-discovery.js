@@ -154,7 +154,10 @@ export async function rankPartCandidatesWithGeometry(discovery, geometryResolver
           ? 100 * candidate.score / discovery.candidates[0].score
           : 0;
         const interfaceMatch = options.requiredInterfaces
-          ? matchRequiredInterfaces(options.requiredInterfaces, candidate.specialised_interfaces || {}, options.interfaceMatchOptions)
+          ? matchRequiredInterfaces(options.requiredInterfaces, candidate.specialised_interfaces || [], {
+            ...(options.interfaceMatchOptions || {}),
+            orientationPermutation: fit.orientation_permutation,
+          })
           : null;
         const specialisedInterfaceCandidate = Boolean(
           interfaceMatch?.satisfied && candidate.specialised_interface_profile_available
