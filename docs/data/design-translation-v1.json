@@ -47,13 +47,15 @@
     ],
     "roof": [
       "roof",
+      "slope",
       "structural"
     ],
     "wing": [
       "wing"
     ],
     "fuselage": [
-      "fuselage"
+      "fuselage",
+      "structural"
     ],
     "cabin": [
       "cabin"
