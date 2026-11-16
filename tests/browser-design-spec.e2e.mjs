@@ -55,7 +55,7 @@ try {
     const technicHoleCandidates = technicDiscovery.candidates.filter(candidate =>
       candidate.specialised_interfaces.some(item => item.interface_type === "technic_pin_hole"));
     const technicInterfaceMatches = technicHoleCandidates.filter(candidate =>
-      matchRequiredInterfaces([{ interface_type: "technic_pin_hole", diameter_mm: 4.8, axis_vector: [0,0,1], count: 1 }], candidate.specialised_interfaces).satisfied);
+      matchRequiredInterfaces([{ interface_type: "round_opening", diameter_mm: 4.8, axis_vector: [0,0,1], count: 1 }], candidate.specialised_interfaces).satisfied);
     const brief = fixtures.specifications.find(item => item.design_id === "small-house");
     const validation = validateDesignSpec(brief);
     const assembly = constructDesign(brief, catalogue);
