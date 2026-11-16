@@ -228,9 +228,17 @@ export function scoreGeometrySuitability(geometry, targetDimensionsMm, options =
   }
   const tolerance = options.maxRelativeError ?? 0.2;
   if (!Number.isFinite(tolerance) || tolerance < 0) throw new RangeError("maxRelativeError must be non-negative.");
-  const permutations = [
+  const allPermutations = [
     [0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0],
   ];
+  const permutations = options.orientationPermutation === undefined
+    ? allPermutations
+    : [options.orientationPermutation];
+  if (permutations.some((permutation) => !Array.isArray(permutation) || permutation.length !== 3
+      || new Set(permutation).size !== 3
+      || !permutation.every((axis) => Number.isInteger(axis) && axis >= 0 && axis <= 2))) {
+    throw new RangeError("orientationPermutation must be a permutation of the three coordinate axes.");
+  }
   let best = null;
   for (const permutation of permutations) {
     const errors = targetDimensionsMm.map((target, axis) =>
