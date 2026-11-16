@@ -35,7 +35,7 @@ The planner is catalogue-driven: part dimensions and mating-feature datums come 
 
 ## Typed connector compatibility
 
-`docs/assets/connector-matcher.js` adds a connector-level compatibility API independent of the rectangular-course tiler. It transforms interface datums into world space and checks connector type, axis alignment, centre offset and (where defined) nominal diameter. The versioned compatibility rules are in `docs/data/connector-compatibility-v1.json`.
+`docs/assets/connector-matcher.js` adds a connector-level compatibility API independent of the rectangular-course tiler. It transforms interface datums into world space and checks connector type, axis alignment, centre offset and (where defined) nominal diameter. The versioned compatibility rules are in `docs/data/connector-compatibility-v1.json`. A separate source-backed semantic catalogue (`docs/data/part-capabilities-v1.json`) describes structural bricks and selected Technic beams, with roles, capabilities, dimensions, interfaces and source provenance. `docs/assets/part-catalogue.js` validates and ranks these candidates against semantic component requirements; the construction planner now uses that discovery result to restrict its geometric candidates.
 
 The existing source-derived Technic catalogue contributes real pin-hole interfaces for parts 3700, 3701 and 3702. The matcher can compare those interfaces against a pin candidate and build an assembly-level list of nominal matches. This is a compatibility assessment only: the candidate pin used in the regression test is synthetic, and the result explicitly does not verify physical clutch.
 
