@@ -86,7 +86,7 @@ test("rejects invalid geometry ranking controls", async () => {
 
 test("ranks Technic candidates against source-derived pin-hole requirements", async () => {
   const technicParts = [
-    { part_id: "3701", name: "Technic Brick 1 x 4 with Holes", category: "Technic", keywords: ["technic", "brick", "pin hole"] },
+    { part_id: "3701", name: "Brick 1 x 4 with Holes", category: "Brick", keywords: ["brick", "pin hole"] },
   ];
   const specialisedCatalogue = {
     profiles: [{
@@ -124,7 +124,7 @@ test("ranks real part candidates directly from a semantic design component", asy
     required_interfaces: [{ interface_type: "round_opening", diameter_mm: 4.8, axis_vector: [0,0,1], count: 3 }],
   };
   const partIndex = { parts: [
-    { part_id: "3701", name: "Technic Brick 1 x 4 with Holes", category: "Technic", keywords: ["technic", "brick"] },
+    { part_id: "3701", name: "Brick 1 x 4 with Holes", category: "Brick", keywords: ["brick"] },
   ] };
   const specialisedCatalogue = { profiles: [{
     part_id: "3701",
