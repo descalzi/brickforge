@@ -2,7 +2,7 @@ import { planDesign } from "./design-engine.js";
 const editor=document.querySelector("#design-spec"),runButton=document.querySelector("#run-design"),status=document.querySelector("#engine-status");
 const outputs={parts:document.querySelector("#engine-parts"),connections:document.querySelector("#engine-connections"),pairs:document.querySelector("#engine-pairs"),preview:document.querySelector("#engine-preview"),report:document.querySelector("#engine-report")};
 const downloads={ldraw:document.querySelector("#download-ldraw"),bom:document.querySelector("#download-bom"),report:document.querySelector("#download-report")};
-let catalogue=null,partCatalogue=null,example=null,result=null;
+let catalogue=null,partCatalogue=null,designTranslation=null,example=null,result=null;
 function setStatus(message,state="info"){status.textContent=message;status.dataset.state=state;}
 function download(name,data,type){const blob=new Blob([data],{type}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=name;a.click();URL.revokeObjectURL(url);}
 function renderPreview(plan){
@@ -16,7 +16,7 @@ function renderPreview(plan){
 }
 function run(){
  try{
-  const spec=JSON.parse(editor.value),plan=planDesign(spec,catalogue,{partCatalogue});result=plan;
+  const spec=JSON.parse(editor.value),plan=planDesign(spec,catalogue,{partCatalogue,designTranslation});result=plan;
   outputs.parts.textContent=String(plan.parts.length);outputs.connections.textContent=String(plan.connections.length);outputs.pairs.textContent=String(plan.total_mating_pairs||0);
   outputs.report.textContent=JSON.stringify({status:plan.status,failures:plan.failures||[],warnings:plan.warnings||[],component_reports:plan.component_reports||[],validation:plan.validation||null,bom:plan.bom||null},null,2);
   renderPreview(plan);
@@ -26,8 +26,8 @@ function run(){
 }
 async function initialise(){
  try{
-  const [cat,parts,fixtures]=await Promise.all([fetch("./data/connection-profiles/basic-bricks.json").then(r=>{if(!r.ok)throw new Error("Part connection catalogue failed to load.");return r.json();}),fetch("./data/part-capabilities-v1.json").then(r=>{if(!r.ok)throw new Error("Semantic part catalogue failed to load.");return r.json();}),fetch("./data/design-spec-fixtures.json").then(r=>{if(!r.ok)throw new Error("Design fixtures failed to load.");return r.json();})]);
-  catalogue=cat;partCatalogue=parts;example=fixtures.fixtures[0];editor.value=JSON.stringify(example,null,2);runButton.disabled=false;setStatus("Catalogue ready. The specification is ready to plan.","ready");
+  const [cat,parts,translation,fixtures]=await Promise.all([fetch("./data/connection-profiles/basic-bricks.json").then(r=>{if(!r.ok)throw new Error("Part connection catalogue failed to load.");return r.json();}),fetch("./data/part-capabilities-v1.json").then(r=>{if(!r.ok)throw new Error("Semantic part catalogue failed to load.");return r.json();}),fetch("./data/design-translation-v1.json").then(r=>{if(!r.ok)throw new Error("Design translation map failed to load.");return r.json();}),fetch("./data/design-spec-fixtures.json").then(r=>{if(!r.ok)throw new Error("Design fixtures failed to load.");return r.json();})]);
+  catalogue=cat;partCatalogue=parts;designTranslation=translation;example=fixtures.fixtures[0];editor.value=JSON.stringify(example,null,2);runButton.disabled=false;setStatus("Catalogue ready. The specification is ready to plan.","ready");
   const params=new URLSearchParams(location.search);if(params.get("run")==="1")run();
  }catch(error){setStatus(error.message,"blocked");}
 }
