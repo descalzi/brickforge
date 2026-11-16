@@ -27,10 +27,15 @@ export function matchRequiredInterfaces(requiredInterfaces, candidateInterfaces,
   const defaultDiameterTolerance = options.diameterToleranceMm ?? 0.5;
   const minimumAxisAlignment = options.minimumAxisAlignmentCosine ?? 0.95;
   const orientationPermutation = options.orientationPermutation ?? [0, 1, 2];
+  const geometryCenterMm = options.geometryCenterMm ?? [0, 0, 0];
   if (!Array.isArray(orientationPermutation) || orientationPermutation.length !== 3
       || new Set(orientationPermutation).size !== 3
       || !orientationPermutation.every((axis) => Number.isInteger(axis) && axis >= 0 && axis <= 2)) {
     throw new RangeError("orientationPermutation must be a permutation of the three coordinate axes.");
+  }
+  if (!Array.isArray(geometryCenterMm) || geometryCenterMm.length !== 3
+      || !geometryCenterMm.every(Number.isFinite)) {
+    throw new RangeError("geometryCenterMm must be a finite three-dimensional point.");
   }
   if (!Number.isFinite(defaultDiameterTolerance) || defaultDiameterTolerance < 0
       || !Number.isFinite(minimumAxisAlignment) || minimumAxisAlignment < 0 || minimumAxisAlignment > 1) {
@@ -38,7 +43,8 @@ export function matchRequiredInterfaces(requiredInterfaces, candidateInterfaces,
   }
   const requirements = requiredInterfaces.map((requirement, index) => {
     if (!requirement || typeof requirement.interface_type !== "string"
-        || !Number.isInteger(requirement.count ?? 1) || (requirement.count ?? 1) < 1) {
+        || !Number.isInteger(requirement.count ?? requirement.positions_mm?.length ?? 1)
+        || (requirement.count ?? requirement.positions_mm?.length ?? 1) < 1) {
       throw new TypeError("Required interface " + index + " needs an interface_type and positive count.");
     }
     const axis = requirement.axis_vector === undefined ? null : normaliseAxis(requirement.axis_vector);
@@ -53,11 +59,29 @@ export function matchRequiredInterfaces(requiredInterfaces, candidateInterfaces,
         && (!Number.isFinite(requirement.max_diameter_error_mm) || requirement.max_diameter_error_mm < 0)) {
       throw new TypeError("Required interface " + index + " has an invalid max_diameter_error_mm.");
     }
-    return { ...requirement, count: requirement.count ?? 1, axis };
+    if (requirement.positions_mm !== undefined
+        && (!Array.isArray(requirement.positions_mm)
+          || !requirement.positions_mm.every((position) => Array.isArray(position)
+            && position.length === 3 && position.every(Number.isFinite)))) {
+      throw new TypeError("Required interface " + index + " has invalid positions_mm.");
+    }
+    if (requirement.positions_mm !== undefined
+        && requirement.count !== undefined && requirement.count !== requirement.positions_mm.length) {
+      throw new TypeError("Required interface " + index + " count must equal positions_mm length when positions are specified.");
+    }
+    if (requirement.position_tolerance_mm !== undefined
+        && (!Number.isFinite(requirement.position_tolerance_mm) || requirement.position_tolerance_mm < 0)) {
+      throw new TypeError("Required interface " + index + " has an invalid position_tolerance_mm.");
+    }
+    return {
+      ...requirement,
+      count: requirement.count ?? requirement.positions_mm?.length ?? 1,
+      axis,
+    };
   });
   const matches = requirements.map((requirement) => {
-    const candidates = candidateInterfaces.filter((candidate) => {
-      if (!interfaceTypeMatches(requirement.interface_type, candidate)) return false;
+    const candidates = candidateInterfaces.map((candidate, index) => ({ candidate, index })).filter(({ candidate }) => {
+      if (!candidate || !interfaceTypeMatches(requirement.interface_type, candidate)) return false;
       if (requirement.diameter_mm !== undefined) {
         if (!Number.isFinite(candidate.nominal_diameter_mm)) return false;
         const tolerance = requirement.max_diameter_error_mm ?? defaultDiameterTolerance;
@@ -70,18 +94,52 @@ export function matchRequiredInterfaces(requiredInterfaces, candidateInterfaces,
       }
       return true;
     });
-    return {
-      interface_type: requirement.interface_type,
-      required_count: requirement.count,
-      matched_count: candidates.length,
-      satisfied: candidates.length >= requirement.count,
-      matched_interfaces: candidates.map((candidate) => ({
+    let matchedInterfaces;
+    if (requirement.positions_mm) {
+      const used = new Set();
+      const tolerance = requirement.position_tolerance_mm ?? options.positionToleranceMm ?? 1;
+      if (!Number.isFinite(tolerance) || tolerance < 0) {
+        throw new RangeError("Position tolerances must be non-negative and finite.");
+      }
+      matchedInterfaces = [];
+      for (const requiredPosition of requirement.positions_mm) {
+        let best = null;
+        for (const item of candidates) {
+          if (used.has(item.index) || !Array.isArray(item.candidate.centre_mm)
+              || item.candidate.centre_mm.length !== 3
+              || !item.candidate.centre_mm.every(Number.isFinite)) continue;
+          const localPosition = item.candidate.centre_mm.map((value, axis) => value - geometryCenterMm[axis]);
+          const orientedPosition = orientationPermutation.map((sourceAxis) => localPosition[sourceAxis]);
+          const distance = Math.hypot(...orientedPosition.map((value, axis) => value - requiredPosition[axis]));
+          if (!best || distance < best.distance) best = { ...item, distance };
+        }
+        if (best && best.distance <= tolerance) {
+          used.add(best.index);
+          matchedInterfaces.push({
+            interface_id: best.candidate.interface_id,
+            nominal_diameter_mm: best.candidate.nominal_diameter_mm ?? null,
+            axis_vector: best.candidate.axis_vector ?? null,
+            position_error_mm: best.distance,
+            source_primitive: best.candidate.source_primitive,
+            status: best.candidate.status,
+          });
+        }
+      }
+    } else {
+      matchedInterfaces = candidates.map(({ candidate }) => ({
         interface_id: candidate.interface_id,
         nominal_diameter_mm: candidate.nominal_diameter_mm ?? null,
         axis_vector: candidate.axis_vector ?? null,
         source_primitive: candidate.source_primitive,
         status: candidate.status,
-      })),
+      }));
+    }
+    return {
+      interface_type: requirement.interface_type,
+      required_count: requirement.count,
+      matched_count: matchedInterfaces.length,
+      satisfied: matchedInterfaces.length >= requirement.count,
+      matched_interfaces: matchedInterfaces,
     };
   });
   return {
