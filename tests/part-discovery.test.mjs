@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { readFile } from "node:fs/promises";
 
 import {
   discoverPartsForRole,
@@ -116,13 +117,9 @@ test("ranks Technic candidates against source-derived pin-hole requirements", as
 });
 
 test("ranks real part candidates directly from a semantic design component", async () => {
-  const component = {
-    id: "technic-beam",
-    role: "beam",
-    geometry: { type: "orthogonal_prism", width_studs: 4, depth_studs: 1 },
-    height_courses: 1,
-    required_interfaces: [{ interface_type: "round_opening", diameter_mm: 4.8, axis_vector: [0,0,1], count: 3, positions_mm: [[-8,0,0],[0,0,0],[8,0,0]] }],
-  };
+  const fixtureData = JSON.parse(await readFile(new URL("../docs/data/design-spec-fixtures.json", import.meta.url), "utf8"));
+  const brief = fixtureData.specifications.find((item) => item.design_id === "technic-beam-with-round-openings");
+  const component = brief.components[0];
   const partIndex = { parts: [] };
   const specialisedCatalogue = { profiles: [{
     part_id: "3701",
