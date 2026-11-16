@@ -14,7 +14,7 @@ const dot = (a,b) => a.reduce((sum,value,index)=>sum+value*b[index],0);
 const transform = (m,p) => [m[0]*p[0]+m[1]*p[1]+m[2]*p[2],m[3]*p[0]+m[4]*p[1]+m[5]*p[2],m[6]*p[0]+m[7]*p[1]+m[8]*p[2]];
 const point = (placement, local) => transform(placement.matrix,local).map((v,i)=>v+placement.translation_ldu[i]);
 
-function candidateProfiles(catalogue, component, courseType, candidateIds) {
+function candidateProfiles(catalogue, component, courseType, candidateIds, candidateScores) {
   const allowedHeight = courseType === "plate" ? PLATE_HEIGHT_MM : BRICK_HEIGHT_MM;
   return catalogue.profiles.filter(profile =>
     candidateIds.has(profile.part_id)
@@ -25,8 +25,8 @@ function candidateProfiles(catalogue, component, courseType, candidateIds) {
     const roleText = (component.role + " " + (component.label || "") + " " + (component.function || []).join(" ")).toLowerCase();
     const family = profile.description.toLowerCase().includes("plate") ? "plate" : "brick";
     const preferred = (component.preferred_families || []).some(value => roleText.includes(value.toLowerCase()) || family === value.toLowerCase());
-    return { profile, family, preferred, area: profile.footprint_studs_x * profile.footprint_studs_z };
-  }).sort((a,b) => Number(b.preferred)-Number(a.preferred) || b.area-a.area || compare(a.profile.part_id,b.profile.part_id));
+    return { profile, family, preferred, semanticScore:candidateScores.get(profile.part_id)||0, area: profile.footprint_studs_x * profile.footprint_studs_z };
+  }).sort((a,b) => Number(b.preferred)-Number(a.preferred) || b.semanticScore-a.semanticScore || b.area-a.area || compare(a.profile.part_id,b.profile.part_id));
 }
 
 function enumerateTilings(width, depth, candidates, maxResults, maxNodes) {
@@ -137,6 +137,7 @@ function componentCandidates(component,catalogue,options,partCatalogue) {
   },partCatalogue);
   if(semanticSearch.status==="no_candidates") return {error:"No source-backed catalogue candidates satisfy semantic role "+component.role+(component.required_features?.length?" and required features "+component.required_features.join(", "):"")+"."};
   const candidateIds=new Set(semanticSearch.candidates.map(candidate=>candidate.part_id));
+  const candidateScores=new Map(semanticSearch.candidates.map(candidate=>[candidate.part_id,candidate.score]));
   const width=component.dimensions_mm.width/STUD_PITCH_MM;
   const depth=component.dimensions_mm.depth/STUD_PITCH_MM;
   const height=component.dimensions_mm.height;
