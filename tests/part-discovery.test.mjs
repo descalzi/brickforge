@@ -24,7 +24,8 @@ test("semantic role discovery ranks functional catalogue evidence", () => {
 test("profiled candidates are distinguished from text-only discoveries", () => {
   const result = discoverPartsForRole("brick", parts, connections);
   assert.equal(result.candidates[0].part_id, "3001");
-  assert.equal(result.candidates[0].planner_eligible, true);
+  assert.equal(result.candidates[0].connection_profile_available, true);
+  assert.equal(result.candidates[0].planner_eligible, false);
   assert.match(result.candidates[0].suitability_status, /requires_geometry/);
 });
 
