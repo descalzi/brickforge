@@ -60,9 +60,13 @@ export function validateDesignSpec(spec) {
     if (!["attached_to","above","below","left_of","right_of","in_front_of","behind","aligned_with","symmetrical_to"].includes(relation?.type)) {
       fail("relationships[" + index + "].type is unsupported.");
     }
-  }
-  if (spec.relationships !== undefined && !Array.isArray(spec.relationships)) {
-    fail("relationships must be an array.");
+    if (relation?.required !== undefined && typeof relation.required !== "boolean") {
+      fail("relationships[" + index + "].required must be a boolean.");
+    }
+    if (relation?.tolerance_studs !== undefined
+        && (!Number.isFinite(relation.tolerance_studs) || relation.tolerance_studs < 0)) {
+      fail("relationships[" + index + "].tolerance_studs must be non-negative.");
+    }
   }
   if (spec.requirements !== undefined) {
     const requirements = spec.requirements;
