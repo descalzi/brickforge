@@ -184,16 +184,31 @@ export async function rankPartCandidatesWithGeometry(discovery, geometryResolver
         const permutations = hasRequiredInterfaces
           ? [[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]]
           : [undefined];
+        const orientationTransforms = [];
+        for (const permutation of permutations) {
+          if (!permutation) {
+            orientationTransforms.push({ permutation: undefined, signs: [1,1,1] });
+            continue;
+          }
+          const inversions = (permutation[0] > permutation[1] ? 1 : 0)
+            + (permutation[0] > permutation[2] ? 1 : 0)
+            + (permutation[1] > permutation[2] ? 1 : 0);
+          const parity = inversions % 2 ? -1 : 1;
+          for (const sx of [-1, 1]) for (const sy of [-1, 1]) for (const sz of [-1, 1]) {
+            if (sx * sy * sz === parity) orientationTransforms.push({ permutation, signs: [sx,sy,sz] });
+          }
+        }
         let best = null;
-        for (const orientationPermutation of permutations) {
+        for (const transform of orientationTransforms) {
           const fit = scoreGeometrySuitability(geometry, targetDimensionsMm, {
             ...options,
-            orientationPermutation,
+            orientationPermutation: transform.permutation,
           });
           const interfaceMatch = hasRequiredInterfaces
             ? matchRequiredInterfaces(options.requiredInterfaces, candidate.specialised_interfaces || [], {
               ...(options.interfaceMatchOptions || {}),
               orientationPermutation: fit.orientation_permutation,
+              orientationSigns: transform.signs,
               geometryCenterMm: options.interfaceMatchOptions?.geometryCenterMm
                 || (geometry.bounds_mm?.minimum && geometry.bounds_mm?.maximum
                   ? geometry.bounds_mm.minimum.map((value, axis) => (value + geometry.bounds_mm.maximum[axis]) / 2)
@@ -209,7 +224,12 @@ export async function rankPartCandidatesWithGeometry(discovery, geometryResolver
           if (!best || combinedScore > best.combinedScore
               || (combinedScore === best.combinedScore
                 && specialisedInterfaceCandidate && !best.specialisedInterfaceCandidate)) {
-            best = { fit, interfaceMatch, specialisedInterfaceCandidate, combinedScore };
+            best = {
+              fit: { ...fit, orientation_signs: transform.signs },
+              interfaceMatch,
+              specialisedInterfaceCandidate,
+              combinedScore,
+            };
           }
         }
         const { fit, interfaceMatch, specialisedInterfaceCandidate, combinedScore } = best;
