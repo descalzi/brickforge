@@ -142,3 +142,26 @@ test("ranks real part candidates directly from a semantic design component", asy
   assert.equal(result.ranking.candidates[0].specialised_interface_candidate, true);
   assert.equal(result.assembly_status, "candidate_ranking_only_not_placed");
 });
+
+test("chooses a dimension-equivalent orientation that aligns a required interface axis", async () => {
+  const partList = [{ part_id: "square-beam", name: "Technic square beam", category: "Technic", keywords: ["technic"] }];
+  const special = { profiles: [{
+    part_id: "square-beam",
+    nominal_connection_interfaces: [{
+      interface_id: "pin-hole",
+      interface_type: "technic_pin_hole",
+      nominal_diameter_mm: 4.8,
+      axis_vector: [1,0,0],
+    }],
+  }] };
+  const discovery = discoverPartsForRole("technic", partList, connections, { specialisedCatalogue: special });
+  const ranked = await rankPartCandidatesWithGeometry(
+    discovery,
+    { async resolvePart() { return { part_id: "square-beam", dimensions_mm: [10,10,8] }; } },
+    { parts: partList },
+    [10,10,8],
+    { requiredInterfaces: [{ interface_type: "technic_pin_hole", diameter_mm: 4.8, axis_vector: [0,1,0], count: 1 }] },
+  );
+  assert.equal(ranked.candidates[0].specialised_interface_candidate, true);
+  assert.deepEqual(ranked.candidates[0].geometry_fit.orientation_permutation, [1,0,2]);
+});
