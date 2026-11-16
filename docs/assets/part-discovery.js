@@ -200,15 +200,9 @@ export async function rankPartCandidatesWithGeometry(discovery, geometryResolver
           ? 100 * candidate.score / discovery.candidates[0].score
           : 0;
         const hasRequiredInterfaces = Array.isArray(options.requiredInterfaces) && options.requiredInterfaces.length > 0;
-        const permutations = hasRequiredInterfaces
-          ? [[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]]
-          : [undefined];
+        const permutations = [[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]];
         const orientationTransforms = [];
         for (const permutation of permutations) {
-          if (!permutation) {
-            orientationTransforms.push({ permutation: undefined, signs: [1,1,1] });
-            continue;
-          }
           const inversions = (permutation[0] > permutation[1] ? 1 : 0)
             + (permutation[0] > permutation[2] ? 1 : 0)
             + (permutation[1] > permutation[2] ? 1 : 0);
