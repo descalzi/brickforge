@@ -236,7 +236,7 @@ export function scoreGeometrySuitability(geometry, targetDimensionsMm, options =
     const errors = targetDimensionsMm.map((target, axis) =>
       Math.abs(geometry.dimensions_mm[permutation[axis]] - target) / target);
     const meanError = errors.reduce((sum, value) => sum + value, 0) / 3;
-    if (!best || meanError < best.mean_relative_error) {
+    if (!best || meanError < best.meanError) {
       best = { permutation, errors, meanError };
     }
   }
