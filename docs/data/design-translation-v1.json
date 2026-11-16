@@ -60,6 +60,9 @@
     ],
     "door": [
       "door"
+    ],
+    "slope": [
+      "slope"
     ]
   },
   "features": {
