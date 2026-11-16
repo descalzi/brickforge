@@ -30,6 +30,7 @@ try {
       catalogueResponse,
       fixturesResponse,
       indexResponse,
+      specialisedResponse,
     ] = await Promise.all([
       import("./assets/design-spec-engine.js"),
       import("./assets/catalogue-utils.js"),
@@ -37,15 +38,20 @@ try {
       fetch("./data/connection-profiles/basic-bricks.json"),
       fetch("./data/design-spec-fixtures.json"),
       fetch("./data/ldraw/parts-index.json.gz"),
+      fetch("./data/specialised-technic-part-catalogue.json"),
     ]);
-    if (!catalogueResponse.ok || !fixturesResponse.ok || !indexResponse.ok) {
+    if (!catalogueResponse.ok || !fixturesResponse.ok || !indexResponse.ok || !specialisedResponse.ok) {
       throw new Error("Published engine data could not be loaded.");
     }
     const catalogue = await catalogueResponse.json();
     const fixtures = await fixturesResponse.json();
     const indexText = await decodeCataloguePayload(await indexResponse.arrayBuffer());
     const partIndex = JSON.parse(indexText);
+    const specialisedCatalogue = await specialisedResponse.json();
     const wheelDiscovery = discoverPartsForRole("wheel", partIndex.parts, catalogue);
+    const technicDiscovery = discoverPartsForRole("technic", partIndex.parts, catalogue, { specialisedCatalogue });
+    const technicHoleCandidates = technicDiscovery.candidates.filter(candidate =>
+      candidate.specialised_interfaces.some(item => item.interface_type === "technic_pin_hole"));
     const brief = fixtures.specifications.find(item => item.design_id === "small-house");
     const validation = validateDesignSpec(brief);
     const assembly = constructDesign(brief, catalogue);
@@ -75,6 +81,9 @@ try {
       cataloguePartCount: partIndex.parts.length,
       wheelCandidateCount: wheelDiscovery.candidate_count,
       wheelPlannerReadyCount: wheelDiscovery.planner_ready_count,
+      technicCandidateCount: technicDiscovery.candidate_count,
+      technicInterfaceProfileCount: technicDiscovery.profiled_candidate_count,
+      technicHoleCandidateCount: technicHoleCandidates.length,
       parts: assembly.parts.length,
       edges: assembly.connections.length,
       matingPairs: assembly.total_mating_pairs,
@@ -91,6 +100,9 @@ try {
   assert.ok(result.cataloguePartCount > 10000);
   assert.ok(result.wheelCandidateCount > 0);
   assert.ok(result.wheelPlannerReadyCount <= result.wheelCandidateCount);
+  assert.ok(result.technicCandidateCount > 0);
+  assert.ok(result.technicInterfaceProfileCount > 0);
+  assert.ok(result.technicHoleCandidateCount > 0);
   assert.ok(result.parts > 0);
   assert.ok(result.edges > 0);
   assert.ok(result.matingPairs > 0);
