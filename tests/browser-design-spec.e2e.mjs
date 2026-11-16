@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 import { chromium } from "playwright";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../docs");
-const mime = new Map([[".js","text/javascript"],[".json","application/json"],[".html","text/html"]]);
+const mime = new Map([[".js", "text/javascript"], [".json", "application/json"], [".html", "text/html"]]);
 const server = http.createServer((request, response) => {
   let pathname;
   try { pathname = decodeURIComponent(new URL(request.url, "http://localhost").pathname); }
@@ -23,20 +23,38 @@ try {
   const page = await browser.newPage();
   await page.goto("http://127.0.0.1:4174/index.html", { waitUntil: "domcontentloaded" });
   const result = await page.evaluate(async () => {
-    const [{ constructDesign, validateDesignSpec }, catalogueResponse, fixturesResponse] = await Promise.all([
+    const [
+      { constructDesign, validateDesignSpec },
+      { decodeCataloguePayload },
+      { discoverPartsForRole },
+      catalogueResponse,
+      fixturesResponse,
+      indexResponse,
+    ] = await Promise.all([
       import("./assets/design-spec-engine.js"),
+      import("./assets/catalogue-utils.js"),
+      import("./assets/part-discovery.js"),
       fetch("./data/connection-profiles/basic-bricks.json"),
       fetch("./data/design-spec-fixtures.json"),
+      fetch("./data/ldraw/parts-index.json.gz"),
     ]);
-    if (!catalogueResponse.ok || !fixturesResponse.ok) throw new Error("Published engine data could not be loaded.");
+    if (!catalogueResponse.ok || !fixturesResponse.ok || !indexResponse.ok) {
+      throw new Error("Published engine data could not be loaded.");
+    }
     const catalogue = await catalogueResponse.json();
     const fixtures = await fixturesResponse.json();
+    const indexText = await decodeCataloguePayload(await indexResponse.arrayBuffer());
+    const partIndex = JSON.parse(indexText);
+    const wheelDiscovery = discoverPartsForRole("wheel", partIndex.parts, catalogue);
     const brief = fixtures.specifications.find(item => item.design_id === "small-house");
     const validation = validateDesignSpec(brief);
     const assembly = constructDesign(brief, catalogue);
     return {
       valid: validation.valid,
-      cataloguePartCount: partIndex.parts.length,\n      wheelCandidateCount: wheelDiscovery.candidate_count,\n      wheelPlannerReadyCount: wheelDiscovery.planner_ready_count,\n      parts: assembly.parts.length,
+      cataloguePartCount: partIndex.parts.length,
+      wheelCandidateCount: wheelDiscovery.candidate_count,
+      wheelPlannerReadyCount: wheelDiscovery.planner_ready_count,
+      parts: assembly.parts.length,
       edges: assembly.connections.length,
       matingPairs: assembly.total_mating_pairs,
       bomParts: assembly.bom.total_parts,
@@ -45,7 +63,10 @@ try {
     };
   });
   assert.equal(result.valid, true);
-  assert.ok(result.cataloguePartCount > 10000);\n  assert.ok(result.wheelCandidateCount > 0);\n  assert.ok(result.wheelPlannerReadyCount <= result.wheelCandidateCount);\n  assert.ok(result.parts > 0);
+  assert.ok(result.cataloguePartCount > 10000);
+  assert.ok(result.wheelCandidateCount > 0);
+  assert.ok(result.wheelPlannerReadyCount <= result.wheelCandidateCount);
+  assert.ok(result.parts > 0);
   assert.ok(result.edges > 0);
   assert.ok(result.matingPairs > 0);
   assert.equal(result.bomParts, result.parts);
