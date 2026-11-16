@@ -19,10 +19,12 @@ test("semantic discovery finds the exact Technic beam for a beam requirement",()
  assert.equal(result.candidates[0].interfaces.length,3);
 });
 
-test("semantic discovery does not invent wheels from structural brick geometry",()=>{
+test("semantic discovery finds a measured wheel part rather than substituting a structural brick",()=>{
  const result=discoverPartCandidates({role:"wheel"},catalogue);
- assert.equal(result.status,"no_candidates");
- assert.deepEqual(result.candidates,[]);
+ assert.equal(result.status,"candidates_found");
+ assert.equal(result.candidates[0].part_id,"3739");
+ assert.equal(result.candidates[0].candidate_status,"geometry_measured");
+ assert.equal(result.candidates[0].dimensions_mm.width,24);
 });
 
 test("reference-only parts are excluded unless explicitly requested",()=>{
@@ -45,9 +47,9 @@ test("specialist wheel, window, slope and wing parts are indexed but not promote
  const windows=discoverPartCandidates({role:"window"},catalogue,{includeReferenceOnly:true});
  const slopes=discoverPartCandidates({role:"slope"},catalogue,{includeReferenceOnly:true});
  const wings=discoverPartCandidates({role:"wing"},catalogue,{includeReferenceOnly:true});
- assert.ok(wheels.candidates.some(part=>part.part_id==="3739"));
- assert.ok(windows.candidates.some(part=>part.part_id==="5260"));
- assert.ok(slopes.candidates.some(part=>part.part_id==="3039"));
- assert.ok(wings.candidates.some(part=>part.part_id==="3934"));
- assert.ok([...wheels.candidates,...windows.candidates,...slopes.candidates,...wings.candidates].every(part=>part.candidate_status==="reference_only"&&part.dimensions_mm===null));
+ assert.ok(wheels.candidates.some(part=>part.part_id==="3739"&&part.candidate_status==="geometry_measured"));
+ assert.ok(windows.candidates.some(part=>part.part_id==="5260"&&part.candidate_status==="geometry_measured"));
+ assert.ok(slopes.candidates.some(part=>part.part_id==="3039"&&part.candidate_status==="reference_only"));
+ assert.ok(wings.candidates.some(part=>part.part_id==="3934"&&part.candidate_status==="geometry_measured"));
+ assert.ok(slopes.candidates.every(part=>part.dimensions_mm===null));
 });
