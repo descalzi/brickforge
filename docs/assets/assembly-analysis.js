@@ -1,4 +1,4 @@
-import { transformVector } from './specialist-placement.js?v=72fddf3032b8';
+import { transformVector } from './specialist-placement.js?v=895538efbf38';
 export function partBodyBounds(part,profile){
  const vertices=profile.body_vertices_mm||[-1,1].flatMap(x=>[0,profile.body_height_ldu*.4].flatMap(y=>[-1,1].map(z=>[x*profile.footprint_studs_x*4,y,z*profile.footprint_studs_z*4])));
  const points=vertices.map(p=>transformVector(part.matrix,p).map((v,i)=>(v+part.translation_ldu[i]*.4)*(i===0?1:-1)));
@@ -7,20 +7,28 @@ export function partBodyBounds(part,profile){
 export const bodiesOverlap=(a,b)=>[0,1,2].every(i=>Math.min(a.max[i],b.max[i])-Math.max(a.min[i],b.min[i])>1e-5);
 const cross=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]);
 function hull(points){const p=[...new Map(points.map(p=>[p.join(','),p])).values()].sort((a,b)=>a[0]-b[0]||a[1]-b[1]);const half=ps=>{const h=[];for(const v of ps){while(h.length>1&&cross(h.at(-2),h.at(-1),v)<=0)h.pop();h.push(v);}return h.slice(0,-1);};return [...half(p),...half([...p].reverse())];}
+/** Incremental nominal balance proxy. Contact hull updates use only the floor
+ * band and its hull vertices; adding a stage does not re-run collision analysis. */
+export function createSupportTracker(profiles){
+ let floor=Infinity,groups=[],supportHull=[],volume=0,weighted=[0,0,0];
+ return {add(part){
+  const profile=profiles.get(part.part_id),b=partBodyBounds(part,profile),v=b.max.reduce((p,x,i)=>p*(x-b.min[i]),1);volume+=v;weighted=weighted.map((n,i)=>n+v*(b.max[i]+b.min[i])/2);
+  const points=[],axis=profile.cylinder_axis_ldraw&&['x','y','z'].indexOf(profile.cylinder_axis_ldraw);let horizontal=-1;
+  if(typeof axis==='number')for(const i of [0,2])if(Math.abs(part.matrix[i*3+axis])===1)horizontal=i;
+  if(horizontal<0)for(const x of [b.min[0],b.max[0]])for(const z of [b.min[2],b.max[2]])points.push([x,z]);
+  else for(const end of [b.min[horizontal],b.max[horizontal]])points.push(horizontal===0?[end,(b.min[2]+b.max[2])/2]:[(b.min[0]+b.max[0])/2,end]);
+  if(b.min[1]<floor-1e-8){floor=b.min[1];groups=groups.filter(g=>g.height-floor<=.1);groups.push({height:floor,points});supportHull=hull(groups.flatMap(g=>g.points));}
+  else if(b.min[1]-floor<=.1){groups.push({height:b.min[1],points});supportHull=hull([...supportHull,...points]);}
+  return this.snapshot();
+ },snapshot(){const centre=weighted.map(n=>n/(volume||1)),inside=supportHull.length>=3&&supportHull.every((p,i)=>cross(p,supportHull[(i+1)%supportHull.length],[centre[0],centre[2]])>=-1e-5);return {floor_mm:floor,contact_hull_xz_mm:supportHull.map(p=>[...p]),uniform_envelope_volume_centre_mm:centre,projection_inside_support_hull:inside,evidence:'Bounding-volume, uniform-density proxy only; hollow parts, material density, bending, clutch and physical stability are not simulated.'};}};
+}
 export function analyzeAssembly(parts,connections,profiles){
  const bounds=new Map(parts.map(p=>[p.instance_id,partBodyBounds(p,profiles.get(p.part_id))]));
  const collisions=[],coupled=new Set(connections.filter(e=>e.mating_pairs?.some(p=>p.connection_type==='rim_tyre_seat')).map(e=>[e.instance_a,e.instance_b].sort().join('|')));
  for(let i=0;i<parts.length;i++)for(let j=i+1;j<parts.length;j++)if(bodiesOverlap(bounds.get(parts[i].instance_id),bounds.get(parts[j].instance_id))&&!coupled.has([parts[i].instance_id,parts[j].instance_id].sort().join('|')))collisions.push([parts[i].instance_id,parts[j].instance_id]);
- const floor=Math.min(...[...bounds.values()].map(b=>b.min[1])),contacts=[];
- for(const p of parts){const b=bounds.get(p.instance_id);if(Math.abs(b.min[1]-floor)>.1)continue;const profile=profiles.get(p.part_id),axis=profile.cylinder_axis_ldraw&&['x','y','z'].indexOf(profile.cylinder_axis_ldraw);let horizontal=-1;if(typeof axis==='number')for(const i of [0,2])if(Math.abs(p.matrix[i*3+axis])===1)horizontal=i;
-  if(horizontal<0)for(const x of [b.min[0],b.max[0]])for(const z of [b.min[2],b.max[2]])contacts.push([x,z]);
-  else for(const end of [b.min[horizontal],b.max[horizontal]])contacts.push(horizontal===0?[end,(b.min[2]+b.max[2])/2]:[(b.min[0]+b.max[0])/2,end]);
- }
- const supportHull=hull(contacts);let volume=0,centre=[0,0,0];
- for(const b of bounds.values()){const v=b.max.reduce((p,x,i)=>p*(x-b.min[i]),1);volume+=v;centre=centre.map((n,i)=>n+v*(b.max[i]+b.min[i])/2);}
- centre=centre.map(n=>n/(volume||1));const inside=supportHull.length>=3&&supportHull.every((p,i)=>cross(p,supportHull[(i+1)%supportHull.length],[centre[0],centre[2]])>=-1e-5);
+ const tracker=createSupportTracker(profiles);for(const part of parts)tracker.add(part);const support=tracker.snapshot();
  const min=[0,1,2].map(i=>Math.min(...[...bounds.values()].map(b=>b.min[i]))),max=[0,1,2].map(i=>Math.max(...[...bounds.values()].map(b=>b.max[i])));
- return {nominal_dimensions_mm:{width:max[0]-min[0],height:max[1]-min[1],depth:max[2]-min[2]},body_envelope_collisions:collisions,support:{floor_mm:floor,contact_hull_xz_mm:supportHull,uniform_envelope_volume_centre_mm:centre,projection_inside_support_hull:inside,evidence:'Bounding-volume, uniform-density proxy only; hollow parts, material density, bending, clutch and intermediate build steps are not simulated.'}};
+ return {nominal_dimensions_mm:{width:max[0]-min[0],height:max[1]-min[1],depth:max[2]-min[2]},body_envelope_collisions:collisions,support};
 }
 export function clearApproach(part,built,partsById,connections,profiles){
  const b=partBodyBounds(part,profiles.get(part.part_id)),directions=[];

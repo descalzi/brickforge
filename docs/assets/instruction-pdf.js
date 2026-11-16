@@ -1,6 +1,6 @@
-import {rasterizeInstructionFaces} from './instruction-rasterizer.js?v=72fddf3032b8';
+import {rasterizeInstructionFaces} from './instruction-rasterizer.js?v=895538efbf38';
 // Browser-native vector booklet. Diagrams and inventory share the canonical plan.
-import { transformVector } from './specialist-placement.js?v=72fddf3032b8';
+import { transformVector } from './specialist-placement.js?v=895538efbf38';
 const palette=new Map([[0,'#26343b'],[1,'#1e5aa8'],[2,'#00852b'],[4,'#b40000'],[7,'#8a928d'],[14,'#f2cd37'],[15,'#eeeeee'],[19,'#e4cd9e'],[25,'#d66b24']]);
 const colourNames=new Map([[0,'Black'],[1,'Blue'],[2,'Green'],[4,'Red'],[7,'Grey'],[14,'Yellow'],[15,'White'],[19,'Tan'],[25,'Orange']]);
 const clean=s=>String(s).normalize('NFKD').replace(/[^\x20-\x7e]/g,' ').replace(/[\\()]/g,'\\$&');
@@ -101,8 +101,9 @@ export async function createInstructionPdf(plan,catalogue,spec={}){
   out+=rect(438,y+185,109,85,rgb('#ffffff'))+diagram(pf,current,new Set(),{x:444,y:y+198,w:97,h:62},{bounds:diagramBounds(pf),previousFade:0,background:[1,1,1]})+text(445,y+191,9,`${step.parts.length}x  ${part.part_id}`,accent);
   const explode=step.nominal_approach_clear&&step.approach_direction?.some(v=>v)?step.approach_direction.map(v=>v*14):null;
   out+=diagram(faces,built,current,{x:44,y:y+42,w:390,h:231},{bounds:diagramBounds(faces.filter(f=>built.has(f.id))),explode});
-  out+=text(48,y+25,8,explode?'Follow the placement arrow; keep the shown orientation.':'Place the new part in the shown orientation. Review the approach.',muted);
-  out+=rect(48,y+11,494,3,rgb('#d8e2e7'))+rect(48,y+11,494*(index+1)/steps.length,3,accent);
+  out+=text(48,y+31,8,index===0?'Start with this part in the shown orientation.':explode?'Follow the placement arrow; keep the shown orientation.':'Place the new part in the shown orientation. Review the approach.',muted);
+  if(step.support_guidance?.status==='hold_recommended')out+=text(48,y+19,7.5,'Hold / support this stage: nominal balance proxy flags limited support.',accent);
+  out+=rect(48,y+8,494,3,rgb('#d8e2e7'))+rect(48,y+8,494*(index+1)/steps.length,3,accent);
   if(index%2===1||index===steps.length-1){out+=footer(streams.length+1,`Steps ${index-index%2+1}-${index+1} / full colour = new / softened = previous`);streams.push(out);await new Promise(resolve=>setTimeout(resolve,0));}
  }
  out=header('COMPLETE')+text(36,751,28,'Your model, assembled.')+text(36,722,11,`${plan.parts.length} real part instances / ${steps.length} canonical steps`,muted)+rect(36,260,523,428,paper)+diagram(faces,all,new Set(),{x:49,y:275,w:497,h:398},{bounds,previousFade:0});
