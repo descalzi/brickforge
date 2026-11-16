@@ -398,7 +398,7 @@ export function constructDesign(spec, catalogue, options = {}) {
     negative_space_coverage: negativeSpaceCoverage,
     relationship_warnings: relationshipWarnings,
     relationship_validation: "semantic component spatial bounds only; direct physical subassembly attachment is not yet mapped",
-    role_validation: "semantic component presence only; catalogue part-role suitability is not yet implemented",
+    role_validation: "semantic component presence only; role-aware candidate ranking exists separately but is not yet integrated into global assembly planning",
     unsupported_required_roles: unsupportedRoles,
     search: result.search,
     limitations: [
