@@ -27,9 +27,9 @@ The hand-authored fixtures in `docs/data/design-spec-fixtures.json` are examples
 
 This is a first end-to-end vertical slice, not the finished arbitrary-object engine:
 
-- each component is currently an orthogonal rectangular prism on an integer stud grid;
-- all components in one construction must share a height in brick courses;
-- their union must be connected and non-overlapping;
+- each component is currently an orthogonal rectangular prism on an integer stud grid with an integer base course and height;
+- the per-course occupancy must be non-empty and the complete selected part graph must be connected;
+- component volumes may not overlap; the current planner is bounded to 64 courses and 256 occupied cells per course;
 - semantic component boundaries are retained as annotations, but the current solid-footprint strategy does not yet create separate physical subassemblies;
 - the published connection catalogue currently provides authored nominal profiles for a limited set of rectangular brick/plate families; the broader 25k-part index is searchable and its real LDraw geometry can be resolved, but most results are not yet planner-eligible;
 - the current matcher verifies nominal stud/receiver datum alignment, not physical clutch force, strength or stability;
