@@ -442,9 +442,9 @@
           "role": "fuselage",
           "geometry": "rectangular_prism",
           "dimensions_mm": {
-            "width": 96,
+            "width": 32,
             "depth": 16,
-            "height": 16
+            "height": 19.2
           },
           "position_mm": {
             "x": 0,
