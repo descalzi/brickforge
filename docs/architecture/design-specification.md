@@ -19,7 +19,7 @@ Component priority and provenance distinguish essential, preferred and optional/
 
 ## Current implemented construction slice
 
-`docs/assets/design-spec-engine.js` validates this contract and converts connected orthogonal-prism footprints into the existing browser assembly pipeline. The construction step uses the published connection-profile catalogue, the deterministic interlocking footprint search, nominal stud/receiver matching, body-envelope collision checks, graph connectivity, LDraw export and BOM generation. A separate role-aware catalogue discovery module searches the full LDraw name/category/keyword index for wheel, window, axle, slope and other semantic roles. It clearly distinguishes text-only discoveries from candidates with authored connection profiles; discovery is not mistaken for physical suitability.
+`docs/assets/design-spec-engine.js` validates this contract and converts connected orthogonal-prism footprints into the existing browser assembly pipeline. The construction step uses the published connection-profile catalogue, the deterministic interlocking footprint search, nominal stud/receiver matching, body-envelope collision checks, graph connectivity, LDraw export and BOM generation. A separate role-aware catalogue discovery module searches the full LDraw name/category/keyword index for wheel, window, axle, slope and other semantic roles. It clearly distinguishes text-only discoveries from candidates with authored connection profiles; discovery is not mistaken for physical suitability. A pinned-source LDraw geometry resolver now expands nested part, subpart and primitive references in the browser, measures real display-surface bounds and surface area, and scores fixed-part envelopes against target dimensions across rotations. This is geometric evidence only; it does not yet prove functional or connection suitability.
 
 The hand-authored fixtures in `docs/data/design-spec-fixtures.json` are examples of ideal structured output. They do not specify any LEGO solution.
 
@@ -31,7 +31,7 @@ This is a first end-to-end vertical slice, not the finished arbitrary-object eng
 - all components in one construction must share a height in brick courses;
 - their union must be connected and non-overlapping;
 - semantic component boundaries are retained as annotations, but the current solid-footprint strategy does not yet create separate physical subassemblies;
-- the published connection catalogue currently provides authored nominal profiles for a limited set of rectangular brick/plate families; the broader 25k-part index is searchable, but most results are not yet planner-eligible;
+- the published connection catalogue currently provides authored nominal profiles for a limited set of rectangular brick/plate families; the broader 25k-part index is searchable and its real LDraw geometry can be resolved, but most results are not yet planner-eligible;
 - the current matcher verifies nominal stud/receiver datum alignment, not physical clutch force, strength or stability;
 - selecting and placing specialised parts such as windows, wheels, curved/sloped surfaces and Technic interfaces is not yet implemented; catalogue text discovery alone is not a substitute; vertical variation, support analysis, build sequence and instruction generation are also outstanding.
 
@@ -45,7 +45,7 @@ Unsupported geometry is rejected rather than silently flattened or claimed as so
 
 ## Planned engine evolution
 
-1. Catalogue enrichment: semantic part roles, real geometry descriptors, dimensions, connection interfaces, orientations, colour and availability metadata.
+1. Catalogue enrichment: semantic part roles, measured geometry descriptors, dimensions, connection interfaces, orientations, colour and availability metadata. The first browser geometry resolver is implemented; richer descriptors and profile coverage remain.
 2. Candidate generation: role-aware part discovery and geometric/functional suitability scoring.
 3. General geometry: non-uniform heights, 3D component volumes, negative space, openings, curved and sloped surfaces.
 4. Assembly planning: global constraint search over candidate parts and poses, not independent greedy substitutions.
