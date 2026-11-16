@@ -143,8 +143,8 @@ function componentCandidates(component,catalogue,options,partCatalogue,designTra
   if(!Number.isInteger(width)||!Number.isInteger(depth)||!Number.isInteger(courses)) {
     return {error:"Component "+component.id+" dimensions must align to 8 mm stud pitch and "+courseHeight+" mm "+options.courseType+" courses."};
   }
-  const candidates=candidateProfiles(catalogue,component,options.courseType);
-  if(!candidates.length) return {error:"No catalogue parts have verified nominal interfaces for the requested course type."};
+  const candidates=candidateProfiles(catalogue,component,options.courseType,candidateIds,candidateScores);
+  if(!candidates.length) return {error:"Semantic candidates exist for "+component.role+" ("+[...candidateIds].join(", ")+"), but none has a verified course-placement connection profile in the construction catalogue."};
   const {tilings,nodes}=enumerateTilings(width,depth,candidates,options.maxTilings,options.maxSearchNodes);
   if(!tilings.length) return {error:"No exact part tiling found for component "+component.id+" ("+width+" × "+depth+" studs)."};
   const profileMap=new Map(catalogue.profiles.map(profile=>[profile.part_id,profile]));
