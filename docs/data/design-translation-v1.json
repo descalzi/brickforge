@@ -63,6 +63,9 @@
     ],
     "slope": [
       "slope"
+    ],
+    "organic_form": [
+      "organic_form"
     ]
   },
   "features": {
@@ -88,7 +91,7 @@
     },
     "rotating": {
       "required_capabilities": [
-        "rotating_joint"
+        "rotating_element"
       ]
     },
     "wheel": {
@@ -98,7 +101,22 @@
     },
     "window": {
       "required_capabilities": [
-        "window"
+        "window_frame"
+      ]
+    },
+    "sloped": {
+      "required_capabilities": [
+        "sloped_surface"
+      ]
+    },
+    "curved": {
+      "required_capabilities": [
+        "curved_surface"
+      ]
+    },
+    "airfoil": {
+      "required_capabilities": [
+        "airfoil_surface"
       ]
     }
   }
