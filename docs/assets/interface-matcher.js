@@ -27,11 +27,16 @@ export function matchRequiredInterfaces(requiredInterfaces, candidateInterfaces,
   const defaultDiameterTolerance = options.diameterToleranceMm ?? 0.5;
   const minimumAxisAlignment = options.minimumAxisAlignmentCosine ?? 0.95;
   const orientationPermutation = options.orientationPermutation ?? [0, 1, 2];
+  const orientationSigns = options.orientationSigns ?? [1, 1, 1];
   const geometryCenterMm = options.geometryCenterMm ?? [0, 0, 0];
   if (!Array.isArray(orientationPermutation) || orientationPermutation.length !== 3
       || new Set(orientationPermutation).size !== 3
       || !orientationPermutation.every((axis) => Number.isInteger(axis) && axis >= 0 && axis <= 2)) {
     throw new RangeError("orientationPermutation must be a permutation of the three coordinate axes.");
+  }
+  if (!Array.isArray(orientationSigns) || orientationSigns.length !== 3
+      || !orientationSigns.every((sign) => sign === 1 || sign === -1)) {
+    throw new RangeError("orientationSigns must contain three values of +1 or -1.");
   }
   if (!Array.isArray(geometryCenterMm) || geometryCenterMm.length !== 3
       || !geometryCenterMm.every(Number.isFinite)) {
@@ -89,7 +94,7 @@ export function matchRequiredInterfaces(requiredInterfaces, candidateInterfaces,
       }
       if (requirement.axis) {
         const localAxis = normaliseAxis(candidate.axis_vector);
-        const axis = localAxis ? orientationPermutation.map((sourceAxis) => localAxis[sourceAxis]) : null;
+        const axis = localAxis ? orientationPermutation.map((sourceAxis, targetAxis) => localAxis[sourceAxis] * orientationSigns[targetAxis]) : null;
         if (!axis || Math.abs(dot(requirement.axis, axis)) < minimumAxisAlignment) return false;
       }
       return true;
@@ -109,7 +114,7 @@ export function matchRequiredInterfaces(requiredInterfaces, candidateInterfaces,
               || item.candidate.centre_mm.length !== 3
               || !item.candidate.centre_mm.every(Number.isFinite)) continue;
           const localPosition = item.candidate.centre_mm.map((value, axis) => value - geometryCenterMm[axis]);
-          const orientedPosition = orientationPermutation.map((sourceAxis) => localPosition[sourceAxis]);
+          const orientedPosition = orientationPermutation.map((sourceAxis, targetAxis) => localPosition[sourceAxis] * orientationSigns[targetAxis]);
           const distance = Math.hypot(...orientedPosition.map((value, axis) => value - requiredPosition[axis]));
           if (!best || distance < best.distance) best = { ...item, distance };
         }
@@ -146,6 +151,7 @@ export function matchRequiredInterfaces(requiredInterfaces, candidateInterfaces,
     satisfied: matches.every((match) => match.satisfied),
     requirements: matches,
     orientation_permutation: orientationPermutation,
+    orientation_signs: orientationSigns,
     physical_connection_verified: false,
     evidence_type: "source-derived-nominal-interface-geometry",
     limitations: [
