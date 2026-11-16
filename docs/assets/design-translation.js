@@ -1,11 +1,11 @@
 export function translateComponentRequirements(component,mapping){
  if(!component||typeof component!=="object"||!mapping||mapping.schema_version!==1||!mapping.roles||!mapping.features)throw new TypeError("A component and version-1 design translation map are required.");
  const errors=[],warnings=[];
- const partRoles=mapping.roles[component.role];
+ const partRoles=mapping.roles[String(component.role||'').toLowerCase()];
  if(!Array.isArray(partRoles)||!partRoles.length)errors.push("No part-role translation exists for semantic role "+component.role+".");
  const requiredCapabilities=[],forbiddenCapabilities=[];
  for(const feature of component.required_features||[]){
-  const entry=mapping.features[feature];
+  const entry=mapping.features[String(feature).toLowerCase()];
   if(!entry)errors.push("No catalogue translation exists for required design feature "+feature+".");
   else requiredCapabilities.push(...(entry.required_capabilities||[]));
  }
