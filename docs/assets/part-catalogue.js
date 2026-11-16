@@ -28,15 +28,17 @@ export function discoverPartCandidates(requirement,catalogue,options={}){
  if(!requirement||typeof requirement!=="object")throw new TypeError("A semantic part requirement is required.");
  const validation=validatePartCapabilityCatalogue(catalogue);
  if(!validation.valid)throw new TypeError("Invalid part capability catalogue: "+validation.errors.join(" "));
- const role=typeof requirement.role==="string"?requirement.role.toLowerCase():null;
+ const roles=(Array.isArray(requirement.roles)?requirement.roles:(typeof requirement.role==="string"?[requirement.role]:[])).map(value=>value.toLowerCase());
  const required=new Set(requirement.required_capabilities||[]);
+ const forbidden=new Set(requirement.forbidden_capabilities||[]);
  const preferred=new Set(requirement.preferred_capabilities||[]);
  const maxError=Number.isFinite(options.maxDimensionErrorMm)?options.maxDimensionErrorMm:Infinity;
  const candidates=[];
  for(const part of catalogue.parts){
   if(part.candidate_status==="reference_only"&&!options.includeReferenceOnly)continue;
-  if(role&&!part.roles.some(value=>value.toLowerCase()===role))continue;
+  if(roles.length&&!part.roles.some(value=>roles.includes(value.toLowerCase())))continue;
   if([...required].some(capability=>!part.capabilities.includes(capability)))continue;
+  if([...forbidden].some(capability=>part.capabilities.includes(capability)))continue;
   const error=dimensionError(part.dimensions_mm,requirement.dimensions_mm);
   if(error!==null&&error>maxError)continue;
   if(requirement.dimensions_mm&&error===null&&!options.allowUnknownDimensions)continue;
@@ -45,5 +47,5 @@ export function discoverPartCandidates(requirement,catalogue,options={}){
   candidates.push({part_id:part.part_id,description:part.description,roles:part.roles,capabilities:part.capabilities,dimensions_mm:part.dimensions_mm,candidate_status:part.candidate_status,dimension_error_mm:error,score,interfaces:part.interfaces,source:part.source});
  }
  candidates.sort((a,b)=>b.score-a.score||(a.dimension_error_mm??Infinity)-(b.dimension_error_mm??Infinity)||a.part_id.localeCompare(b.part_id));
- return {status:candidates.length?"candidates_found":"no_candidates",role,required_capabilities:[...required],candidates};
+ return {status:candidates.length?"candidates_found":"no_candidates",roles,required_capabilities:[...required],forbidden_capabilities:[...forbidden],candidates};
 }
