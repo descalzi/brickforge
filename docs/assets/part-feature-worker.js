@@ -1,4 +1,4 @@
-import { analyzeMeshFeaturesExtended } from "./mesh-feature-analysis.js?v=b6ebc6c828d2";
+import { analyzeMeshFeaturesExtended } from "./mesh-feature-analysis.js?v=07b56d3093e4";
 
 self.addEventListener("message", (event) => {
   const { trianglePositions, boundsMin, boundsMax } = event.data || {};

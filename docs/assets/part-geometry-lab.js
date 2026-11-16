@@ -1,4 +1,4 @@
-import { loadLDrawPartSurface } from "./ldraw-surface-loader.js?v=b6ebc6c828d2";
+import { loadLDrawPartSurface } from "./ldraw-surface-loader.js?v=07b56d3093e4";
 const status=document.querySelector("#status"),output=document.querySelector("#results");
 const ids=(new URLSearchParams(location.search).get("parts")||"3001,3739,35,3486,6600,39367,5260,2493b,3039,3934,3545,2780,3701").split(",").map(value=>value.trim()).filter(Boolean);
 async function run(){

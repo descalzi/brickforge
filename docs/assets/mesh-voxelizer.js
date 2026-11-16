@@ -1,6 +1,6 @@
-import { BRICK_GRID_PITCH_MM, CellClass } from "./target-grid.js?v=b6ebc6c828d2";
-import { analyzeMeshFeaturesExtended } from "./mesh-feature-analysis.js?v=b6ebc6c828d2";
-import { diagnoseTriangleIntersections } from "./mesh-intersections.js?v=b6ebc6c828d2";
+import { BRICK_GRID_PITCH_MM, CellClass } from "./target-grid.js?v=07b56d3093e4";
+import { analyzeMeshFeaturesExtended } from "./mesh-feature-analysis.js?v=07b56d3093e4";
+import { diagnoseTriangleIntersections } from "./mesh-intersections.js?v=07b56d3093e4";
 
 const UNIT_TO_MM = Object.freeze({ mm: 1, cm: 10, m: 1000, in: 25.4 });
 const SAMPLE_OFFSETS = Object.freeze([0.25, 0.5, 0.75]);

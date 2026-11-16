@@ -1,5 +1,5 @@
-import { discoverPartCandidates } from './part-catalogue.js?v=b6ebc6c828d2';
-import { translateComponentRequirements } from './design-translation.js?v=b6ebc6c828d2';
+import { discoverPartCandidates } from './part-catalogue.js?v=07b56d3093e4';
+import { translateComponentRequirements } from './design-translation.js?v=07b56d3093e4';
 
 const yawRotations = [[1,0,0,0,1,0,0,0,1],[0,0,1,0,1,0,-1,0,0],[-1,0,0,0,1,0,0,0,-1],[0,0,-1,0,1,0,1,0,0]];
 const permutations=[[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]];

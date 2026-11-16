@@ -28,3 +28,8 @@ test('layout suggestions cannot fill keepout volumes or exceed their shared atte
  const s={components:[{id:'a',position_tolerance_mm:8},{id:'b'}],relationships:[{type:'aligned_with',from:'a',to:'b',axis:'x',anchor:'center'}],negative_spaces:[{position_mm:{x:-4,y:0,z:-4},dimensions_mm:{width:8,height:9.6,depth:8}}]},sets=[[part('a',10)],[part('b',0)]];
  const r=fitAttachmentPoses(s,sets,profiles);assert.equal(r.generated,0);s.negative_spaces=[];const limited=fitAttachmentPoses(s,sets,profiles,{maxAttempts:1});assert.equal(limited.attempts,1);assert.equal(limited.budget_exhausted,true);
 });
+
+test('a blocked attachment keeps pose-search evidence and makes no impossibility claim',()=>{
+ const s=brief('small-road-car');s.components.find(c=>c.id==='front-left-wheel').position_mm.x-=.5;
+ const p=planDesign(s,catalogue,options);assert.equal(p.status,'blocked');assert.match(p.failures[0],/within the candidate limits/);assert.equal(typeof p.search.pose_attempts,'number');assert.equal(typeof p.search.budget_exhausted,'boolean');assert.equal(p.search.global_combinations,0);
+});

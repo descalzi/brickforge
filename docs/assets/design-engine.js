@@ -1,13 +1,13 @@
-import { evaluateDesignRelationships as evaluateRelationships } from "./design-relations.js?v=b6ebc6c828d2";
-import { featureCompatibility, axesCompatible } from "./connection-types.js?v=b6ebc6c828d2";
-import { fitAttachmentPoses } from "./attachment-fitting.js?v=b6ebc6c828d2";
-import { assertValidDesignSpec } from "./design-spec.js?v=b6ebc6c828d2";
-import { discoverPartCandidates, validatePartCapabilityCatalogue } from "./part-catalogue.js?v=b6ebc6c828d2";
-import { translateComponentRequirements } from "./design-translation.js?v=b6ebc6c828d2";
-import { planTechnicBeamJoint } from "./technic-planner.js?v=b6ebc6c828d2";
-import { specialistComponentCandidates } from "./specialist-placement.js?v=b6ebc6c828d2";
-import { partBodyBounds, analyzeAssembly } from "./assembly-analysis.js?v=b6ebc6c828d2";
-import { createAssemblyInstructions } from "./assembly-instructions.js?v=b6ebc6c828d2";
+import { evaluateDesignRelationships as evaluateRelationships } from "./design-relations.js?v=07b56d3093e4";
+import { featureCompatibility, axesCompatible } from "./connection-types.js?v=07b56d3093e4";
+import { fitAttachmentPoses } from "./attachment-fitting.js?v=07b56d3093e4";
+import { assertValidDesignSpec } from "./design-spec.js?v=07b56d3093e4";
+import { discoverPartCandidates, validatePartCapabilityCatalogue } from "./part-catalogue.js?v=07b56d3093e4";
+import { translateComponentRequirements } from "./design-translation.js?v=07b56d3093e4";
+import { planTechnicBeamJoint } from "./technic-planner.js?v=07b56d3093e4";
+import { specialistComponentCandidates } from "./specialist-placement.js?v=07b56d3093e4";
+import { partBodyBounds, analyzeAssembly } from "./assembly-analysis.js?v=07b56d3093e4";
+import { createAssemblyInstructions } from "./assembly-instructions.js?v=07b56d3093e4";
 
 const LDU_TO_MM = 0.4;
 const STUD_PITCH_MM = 8;
@@ -286,6 +286,7 @@ export function planDesign(spec,catalogue,overrides={}) {
   }
   const poseSearch=fitAttachmentPoses(spec,candidateSets,profileMap,{maxAttempts:options.maxSearchNodes});
   candidateSets.splice(0,candidateSets.length,...poseSearch.sets);
+  const poseStats={pose_attempts:poseSearch.attempts,pose_candidates_generated:poseSearch.generated,layout_candidates_generated:poseSearch.layout_generated,pose_budget_exhausted:poseSearch.budget_exhausted};
   let best=null,globalCombinations=0,globalNodes=0,overBudget=false;
   const chosen=Array(candidateSets.length);
   const componentIndex=new Map(spec.components.map((c,i)=>[c.id,i]));
@@ -298,7 +299,7 @@ export function planDesign(spec,catalogue,overrides={}) {
     const left=candidateSets[a][ai].parts,right=candidateSets[b][bi].parts,ids=new Set(left.map(p=>p.instance_id));
     const graph=assemble([...left,...right],profileMap,false),ok=graph.connections.some(e=>ids.has(e.instance_a)!==ids.has(e.instance_b));pairCache.set(key,ok);return ok;
   }
-  for(const [a,b] of requiredAttachments)if(!candidateSets[a].some((_,ai)=>candidateSets[b].some((_,bi)=>directConnection(a,ai,b,bi))))return {status:'blocked',design_id:spec.design_id,parts:[],connections:[],failures:['No nominal attachment was found within the candidate limits from '+spec.components[a].id+' to '+spec.components[b].id+'.'],warnings:[],component_reports:componentReports};
+  for(const [a,b] of requiredAttachments)if(!candidateSets[a].some((_,ai)=>candidateSets[b].some((_,bi)=>directConnection(a,ai,b,bi))))return {status:'blocked',design_id:spec.design_id,parts:[],connections:[],failures:['No nominal attachment was found within the candidate limits from '+spec.components[a].id+' to '+spec.components[b].id+'.'],warnings:[],search:{...poseStats,global_nodes:0,global_combinations:0,budget_exhausted:poseSearch.budget_exhausted},component_reports:componentReports};
   const chosenIndices=Array(candidateSets.length).fill(-1);
   function chooseComponent(index) {
     if(globalCombinations>=options.maxGlobalCombinations||++globalNodes>options.maxSearchNodes)return;
@@ -336,7 +337,7 @@ export function planDesign(spec,catalogue,overrides={}) {
     }
   }
   chooseComponent(0);
-  if(!best) return {status:"blocked",design_id:spec.design_id,failures:[overBudget?"No arrangement satisfies the max_parts budget of "+options.maxParts+".":"No globally connected arrangement satisfies the complete design."],warnings:[],parts:[],connections:[],search:{pose_attempts:poseSearch.attempts,pose_candidates_generated:poseSearch.generated,layout_candidates_generated:poseSearch.layout_generated,pose_budget_exhausted:poseSearch.budget_exhausted,global_nodes:globalNodes,global_combinations:globalCombinations},component_reports:componentReports};
+  if(!best) return {status:"blocked",design_id:spec.design_id,failures:[overBudget?"No arrangement found within the search limits and max_parts budget of "+options.maxParts+".":"No globally connected arrangement was found within the configured candidate and search limits."],warnings:[],parts:[],connections:[],search:{...poseStats,global_nodes:globalNodes,global_combinations:globalCombinations,budget_exhausted:poseSearch.budget_exhausted||globalNodes>options.maxSearchNodes||globalCombinations>=options.maxGlobalCombinations},component_reports:componentReports};
   const parts=best.parts,graph=best.graph;
   componentReports.forEach((report,index)=>{
     report.selected_course_layouts=best.chosen[index];report.pose_alternatives=candidateSets[index].length;const c=spec.components[index],bs=parts.filter(p=>p.component_id===c.id).map(p=>partBodyBounds(p,profileMap.get(p.part_id)));
@@ -381,7 +382,7 @@ export function planDesign(spec,catalogue,overrides={}) {
     {id:"physical_clutch_strength",status:"not_assessed",detail:"The available catalogue contains nominal datums, not measured clutch geometry or force."},
     {id:"structural_stability",status:"not_assessed",detail:"No load, bending, tipping or material model is available."}
   ]};
-  return {status:"planned",design_id:spec.design_id,parts,connections:graph.connections,search:{pose_attempts:poseSearch.attempts,pose_candidates_generated:poseSearch.generated,layout_candidates_generated:poseSearch.layout_generated,pose_budget_exhausted:poseSearch.budget_exhausted,global_combinations:globalCombinations,global_nodes:globalNodes,budget_exhausted:globalNodes>options.maxSearchNodes||globalCombinations>=options.maxGlobalCombinations},total_mating_pairs:graph.connections.reduce((sum,edge)=>sum+edge.mating_pairs.length,0),bom,ldraw:ldraw.join("\n")+"\n",instructions,analysis,component_reports:componentReports,validation,warnings,relationship_checks:best.relationship_report.checks,dimensions_mm:analysis.nominal_dimensions_mm,requested_dimensions_mm:designBounds(spec)};
+  return {status:"planned",design_id:spec.design_id,parts,connections:graph.connections,search:{...poseStats,global_combinations:globalCombinations,global_nodes:globalNodes,budget_exhausted:poseSearch.budget_exhausted||globalNodes>options.maxSearchNodes||globalCombinations>=options.maxGlobalCombinations},total_mating_pairs:graph.connections.reduce((sum,edge)=>sum+edge.mating_pairs.length,0),bom,ldraw:ldraw.join("\n")+"\n",instructions,analysis,component_reports:componentReports,validation,warnings,relationship_checks:best.relationship_report.checks,dimensions_mm:analysis.nominal_dimensions_mm,requested_dimensions_mm:designBounds(spec)};
 }
 
 function designBounds(spec) {
