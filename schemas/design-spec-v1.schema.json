@@ -88,7 +88,9 @@
           "enum": [
             "fidelity",
             "part-count",
-            "balanced"
+            "balanced",
+            "simplicity",
+            "interlock"
           ]
         }
       }
@@ -176,6 +178,10 @@
             "inferred",
             "uncertain"
           ]
+        },
+        "base_course": {
+          "type": "integer",
+          "minimum": 0
         }
       }
     },
