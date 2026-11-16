@@ -1,6 +1,6 @@
-import { featureCompatibility, axesCompatible } from './connection-types.js?v=c37e3f51f3b7';
-import { transformVector } from './specialist-placement.js?v=c37e3f51f3b7';
-import { partBodyBounds, bodiesOverlap } from './assembly-analysis.js?v=c37e3f51f3b7';
+import { featureCompatibility, axesCompatible } from './connection-types.js?v=3233205dd5e1';
+import { transformVector } from './specialist-placement.js?v=3233205dd5e1';
+import { partBodyBounds, bodiesOverlap } from './assembly-analysis.js?v=3233205dd5e1';
 /** Propagate connector-derived translations only inside explicitly uncertain
  * component positions. Orientations and geometry come from catalogue candidates;
  * no fixture or object-category recipe participates in the search. */

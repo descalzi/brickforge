@@ -1,4 +1,4 @@
-import { createSvgDesignViewer } from "./design-svg-viewer.js?v=c37e3f51f3b7";
+import { createSvgDesignViewer } from "./design-svg-viewer.js?v=3233205dd5e1";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 export const colours = new Map([[0,"#1b2a34"],[1,"#1e5aa8"],[2,"#00852b"],[4,"#b40000"],[7,"#8a928d"],[14,"#f2cd37"],[15,"#f4f4f4"],[19,"#e4cd9e"],[25,"#d66b24"]]);

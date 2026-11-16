@@ -13,6 +13,21 @@ Browser JavaScript is authoritative. Static publication serves code and data;
 construction needs no server. Python ingests source catalogues and produces or
 audits independent geometric references.
 
+## Relative intent constraints
+
+`dimension_ratio` preserves named component-axis proportions. Explicit
+`aligned_with` relationships specify a coordinate axis, min/max/center anchors
+and an optional signed offset. Explicit `symmetric_to` names the mirror axis and
+plane and checks equal dimensions, cross-axis centres and mirrored profile
+outlines. Legacy unqualified alignment/symmetry remains readable, with a warning
+about its weaker interpretation.
+
+These constraints are evaluated on the actual nominal dimensions and positions
+after fitting. A dimension allowance cannot silently break a required proportion.
+The exported relationship checks retain measured/expected values and tolerances.
+This validates relative requirements; it does not synthesise an unrestricted
+relative layout from symbolic dimensions.
+
 ## Discovery, placement and search
 
 Semantic translation and capability discovery restrict eligible profiles.

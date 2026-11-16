@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://descalzi.github.io/brickforge/schemas/design-spec-v1.schema.json",
   "title": "BrickForge design specification v1",
-  "description": "A catalogue-independent description of the intended object. It deliberately contains no LEGO part IDs, placements or construction choices.",
+  "description": "A catalogue-independent description of the intended object. It deliberately contains no catalogue part IDs, placements or construction choices.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -120,7 +120,8 @@
               "behind",
               "attached_to",
               "aligned_with",
-              "symmetric_to"
+              "symmetric_to",
+              "dimension_ratio"
             ]
           },
           "from": {
@@ -136,8 +137,681 @@
           "required": {
             "type": "boolean",
             "default": true
+          },
+          "axis": {
+            "enum": [
+              "x",
+              "y",
+              "z"
+            ]
+          },
+          "anchor": {
+            "enum": [
+              "min",
+              "max",
+              "center"
+            ]
+          },
+          "from_anchor": {
+            "enum": [
+              "min",
+              "max",
+              "center"
+            ]
+          },
+          "to_anchor": {
+            "enum": [
+              "min",
+              "max",
+              "center"
+            ]
+          },
+          "offset_mm": {
+            "type": "number"
+          },
+          "plane_mm": {
+            "type": "number"
+          },
+          "ratio": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "from_axis": {
+            "enum": [
+              "width",
+              "depth",
+              "height"
+            ]
+          },
+          "to_axis": {
+            "enum": [
+              "width",
+              "depth",
+              "height"
+            ]
           }
-        }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "dimension_ratio"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "ratio",
+                "from_axis",
+                "to_axis"
+              ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "above"
+                }
+              }
+            },
+            "then": {
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "axis"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "anchor"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "from_anchor"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "to_anchor"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "offset_mm"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "plane_mm"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "ratio"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "from_axis"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "to_axis"
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "below"
+                }
+              }
+            },
+            "then": {
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "axis"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "anchor"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "from_anchor"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "to_anchor"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "offset_mm"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "plane_mm"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "ratio"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "from_axis"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "to_axis"
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "left_of"
+                }
+              }
+            },
+            "then": {
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "axis"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "anchor"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "from_anchor"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "to_anchor"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "offset_mm"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "plane_mm"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "ratio"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "from_axis"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "to_axis"
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "right_of"
+                }
+              }
+            },
+            "then": {
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "axis"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "anchor"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "from_anchor"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "to_anchor"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "offset_mm"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "plane_mm"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "ratio"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "from_axis"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "to_axis"
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "in_front_of"
+                }
+              }
+            },
+            "then": {
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "axis"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "anchor"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "from_anchor"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "to_anchor"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "offset_mm"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "plane_mm"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "ratio"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "from_axis"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "to_axis"
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "behind"
+                }
+              }
+            },
+            "then": {
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "axis"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "anchor"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "from_anchor"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "to_anchor"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "offset_mm"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "plane_mm"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "ratio"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "from_axis"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "to_axis"
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "attached_to"
+                }
+              }
+            },
+            "then": {
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "axis"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "anchor"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "from_anchor"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "to_anchor"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "offset_mm"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "plane_mm"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "ratio"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "from_axis"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "to_axis"
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "aligned_with"
+                }
+              }
+            },
+            "then": {
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "plane_mm"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "ratio"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "from_axis"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "to_axis"
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "symmetric_to"
+                }
+              }
+            },
+            "then": {
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "anchor"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "from_anchor"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "to_anchor"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "offset_mm"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "ratio"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "from_axis"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "to_axis"
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "dimension_ratio"
+                }
+              }
+            },
+            "then": {
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "axis"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "anchor"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "from_anchor"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "to_anchor"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "offset_mm"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "plane_mm"
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "aligned_with"
+                }
+              },
+              "anyOf": [
+                {
+                  "required": [
+                    "anchor"
+                  ]
+                },
+                {
+                  "required": [
+                    "from_anchor"
+                  ]
+                },
+                {
+                  "required": [
+                    "to_anchor"
+                  ]
+                },
+                {
+                  "required": [
+                    "offset_mm"
+                  ]
+                }
+              ]
+            },
+            "then": {
+              "required": [
+                "axis"
+              ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "symmetric_to"
+                }
+              },
+              "required": [
+                "plane_mm"
+              ]
+            },
+            "then": {
+              "required": [
+                "axis"
+              ]
+            }
+          }
+        ]
       }
     },
     "constraints": {

@@ -1250,7 +1250,41 @@
           }
         }
       ],
-      "relationships": [],
+      "relationships": [
+        {
+          "type": "symmetric_to",
+          "from": "left-wing",
+          "to": "right-wing",
+          "axis": "x",
+          "plane_mm": 39.484,
+          "tolerance_mm": 0.001
+        },
+        {
+          "type": "aligned_with",
+          "from": "wing-bridge",
+          "to": "fuselage",
+          "axis": "x",
+          "anchor": "center",
+          "tolerance_mm": 0.001
+        },
+        {
+          "type": "aligned_with",
+          "from": "wing-bridge",
+          "to": "fuselage",
+          "axis": "z",
+          "anchor": "center",
+          "tolerance_mm": 0.001
+        },
+        {
+          "type": "dimension_ratio",
+          "from": "left-wing",
+          "to": "fuselage",
+          "from_axis": "width",
+          "to_axis": "width",
+          "ratio": 2,
+          "tolerance_mm": 0.6
+        }
+      ],
       "constraints": {
         "require_connected": true,
         "allow_intersections": false,
@@ -1342,7 +1376,17 @@
           }
         }
       ],
-      "relationships": [],
+      "relationships": [
+        {
+          "type": "dimension_ratio",
+          "from": "cap",
+          "to": "stem",
+          "from_axis": "width",
+          "to_axis": "width",
+          "ratio": 2,
+          "tolerance_mm": 0.001
+        }
+      ],
       "constraints": {
         "require_connected": true,
         "allow_intersections": false,
