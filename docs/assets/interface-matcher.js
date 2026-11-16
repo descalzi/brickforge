@@ -18,6 +18,12 @@ export function matchRequiredInterfaces(requiredInterfaces, candidateInterfaces,
   }
   const defaultDiameterTolerance = options.diameterToleranceMm ?? 0.5;
   const minimumAxisAlignment = options.minimumAxisAlignmentCosine ?? 0.95;
+  const orientationPermutation = options.orientationPermutation ?? [0, 1, 2];
+  if (!Array.isArray(orientationPermutation) || orientationPermutation.length !== 3
+      || new Set(orientationPermutation).size !== 3
+      || !orientationPermutation.every((axis) => Number.isInteger(axis) && axis >= 0 && axis <= 2)) {
+    throw new RangeError("orientationPermutation must be a permutation of the three coordinate axes.");
+  }
   if (!Number.isFinite(defaultDiameterTolerance) || defaultDiameterTolerance < 0
       || !Number.isFinite(minimumAxisAlignment) || minimumAxisAlignment < 0 || minimumAxisAlignment > 1) {
     throw new RangeError("Interface tolerances must be finite and within their valid ranges.");
@@ -50,7 +56,8 @@ export function matchRequiredInterfaces(requiredInterfaces, candidateInterfaces,
         if (Math.abs(candidate.nominal_diameter_mm - requirement.diameter_mm) > tolerance) return false;
       }
       if (requirement.axis) {
-        const axis = normaliseAxis(candidate.axis_vector);
+        const localAxis = normaliseAxis(candidate.axis_vector);
+        const axis = localAxis ? orientationPermutation.map((sourceAxis) => localAxis[sourceAxis]) : null;
         if (!axis || Math.abs(dot(requirement.axis, axis)) < minimumAxisAlignment) return false;
       }
       return true;
@@ -72,6 +79,7 @@ export function matchRequiredInterfaces(requiredInterfaces, candidateInterfaces,
   return {
     satisfied: matches.every((match) => match.satisfied),
     requirements: matches,
+    orientation_permutation: orientationPermutation,
     physical_connection_verified: false,
     evidence_type: "source-derived-nominal-interface-geometry",
     limitations: [
