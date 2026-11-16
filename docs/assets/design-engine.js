@@ -112,6 +112,13 @@ function assemble(parts, profileMap, requireConnected) {
 }
 
 function componentCandidates(component,catalogue,options) {
+  const supportedRoles = new Set(["structural","chassis","body","wall","floor","base","platform","support","beam","block","solid","roof-support"]);
+  if (!supportedRoles.has(component.role.toLowerCase())) {
+    return {error:"The current verified catalogue cannot yet build the semantic role \"" + component.role + "\". It contains standard brick/plate geometry, not verified wheel, window, hinge, clip or other specialised capabilities."};
+  }
+  if ((component.required_features || []).length) {
+    return {error:"Required semantic features are not yet represented in the verified connection catalogue: " + component.required_features.join(", ") + "."};
+  }
   const width=component.dimensions_mm.width/STUD_PITCH_MM;
   const depth=component.dimensions_mm.depth/STUD_PITCH_MM;
   const height=component.dimensions_mm.height;
@@ -150,6 +157,34 @@ function componentCandidates(component,catalogue,options) {
   return best?{...best,search_nodes:nodes,combinations}:{error:"No fully connected course arrangement found for component "+component.id+".",search_nodes:nodes,combinations};
 }
 
+function componentBounds(component) {
+  const p=component.position_mm,d=component.dimensions_mm;
+  return {min:[p.x,p.y,p.z],max:[p.x+d.width,p.y+d.height,p.z+d.depth]};
+}
+function overlaps(a,b) {
+  return [0,1,2].every(axis=>Math.min(a.max[axis],b.max[axis])-Math.max(a.min[axis],b.min[axis])>1e-6);
+}
+function evaluateRelationships(spec) {
+  const byId=new Map(spec.components.map(component=>[component.id,component]));
+  const failures=[],warnings=[];
+  for(const relation of spec.relationships) {
+    const a=componentBounds(byId.get(relation.from)),b=componentBounds(byId.get(relation.to));
+    const tolerance=relation.tolerance_mm??0.5;
+    let passed=true;
+    if(relation.type==="above") passed=a.min[1]>=b.max[1]-tolerance;
+    else if(relation.type==="below") passed=a.max[1]<=b.min[1]+tolerance;
+    else if(relation.type==="left_of") passed=a.max[0]<=b.min[0]+tolerance;
+    else if(relation.type==="right_of") passed=a.min[0]>=b.max[0]-tolerance;
+    else if(relation.type==="in_front_of") passed=a.max[2]<=b.min[2]+tolerance;
+    else if(relation.type==="behind") passed=a.min[2]>=b.max[2]-tolerance;
+    else if(relation.type==="aligned_with") passed=[0,1,2].some(axis=>Math.abs(a.min[axis]-b.min[axis])<=tolerance);
+    else if(relation.type==="symmetric_to") passed=close(a.min[0]+a.max[0],-(b.min[0]+b.max[0]),tolerance);
+    else if(relation.type==="attached_to") passed=[0,1,2].some(axis=>close(a.max[axis],b.min[axis],tolerance)||close(b.max[axis],a.min[axis],tolerance));
+    if(!passed) (relation.required===false?warnings:failures).push("Relationship "+relation.type+" between "+relation.from+" and "+relation.to+" is not satisfied.");
+  }
+  return {failures,warnings};
+}
+
 export function planDesign(spec,catalogue,overrides={}) {
   assertValidDesignSpec(spec);
   if(!catalogue||catalogue.schema_version!==1||!Array.isArray(catalogue.profiles)) throw new TypeError("A version-1 connection profile catalogue is required.");
@@ -161,6 +196,15 @@ export function planDesign(spec,catalogue,overrides={}) {
     maxCombinations:overrides.maxCombinations||20000,
     defaultColour:(spec.appearance?.preferred_colours||[4])[0],
   };
+  const relationshipReport=evaluateRelationships(spec);
+  if(relationshipReport.failures.length) return {status:"blocked",design_id:spec.design_id,failures:relationshipReport.failures,warnings:relationshipReport.warnings,parts:[],connections:[],component_reports:[]};
+  if(!spec.constraints.allow_intersections) {
+    for(let i=0;i<spec.components.length;i++) for(let j=i+1;j<spec.components.length;j++) {
+      if(overlaps(componentBounds(spec.components[i]),componentBounds(spec.components[j]))) {
+        return {status:"blocked",design_id:spec.design_id,failures:["Semantic components "+spec.components[i].id+" and "+spec.components[j].id+" overlap in their specified volumes."],warnings:[],parts:[],connections:[],component_reports:[]};
+      }
+    }
+  }
   const profileMap=new Map(catalogue.profiles.map(profile=>[profile.part_id,profile]));
   const parts=[],componentReports=[];
   for(const component of spec.components) {
@@ -177,11 +221,13 @@ export function planDesign(spec,catalogue,overrides={}) {
   const bom={schema_version:1,items:[...bomMap].map(([key,quantity])=>{const [part_id,colour]=key.split("|");return {part_id,colour_code:Number(colour),quantity};}).sort((a,b)=>compare(a.part_id,b.part_id)||a.colour_code-b.colour_code)};
   const ldraw=["0 "+(spec.name||spec.design_id),"0 Name: "+spec.design_id,"0 BrickForge deterministic design planner"];
   for(const part of parts) ldraw.push("1 "+part.colour_code+" "+part.translation_ldu.join(" ")+" "+part.matrix.join(" ")+" "+part.part_id+".dat");
-  const warnings=[...new Set(catalogue.limitations||[])];
+  const warnings=[...new Set([...(catalogue.limitations||[]),...relationshipReport.warnings])];
   warnings.push("Connection edges represent nominal stud/receiver datum alignment only; clutch force, stability and structural strength are not verified.");
   const validation={checks:[
     {id:"design_spec",status:"passed",detail:"The catalogue-independent design specification is valid."},
     {id:"part_catalogue_coverage",status:"passed",detail:"Every placed part has a source profile in the supplied catalogue."},
+    {id:"semantic_relationships",status:"passed",detail:"All required spatial relationships in the design specification are satisfied."},
+    {id:"component_intersections",status:"passed",detail:"Semantic component volumes do not overlap."},
     {id:"exact_course_tiling",status:"passed",detail:"Every component course is exactly covered by non-overlapping catalogue footprints."},
     {id:"nominal_connection_alignment",status:"passed",detail:"Every graph edge has opposing, position-matched stud/receiver datums."},
     {id:"graph_connectivity",status:graph.connected?"passed":"failed",detail:graph.connected?"All part instances belong to one connected graph.":"The assembly contains disconnected components."},
