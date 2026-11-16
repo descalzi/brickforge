@@ -37,10 +37,13 @@ test("constructs a connected semantic brief into real catalogue placements and e
   assert.equal(result.design_diagnostics.component_coverage[0].status, "represented_in_shared_footprint");
 });
 
-test("rejects malformed specifications and duplicate component identifiers", () => {
+test("rejects malformed specifications, duplicate IDs and non-array relationships", () => {
   const invalid = structuredClone(carBrief);
   invalid.components.push(structuredClone(invalid.components[0]));
   assert.equal(validateDesignSpec(invalid).valid, false);
+  const malformedRelationships = structuredClone(carBrief);
+  malformedRelationships.relationships = { type: "attached_to" };
+  assert.equal(validateDesignSpec(malformedRelationships).valid, false);
 });
 
 test("does not silently flatten components with different heights", async () => {
