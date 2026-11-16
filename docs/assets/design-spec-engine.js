@@ -163,7 +163,7 @@ export function validateDesignSpec(spec) {
       fail("preferences must be an object.");
     } else {
       if (preferences.colours !== undefined
-          && (!Array.isArray(preferences.colours)
+          && (!Array.isArray(preferences.colours) || preferences.colours.length === 0
             || !preferences.colours.every((code) => Number.isInteger(code) && code >= 0))) {
         fail("preferences.colours must be non-negative integer LDraw colour codes.");
       }
