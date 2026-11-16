@@ -179,3 +179,13 @@ test("a sphere-shaped component is never silently tiled as a rectangular box",()
  assert.match(result.failures[0],/geometry primitive sphere is not yet supported/);
  assert.match(result.failures[0],/no rectangular-block substitution/);
 });
+
+test("primitive geometry parameters must agree with declared component bounds",()=>{
+ const cylinder=structuredClone(carBody);
+ cylinder.components[0].geometry="cylinder";
+ cylinder.components[0].geometry_parameters={axis:"z",diameter_mm:16};
+ assert.equal(validateDesignSpec(cylinder).valid,false);
+ const malformed=structuredClone(cylinder);
+ delete malformed.components[0].dimensions_mm;
+ assert.equal(validateDesignSpec(malformed).valid,false);
+});
