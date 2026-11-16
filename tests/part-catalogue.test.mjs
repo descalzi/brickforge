@@ -42,16 +42,16 @@ test("dimension limits and required capabilities constrain discovery",()=>{
  assert.equal(unsupported.status,"no_candidates");
 });
 
-test("specialist wheel, window, slope and wing parts are indexed but not promoted to buildable geometry",()=>{
+test("specialists distinguish profiled slopes from reference-only and measured unprofiled candidates",()=>{
  const wheels=discoverPartCandidates({role:"wheel"},catalogue,{includeReferenceOnly:true});
  const windows=discoverPartCandidates({role:"window"},catalogue,{includeReferenceOnly:true});
  const slopes=discoverPartCandidates({role:"slope"},catalogue,{includeReferenceOnly:true});
  const wings=discoverPartCandidates({role:"wing"},catalogue,{includeReferenceOnly:true});
  assert.ok(wheels.candidates.some(part=>part.part_id==="3739"&&part.candidate_status==="geometry_measured"));
  assert.ok(windows.candidates.some(part=>part.part_id==="5260"&&part.candidate_status==="geometry_measured"));
- assert.ok(slopes.candidates.some(part=>part.part_id==="3039"&&part.candidate_status==="reference_only"));
+ assert.ok(slopes.candidates.some(part=>part.part_id==="3039"&&part.candidate_status==="geometry_measured"));
  assert.ok(wings.candidates.some(part=>part.part_id==="3934"&&part.candidate_status==="geometry_measured"));
- assert.ok(slopes.candidates.every(part=>part.dimensions_mm===null));
+ assert.ok(slopes.candidates.filter(part=>part.candidate_status==="reference_only").every(part=>part.dimensions_mm===null));
 });
 
 test("candidate dimensions are compared across orthogonal part orientations",()=>{
