@@ -27,6 +27,7 @@ try {
       { constructDesign, validateDesignSpec },
       { decodeCataloguePayload },
       { discoverPartsForRole },
+      { matchRequiredInterfaces },
       catalogueResponse,
       fixturesResponse,
       indexResponse,
@@ -35,6 +36,7 @@ try {
       import("./assets/design-spec-engine.js"),
       import("./assets/catalogue-utils.js"),
       import("./assets/part-discovery.js"),
+      import("./assets/interface-matcher.js"),
       fetch("./data/connection-profiles/basic-bricks.json"),
       fetch("./data/design-spec-fixtures.json"),
       fetch("./data/ldraw/parts-index.json.gz"),
@@ -52,6 +54,8 @@ try {
     const technicDiscovery = discoverPartsForRole("technic", partIndex.parts, catalogue, { specialisedCatalogue });
     const technicHoleCandidates = technicDiscovery.candidates.filter(candidate =>
       candidate.specialised_interfaces.some(item => item.interface_type === "technic_pin_hole"));
+    const technicInterfaceMatches = technicHoleCandidates.filter(candidate =>
+      matchRequiredInterfaces([{ interface_type: "technic_pin_hole", diameter_mm: 4.8, axis_vector: [0,0,1], count: 1 }], candidate.specialised_interfaces).satisfied);
     const brief = fixtures.specifications.find(item => item.design_id === "small-house");
     const validation = validateDesignSpec(brief);
     const assembly = constructDesign(brief, catalogue);
@@ -84,6 +88,7 @@ try {
       technicCandidateCount: technicDiscovery.candidate_count,
       technicInterfaceProfileCount: technicDiscovery.profiled_candidate_count,
       technicHoleCandidateCount: technicHoleCandidates.length,
+      technicInterfaceMatchCount: technicInterfaceMatches.length,
       parts: assembly.parts.length,
       edges: assembly.connections.length,
       matingPairs: assembly.total_mating_pairs,
@@ -103,6 +108,7 @@ try {
   assert.ok(result.technicCandidateCount > 0);
   assert.ok(result.technicInterfaceProfileCount > 0);
   assert.ok(result.technicHoleCandidateCount > 0);
+  assert.ok(result.technicInterfaceMatchCount > 0);
   assert.ok(result.parts > 0);
   assert.ok(result.edges > 0);
   assert.ok(result.matingPairs > 0);
