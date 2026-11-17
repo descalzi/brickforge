@@ -1,18 +1,18 @@
-import {chassisInserts} from './wheel-mount-layout.js?v=8c466e17ba47';
-import {rectangularDimensionVariants} from './dimension-variants.js?v=8c466e17ba47';
-import {combineCourseTilings} from './course-beam-search.js?v=8c466e17ba47';
-import {roundedShapeOccupancy} from './rounded-shape.js?v=8c466e17ba47';
-import {composeExtrudedProfile} from './profile-composition.js?v=8c466e17ba47';
-import { evaluateDesignRelationships as evaluateRelationships } from "./design-relations.js?v=8c466e17ba47";
-import { featureCompatibility, axesCompatible } from "./connection-types.js?v=8c466e17ba47";
-import { fitAttachmentPoses } from "./attachment-fitting.js?v=8c466e17ba47";
-import { assertValidDesignSpec } from "./design-spec.js?v=8c466e17ba47";
-import { discoverPartCandidates, validatePartCapabilityCatalogue } from "./part-catalogue.js?v=8c466e17ba47";
-import { translateComponentRequirements } from "./design-translation.js?v=8c466e17ba47";
-import { planTechnicBeamJoint } from "./technic-planner.js?v=8c466e17ba47";
-import { specialistComponentCandidates } from "./specialist-placement.js?v=8c466e17ba47";
-import { partBodyBounds, analyzeAssembly,findBodyCollisions } from "./assembly-analysis.js?v=8c466e17ba47";
-import { createAssemblyInstructions } from "./assembly-instructions.js?v=8c466e17ba47";
+import {chassisInserts} from './wheel-mount-layout.js?v=ea85888e5541';
+import {rectangularDimensionVariants} from './dimension-variants.js?v=ea85888e5541';
+import {combineCourseTilings} from './course-beam-search.js?v=ea85888e5541';
+import {roundedShapeOccupancy} from './rounded-shape.js?v=ea85888e5541';
+import {composeExtrudedProfile} from './profile-composition.js?v=ea85888e5541';
+import { evaluateDesignRelationships as evaluateRelationships } from "./design-relations.js?v=ea85888e5541";
+import { featureCompatibility, axesCompatible } from "./connection-types.js?v=ea85888e5541";
+import { fitAttachmentPoses } from "./attachment-fitting.js?v=ea85888e5541";
+import { assertValidDesignSpec } from "./design-spec.js?v=ea85888e5541";
+import { discoverPartCandidates, validatePartCapabilityCatalogue } from "./part-catalogue.js?v=ea85888e5541";
+import { translateComponentRequirements } from "./design-translation.js?v=ea85888e5541";
+import { planTechnicBeamJoint } from "./technic-planner.js?v=ea85888e5541";
+import { specialistComponentCandidates } from "./specialist-placement.js?v=ea85888e5541";
+import { partBodyBounds, analyzeAssembly,findBodyCollisions } from "./assembly-analysis.js?v=ea85888e5541";
+import { createAssemblyInstructions } from "./assembly-instructions.js?v=ea85888e5541";
 
 const LDU_TO_MM = 0.4;
 const STUD_PITCH_MM = 8;
@@ -116,15 +116,20 @@ function matingPairs(profileA, a, profileB, b, tolerance=0.25, worldA, worldB) {
   return matches;
 }
 
-function assemble(parts, profileMap, requireConnected) {
+function connectionEdges(parts, profileMap, split = null) {
   const connections=[];
   const world=parts.map(part=>profileMap.get(part.part_id).features.map(feature=>({...feature,position:point(part,feature.position_ldu),direction:transform(part.matrix,feature.axis)})));
   const bounds=world.map(features=>({min:[0,1,2].map(axis=>Math.min(...features.map(f=>f.position[axis]))),max:[0,1,2].map(axis=>Math.max(...features.map(f=>f.position[axis])))}));
-  for(let i=0;i<parts.length;i++) for(let j=i+1;j<parts.length;j++) {
+  for(let i=0;i<(split??parts.length);i++) for(let j=split??(i+1);j<parts.length;j++) {
     if([0,1,2].some(axis=>bounds[i].min[axis]>bounds[j].max[axis]+0.25 || bounds[j].min[axis]>bounds[i].max[axis]+0.25))continue;
     const pairs=matingPairs(profileMap.get(parts[i].part_id),parts[i],profileMap.get(parts[j].part_id),parts[j],0.25,world[i],world[j]);
     if(pairs.length) connections.push({instance_a:parts[i].instance_id,instance_b:parts[j].instance_id,mating_pairs:pairs});
   }
+  return connections;
+}
+
+function assemble(parts, profileMap, requireConnected) {
+  const connections=connectionEdges(parts,profileMap);
   const adjacency=new Map(parts.map(part=>[part.instance_id,new Set()]));
   for(const edge of connections){adjacency.get(edge.instance_a).add(edge.instance_b);adjacency.get(edge.instance_b).add(edge.instance_a);}
   const seen=new Set();
@@ -328,7 +333,8 @@ export function planDesign(spec,catalogue,overrides={}) {
     const targets=new Set(spec.relationships.filter(r=>r.type==='attached_to' && r.required!==false && (r.from===component.id||r.to===component.id))
       .map(r=>r.from===component.id?r.to:r.from));
     const wheelTargets=component.role==='chassis'?spec.components.filter(c=>targets.has(c.id) && c.role==='wheel' && c.geometry==='cylinder'):null;
-    const result=componentCandidates(component,catalogue,{...options,wheelTargets},partCatalogue,designTranslation);
+    const negativeSpaces=options.negativeSpaces.filter(space=>space.component_id===undefined || space.component_id===component.id);
+    const result=componentCandidates(component,catalogue,{...options,wheelTargets,negativeSpaces},partCatalogue,designTranslation);
     if (result.error) {
       componentReports.push({
         component_id: component.id, status: 'blocked', reason: result.error,
@@ -365,12 +371,24 @@ export function planDesign(spec,catalogue,overrides={}) {
   const requiredAttachments=spec.relationships.filter(r=>r.type==='attached_to'&&r.required!==false).map(r=>[componentIndex.get(r.from),componentIndex.get(r.to)]);
   const degree=i=>requiredAttachments.filter(r=>r.includes(i)).length;
   const order=candidateSets.map((_,i)=>i).sort((a,b)=>degree(b)-degree(a)||candidateSets[a].length-candidateSets[b].length||a-b);
-  const pairCache=new Map();
-  function directConnection(a,ai,b,bi){
-    const key=[a,ai,b,bi].join(':');if(pairCache.has(key))return pairCache.get(key);
-    const left=candidateSets[a][ai].parts,right=candidateSets[b][bi].parts,ids=new Set(left.map(p=>p.instance_id));
-    const graph=assemble([...left,...right],profileMap,false),ok=graph.connections.some(e=>ids.has(e.instance_a)!==ids.has(e.instance_b));pairCache.set(key,ok);return ok;
+  // Layouts are immutable after pose fitting. Reuse exactly the same nominal
+  // joint and material checks when neighbouring components change their layout.
+  const pairCache=new Map(), internalCache=new WeakMap();
+  function measure(parts,split=null){
+    const edges=connectionEdges(parts,profileMap,split);
+    return {attached:edges.length>0, contacts:edges.length*5+edges.reduce((sum,e)=>sum+e.mating_pairs.length,0),
+      collision:findBodyCollisions(parts,edges,profileMap,true,split).length>0};
   }
+  function layoutPair(a,ai,b,bi){
+    if(a>b)return layoutPair(b,bi,a,ai);
+    const key=[a,ai,b,bi].join(':');
+    if(!pairCache.has(key)){
+      const left=candidateSets[a][ai].parts,right=candidateSets[b][bi].parts;
+      pairCache.set(key,measure([...left,...right],left.length));
+    }
+    return pairCache.get(key);
+  }
+  const directConnection=(a,ai,b,bi)=>layoutPair(a,ai,b,bi).attached;
   for(const [a,b] of requiredAttachments)if(!candidateSets[a].some((_,ai)=>candidateSets[b].some((_,bi)=>directConnection(a,ai,b,bi))))return {status:'blocked',design_id:spec.design_id,parts:[],connections:[],failures:['No nominal attachment was found within the candidate limits from '+spec.components[a].id+' to '+spec.components[b].id+'.'],warnings:[],search:{...poseStats,global_nodes:0,global_combinations:0,budget_exhausted:poseStats.component_budget_exhausted||poseSearch.budget_exhausted},component_reports:componentReports};
   const chosenIndices=Array(candidateSets.length).fill(-1);
   function chooseComponent(index) {
@@ -379,6 +397,19 @@ export function planDesign(spec,catalogue,overrides={}) {
       globalCombinations++;
       const parts=chosen.flatMap(item=>item.parts);
       if(parts.length>options.maxParts){overBudget=true;return;}
+      let score=parts.length*1000;
+      for(const [i,layout] of chosen.entries()){
+        if(!internalCache.has(layout))internalCache.set(layout,measure(layout.parts));
+        const within=internalCache.get(layout);
+        if(within.collision)return;
+        score-=within.contacts;
+        for(let j=0;j<i;j++){
+          const between=layoutPair(j,chosenIndices[j],i,chosenIndices[i]);
+          if(between.collision)return;
+          score-=between.contacts;
+        }
+      }
+      if(best && score>=best.score)return;
       const realisedComponents=spec.components.map(c=>{
         const bs=parts.filter(p=>p.component_id===c.id).map(p=>partBodyBounds(p,profileMap.get(p.part_id)));
         const min=[0,1,2].map(i=>Math.min(...bs.map(b=>b.min[i]))),max=[0,1,2].map(i=>Math.max(...bs.map(b=>b.max[i])));
@@ -388,15 +419,14 @@ export function planDesign(spec,catalogue,overrides={}) {
       if(realisedRelationships.failures.length)return;
 
       const graph=assemble(parts,profileMap,spec.constraints.require_connected);
-      if(!graph||findBodyCollisions(parts,graph.connections,profileMap,true).length)return;
+      if(!graph)return;
       const componentByInstance=new Map(parts.map(part=>[part.instance_id,part.component_id]));
       if(spec.relationships.some(relation=>relation.type==="attached_to" && relation.required!==false && !graph.connections.some(edge=>new Set([componentByInstance.get(edge.instance_a),componentByInstance.get(edge.instance_b)]).has(relation.from) && new Set([componentByInstance.get(edge.instance_a),componentByInstance.get(edge.instance_b)]).has(relation.to))))return;
       for(const check of realisedRelationships.checks)if(check.type==='attached_to'){
         const matched=graph.connections.some(e=>new Set([componentByInstance.get(e.instance_a),componentByInstance.get(e.instance_b)]).has(check.from)&&new Set([componentByInstance.get(e.instance_a),componentByInstance.get(e.instance_b)]).has(check.to));
         check.status=matched?'passed':check.required?'failed':'warning';if(!matched&&!check.required)realisedRelationships.warnings.push('Optional attachment between '+check.from+' and '+check.to+' was not realised.');
       }
-      const score=parts.length*1000-graph.connections.length*5-graph.connections.reduce((sum,edge)=>sum+edge.mating_pairs.length,0);
-      if(!best||score<best.score)best={parts,graph,score,chosen:chosen.map(item=>item.tiling),poses:chosen.map(item=>item.pose_offset_ldu||[0,0,0]),methods:chosen.map(item=>item.composition?'exact_prism_material_cover':item.integrated_mounts?'integrated_wheel_carrier_courses':item.specialist?'profiled_rigid':'uniform_course_tiling'),relationship_report:realisedRelationships};
+      best={parts,graph,score,chosen:chosen.map(item=>item.tiling),poses:chosen.map(item=>item.pose_offset_ldu||[0,0,0]),methods:chosen.map(item=>item.composition?'exact_prism_material_cover':item.integrated_mounts?'integrated_wheel_carrier_courses':item.specialist?'profiled_rigid':'uniform_course_tiling'),relationship_report:realisedRelationships};
       return;
     }
     const component=order[index];

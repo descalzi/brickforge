@@ -1,4 +1,4 @@
-import { clearApproach,createSupportTracker,partBodyBounds } from "./assembly-analysis.js?v=8c466e17ba47";
+import { clearApproach,createSupportTracker,partBodyBounds } from "./assembly-analysis.js?v=ea85888e5541";
 /** A connected nominal assembly sequence. This is deliberately not described
  * as a collision-free insertion path or a structural buildability proof. */
 export function createAssemblyInstructions(parts,connections,profiles) {

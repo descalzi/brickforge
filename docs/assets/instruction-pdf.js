@@ -1,7 +1,7 @@
-import { instructionJointNote } from "./assembly-instructions.js?v=8c466e17ba47";
-import {rasterizeInstructionFaces} from './instruction-rasterizer.js?v=8c466e17ba47';
+import { instructionJointNote } from "./assembly-instructions.js?v=ea85888e5541";
+import {rasterizeInstructionFaces} from './instruction-rasterizer.js?v=ea85888e5541';
 // Browser-native illustrated hybrid booklet. Diagrams and inventory share the canonical plan.
-import { transformVector } from './specialist-placement.js?v=8c466e17ba47';
+import { transformVector } from './specialist-placement.js?v=ea85888e5541';
 const palette=new Map([[0,'#26343b'],[1,'#1e5aa8'],[2,'#00852b'],[4,'#b40000'],[7,'#8a928d'],[14,'#f2cd37'],[15,'#eeeeee'],[19,'#e4cd9e'],[25,'#d66b24']]);
 const colourNames=new Map([[0,'Black'],[1,'Blue'],[2,'Green'],[4,'Red'],[7,'Grey'],[14,'Yellow'],[15,'White'],[19,'Tan'],[25,'Orange']]);
 const clean=s=>String(s).normalize('NFKD').replace(/[^\x20-\x7e]/g,' ').replace(/[\\()]/g,'\\$&');

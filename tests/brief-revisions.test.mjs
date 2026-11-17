@@ -115,3 +115,23 @@ test('integrated carriers also fit a rotated exact layout and respect fixed limi
   spec.negative_spaces=[{id:'empty-bay',position_mm:{x:0,y:0,z:0},dimensions_mm:{width:8,depth:8,height:3.2}}];
   assert.equal(planDesign(spec,catalogue,options).status,'blocked');
 });
+
+test('the house revision preserves its envelope and seats the frame in its host wall', () => {
+  const original=fixtures.challenge_specs.find(s=>s.design_id==='challenge-house');
+  const revision=search(original), spec=revision.specification;
+  assert.ok(spec);
+  assert.deepEqual(spec.relationships,original.relationships);
+  assert.equal(revision.edits.find(e=>e.field==='outline_mm').vertical_error_mm,4.8);
+  assert.deepEqual(spec.components.at(-1).dimensions_mm,original.components.at(-1).dimensions_mm);
+  assert.equal(spec.negative_spaces[0].component_id,'front-wall');
+  const plan=planDesign(spec,catalogue,options);
+  assert.equal(plan.status,'planned');
+  assert.equal(plan.analysis.body_envelope_collisions.length,0);
+  assert.ok(plan.relationship_checks.every(c=>c.status==='passed'));
+  assert.ok(plan.parts.some(p=>p.component_id==='front-window' && p.part_id==='60592'));
+  const global=structuredClone(spec);
+  delete global.negative_spaces[0].component_id;
+  assert.equal(planDesign(global,catalogue,options).status,'blocked');
+  spec.negative_spaces[0].component_id='missing-wall';
+  assert.throws(()=>planDesign(spec,catalogue,options),/unknown host component/);
+});

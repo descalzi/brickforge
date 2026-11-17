@@ -162,6 +162,18 @@ try{
  const integratedCar=JSON.parse(await page.locator('#engine-report').innerText());
  assert.equal(integratedCar.parts.filter(p=>p.component_id==='chassis' && p.part_id==='4600').length,2);
  assert.equal(integratedCar.connections.flatMap(e=>e.mating_pairs).filter(p=>p.connection_type==='wheel_pin_bore').length,4);
+ await page.selectOption('#fixture-select','challenge-house');
+ await page.click('#run-design');
+ await page.waitForFunction(()=>document.querySelector('#engine-status').dataset.state==='blocked');
+ await page.click('#find-revision');
+ await page.waitForSelector('#use-revision:visible');
+ assert.match(await page.locator('#revision-preview').innerText(), /4.8 mm/);
+ assert.match(await page.locator('#revision-preview').innerText(), /front-window-opening into front-wall/);
+ await page.click('#use-revision');
+ await page.waitForFunction(()=>document.querySelector('#engine-status').dataset.state==='planned');
+ const house=JSON.parse(await page.locator('#engine-report').innerText());
+ assert.equal(house.parts.find(p=>p.component_id==='front-window').part_id,'60592');
+ await page.screenshot({path:'/tmp/brickforge-inset-window-house.png',fullPage:true});
  await page.selectOption('#fixture-select','joint-sized-platform');await page.click('#run-design');await page.waitForFunction(()=>document.querySelector('#engine-status').dataset.state==='planned');const jointSize=JSON.parse(await page.locator('#engine-report').innerText());assert.equal(jointSize.component_reports[0].realised_dimensions_mm.width,24);assert.ok(jointSize.relationship_checks.every(c=>c.status==='passed'));
  await page.selectOption('#fixture-select','joint-height-platform');await page.click('#run-design');await page.waitForFunction(()=>document.querySelector('#engine-status').dataset.state==='planned');const jointHeight=JSON.parse(await page.locator('#engine-report').innerText());assert.ok(Math.abs(jointHeight.component_reports[0].realised_dimensions_mm.height-25.6)<1e-6);assert.equal(jointHeight.component_reports[0].selected_construction_method,'exact_prism_material_cover');await page.screenshot({path:'/tmp/brickforge-joint-height.png',fullPage:true});
  // A gateway is mocked only as transport/contract evidence, not real LLM quality.

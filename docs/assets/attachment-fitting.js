@@ -1,8 +1,8 @@
-import {nominalBodyIntersectsBox} from './nominal-collision.js?v=8c466e17ba47';
-import { layoutTranslationProposals } from './layout-fitting.js?v=8c466e17ba47';
-import { featureCompatibility, axesCompatible } from './connection-types.js?v=8c466e17ba47';
-import { transformVector } from './specialist-placement.js?v=8c466e17ba47';
-import { partBodyBounds } from './assembly-analysis.js?v=8c466e17ba47';
+import {nominalBodyIntersectsBox} from './nominal-collision.js?v=ea85888e5541';
+import { layoutTranslationProposals } from './layout-fitting.js?v=ea85888e5541';
+import { featureCompatibility, axesCompatible } from './connection-types.js?v=ea85888e5541';
+import { transformVector } from './specialist-placement.js?v=ea85888e5541';
+import { partBodyBounds } from './assembly-analysis.js?v=ea85888e5541';
 /** Propagate relation- and connector-derived translations only inside explicitly uncertain
  * component positions. Orientations and geometry come from catalogue candidates;
  * no fixture or object-category recipe participates in the search. */
@@ -13,14 +13,14 @@ export function fitAttachmentPoses(spec,sets,profiles,{maxAlternatives=48,maxAtt
  const seen=result.map(cs=>new Set(cs.map(signature)));
  const worldFeatures=c=>c.parts.flatMap(p=>profiles.get(p.part_id).features.map(f=>({...f,point:transformVector(p.matrix,f.position_ldu).map((v,i)=>v+p.translation_ldu[i]),direction:transformVector(p.matrix,f.axis)})));
  const cached=new WeakMap();const features=c=>{if(!cached.has(c))cached.set(c,worldFeatures(c));return cached.get(c);};
- const keepouts=(spec.negative_spaces||[]).map(s=>({min:[s.position_mm.x,s.position_mm.y,s.position_mm.z],max:[s.position_mm.x+s.dimensions_mm.width,s.position_mm.y+s.dimensions_mm.height,s.position_mm.z+s.dimensions_mm.depth]}));
+ const keepouts=(spec.negative_spaces||[]).map(s=>({component:s.component_id,min:[s.position_mm.x,s.position_mm.y,s.position_mm.z],max:[s.position_mm.x+s.dimensions_mm.width,s.position_mm.y+s.dimensions_mm.height,s.position_mm.z+s.dimensions_mm.depth]}));
  const resultReport=()=>({sets:result,attempts,generated,layout_generated:layoutGenerated,budget_exhausted:budgetExhausted});
  const insert=(moving,candidate,delta)=>{
   const tolerance=spec.components[moving].position_tolerance_mm||0,offset=delta.map((v,i)=>v+(candidate.pose_offset_ldu?.[i]||0));
   if(!tolerance||offset.some(v=>Math.abs(v*.4)>tolerance+1e-6))return false;
   const placed={...candidate,pose_offset_ldu:offset,parts:candidate.parts.map(p=>({...p,translation_ldu:p.translation_ldu.map((v,i)=>v+delta[i])}))};
   const key=signature(placed);if(seen[moving].has(key))return false;
-  if(placed.parts.some(p=>keepouts.some(k=>nominalBodyIntersectsBox(p,profiles.get(p.part_id),k))))return false;
+  if(placed.parts.some(p=>keepouts.some(k=>(k.component===undefined||k.component===p.component_id)&&nominalBodyIntersectsBox(p,profiles.get(p.part_id),k))))return false;
   seen[moving].add(key);result[moving].push(placed);generated++;return true;
  };
  const bounds=c=>{const bs=c.parts.map(p=>partBodyBounds(p,profiles.get(p.part_id)));return {min:[0,1,2].map(i=>Math.min(...bs.map(b=>b.min[i]))),max:[0,1,2].map(i=>Math.max(...bs.map(b=>b.max[i])))};};

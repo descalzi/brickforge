@@ -22,7 +22,7 @@ for(const spec of fixtures.fixtures)test("studio brief constructs with actual no
   assert.ok(shift.every(v=>Math.abs(v)<=(c.position_tolerance_mm||0)+1e-6),'position adjustment exceeds explicit allowance: '+c.id);
   const lo=[p.x,p.y,p.z].map((v,i)=>v+shift[i]),hi=lo.map((v,i)=>v+[d.width,d.height,d.depth][i]+(c.fit_tolerance_mm||0));
   assert.ok(actual.min.every((v,i)=>v>=lo[i]-1e-6)&&actual.max.every((v,i)=>v<=hi[i]+1e-6),"part outside semantic volume: "+part.instance_id);
-  for(const space of spec.negative_spaces||[]){const p=space.position_mm,d=space.dimensions_mm,lo=[p.x,p.y,p.z],hi=[p.x+d.width,p.y+d.height,p.z+d.depth];assert.ok(![0,1,2].every(i=>Math.min(actual.max[i],hi[i])-Math.max(actual.min[i],lo[i])>1e-6),"part body intersects "+space.id);}
+  for(const space of spec.negative_spaces||[]){if(space.component_id!==undefined && space.component_id!==part.component_id)continue;const p=space.position_mm,d=space.dimensions_mm,lo=[p.x,p.y,p.z],hi=[p.x+d.width,p.y+d.height,p.z+d.depth];assert.ok(![0,1,2].every(i=>Math.min(actual.max[i],hi[i])-Math.max(actual.min[i],lo[i])>1e-6),"part body intersects "+space.id);}
  }
 });
 test("partial-cell keepouts are rejected instead of silently filled",()=>{const spec=structuredClone(fixtures.fixtures[1]);spec.negative_spaces[0].position_mm.x+=1;const plan=planDesign(spec,catalogue,options);assert.equal(plan.status,"blocked");assert.match(plan.failures[0],/partial grid cell/);});
