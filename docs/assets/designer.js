@@ -1,10 +1,10 @@
-import {reorientExtrudedComponent} from './part-orientation.js?v=3ae726348844';
-import { ASSET_VERSION } from "./release-version.js?v=3ae726348844";
-import { buildInterpretationRequest, interpretDescription, endpointProvider } from "./text-design.js?v=3ae726348844";
-import { createInstructionPdf } from "./instruction-pdf.js?v=3ae726348844";
-import { partBodyBounds } from "./assembly-analysis.js?v=3ae726348844";
-import { validateDesignSpec } from "./design-spec.js?v=3ae726348844";
-import { createDesignViewer, colours } from "./design-viewer.js?v=3ae726348844";
+import {reorientExtrudedComponent} from './part-orientation.js?v=d0896f9f9a9d';
+import { ASSET_VERSION } from "./release-version.js?v=d0896f9f9a9d";
+import { buildInterpretationRequest, interpretDescription, endpointProvider } from "./text-design.js?v=d0896f9f9a9d";
+import { createInstructionPdf } from "./instruction-pdf.js?v=d0896f9f9a9d";
+import { partBodyBounds } from "./assembly-analysis.js?v=d0896f9f9a9d";
+import { validateDesignSpec } from "./design-spec.js?v=d0896f9f9a9d";
+import { createDesignViewer, colours } from "./design-viewer.js?v=d0896f9f9a9d";
 const $=id=>document.getElementById(id);
 const editor=$("design-spec"),status=$("engine-status"),runButton=$("run-design"),selector=$("fixture-select");
 const downloads=[$("download-ldraw"),$("download-bom"),$("download-report"),$("download-instructions"),$("download-pdf")];
@@ -52,20 +52,33 @@ function showEvidence(plan){
   $("validation-list").replaceChildren();$("warning-list").replaceChildren();
   for(const check of plan.validation?.checks||[]){const row=document.createElement("div");row.className="check";row.dataset.state=check.status;const name=document.createElement("strong"),detail=document.createElement("small");name.textContent=check.id.replaceAll("_"," ");detail.textContent=check.detail;row.append(name,detail);$("validation-list").append(row);}
   for(const check of plan.relationship_checks||[]){if(check.type==='attached_to')continue;const row=document.createElement('div');row.className='check';row.dataset.state=check.status;const name=document.createElement('strong'),detail=document.createElement('small');name.textContent=check.detail;detail.textContent=check.measured_mm===null?'Realised shape and layout checked.':`Measured ${+check.measured_mm.toFixed(3)} mm; target ${+check.expected_mm.toFixed(3)} mm ± ${check.tolerance_mm} mm`;row.append(name,detail);$('validation-list').append(row);}
-  for(const report of plan.component_reports||[])if(report.dimension_search){const row=document.createElement('div');row.className='check';row.dataset.state='passed';const name=document.createElement('strong'),detail=document.createElement('small'),format=d=>['width','depth','height'].map(k=>+d[k].toFixed(3)).join(' × ');name.textContent='Dimension fit: '+report.component_id;detail.textContent=`Requested ${format(report.requested_dimensions_mm)} mm; realised ${format(report.realised_dimensions_mm)} mm. Allowance ±${report.allowed_deviation_mm} mm per dimension; joints and relationships checked.`;row.append(name,detail);$('validation-list').append(row);}
-  for(const report of plan.component_reports||[])if(report.approximation){const a=report.approximation,row=document.createElement('div');row.className='check';row.dataset.state='warning';const name=document.createElement('strong'),detail=document.createElement('small');name.textContent='Stepped rounded shape: '+report.component_id;detail.textContent=`Allowed radial shape error ${a.shape_tolerance_mm} mm. Outer excess bound ${a.outer_excess_bound_mm.toFixed(2)} mm; inner missing-band bound ${a.inner_missing_band_bound_mm.toFixed(2)} mm, excluding declared voids.`;row.append(name,detail);$('validation-list').append(row);}
-  const list=document.createElement("ul");for(const message of [...plan.failures||[],...plan.warnings||[]]){const li=document.createElement("li");li.textContent=message;list.append(li);}$("warning-list").append(list);
+  for(const report of plan.component_reports||[])if(plan.status==="planned" && report.dimension_search){const row=document.createElement('div');row.className='check';row.dataset.state='passed';const name=document.createElement('strong'),detail=document.createElement('small'),format=d=>['width','depth','height'].map(k=>+d[k].toFixed(3)).join(' × ');name.textContent='Dimension fit: '+report.component_id;detail.textContent=`Requested ${format(report.requested_dimensions_mm)} mm; realised ${format(report.realised_dimensions_mm)} mm. Allowance ±${report.allowed_deviation_mm} mm per dimension; joints and relationships checked.`;row.append(name,detail);$('validation-list').append(row);}
+  for(const report of plan.component_reports||[])if(plan.status==="planned" && report.approximation){const a=report.approximation,row=document.createElement('div');row.className='check';row.dataset.state='warning';const name=document.createElement('strong'),detail=document.createElement('small');name.textContent='Stepped rounded shape: '+report.component_id;detail.textContent=`Allowed radial shape error ${a.shape_tolerance_mm} mm. Outer excess bound ${a.outer_excess_bound_mm.toFixed(2)} mm; inner missing-band bound ${a.inner_missing_band_bound_mm.toFixed(2)} mm, excluding declared voids.`;row.append(name,detail);$('validation-list').append(row);}
+  for (const component of plan.component_reports || []) {
+    if (component.status !== 'blocked') continue;
+    const row = document.createElement('div');
+    row.className = 'check';
+    row.dataset.state = 'blocked';
+    const name = document.createElement('strong'), reason = document.createElement('small');
+    name.textContent = component.component_id;
+    reason.textContent = component.reason;
+    row.append(name, reason);
+    $('validation-list').append(row);
+  }
+  const shownReasons = new Set((plan.component_reports || []).filter(r => r.status === "blocked").map(r => r.reason));
+  const list=document.createElement("ul");for(const message of [...(plan.failures || []).filter(reason => !shownReasons.has(reason)),...plan.warnings||[]]){const li=document.createElement("li");li.textContent=message;list.append(li);}$("warning-list").append(list);
   $("engine-report").textContent=JSON.stringify(plan,null,2);
 }
 function run(){
   invalidate("Validating design specification…");
   let spec;try{spec=JSON.parse(editor.value);const validation=validateDesignSpec(spec);if(!validation.valid)throw new Error(validation.errors.join(" "));}catch(error){setStatus(error.message,"blocked");$("engine-report").textContent=error.message;return;}
   components(spec);activeSpec=spec;runButton.disabled=true;$("cancel-design").hidden=false;setStatus("Searching catalogue parts and connected layouts…","planning");
-  const started=performance.now();worker=new Worker(new URL("./design-worker.js?v=3ae726348844",import.meta.url),{type:"module"});
+  const started=performance.now();worker=new Worker(new URL("./design-worker.js?v=d0896f9f9a9d",import.meta.url),{type:"module"});
   worker.onmessage=({data})=>{
     finishWorker();if(data.error){setStatus(data.error,"blocked");$("engine-report").textContent=data.error;return;}
     result=data.result;showEvidence(result);components(spec,result);
-    if(result.status!=="planned"){$("brief-repair").hidden=false;setStatus((result.failures||["No plan found."]).join(" "),"blocked");return;}
+    if(result.status!=="planned"){$("brief-repair").hidden=false;const count=result.component_reports?.filter(r=>r.status==='blocked').length;
+      setStatus(count>1 ? `${count} components could not be fitted. See the reasons below.` : (result.failures||["No plan found."]).join(" "),"blocked");return;}
     $("engine-parts").textContent=result.parts.length;$("engine-connections").textContent=result.connections.length;$("engine-pairs").textContent=result.total_mating_pairs??"—";
     const d=result.dimensions_mm;$("engine-size").textContent=d?`${+d.width.toFixed(1)} × ${+d.depth.toFixed(1)} × ${+d.height.toFixed(1)}`:"See report";
     const pitch=spec.constraints.course_type==="brick"?9.6:3.2;
@@ -154,7 +167,7 @@ showRevisions();
 const revisionFieldNames = {position_tolerance_mm: 'position allowance per axis', fit_tolerance_mm: 'dimension allowance', shape_tolerance_mm: 'radial shape allowance'};
 $("find-revision").addEventListener("click", () => {
   if (result?.status !== "blocked" || worker) return;
-  const search = new Worker(new URL("./design-worker.js?v=3ae726348844", import.meta.url), {type: "module"});
+  const search = new Worker(new URL("./design-worker.js?v=d0896f9f9a9d", import.meta.url), {type: "module"});
   worker = search;
   const preview = $("revision-preview");
   $("find-revision").disabled = true;

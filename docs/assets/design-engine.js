@@ -1,17 +1,17 @@
-import {rectangularDimensionVariants} from './dimension-variants.js?v=3ae726348844';
-import {combineCourseTilings} from './course-beam-search.js?v=3ae726348844';
-import {roundedShapeOccupancy} from './rounded-shape.js?v=3ae726348844';
-import {composeExtrudedProfile} from './profile-composition.js?v=3ae726348844';
-import { evaluateDesignRelationships as evaluateRelationships } from "./design-relations.js?v=3ae726348844";
-import { featureCompatibility, axesCompatible } from "./connection-types.js?v=3ae726348844";
-import { fitAttachmentPoses } from "./attachment-fitting.js?v=3ae726348844";
-import { assertValidDesignSpec } from "./design-spec.js?v=3ae726348844";
-import { discoverPartCandidates, validatePartCapabilityCatalogue } from "./part-catalogue.js?v=3ae726348844";
-import { translateComponentRequirements } from "./design-translation.js?v=3ae726348844";
-import { planTechnicBeamJoint } from "./technic-planner.js?v=3ae726348844";
-import { specialistComponentCandidates } from "./specialist-placement.js?v=3ae726348844";
-import { partBodyBounds, analyzeAssembly,findBodyCollisions } from "./assembly-analysis.js?v=3ae726348844";
-import { createAssemblyInstructions } from "./assembly-instructions.js?v=3ae726348844";
+import {rectangularDimensionVariants} from './dimension-variants.js?v=d0896f9f9a9d';
+import {combineCourseTilings} from './course-beam-search.js?v=d0896f9f9a9d';
+import {roundedShapeOccupancy} from './rounded-shape.js?v=d0896f9f9a9d';
+import {composeExtrudedProfile} from './profile-composition.js?v=d0896f9f9a9d';
+import { evaluateDesignRelationships as evaluateRelationships } from "./design-relations.js?v=d0896f9f9a9d";
+import { featureCompatibility, axesCompatible } from "./connection-types.js?v=d0896f9f9a9d";
+import { fitAttachmentPoses } from "./attachment-fitting.js?v=d0896f9f9a9d";
+import { assertValidDesignSpec } from "./design-spec.js?v=d0896f9f9a9d";
+import { discoverPartCandidates, validatePartCapabilityCatalogue } from "./part-catalogue.js?v=d0896f9f9a9d";
+import { translateComponentRequirements } from "./design-translation.js?v=d0896f9f9a9d";
+import { planTechnicBeamJoint } from "./technic-planner.js?v=d0896f9f9a9d";
+import { specialistComponentCandidates } from "./specialist-placement.js?v=d0896f9f9a9d";
+import { partBodyBounds, analyzeAssembly,findBodyCollisions } from "./assembly-analysis.js?v=d0896f9f9a9d";
+import { createAssemblyInstructions } from "./assembly-instructions.js?v=d0896f9f9a9d";
 
 const LDU_TO_MM = 0.4;
 const STUD_PITCH_MM = 8;
@@ -313,9 +313,32 @@ export function planDesign(spec,catalogue,overrides={}) {
   const componentReports=[],candidateSets=[];
   for(const component of spec.components) {
     const result=componentCandidates(component,catalogue,options,partCatalogue,designTranslation);
-    if(result.error) return {status:"blocked",design_id:spec.design_id,failures:[result.error],warnings:[],parts:[],connections:[],search:{component_budget_exhausted:!!(result.composition?.budget_exhausted||result.course_search?.budget_exhausted||result.dimension_search?.budget_exhausted||result.approximation?.budget_exhausted),budget_exhausted:!!(result.composition?.budget_exhausted||result.course_search?.budget_exhausted||result.dimension_search?.budget_exhausted||result.approximation?.budget_exhausted)},component_reports:[{component_id:component.id,status:"blocked",reason:result.error,dimension_search:result.dimension_search||null,course_search:result.course_search||null,approximation:result.approximation||null,composition:result.composition||null}]};
+    if (result.error) {
+      componentReports.push({
+        component_id: component.id, status: 'blocked', reason: result.error,
+        dimension_search: result.dimension_search || null,
+        course_search: result.course_search || null,
+        approximation: result.approximation || null,
+        composition: result.composition || null
+      });
+      if (overrides.stopOnFirstComponentFailure) break;
+      continue;
+    }
     candidateSets.push(result.alternatives);
     componentReports.push({component_id:component.id,status:"planned",dimension_search:result.dimension_search||null,course_search:result.course_search||null,approximation:result.approximation||null,composition:result.composition||null,semantic_candidate_count:result.semantic_candidates.length,specialist:result.alternatives.some(a=>a.specialist),top_part_candidates:result.semantic_candidates.slice(0,5).map(candidate=>({part_id:candidate.part_id,description:candidate.description,score:candidate.score,dimension_error_mm:candidate.dimension_error_mm})),candidate_layouts:result.alternatives.length,search_nodes:result.search_nodes,combinations_examined:result.combinations});
+  }
+  const blockedComponents = componentReports.filter(report => report.status === 'blocked');
+  if (blockedComponents.length) {
+    const budgetExhausted = blockedComponents.some(report =>
+      [report.composition, report.course_search, report.dimension_search, report.approximation]
+        .some(search => search?.budget_exhausted));
+    return {
+      status: 'blocked', design_id: spec.design_id, parts: [], connections: [], warnings: [],
+      failures: blockedComponents.map(report => report.reason),
+      component_reports: componentReports.map(report => report.status === 'planned'
+        ? {...report, status: 'candidates_found'} : report),
+      search: {component_budget_exhausted: budgetExhausted, budget_exhausted: budgetExhausted}
+    };
   }
   const poseSearch=fitAttachmentPoses(spec,candidateSets,profileMap,{maxAttempts:options.maxSearchNodes});
   candidateSets.splice(0,candidateSets.length,...poseSearch.sets);
