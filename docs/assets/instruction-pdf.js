@@ -1,6 +1,6 @@
-import {rasterizeInstructionFaces} from './instruction-rasterizer.js?v=7cab87a13250';
+import {rasterizeInstructionFaces} from './instruction-rasterizer.js?v=cb7f60a0af7d';
 // Browser-native illustrated hybrid booklet. Diagrams and inventory share the canonical plan.
-import { transformVector } from './specialist-placement.js?v=7cab87a13250';
+import { transformVector } from './specialist-placement.js?v=cb7f60a0af7d';
 const palette=new Map([[0,'#26343b'],[1,'#1e5aa8'],[2,'#00852b'],[4,'#b40000'],[7,'#8a928d'],[14,'#f2cd37'],[15,'#eeeeee'],[19,'#e4cd9e'],[25,'#d66b24']]);
 const colourNames=new Map([[0,'Black'],[1,'Blue'],[2,'Green'],[4,'Red'],[7,'Grey'],[14,'Yellow'],[15,'White'],[19,'Tan'],[25,'Orange']]);
 const clean=s=>String(s).normalize('NFKD').replace(/[^\x20-\x7e]/g,' ').replace(/[\\()]/g,'\\$&');
@@ -22,7 +22,10 @@ function triangles(profile){
  for(const f of profile.features.filter(f=>f.kind==='stud')){const [x,y,z]=f.position_ldu.map(v=>v*.4);for(let i=0;i<12;i++){const a=i*Math.PI/6,b=(i+1)*Math.PI/6,pa=[x+2.4*Math.cos(a),y-1.6,z+2.4*Math.sin(a)],pb=[x+2.4*Math.cos(b),y-1.6,z+2.4*Math.sin(b)];r.push([[x,y-1.6,z],pa,pb],[pa,[pa[0],y,pa[2]],pb],[pb,[pa[0],y,pa[2]],[pb[0],y,pb[2]]]);}}
  return r;
 }
-function project([x,y,z],yaw=-Math.PI+.7){const pitch=.55;return [x*Math.cos(yaw)+z*Math.sin(yaw),y*Math.cos(pitch)-(-x*Math.sin(yaw)+z*Math.cos(yaw))*Math.sin(pitch),y*Math.sin(pitch)+(-x*Math.sin(yaw)+z*Math.cos(yaw))*Math.cos(pitch)];}
+const defaultYaw=-Math.PI+.7;
+export function instructionViewYaw(direction){return direction&&Math.abs(direction[1])<1e-6&&Math.hypot(direction[0],direction[2])>.999?Math.atan2(-direction[0],direction[2])+.45:defaultYaw;}
+function project([x,y,z],yaw=defaultYaw){const pitch=.55;return [x*Math.cos(yaw)+z*Math.sin(yaw),y*Math.cos(pitch)-(-x*Math.sin(yaw)+z*Math.cos(yaw))*Math.sin(pitch),y*Math.sin(pitch)+(-x*Math.sin(yaw)+z*Math.cos(yaw))*Math.cos(pitch)];}
+const reproject=(faces,yaw)=>faces.map(f=>({...f,points:f.world_points.map(p=>project(p,yaw))}));
 function sceneFaces(plan,profiles){
  const faces=[],cache=new Map();
  for(const part of plan.parts){const profile=profiles.get(part.part_id);if(!profile)throw new Error('No diagram profile for '+part.part_id);
@@ -35,16 +38,16 @@ function sceneFaces(plan,profiles){
   for(const {tri,edges} of cache.get(profile)){
    const world=tri.map(p=>transformVector(part.matrix,p).map((v,i)=>(v+part.translation_ldu[i]*.4)*(i===0?1:-1))),a=world[1].map((v,i)=>v-world[0][i]),b=world[2].map((v,i)=>v-world[0][i]),normal=[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]],len=Math.hypot(...normal)||1;
    const lighting=.62+.25*Math.abs(normal[1])/len+.13*Math.abs(normal[0])/len;
-   faces.push({id:part.instance_id,colour:rgb(palette.get(part.colour_code??part.colour)||'#a9b8c2'),points:world.map(p=>project(p)),shade:lighting,edges});
+   faces.push({id:part.instance_id,colour:rgb(palette.get(part.colour_code??part.colour)||'#a9b8c2'),world_points:world,points:world.map(p=>project(p)),shade:lighting,edges});
   }
  }
  return faces;
 }
 const diagramBounds=faces=>{const min=[Infinity,Infinity],max=[-Infinity,-Infinity];for(const f of faces)for(const p of f.points)for(let i=0;i<2;i++){min[i]=Math.min(min[i],p[i]);max[i]=Math.max(max[i],p[i]);}return {min,max};};
 function arrow(a,b){const angle=Math.atan2(b[1]-a[1],b[0]-a[0]),tip=(theta)=>[b[0]-7*Math.cos(theta),b[1]-7*Math.sin(theta)];const l=tip(angle-.45),r=tip(angle+.45);return line(a,b,accent,1.4)+fill(accent)+`${n(b[0])} ${n(b[1])} m ${n(l[0])} ${n(l[1])} l ${n(r[0])} ${n(r[1])} l h f\n`;}
-function drawDiagram(faces,visible,current,box,{bounds=diagramBounds(faces),explode=null,previousFade=.32,background=paper}={},images){
+function drawDiagram(faces,visible,current,box,{bounds=diagramBounds(faces),explode=null,previousFade=.32,background=paper,yaw=defaultYaw}={},images){
  const selected=faces.filter(f=>visible.has(f.id));if(!selected.length)return '';
- const margin=explode?12:0,b={min:bounds.min.map(v=>v-margin),max:bounds.max.map(v=>v+margin)},delta=explode?project(explode):[0,0,0];
+ const margin=explode?12:0,b={min:bounds.min.map(v=>v-margin),max:bounds.max.map(v=>v+margin)},delta=explode?project(explode,yaw):[0,0,0];
  if(explode)for(const f of selected.filter(f=>current.has(f.id)))for(const p of f.points)for(let i=0;i<2;i++){b.min[i]=Math.min(b.min[i],p[i]+delta[i]);b.max[i]=Math.max(b.max[i],p[i]+delta[i]);}
  const scale=Math.min((box.w-20)/(b.max[0]-b.min[0]||1),(box.h-20)/(b.max[1]-b.min[1]||1)),map=p=>[box.x+box.w/2+(p[0]-(b.min[0]+b.max[0])/2)*scale,box.y+box.h/2+(p[1]-(b.min[1]+b.max[1])/2)*scale];
  const pixelWidth=Math.ceil(box.w*2),pixelHeight=Math.ceil(box.h*2);
@@ -79,7 +82,8 @@ export async function createInstructionPdf(plan,catalogue,spec={}){
  if(plan.status!=='planned')throw new Error('A planned assembly is required for instruction export.');
  if(plan.parts.length>120)throw new Error('PDF diagrams are limited to 120 parts. Use the full assembly report and LDraw STEP export for larger plans.');
  const steps=plan.instructions?.steps;if(!steps?.length)throw new Error('No canonical assembly sequence is available.');
- const profiles=new Map(catalogue.profiles.map(p=>[p.part_id,p])),faces=sceneFaces(plan,profiles),bounds=diagramBounds(faces),all=new Set(plan.parts.map(p=>p.instance_id)),streams=[],title=spec.name||plan.design_id,items=plan.bom.items||plan.bom;
+ const profiles=new Map(catalogue.profiles.map(p=>[p.part_id,p]));
+ const sideStep=steps.find(s=>s.approach_direction&&Math.abs(s.approach_direction[1])<1e-6&&s.parts.some(id=>{const part=plan.parts.find(p=>p.instance_id===id);return profiles.get(part.part_id).features.some(f=>f.kind==='stud_receiver');})),overviewYaw=instructionViewYaw(sideStep?.approach_direction),faces=reproject(sceneFaces(plan,profiles),overviewYaw),bounds=diagramBounds(faces),all=new Set(plan.parts.map(p=>p.instance_id)),streams=[],title=spec.name||plan.design_id,items=plan.bom.items||plan.bom;
  const images=[],diagram=(...args)=>drawDiagram(...args,images);
  const header=section=>rect(0,797,595,45,ink)+text(34,815,12,'BRICKFORGE',rgb('#ffffff'))+text(295,815,8,section.slice(0,48),rgb('#dbe7eb'));
  const footer=(page,section)=>line([34,43],[561,43],rgb('#d7e0e4'))+text(34,25,8,section.slice(0,90),muted)+text(535,25,9,String(page));
@@ -95,13 +99,14 @@ export async function createInstructionPdf(plan,catalogue,spec={}){
  }
  const built=new Set();
  for(const [index,step] of steps.entries()){
-  if(index%2===0)out=header('ASSEMBLY / STEP-BY-STEP');const y=index%2===0?427:79,part=plan.parts.find(p=>p.instance_id===step.parts[0]),component=spec.components?.find(c=>c.id===part.component_id),current=new Set(step.parts),pf=faces.filter(f=>current.has(f.id));for(const id of current)built.add(id);
+  if(index%2===0)out=header('ASSEMBLY / STEP-BY-STEP');const y=index%2===0?427:79,part=plan.parts.find(p=>p.instance_id===step.parts[0]),component=spec.components?.find(c=>c.id===part.component_id),current=new Set(step.parts),yaw=step.approach_direction&&Math.abs(step.approach_direction[1])<1e-6?instructionViewYaw(step.approach_direction):overviewYaw,stepFaces=reproject(faces,yaw),pf=stepFaces.filter(f=>current.has(f.id));for(const id of current)built.add(id);
   out+=rect(34,y,527,329,paper)+rect(34,y+280,527,49,rgb('#e1e9ed'))+text(48,y+298,20,'STEP '+step.step)+text(174,y+303,12,(component?.label||component?.id||step.title).slice(0,40))+text(174,y+286,9,`${step.parts.length} new part${step.parts.length===1?'':'s'} / ${step.part_id||part.part_id} / ${colourNames.get(part.colour_code??part.colour)||'see inventory'}`,muted);
   // A separate parts tray keeps the exact incoming element readable.
   out+=rect(438,y+185,109,85,rgb('#ffffff'))+diagram(pf,current,new Set(),{x:444,y:y+198,w:97,h:62},{bounds:diagramBounds(pf),previousFade:0,background:[1,1,1]})+text(445,y+191,9,`${step.parts.length}x  ${part.part_id}`,accent);
   const explode=step.nominal_approach_clear&&step.approach_direction?.some(v=>v)?step.approach_direction.map(v=>v*14):null;
-  out+=diagram(faces,built,current,{x:44,y:y+42,w:390,h:231},{bounds:diagramBounds(faces.filter(f=>built.has(f.id))),explode});
+  out+=diagram(stepFaces,built,current,{x:44,y:y+42,w:390,h:231},{bounds:diagramBounds(stepFaces.filter(f=>built.has(f.id))),explode,yaw});
   out+=text(48,y+31,8,index===0?'Start with this part in the shown orientation.':explode?'Follow the placement arrow; keep the shown orientation.':'Place the new part in the shown orientation. Review the approach.',muted);
+  if(yaw!==overviewYaw)out+=text(310,y+31,7,'View turned toward the joint',accent);
   if(step.support_guidance?.status==='hold_recommended')out+=text(48,y+19,7.5,'Hold / support this stage: nominal balance proxy flags limited support.',accent);
   out+=rect(48,y+8,494,3,rgb('#d8e2e7'))+rect(48,y+8,494*(index+1)/steps.length,3,accent);
   if(index%2===1||index===steps.length-1){out+=footer(streams.length+1,`Steps ${index-index%2+1}-${index+1} / full colour = new / softened = previous`);streams.push(out);await new Promise(resolve=>setTimeout(resolve,0));}

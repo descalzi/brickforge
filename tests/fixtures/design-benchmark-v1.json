@@ -1,0 +1,839 @@
+{
+  "schema_version": 1,
+  "description": "Structured-brief parameter variants and negative controls. These are not unseen natural-language model evaluations or physical build trials. Canonical Studio fixtures and unchanged original challenges are also run separately.",
+  "cases": [
+    {
+      "id": "benchmark-roof-depth24",
+      "scope": "parametric_architecture",
+      "expectation": "planned",
+      "spec": {
+        "schema_version": 1,
+        "design_id": "benchmark-roof-depth24",
+        "units": "mm",
+        "name": "benchmark roof depth24",
+        "components": [
+          {
+            "id": "base",
+            "role": "base",
+            "geometry": "rectangular_prism",
+            "dimensions_mm": {
+              "width": 48,
+              "depth": 24,
+              "height": 3.2
+            },
+            "position_mm": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "priority": "essential",
+            "colour": 7,
+            "label": "Foundation"
+          },
+          {
+            "id": "roof",
+            "role": "roof",
+            "geometry": "extruded_profile",
+            "geometry_parameters": {
+              "depth_mm": 24,
+              "outline_mm": [
+                [
+                  0,
+                  0
+                ],
+                [
+                  48,
+                  0
+                ],
+                [
+                  48,
+                  1.6
+                ],
+                [
+                  40,
+                  9.6
+                ],
+                [
+                  40,
+                  11.2
+                ],
+                [
+                  32,
+                  19.2
+                ],
+                [
+                  16,
+                  19.2
+                ],
+                [
+                  8,
+                  11.2
+                ],
+                [
+                  8,
+                  9.6
+                ],
+                [
+                  0,
+                  1.6
+                ]
+              ]
+            },
+            "dimensions_mm": {
+              "width": 48,
+              "depth": 24,
+              "height": 19.2
+            },
+            "position_mm": {
+              "x": 0,
+              "y": 3.2,
+              "z": 0
+            },
+            "priority": "essential",
+            "required_features": [
+              "sloped"
+            ],
+            "colour": 4,
+            "label": "Composed roof"
+          }
+        ],
+        "relationships": [
+          {
+            "type": "attached_to",
+            "from": "roof",
+            "to": "base"
+          }
+        ],
+        "constraints": {
+          "require_connected": true,
+          "allow_intersections": false,
+          "course_type": "auto",
+          "max_parts": 250,
+          "max_search_nodes": 100000
+        }
+      }
+    },
+    {
+      "id": "benchmark-tunnel-depth24",
+      "scope": "parametric_architecture",
+      "expectation": "planned",
+      "spec": {
+        "schema_version": 1,
+        "design_id": "benchmark-tunnel-depth24",
+        "units": "mm",
+        "name": "benchmark tunnel depth24",
+        "components": [
+          {
+            "id": "base",
+            "role": "base",
+            "geometry": "rectangular_prism",
+            "dimensions_mm": {
+              "width": 48,
+              "depth": 24,
+              "height": 3.2
+            },
+            "position_mm": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "priority": "essential",
+            "colour": 7,
+            "label": "Foundation"
+          },
+          {
+            "id": "roof",
+            "role": "roof",
+            "geometry": "extruded_profile",
+            "geometry_parameters": {
+              "depth_mm": 24,
+              "outline_mm": [
+                [
+                  0,
+                  0
+                ],
+                [
+                  48,
+                  0
+                ],
+                [
+                  48,
+                  1.6
+                ],
+                [
+                  40,
+                  9.6
+                ],
+                [
+                  40,
+                  11.2
+                ],
+                [
+                  32,
+                  19.2
+                ],
+                [
+                  16,
+                  19.2
+                ],
+                [
+                  8,
+                  11.2
+                ],
+                [
+                  8,
+                  9.6
+                ],
+                [
+                  0,
+                  1.6
+                ]
+              ]
+            },
+            "dimensions_mm": {
+              "width": 48,
+              "depth": 24,
+              "height": 19.2
+            },
+            "position_mm": {
+              "x": 0,
+              "y": 3.2,
+              "z": 0
+            },
+            "priority": "essential",
+            "required_features": [
+              "sloped"
+            ],
+            "colour": 4,
+            "label": "Composed roof"
+          }
+        ],
+        "relationships": [
+          {
+            "type": "attached_to",
+            "from": "roof",
+            "to": "base"
+          }
+        ],
+        "constraints": {
+          "require_connected": true,
+          "allow_intersections": false,
+          "course_type": "auto",
+          "max_parts": 250,
+          "max_search_nodes": 100000
+        },
+        "negative_spaces": [
+          {
+            "id": "central-tunnel",
+            "position_mm": {
+              "x": 16,
+              "y": 3.2,
+              "z": 0
+            },
+            "dimensions_mm": {
+              "width": 16,
+              "height": 9.6,
+              "depth": 24
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "benchmark-roof-depth8",
+      "scope": "parametric_architecture",
+      "expectation": "planned",
+      "spec": {
+        "schema_version": 1,
+        "design_id": "benchmark-roof-depth8",
+        "units": "mm",
+        "name": "benchmark roof depth8",
+        "components": [
+          {
+            "id": "base",
+            "role": "base",
+            "geometry": "rectangular_prism",
+            "dimensions_mm": {
+              "width": 48,
+              "depth": 8,
+              "height": 3.2
+            },
+            "position_mm": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "priority": "essential",
+            "colour": 7,
+            "label": "Foundation"
+          },
+          {
+            "id": "roof",
+            "role": "roof",
+            "geometry": "extruded_profile",
+            "geometry_parameters": {
+              "depth_mm": 8,
+              "outline_mm": [
+                [
+                  0,
+                  0
+                ],
+                [
+                  48,
+                  0
+                ],
+                [
+                  48,
+                  1.6
+                ],
+                [
+                  40,
+                  9.6
+                ],
+                [
+                  40,
+                  11.2
+                ],
+                [
+                  32,
+                  19.2
+                ],
+                [
+                  16,
+                  19.2
+                ],
+                [
+                  8,
+                  11.2
+                ],
+                [
+                  8,
+                  9.6
+                ],
+                [
+                  0,
+                  1.6
+                ]
+              ]
+            },
+            "dimensions_mm": {
+              "width": 48,
+              "depth": 8,
+              "height": 19.2
+            },
+            "position_mm": {
+              "x": 0,
+              "y": 3.2,
+              "z": 0
+            },
+            "priority": "essential",
+            "required_features": [
+              "sloped"
+            ],
+            "colour": 4,
+            "label": "Composed roof"
+          }
+        ],
+        "relationships": [
+          {
+            "type": "attached_to",
+            "from": "roof",
+            "to": "base"
+          }
+        ],
+        "constraints": {
+          "require_connected": true,
+          "allow_intersections": false,
+          "course_type": "auto",
+          "max_parts": 250,
+          "max_search_nodes": 100000
+        }
+      }
+    },
+    {
+      "id": "benchmark-curve-width48",
+      "scope": "parametric_curved_surface",
+      "expectation": "planned",
+      "spec": {
+        "schema_version": 1,
+        "design_id": "benchmark-curve-width48",
+        "name": "benchmark curve width48",
+        "units": "mm",
+        "components": [
+          {
+            "id": "base",
+            "role": "base",
+            "geometry": "rectangular_prism",
+            "dimensions_mm": {
+              "width": 48,
+              "height": 3.2,
+              "depth": 16
+            },
+            "position_mm": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "priority": "essential",
+            "colour": 7
+          },
+          {
+            "id": "canopy",
+            "role": "roof",
+            "geometry": "extruded_profile",
+            "dimensions_mm": {
+              "width": 48,
+              "height": 6.4,
+              "depth": 16
+            },
+            "position_mm": {
+              "x": 0,
+              "y": 3.2,
+              "z": 0
+            },
+            "priority": "essential",
+            "colour": 4,
+            "fit_tolerance_mm": 0.001,
+            "geometry_parameters": {
+              "extrusion_axis": "x",
+              "depth_mm": 48,
+              "outline_mm": [
+                [
+                  16,
+                  3.2
+                ],
+                [
+                  8,
+                  0
+                ],
+                [
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  1.6
+                ],
+                [
+                  2.2256,
+                  3.012629844
+                ],
+                [
+                  4.686400000000001,
+                  4.203954372000001
+                ],
+                [
+                  7.340799999999999,
+                  5.153073816000003
+                ],
+                [
+                  10.144,
+                  5.841446160000001
+                ],
+                [
+                  13.0464,
+                  6.260959272
+                ],
+                [
+                  16,
+                  6.400024392000001
+                ]
+              ]
+            },
+            "required_features": [
+              "curved"
+            ],
+            "orientation": {
+              "up": "+y",
+              "forward": "-z"
+            }
+          }
+        ],
+        "relationships": [
+          {
+            "type": "attached_to",
+            "from": "canopy",
+            "to": "base"
+          }
+        ],
+        "constraints": {
+          "require_connected": true,
+          "allow_intersections": false,
+          "course_type": "auto",
+          "max_parts": 100,
+          "max_search_nodes": 100000
+        },
+        "assumptions": [
+          "The 0.001 mm dimension allowance covers source faceting precision; the measured curve and rear recess remain explicit. Only the front flat row has nominal receivers."
+        ]
+      }
+    },
+    {
+      "id": "benchmark-side-panel-offset",
+      "scope": "parametric_side_joint",
+      "expectation": "planned",
+      "spec": {
+        "schema_version": 1,
+        "design_id": "benchmark-side-panel-offset",
+        "name": "benchmark side panel offset",
+        "units": "mm",
+        "components": [
+          {
+            "id": "base",
+            "role": "base",
+            "geometry": "rectangular_prism",
+            "dimensions_mm": {
+              "width": 24,
+              "height": 12.8,
+              "depth": 16
+            },
+            "position_mm": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "priority": "essential",
+            "colour": 7
+          },
+          {
+            "id": "mount",
+            "role": "side_mount",
+            "geometry": "rectangular_prism",
+            "dimensions_mm": {
+              "width": 8,
+              "height": 9.6,
+              "depth": 8
+            },
+            "position_mm": {
+              "x": 8,
+              "y": 12.8,
+              "z": 8
+            },
+            "priority": "essential",
+            "colour": 14,
+            "required_features": [
+              "side_stud"
+            ],
+            "orientation": {
+              "up": "+y",
+              "forward": "+z"
+            }
+          },
+          {
+            "id": "panel",
+            "role": "wall",
+            "geometry": "rectangular_prism",
+            "dimensions_mm": {
+              "width": 8,
+              "height": 8,
+              "depth": 3.2
+            },
+            "position_mm": {
+              "x": 8,
+              "y": 14.4,
+              "z": 14.4
+            },
+            "priority": "essential",
+            "colour": 4,
+            "orientation": {
+              "up": "+z"
+            }
+          }
+        ],
+        "relationships": [
+          {
+            "type": "attached_to",
+            "from": "mount",
+            "to": "base"
+          },
+          {
+            "type": "attached_to",
+            "from": "panel",
+            "to": "mount"
+          }
+        ],
+        "constraints": {
+          "require_connected": true,
+          "allow_intersections": false,
+          "course_type": "auto",
+          "max_parts": 100,
+          "max_search_nodes": 100000
+        },
+        "assumptions": [
+          "The headlight connector has a recessed side-stud datum. Side clutch and insertion remain physically unverified."
+        ]
+      }
+    },
+    {
+      "id": "benchmark-rounded32",
+      "scope": "parametric_organic_approximation",
+      "expectation": "planned",
+      "spec": {
+        "schema_version": 1,
+        "design_id": "benchmark-rounded32",
+        "name": "benchmark rounded32",
+        "units": "mm",
+        "relationships": [],
+        "constraints": {
+          "require_connected": true,
+          "allow_intersections": false,
+          "max_parts": 200,
+          "max_search_nodes": 100000,
+          "course_type": "auto"
+        },
+        "appearance": {
+          "preferred_colours": [
+            4
+          ]
+        },
+        "components": [
+          {
+            "id": "body",
+            "role": "organic_form",
+            "geometry": "sphere",
+            "dimensions_mm": {
+              "width": 32,
+              "height": 32,
+              "depth": 32
+            },
+            "position_mm": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "priority": "essential",
+            "confidence": "explicit",
+            "geometry_parameters": {
+              "radius_mm": 16
+            },
+            "function": [
+              "organic silhouette"
+            ],
+            "shape_tolerance_mm": 6.4,
+            "label": "Rounded body"
+          }
+        ],
+        "assumptions": [
+          "The solid body permits a stepped brick approximation with a 6.4 mm radial shape allowance. Smooth curved source surfaces are not required."
+        ]
+      }
+    },
+    {
+      "id": "benchmark-wrong-panel-facing",
+      "scope": "negative_side_joint",
+      "expectation": "blocked",
+      "spec": {
+        "schema_version": 1,
+        "design_id": "benchmark-wrong-panel-facing",
+        "name": "benchmark wrong panel facing",
+        "units": "mm",
+        "components": [
+          {
+            "id": "base",
+            "role": "base",
+            "geometry": "rectangular_prism",
+            "dimensions_mm": {
+              "width": 16,
+              "height": 12.8,
+              "depth": 16
+            },
+            "position_mm": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "priority": "essential",
+            "colour": 7
+          },
+          {
+            "id": "mount",
+            "role": "side_mount",
+            "geometry": "rectangular_prism",
+            "dimensions_mm": {
+              "width": 8,
+              "height": 9.6,
+              "depth": 8
+            },
+            "position_mm": {
+              "x": 0,
+              "y": 12.8,
+              "z": 8
+            },
+            "priority": "essential",
+            "colour": 14,
+            "required_features": [
+              "side_stud"
+            ],
+            "orientation": {
+              "up": "+y",
+              "forward": "+z"
+            }
+          },
+          {
+            "id": "panel",
+            "role": "wall",
+            "geometry": "rectangular_prism",
+            "dimensions_mm": {
+              "width": 8,
+              "height": 8,
+              "depth": 3.2
+            },
+            "position_mm": {
+              "x": 0,
+              "y": 14.4,
+              "z": 14.4
+            },
+            "priority": "essential",
+            "colour": 4,
+            "orientation": {
+              "up": "-z"
+            }
+          }
+        ],
+        "relationships": [
+          {
+            "type": "attached_to",
+            "from": "mount",
+            "to": "base"
+          },
+          {
+            "type": "attached_to",
+            "from": "panel",
+            "to": "mount"
+          }
+        ],
+        "constraints": {
+          "require_connected": true,
+          "allow_intersections": false,
+          "course_type": "auto",
+          "max_parts": 100,
+          "max_search_nodes": 100000
+        },
+        "assumptions": [
+          "The headlight connector has a recessed side-stud datum. Side clutch and insertion remain physically unverified."
+        ]
+      }
+    },
+    {
+      "id": "benchmark-curve-forbidden",
+      "scope": "negative_feature_contract",
+      "expectation": "blocked",
+      "spec": {
+        "schema_version": 1,
+        "design_id": "benchmark-curve-forbidden",
+        "name": "benchmark curve forbidden",
+        "units": "mm",
+        "components": [
+          {
+            "id": "base",
+            "role": "base",
+            "geometry": "rectangular_prism",
+            "dimensions_mm": {
+              "width": 32,
+              "height": 3.2,
+              "depth": 16
+            },
+            "position_mm": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "priority": "essential",
+            "colour": 7
+          },
+          {
+            "id": "canopy",
+            "role": "roof",
+            "geometry": "extruded_profile",
+            "dimensions_mm": {
+              "width": 32,
+              "height": 6.4,
+              "depth": 16
+            },
+            "position_mm": {
+              "x": 0,
+              "y": 3.2,
+              "z": 0
+            },
+            "priority": "essential",
+            "colour": 4,
+            "fit_tolerance_mm": 0.001,
+            "geometry_parameters": {
+              "extrusion_axis": "x",
+              "depth_mm": 32,
+              "outline_mm": [
+                [
+                  16,
+                  3.2
+                ],
+                [
+                  8,
+                  0
+                ],
+                [
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  1.6
+                ],
+                [
+                  2.2256,
+                  3.012629844
+                ],
+                [
+                  4.686400000000001,
+                  4.203954372000001
+                ],
+                [
+                  7.340799999999999,
+                  5.153073816000003
+                ],
+                [
+                  10.144,
+                  5.841446160000001
+                ],
+                [
+                  13.0464,
+                  6.260959272
+                ],
+                [
+                  16,
+                  6.400024392000001
+                ]
+              ]
+            },
+            "required_features": [
+              "curved"
+            ],
+            "orientation": {
+              "up": "+y",
+              "forward": "-z"
+            },
+            "forbidden_features": [
+              "curved"
+            ]
+          }
+        ],
+        "relationships": [
+          {
+            "type": "attached_to",
+            "from": "canopy",
+            "to": "base"
+          }
+        ],
+        "constraints": {
+          "require_connected": true,
+          "allow_intersections": false,
+          "course_type": "auto",
+          "max_parts": 100,
+          "max_search_nodes": 100000
+        },
+        "assumptions": [
+          "The 0.001 mm dimension allowance covers source faceting precision; the measured curve and rear recess remain explicit. Only the front flat row has nominal receivers."
+        ]
+      }
+    }
+  ]
+}

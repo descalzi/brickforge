@@ -1,0 +1,404 @@
+{
+  "schema_version": 1,
+  "evaluation": "deterministic_structured_brief_coverage",
+  "limitations": [
+    "Parameter variants do not establish arbitrary-object generation or unseen natural-language interpretation quality.",
+    "Blocked original challenges are known gaps, not successful builds.",
+    "Physical insertion, clutch, load capacity and hand access are not assessed."
+  ],
+  "summary": {
+    "cases": 34,
+    "planned": 28,
+    "negative_controls": 2,
+    "known_gaps": 4,
+    "regressions": 0
+  },
+  "results": [
+    {
+      "id": "interlocked-structural-body",
+      "scope": "canonical_studio",
+      "expectation": "planned",
+      "status": "planned",
+      "expectation_matches": true,
+      "parts": 4,
+      "nominal_approach_unassessed": 0,
+      "physical_insertion": "not_assessed",
+      "failures": []
+    },
+    {
+      "id": "two-opening-wall",
+      "scope": "canonical_studio",
+      "expectation": "planned",
+      "status": "planned",
+      "expectation_matches": true,
+      "parts": 8,
+      "nominal_approach_unassessed": 0,
+      "physical_insertion": "not_assessed",
+      "failures": []
+    },
+    {
+      "id": "table",
+      "scope": "canonical_studio",
+      "expectation": "planned",
+      "status": "planned",
+      "expectation_matches": true,
+      "parts": 12,
+      "nominal_approach_unassessed": 0,
+      "physical_insertion": "not_assessed",
+      "failures": []
+    },
+    {
+      "id": "stepped-platform",
+      "scope": "canonical_studio",
+      "expectation": "planned",
+      "status": "planned",
+      "expectation_matches": true,
+      "parts": 5,
+      "nominal_approach_unassessed": 0,
+      "physical_insertion": "not_assessed",
+      "failures": []
+    },
+    {
+      "id": "open-courtyard",
+      "scope": "canonical_studio",
+      "expectation": "planned",
+      "status": "planned",
+      "expectation_matches": true,
+      "parts": 15,
+      "nominal_approach_unassessed": 0,
+      "physical_insertion": "not_assessed",
+      "failures": []
+    },
+    {
+      "id": "windowed-pavilion",
+      "scope": "canonical_studio",
+      "expectation": "planned",
+      "status": "planned",
+      "expectation_matches": true,
+      "parts": 17,
+      "nominal_approach_unassessed": 0,
+      "physical_insertion": "not_assessed",
+      "failures": []
+    },
+    {
+      "id": "sloped-canopy",
+      "scope": "canonical_studio",
+      "expectation": "planned",
+      "status": "planned",
+      "expectation_matches": true,
+      "parts": 5,
+      "nominal_approach_unassessed": 0,
+      "physical_insertion": "not_assessed",
+      "failures": []
+    },
+    {
+      "id": "small-road-car",
+      "scope": "canonical_studio",
+      "expectation": "planned",
+      "status": "planned",
+      "expectation_matches": true,
+      "parts": 17,
+      "nominal_approach_unassessed": 0,
+      "physical_insertion": "not_assessed",
+      "failures": []
+    },
+    {
+      "id": "tapered-aircraft",
+      "scope": "canonical_studio",
+      "expectation": "planned",
+      "status": "planned",
+      "expectation_matches": true,
+      "parts": 4,
+      "nominal_approach_unassessed": 0,
+      "physical_insertion": "not_assessed",
+      "failures": []
+    },
+    {
+      "id": "rounded-mushroom",
+      "scope": "canonical_studio",
+      "expectation": "planned",
+      "status": "planned",
+      "expectation_matches": true,
+      "parts": 3,
+      "nominal_approach_unassessed": 0,
+      "physical_insertion": "not_assessed",
+      "failures": []
+    },
+    {
+      "id": "doorway-wall",
+      "scope": "canonical_studio",
+      "expectation": "planned",
+      "status": "planned",
+      "expectation_matches": true,
+      "parts": 16,
+      "nominal_approach_unassessed": 0,
+      "physical_insertion": "not_assessed",
+      "failures": []
+    },
+    {
+      "id": "approximate-road-car",
+      "scope": "canonical_studio",
+      "expectation": "planned",
+      "status": "planned",
+      "expectation_matches": true,
+      "parts": 17,
+      "nominal_approach_unassessed": 0,
+      "physical_insertion": "not_assessed",
+      "failures": []
+    },
+    {
+      "id": "aligned-table",
+      "scope": "canonical_studio",
+      "expectation": "planned",
+      "status": "planned",
+      "expectation_matches": true,
+      "parts": 12,
+      "nominal_approach_unassessed": 0,
+      "physical_insertion": "not_assessed",
+      "failures": []
+    },
+    {
+      "id": "composed-pitched-roof",
+      "scope": "canonical_studio",
+      "expectation": "planned",
+      "status": "planned",
+      "expectation_matches": true,
+      "parts": 7,
+      "nominal_approach_unassessed": 0,
+      "physical_insertion": "not_assessed",
+      "failures": []
+    },
+    {
+      "id": "composed-roof-tunnel",
+      "scope": "canonical_studio",
+      "expectation": "planned",
+      "status": "planned",
+      "expectation_matches": true,
+      "parts": 6,
+      "nominal_approach_unassessed": 0,
+      "physical_insertion": "not_assessed",
+      "failures": []
+    },
+    {
+      "id": "stepped-rounded-body",
+      "scope": "canonical_studio",
+      "expectation": "planned",
+      "status": "planned",
+      "expectation_matches": true,
+      "parts": 48,
+      "nominal_approach_unassessed": 0,
+      "physical_insertion": "not_assessed",
+      "failures": []
+    },
+    {
+      "id": "joint-sized-platform",
+      "scope": "canonical_studio",
+      "expectation": "planned",
+      "status": "planned",
+      "expectation_matches": true,
+      "parts": 2,
+      "nominal_approach_unassessed": 0,
+      "physical_insertion": "not_assessed",
+      "failures": []
+    },
+    {
+      "id": "joint-height-platform",
+      "scope": "canonical_studio",
+      "expectation": "planned",
+      "status": "planned",
+      "expectation_matches": true,
+      "parts": 5,
+      "nominal_approach_unassessed": 0,
+      "physical_insertion": "not_assessed",
+      "failures": []
+    },
+    {
+      "id": "side-mounted-panel",
+      "scope": "canonical_studio",
+      "expectation": "planned",
+      "status": "planned",
+      "expectation_matches": true,
+      "parts": 4,
+      "nominal_approach_unassessed": 0,
+      "physical_insertion": "not_assessed",
+      "failures": []
+    },
+    {
+      "id": "shallow-canopy",
+      "scope": "canonical_studio",
+      "expectation": "planned",
+      "status": "planned",
+      "expectation_matches": true,
+      "parts": 4,
+      "nominal_approach_unassessed": 0,
+      "physical_insertion": "not_assessed",
+      "failures": []
+    },
+    {
+      "id": "curved-canopy",
+      "scope": "canonical_studio",
+      "expectation": "planned",
+      "status": "planned",
+      "expectation_matches": true,
+      "parts": 3,
+      "nominal_approach_unassessed": 0,
+      "physical_insertion": "not_assessed",
+      "failures": []
+    },
+    {
+      "id": "composed-curved-plinth",
+      "scope": "canonical_studio",
+      "expectation": "planned",
+      "status": "planned",
+      "expectation_matches": true,
+      "parts": 2,
+      "nominal_approach_unassessed": 0,
+      "physical_insertion": "not_assessed",
+      "failures": []
+    },
+    {
+      "id": "benchmark-roof-depth24",
+      "scope": "parametric_architecture",
+      "expectation": "planned",
+      "status": "planned",
+      "expectation_matches": true,
+      "parts": 11,
+      "nominal_approach_unassessed": 0,
+      "physical_insertion": "not_assessed",
+      "failures": []
+    },
+    {
+      "id": "benchmark-tunnel-depth24",
+      "scope": "parametric_architecture",
+      "expectation": "planned",
+      "status": "planned",
+      "expectation_matches": true,
+      "parts": 10,
+      "nominal_approach_unassessed": 0,
+      "physical_insertion": "not_assessed",
+      "failures": []
+    },
+    {
+      "id": "benchmark-roof-depth8",
+      "scope": "parametric_architecture",
+      "expectation": "planned",
+      "status": "planned",
+      "expectation_matches": true,
+      "parts": 6,
+      "nominal_approach_unassessed": 0,
+      "physical_insertion": "not_assessed",
+      "failures": []
+    },
+    {
+      "id": "benchmark-curve-width48",
+      "scope": "parametric_curved_surface",
+      "expectation": "planned",
+      "status": "planned",
+      "expectation_matches": true,
+      "parts": 4,
+      "nominal_approach_unassessed": 0,
+      "physical_insertion": "not_assessed",
+      "failures": []
+    },
+    {
+      "id": "benchmark-side-panel-offset",
+      "scope": "parametric_side_joint",
+      "expectation": "planned",
+      "status": "planned",
+      "expectation_matches": true,
+      "parts": 4,
+      "nominal_approach_unassessed": 0,
+      "physical_insertion": "not_assessed",
+      "failures": []
+    },
+    {
+      "id": "benchmark-rounded32",
+      "scope": "parametric_organic_approximation",
+      "expectation": "planned",
+      "status": "planned",
+      "expectation_matches": true,
+      "parts": 22,
+      "nominal_approach_unassessed": 0,
+      "physical_insertion": "not_assessed",
+      "failures": []
+    },
+    {
+      "id": "benchmark-wrong-panel-facing",
+      "scope": "negative_side_joint",
+      "expectation": "blocked",
+      "status": "blocked",
+      "expectation_matches": true,
+      "parts": 0,
+      "nominal_approach_unassessed": null,
+      "physical_insertion": "not_assessed",
+      "failures": [
+        "No nominal attachment was found within the candidate limits from panel to mount."
+      ]
+    },
+    {
+      "id": "benchmark-curve-forbidden",
+      "scope": "negative_feature_contract",
+      "expectation": "blocked",
+      "status": "blocked",
+      "expectation_matches": true,
+      "parts": 0,
+      "nominal_approach_unassessed": null,
+      "physical_insertion": "not_assessed",
+      "failures": [
+        "No contained source-backed prism placements were found for canopy."
+      ]
+    },
+    {
+      "id": "challenge-car",
+      "scope": "original_challenge",
+      "expectation": "known_gap",
+      "status": "blocked",
+      "expectation_matches": true,
+      "parts": 0,
+      "nominal_approach_unassessed": null,
+      "physical_insertion": "not_assessed",
+      "failures": [
+        "Measured specialist candidates exist for front-left-wheel (small-wheel-and-tyre), but none preserves its dimensions, cross-section, extrusion direction and empty-space constraints. No bounding-box substitution was made."
+      ]
+    },
+    {
+      "id": "challenge-house",
+      "scope": "original_challenge",
+      "expectation": "known_gap",
+      "status": "blocked",
+      "expectation_matches": true,
+      "parts": 0,
+      "nominal_approach_unassessed": null,
+      "physical_insertion": "not_assessed",
+      "failures": [
+        "Measured specialist candidates exist for front-window (60592), but none preserves its dimensions, cross-section, extrusion direction and empty-space constraints. No bounding-box substitution was made."
+      ]
+    },
+    {
+      "id": "challenge-aircraft",
+      "scope": "original_challenge",
+      "expectation": "known_gap",
+      "status": "blocked",
+      "expectation_matches": true,
+      "parts": 0,
+      "nominal_approach_unassessed": null,
+      "physical_insertion": "not_assessed",
+      "failures": [
+        "Reference-only parts exist for semantic role wing (3545), but their geometry and connector interfaces are not yet measured; they cannot be placed safely."
+      ]
+    },
+    {
+      "id": "challenge-organic-form",
+      "scope": "original_challenge",
+      "expectation": "known_gap",
+      "status": "blocked",
+      "expectation_matches": true,
+      "parts": 0,
+      "nominal_approach_unassessed": null,
+      "physical_insertion": "not_assessed",
+      "failures": [
+        "Source-backed candidates exist for organic_form (30367, 3941, 15068, 3062b). Nearest measured candidate 30367 is 16×16×9.6 mm versus requested 32×32×32 mm; bounding-dimension error 31.8 mm. Geometry primitive sphere is not yet supported by the placement solver; no rectangular-block substitution is attempted."
+      ]
+    }
+  ]
+}

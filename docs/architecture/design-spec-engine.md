@@ -209,3 +209,25 @@ prism cover to combine bricks and plates within one component. Explicit rounded
 occupancy masks do not enter this full-box path. Rounded shape allowance and
 dimension allowance stay independent. The Studio displays requested and realised
 sizes and the allowed deviation beside connection evidence.
+
+### Continuous nominal approaches
+
+A convex source prism sweeps along its connector axis to a convex hull of its
+start/end material. Compound connector bodies sweep each nominal child box.
+Other profiles retain conservative envelopes. The SAT axes include original
+face normals and edge-by-sweep normals; obstacles between clear endpoints still
+block the approach. Every already engaged interface must permit the same motion
+axis. The canonical sequence records the resulting evidence; a blocked approach
+is retained as unassessed rather than certified.
+
+Side-joint booklet views turn toward the receiving face, keeping explosion
+vectors in the same projection. These checks exclude stud protrusions, detailed
+underside cavities, elastic insertion, hand access and physical retention.
+
+### Coverage reporting
+
+`node scripts/benchmark_design_engine.mjs --check` reproduces the committed
+structured-brief benchmark. Working canonical studies, parameter variants,
+negative controls and the original challenge gaps remain separate. A blocked
+original challenge is never counted as a successful assembly. No language
+provider or physical build is evaluated by this report.

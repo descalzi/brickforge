@@ -44,6 +44,8 @@ jobs:
         run: node tests/browser-inspector.e2e.mjs
       - name: Test browser construction, irregular footprints and camera helpers
         run: node --test tests/*.test.mjs
+      - name: Verify structured-brief benchmark and known gaps
+        run: node scripts/benchmark_design_engine.mjs --check
       - name: Test design specification engine in headless Chromium
         run: node tests/browser-design-engine.e2e.mjs
       - name: Retain design studio browser screenshots

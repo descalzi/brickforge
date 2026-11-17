@@ -1,17 +1,17 @@
-import {rectangularDimensionVariants} from './dimension-variants.js?v=7cab87a13250';
-import {combineCourseTilings} from './course-beam-search.js?v=7cab87a13250';
-import {roundedShapeOccupancy} from './rounded-shape.js?v=7cab87a13250';
-import {composeExtrudedProfile} from './profile-composition.js?v=7cab87a13250';
-import { evaluateDesignRelationships as evaluateRelationships } from "./design-relations.js?v=7cab87a13250";
-import { featureCompatibility, axesCompatible } from "./connection-types.js?v=7cab87a13250";
-import { fitAttachmentPoses } from "./attachment-fitting.js?v=7cab87a13250";
-import { assertValidDesignSpec } from "./design-spec.js?v=7cab87a13250";
-import { discoverPartCandidates, validatePartCapabilityCatalogue } from "./part-catalogue.js?v=7cab87a13250";
-import { translateComponentRequirements } from "./design-translation.js?v=7cab87a13250";
-import { planTechnicBeamJoint } from "./technic-planner.js?v=7cab87a13250";
-import { specialistComponentCandidates } from "./specialist-placement.js?v=7cab87a13250";
-import { partBodyBounds, analyzeAssembly,findBodyCollisions } from "./assembly-analysis.js?v=7cab87a13250";
-import { createAssemblyInstructions } from "./assembly-instructions.js?v=7cab87a13250";
+import {rectangularDimensionVariants} from './dimension-variants.js?v=cb7f60a0af7d';
+import {combineCourseTilings} from './course-beam-search.js?v=cb7f60a0af7d';
+import {roundedShapeOccupancy} from './rounded-shape.js?v=cb7f60a0af7d';
+import {composeExtrudedProfile} from './profile-composition.js?v=cb7f60a0af7d';
+import { evaluateDesignRelationships as evaluateRelationships } from "./design-relations.js?v=cb7f60a0af7d";
+import { featureCompatibility, axesCompatible } from "./connection-types.js?v=cb7f60a0af7d";
+import { fitAttachmentPoses } from "./attachment-fitting.js?v=cb7f60a0af7d";
+import { assertValidDesignSpec } from "./design-spec.js?v=cb7f60a0af7d";
+import { discoverPartCandidates, validatePartCapabilityCatalogue } from "./part-catalogue.js?v=cb7f60a0af7d";
+import { translateComponentRequirements } from "./design-translation.js?v=cb7f60a0af7d";
+import { planTechnicBeamJoint } from "./technic-planner.js?v=cb7f60a0af7d";
+import { specialistComponentCandidates } from "./specialist-placement.js?v=cb7f60a0af7d";
+import { partBodyBounds, analyzeAssembly,findBodyCollisions } from "./assembly-analysis.js?v=cb7f60a0af7d";
+import { createAssemblyInstructions } from "./assembly-instructions.js?v=cb7f60a0af7d";
 
 const LDU_TO_MM = 0.4;
 const STUD_PITCH_MM = 8;
@@ -407,7 +407,7 @@ export function planDesign(spec,catalogue,overrides={}) {
     {id:'placed_body_envelopes',status:'passed',detail:'Solid boxes and source-backed slope prisms pass nominal material collision checks; other profiles use conservative envelopes. Profiled rim/tyre seats are exempt; studs and underside details are excluded.'},
     {id:'support_projection_proxy',status:analysis.support.projection_inside_support_hull?'passed':'not_assessed',detail:analysis.support.evidence},
     {id:'intermediate_support_guidance',status:instructions.steps.some(s=>s.support_guidance?.status==='hold_recommended')?'warning':'passed',detail:instructions.steps.filter(s=>s.support_guidance?.status==='hold_recommended').length+' stage(s) flagged for hand support by the nominal envelope/volume projection proxy. This is guidance, not physical stability certification.'},
-    {id:'nominal_insertion_approaches',status:instructions.steps.every(s=>s.nominal_approach_clear)?'passed':'not_assessed',detail:'Straight connector-axis approaches checked against prior nominal body envelopes. Studs, cavities and deformation are excluded; this is not physical insertion certification.'},
+    {id:'nominal_insertion_approaches',status:instructions.steps.every(s=>s.nominal_approach_clear)?'passed':'not_assessed',detail:'Continuous straight connector-axis sweeps checked against prior nominal convex/compound bodies, with conservative envelopes for other profiles. Studs, cavities and deformation are excluded; this is not physical insertion certification.'},
     {id:"negative_space_body_clearance",status:"passed",detail:options.negativeSpaces.length+" rectangular keepouts preserved by exact nominal body tiling; stud protrusions and mesh-level clearance are not assessed."},
     {id:"design_spec",status:"passed",detail:"The catalogue-independent design specification is valid."},
     {id:"part_catalogue_coverage",status:"passed",detail:"Every placed part has a source profile in the supplied catalogue."},
