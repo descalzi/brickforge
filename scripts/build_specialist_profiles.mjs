@@ -1,5 +1,6 @@
 // Offline catalogue ingestion only. The production planner is browser JavaScript.
 // Usage: node scripts/build_specialist_profiles.mjs [local-pinned-ldraw-directory]
+import {convexHull} from '../docs/assets/polygon-geometry.js';
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
@@ -23,6 +24,7 @@ const out=new URL('../docs/data/part-meshes/',import.meta.url);await mkdir(out,{
 for(const d of definitions){
  const measured=await resolver.resolvePart(d.id,index,{includeTrianglePositions:true}),root=documents.get(`parts/${d.id}.dat`);
  const description=root.split(/\r?\n/)[0].slice(2),author=root.match(/^0 Author: (.+)/m)?.[1].trim(),license=root.match(/^0 !LICENSE (.+)/m)?.[1].trim();
+ if(d.derive_convex_extrusion){const axis=['x','y','z'].indexOf(d.derive_convex_extrusion.axis),projection=[0,1,2].filter(i=>i!==axis),cap=d.derive_convex_extrusion.cap_coordinate_mm,points=[];for(let i=0;i<measured.triangle_positions_mm.length;i+=3){const p=measured.triangle_positions_mm.slice(i,i+3);if(Math.abs(p[axis]-cap)<1e-5)points.push(projection.map(k=>p[k]));}const polygon=convexHull(points);if(polygon.length<3)throw new Error('Missing source cap for '+d.id);d.body_vertices_mm=[-cap,cap].flatMap(x=>polygon.map(p=>{const v=[];v[axis]=x;projection.forEach((k,i)=>v[k]=p[i]);return v;}));}
  const features=[];
  for(let i=0;i<d.width/8;i++)for(let z=0;z<d.depth/8;z++){
   const x=(i+.5)*8-d.width/2,zz=d.slope?-8+z*8:0;
@@ -37,9 +39,10 @@ for(const d of definitions){
  const profile={part_id:d.id,description,features,body_vertices_mm:vertices,supported_geometry:[d.slope?'extruded_profile':'rectangular_prism'],extrusion_axes_ldraw:d.slope?['x']:[],body_height_ldu:d.height/.4,mesh_file:`part-meshes/${d.id}.json`,source_filename:`parts/${d.id}.dat`,source_library_commit:commit,connection_evidence:'BrickForge-authored nominal stud-grid datums checked against source top studs and underside envelope; physical clutch not verified.'};
  if(d.body_vertices_mm){Object.assign(profile,{body_vertices_mm:d.body_vertices_mm,features:d.features,supported_geometry:d.supported_geometry,extrusion_axes_ldraw:d.extrusion_axes_ldraw||[],cylinder_axis_ldraw:d.cylinder_axis_ldraw});}
  if(d.slope)profile.orientation_frame={up:[0,-1,0],forward:[0,0,-1]};
+ if(d.body_boxes_mm)profile.body_boxes_mm=d.body_boxes_mm;
  if(d.orientation_frame)profile.orientation_frame=d.orientation_frame;
  if(d.connection_evidence)profile.connection_evidence=d.connection_evidence;
- profile.body_geometry_evidence=d.body_vertices_mm?'authored_nominal_envelope':'source_silhouette_vertices';
+ profile.body_geometry_evidence=d.body_geometry_evidence||(d.body_vertices_mm?'authored_nominal_envelope':'source_silhouette_vertices');
  profiles.push(profile);
  const part={part_id:d.id,description,roles:d.roles|| (d.slope?['roof','slope']:['window']),capabilities:d.capabilities|| (d.slope?['sloped_surface','top_studs','underside_stud_receivers']:['window_frame','top_studs','underside_stud_receivers']),dimensions_mm:{width:d.width,depth:d.depth,height:d.height},candidate_status:'geometry_measured',interfaces:profile.features.map(f=>({interface_id:f.feature_id,interface_type:f.kind,position_mm:f.position_ldu.map(v=>v*.4),axis_vector:f.axis,nominal_diameter_mm:null,evidence_status:'authored_nominal_grid_from_ldraw'})),source:{file:`parts/${d.id}.dat`,revision:root.match(/!LDRAW_ORG Part UPDATE (.+)/)?.[1].trim()||null,license,author,library_commit:commit},geometry_measurement:{source_library_commit:commit,triangle_count:measured.triangle_count,method:'recursive_ldraw_surface_bounds',bounds_mm:[measured.bounds_mm.minimum,measured.bounds_mm.maximum]}};
  const existing=capabilities.parts.findIndex(p=>p.part_id===d.id);if(existing<0)capabilities.parts.push(part);else capabilities.parts[existing]=part;

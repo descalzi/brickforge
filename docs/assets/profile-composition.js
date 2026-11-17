@@ -1,8 +1,9 @@
-import {orientationMatches} from './part-orientation.js?v=1b52eaceae39';
-import {transformVector} from './specialist-placement.js?v=1b52eaceae39';
-import {translateComponentRequirements} from './design-translation.js?v=1b52eaceae39';
-import {discoverPartCandidates} from './part-catalogue.js?v=1b52eaceae39';
-import {convexHull,polygonArea,pointInPolygon,clipConvex,triangulatePolygon} from './polygon-geometry.js?v=1b52eaceae39';
+import {pruneUnsupportedPrismFaces} from './prism-face-pruning.js?v=7cab87a13250';
+import {orientationMatches} from './part-orientation.js?v=7cab87a13250';
+import {transformVector} from './specialist-placement.js?v=7cab87a13250';
+import {translateComponentRequirements} from './design-translation.js?v=7cab87a13250';
+import {discoverPartCandidates} from './part-catalogue.js?v=7cab87a13250';
+import {convexHull,polygonArea,pointInPolygon,clipConvex,triangulatePolygon} from './polygon-geometry.js?v=7cab87a13250';
 const EPS=1e-6,yaws=[[1,0,0,0,1,0,0,0,1],[0,0,1,0,1,0,-1,0,0],[-1,0,0,0,1,0,0,0,-1],[0,0,-1,0,1,0,1,0,0]];
 const unique=values=>[...new Set(values.map(v=>+v.toFixed(7)))].sort((a,b)=>a-b);
 const rect=(x0,y0,x1,y1)=>[[x0,y0],[x1,y0],[x1,y1],[x0,y1]];
@@ -15,12 +16,13 @@ export function composeExtrudedProfile(component,catalogue,options,partCatalogue
  if(component.geometry!=='extruded_profile')return null;
  const translated=translateComponentRequirements(component,mapping);if(!translated.valid)return null;
  const search=discoverPartCandidates({roles:translated.part_roles,required_capabilities:[],forbidden_capabilities:translated.forbidden_capabilities,dimensions_mm:component.dimensions_mm},partCatalogue),allowed=new Map(search.candidates.map(c=>[c.part_id,c]));
- const ext=component.geometry_parameters.extrusion_axis==='x'?0:2,u=ext===0?2:0,d=component.dimensions_mm,width=u===0?d.width:d.depth,height=d.height,length=ext===0?d.width:d.depth,raw=component.geometry_parameters.outline_mm,min=[0,1].map(i=>Math.min(...raw.map(p=>p[i]))),outline=raw.map(p=>p.map((v,i)=>v-min[i]));
+ const ext=component.geometry_parameters.extrusion_axis==='x'?0:2,u=ext===0?2:0,d=component.dimensions_mm,length=ext===0?d.width:d.depth,raw=component.geometry_parameters.outline_mm,min=[0,1].map(i=>Math.min(...raw.map(p=>p[i]))),outline=raw.map(p=>p.map((v,i)=>v-min[i])),width=Math.max(...outline.map(p=>p[0])),height=Math.max(...outline.map(p=>p[1]));
+ if(Math.abs(width-(u===0?d.width:d.depth))>(component.fit_tolerance_mm||0)+EPS||Math.abs(height-d.height)>(component.fit_tolerance_mm||0)+EPS)return {error:'Profile material bounds differ from the declared dimensions without a sufficient explicit allowance.'};
  let targetTriangles;try{targetTriangles=triangulatePolygon(outline);}catch(e){return {error:e.message};}
  if(width>128||height>76.8||length>128)return {error:'Component '+component.id+' exceeds the profile composition envelope (128 mm across/extrusion, 76.8 mm high).'};
  const origin=[component.position_mm.x,component.position_mm.y,component.position_mm.z],spaces=(options.negativeSpaces||[]).map(s=>{const p=[s.position_mm.x,s.position_mm.y,s.position_mm.z],sz=[s.dimensions_mm.width,s.dimensions_mm.height,s.dimensions_mm.depth];return {polygon:rect(p[u]-origin[u],p[1]-origin[1],p[u]+sz[u]-origin[u],p[1]+sz[1]-origin[1]),lo:p[ext]-origin[ext],hi:p[ext]+sz[ext]-origin[ext]};});
  const sourceProfiles=[...catalogue.profiles,...(specialists?.profiles||[]).filter(p=>p.supported_geometry?.includes('extruded_profile'))].filter(p=>allowed.has(p.part_id));if(!sourceProfiles.length)return null;
- const candidates=[],seen=new Set(),maxCandidates=6000;
+ let candidates=[];const seen=new Set(),maxCandidates=6000;
  for(const profile of sourceProfiles){
   const semantic=allowed.get(profile.part_id);if(!semantic)continue;
   for(const matrix of yaws){
@@ -38,6 +40,8 @@ export function composeExtrudedProfile(component,catalogue,options,partCatalogue
   }
  }
  if(!candidates.length)return {error:'No contained source-backed prism placements were found for '+component.id+'.'};
+ const boundaryPruning=pruneUnsupportedPrismFaces(candidates,outline,length,spaces);candidates=boundaryPruning.candidates;
+ if(!candidates.length)return {error:'No candidate prism has a fully supportable material boundary within the placement limits.'};
  const lines=[],lineKeys=new Set(),ys=[0,height];function addEdges(poly){for(let i=0;i<poly.length;i++){const a=poly[i],b=poly[(i+1)%poly.length];ys.push(a[1],b[1]);if(Math.abs(a[1]-b[1])<EPS)continue;const slope=(b[0]-a[0])/(b[1]-a[1]),intercept=a[0]-slope*a[1],low=Math.min(a[1],b[1]),high=Math.max(a[1],b[1]),key=[slope,intercept,low,high].map(v=>v.toFixed(6)).join(',');if(!lineKeys.has(key)){lineKeys.add(key);lines.push({a:slope,b:intercept,low,high});}}}
  addEdges(outline);for(const c of candidates)addEdges(c.polygon);for(const s of spaces)addEdges(s.polygon);
  if(lines.length>600)return {error:'Profile line arrangement budget reached.',composition:{budget_exhausted:true}};
@@ -58,6 +62,6 @@ export function composeExtrudedProfile(component,catalogue,options,partCatalogue
   let choices=null;for(let i=0;i<atoms.length;i++)if(!(covered&(1n<<BigInt(i)))){const available=covering[i].filter(j=>!(placements[j].mask&covered));if(!available.length)return;if(!choices||available.length<choices.length)choices=available;if(choices.length===1)break;}
   choices.sort((a,b)=>placements[b].volume-placements[a].volume||placements[a].part.part_id.localeCompare(placements[b].part.part_id));for(const i of choices){chosen.push(i);visit(covered|placements[i].mask);chosen.pop();if(nodes>options.maxSearchNodes||alternatives.length>=maxAlternatives)break;}
  }
- visit(0n);const composition={method:'exact_prism_material_cover',atom_count:atoms.length,placement_count:placements.length,target_volume_mm3:atoms.reduce((s,a)=>s+a.volume,0),budget_exhausted:exhausted||alternatives.length>=maxAlternatives,grid_mm:{horizontal:8,vertical:3.2},limitations:['Upright constant-section convex source prisms on a stud/plate grid; no curved-surface or non-right-angle substitution.']};
+ visit(0n);const composition={method:'exact_prism_material_cover',boundary_candidates_pruned:boundaryPruning.removed,atom_count:atoms.length,placement_count:placements.length,target_volume_mm3:atoms.reduce((s,a)=>s+a.volume,0),budget_exhausted:exhausted||alternatives.length>=maxAlternatives,grid_mm:{horizontal:8,vertical:3.2},limitations:['Upright constant-section convex source prisms on a stud/plate grid; only source-measured faceted curves; no non-right-angle substitution.']};
  return alternatives.length?{alternatives,semantic_candidates:search.candidates,search_nodes:nodes,combinations,composition}:{error:'No exact multi-part prism cover was found within the component search limits.',composition};
 }

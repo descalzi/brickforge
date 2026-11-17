@@ -1,17 +1,17 @@
-import {rectangularDimensionVariants} from './dimension-variants.js?v=1b52eaceae39';
-import {combineCourseTilings} from './course-beam-search.js?v=1b52eaceae39';
-import {roundedShapeOccupancy} from './rounded-shape.js?v=1b52eaceae39';
-import {composeExtrudedProfile} from './profile-composition.js?v=1b52eaceae39';
-import { evaluateDesignRelationships as evaluateRelationships } from "./design-relations.js?v=1b52eaceae39";
-import { featureCompatibility, axesCompatible } from "./connection-types.js?v=1b52eaceae39";
-import { fitAttachmentPoses } from "./attachment-fitting.js?v=1b52eaceae39";
-import { assertValidDesignSpec } from "./design-spec.js?v=1b52eaceae39";
-import { discoverPartCandidates, validatePartCapabilityCatalogue } from "./part-catalogue.js?v=1b52eaceae39";
-import { translateComponentRequirements } from "./design-translation.js?v=1b52eaceae39";
-import { planTechnicBeamJoint } from "./technic-planner.js?v=1b52eaceae39";
-import { specialistComponentCandidates } from "./specialist-placement.js?v=1b52eaceae39";
-import { partBodyBounds, analyzeAssembly,findBodyCollisions } from "./assembly-analysis.js?v=1b52eaceae39";
-import { createAssemblyInstructions } from "./assembly-instructions.js?v=1b52eaceae39";
+import {rectangularDimensionVariants} from './dimension-variants.js?v=7cab87a13250';
+import {combineCourseTilings} from './course-beam-search.js?v=7cab87a13250';
+import {roundedShapeOccupancy} from './rounded-shape.js?v=7cab87a13250';
+import {composeExtrudedProfile} from './profile-composition.js?v=7cab87a13250';
+import { evaluateDesignRelationships as evaluateRelationships } from "./design-relations.js?v=7cab87a13250";
+import { featureCompatibility, axesCompatible } from "./connection-types.js?v=7cab87a13250";
+import { fitAttachmentPoses } from "./attachment-fitting.js?v=7cab87a13250";
+import { assertValidDesignSpec } from "./design-spec.js?v=7cab87a13250";
+import { discoverPartCandidates, validatePartCapabilityCatalogue } from "./part-catalogue.js?v=7cab87a13250";
+import { translateComponentRequirements } from "./design-translation.js?v=7cab87a13250";
+import { planTechnicBeamJoint } from "./technic-planner.js?v=7cab87a13250";
+import { specialistComponentCandidates } from "./specialist-placement.js?v=7cab87a13250";
+import { partBodyBounds, analyzeAssembly,findBodyCollisions } from "./assembly-analysis.js?v=7cab87a13250";
+import { createAssemblyInstructions } from "./assembly-instructions.js?v=7cab87a13250";
 
 const LDU_TO_MM = 0.4;
 const STUD_PITCH_MM = 8;
@@ -140,7 +140,7 @@ function componentCandidates(component,catalogue,options,partCatalogue,designTra
     const h=component.dimensions_mm.height,t=component.fit_tolerance_mm||0;
     options={...options,courseType:Math.abs(h-Math.round(h/9.6)*9.6)<=Math.max(t,1e-6)?'brick':'plate'};
   }
-  const specialised=specialistComponentCandidates(component,options,partCatalogue,designTranslation,options.specialistCatalogue);
+  const specialised=specialistComponentCandidates(component,options,partCatalogue,designTranslation,options.specialistCatalogue,catalogue.profiles);
   if(specialised?.alternatives)return specialised;
   const mixed=component.geometry==='rectangular_prism'&&!options.shapeOccupancy&&(options.allowMixedStructural||(requestedCourseType==='auto'&&component.dimensions_mm.height>9.6&&Math.abs(component.dimensions_mm.height/9.6-Math.round(component.dimensions_mm.height/9.6))>1e-6));
   const d=component.dimensions_mm,profileTarget=mixed?{...component,geometry:'extruded_profile',geometry_parameters:{depth_mm:d.depth,outline_mm:[[0,0],[d.width,0],[d.width,d.height],[0,d.height]]}}:component;
@@ -254,7 +254,7 @@ function componentCandidates(component,catalogue,options,partCatalogue,designTra
 function fitRectangularDimensions(component,catalogue,options,partCatalogue,mapping){
  const variants=rectangularDimensionVariants(component,options.courseType),groups=[],semantic=new Map(),seen=new Set();let nodes=0,combinations=0,attempted=0,bounded=false;
  const add=(key,result)=>{if(!result?.alternatives?.length)return;const alternatives=[];for(const a of result.alternatives){const signature=a.parts.map(p=>p.part_id+':'+p.matrix.join(',')+':'+p.translation_ldu.map(v=>v.toFixed(6)).join(',')).join('|');if(seen.has(signature))continue;seen.add(signature);alternatives.push(a);}if(alternatives.length)groups.push({key,alternatives});for(const c of result.semantic_candidates||[])semantic.set(c.part_id,c);};
- const measured=specialistComponentCandidates(component,options,partCatalogue,mapping,options.specialistCatalogue);
+ const measured=specialistComponentCandidates(component,options,partCatalogue,mapping,options.specialistCatalogue,catalogue.profiles);
  if(measured?.alternatives)for(const a of measured.alternatives)add('source:'+a.parts[0].matrix.join(','),{...measured,alternatives:[a]});
  for(const variant of variants){
   const remaining=options.maxSearchNodes-nodes;if(remaining<=0){bounded=true;break;}attempted++;
@@ -299,7 +299,7 @@ export function planDesign(spec,catalogue,overrides={}) {
   if(relationshipReport.failures.length&&!spec.components.some(c=>c.position_tolerance_mm||c.fit_tolerance_mm)) return {status:"blocked",design_id:spec.design_id,failures:relationshipReport.failures,warnings:relationshipReport.warnings,parts:[],connections:[],component_reports:[]};
   if(!spec.constraints.allow_intersections) {
     for(let i=0;i<spec.components.length;i++) for(let j=i+1;j<spec.components.length;j++) {
-      if(spec.components[i].geometry==='rectangular_prism'&&spec.components[j].geometry==='rectangular_prism'&&!(spec.negative_spaces||[]).length&&overlaps(componentBounds(spec.components[i]),componentBounds(spec.components[j]))&&!spec.components[i].position_tolerance_mm&&!spec.components[j].position_tolerance_mm&&!spec.components[i].fit_tolerance_mm&&!spec.components[j].fit_tolerance_mm) {
+      if(spec.components[i].geometry==='rectangular_prism'&&spec.components[j].geometry==='rectangular_prism'&&!spec.components[i].orientation&&!spec.components[j].orientation&&!(spec.negative_spaces||[]).length&&overlaps(componentBounds(spec.components[i]),componentBounds(spec.components[j]))&&!spec.components[i].position_tolerance_mm&&!spec.components[j].position_tolerance_mm&&!spec.components[i].fit_tolerance_mm&&!spec.components[j].fit_tolerance_mm) {
         return {status:"blocked",design_id:spec.design_id,failures:["Semantic components "+spec.components[i].id+" and "+spec.components[j].id+" overlap in their specified volumes."],warnings:[],parts:[],connections:[],component_reports:[]};
       }
     }

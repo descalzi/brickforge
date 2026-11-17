@@ -159,13 +159,28 @@
       "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
     },
     {
+      "file": "p/3-16chrd.dat",
+      "author": "Niels Karsdorp [nielsk]",
+      "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
+    },
+    {
       "file": "p/3-16cyli.dat",
       "author": "Mark Kennedy [mkennedy]",
       "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
     },
     {
+      "file": "p/3-16cys2.dat",
+      "author": "Donald Sutter [technog]",
+      "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
+    },
+    {
       "file": "p/3-16edge.dat",
       "author": "Donald Sutter [technog]",
+      "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
+    },
+    {
+      "file": "p/3-16ndis.dat",
+      "author": "Magnus Forsberg [MagFors]",
       "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
     },
     {
@@ -234,6 +249,16 @@
       "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
     },
     {
+      "file": "p/4-4cyls.dat",
+      "author": "Donald Sutter [technog]",
+      "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
+    },
+    {
+      "file": "p/4-4cylse.dat",
+      "author": "Willy Tschager [Holly-Wood]",
+      "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
+    },
+    {
       "file": "p/4-4disc.dat",
       "author": "James Jessiman",
       "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
@@ -245,6 +270,11 @@
     },
     {
       "file": "p/4-4ndis.dat",
+      "author": "James Jessiman",
+      "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
+    },
+    {
+      "file": "p/4-4ring1.dat",
       "author": "James Jessiman",
       "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
     },
@@ -261,6 +291,21 @@
     {
       "file": "p/4-4ring4.dat",
       "author": "James Jessiman",
+      "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
+    },
+    {
+      "file": "p/48/1-8chrd.dat",
+      "author": "Willy Tschager [Holly-Wood]",
+      "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
+    },
+    {
+      "file": "p/48/1-8cyli.dat",
+      "author": "Steve Bliss [sbliss]",
+      "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
+    },
+    {
+      "file": "p/48/1-8edge.dat",
+      "author": "[PTadmin]",
       "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
     },
     {
@@ -309,6 +354,36 @@
       "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
     },
     {
+      "file": "p/axl5ho10.dat",
+      "author": "Magnus Forsberg [MagFors]",
+      "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
+    },
+    {
+      "file": "p/axl5hol8.dat",
+      "author": "Magnus Forsberg [MagFors]",
+      "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
+    },
+    {
+      "file": "p/axl5hol9.dat",
+      "author": "Magnus Forsberg [MagFors]",
+      "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
+    },
+    {
+      "file": "p/axlehol2.dat",
+      "author": "James Jessiman",
+      "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
+    },
+    {
+      "file": "p/axlehol3.dat",
+      "author": "James Jessiman",
+      "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
+    },
+    {
+      "file": "p/axlehole.dat",
+      "author": "James Jessiman",
+      "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
+    },
+    {
       "file": "p/box0.dat",
       "author": "Santeri Piippo [arezey]",
       "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
@@ -321,6 +396,11 @@
     {
       "file": "p/box2-5.dat",
       "author": "Steffen [Steffen]",
+      "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
+    },
+    {
+      "file": "p/box2-7.dat",
+      "author": "Willy Tschager [Holly-Wood]",
       "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
     },
     {
@@ -429,6 +509,11 @@
       "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
     },
     {
+      "file": "p/stud10.dat",
+      "author": "Orion Pobursky [OrionP]",
+      "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
+    },
+    {
       "file": "p/stud2.dat",
       "author": "James Jessiman",
       "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
@@ -440,6 +525,11 @@
     },
     {
       "file": "p/stud3.dat",
+      "author": "James Jessiman",
+      "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
+    },
+    {
+      "file": "p/stud3a.dat",
       "author": "James Jessiman",
       "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
     },
@@ -464,6 +554,11 @@
       "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
     },
     {
+      "file": "p/stud4s.dat",
+      "author": "Willy Tschager [Holly-Wood]",
+      "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
+    },
+    {
       "file": "p/stug-1x2.dat",
       "author": "Steffen [Steffen]",
       "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
@@ -476,6 +571,11 @@
     {
       "file": "p/stug-3x3.dat",
       "author": "Steve Bliss [sbliss]",
+      "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
+    },
+    {
+      "file": "p/stug10-2x2.dat",
+      "author": "Magnus Forsberg [MagFors]",
       "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
     },
     {
@@ -514,6 +614,11 @@
       "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
     },
     {
+      "file": "parts/15068.dat",
+      "author": "Owen Burgoyne [C3POwen]",
+      "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
+    },
+    {
       "file": "parts/30367.dat",
       "author": "[PTadmin]",
       "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
@@ -534,7 +639,17 @@
       "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
     },
     {
+      "file": "parts/3040b.dat",
+      "author": "James Jessiman",
+      "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
+    },
+    {
       "file": "parts/3062b.dat",
+      "author": "James Jessiman",
+      "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
+    },
+    {
+      "file": "parts/3298.dat",
       "author": "James Jessiman",
       "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
     },
@@ -550,6 +665,16 @@
     },
     {
       "file": "parts/3934.dat",
+      "author": "James Jessiman",
+      "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
+    },
+    {
+      "file": "parts/3941.dat",
+      "author": "James Jessiman",
+      "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
+    },
+    {
+      "file": "parts/4070.dat",
       "author": "James Jessiman",
       "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
     },
@@ -574,6 +699,11 @@
       "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
     },
     {
+      "file": "parts/s/15068s01.dat",
+      "author": "Owen Burgoyne [C3POwen]",
+      "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
+    },
+    {
       "file": "parts/s/30367as01.dat",
       "author": "Magnus Forsberg [MagFors]",
       "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
@@ -594,8 +724,18 @@
       "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
     },
     {
+      "file": "parts/s/3040s01.dat",
+      "author": "Orion Pobursky [OrionP]",
+      "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
+    },
+    {
       "file": "parts/s/3062bs01.dat",
       "author": "Takeshi Takahashi [RainbowDolphin]",
+      "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
+    },
+    {
+      "file": "parts/s/3298s01.dat",
+      "author": "Mark Kennedy [mkennedy]",
       "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
     },
     {
@@ -606,6 +746,11 @@
     {
       "file": "parts/s/3933s01.dat",
       "author": "James Jessiman",
+      "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
+    },
+    {
+      "file": "parts/s/3941s01.dat",
+      "author": "Gerald Lasser [GeraldLasser]",
       "license": "Licensed under CC BY 4.0 : see CAreadme.txt"
     },
     {
