@@ -1,14 +1,17 @@
-import { instructionJointNote } from "./assembly-instructions.js?v=ea85888e5541";
-import {reorientExtrudedComponent} from './part-orientation.js?v=ea85888e5541';
-import { ASSET_VERSION } from "./release-version.js?v=ea85888e5541";
-import { buildInterpretationRequest, interpretDescription, endpointProvider } from "./text-design.js?v=ea85888e5541";
-import { buildInventory, inventoryCsv } from "./build-inventory.js?v=ea85888e5541";
-import { partBodyBounds } from "./assembly-analysis.js?v=ea85888e5541";
-import { validateDesignSpec } from "./design-spec.js?v=ea85888e5541";
-import { createDesignViewer, colours } from "./design-viewer.js?v=ea85888e5541";
+import {interpretPlate} from './plate-description.js?v=76b0ed28438a';
+import {deviceModelState,deviceProvider} from './device-interpretation.js?v=76b0ed28438a';
+import { instructionJointNote } from "./assembly-instructions.js?v=76b0ed28438a";
+import {reorientExtrudedComponent} from './part-orientation.js?v=76b0ed28438a';
+import { ASSET_VERSION } from "./release-version.js?v=76b0ed28438a";
+import { buildInterpretationRequest, interpretDescription, endpointProvider } from "./text-design.js?v=76b0ed28438a";
+import { buildInventory, inventoryCsv } from "./build-inventory.js?v=76b0ed28438a";
+import { partBodyBounds } from "./assembly-analysis.js?v=76b0ed28438a";
+import { validateDesignSpec } from "./design-spec.js?v=76b0ed28438a";
+import { createDesignViewer, colours } from "./design-viewer.js?v=76b0ed28438a";
 const $=id=>document.getElementById(id);
 const editor=$("design-spec"),status=$("engine-status"),runButton=$("run-design"),selector=$("fixture-select");
 const downloads=[$("download-ldraw"),$("download-bom"),$("download-report"),$("download-instructions"),$("download-pdf")];
+let deviceState="checking";
 let responseSchema,analysisController=null,analysisGeneration=0,selectedComponent=null;
 let catalogue,displayCatalogue,options,fixtures=[],result=null,activeSpec=null,worker=null,timer=null,viewer=null,currentExample=null;
 try{viewer=createDesignViewer($("studio-viewport"));}catch(error){$("viewer-empty").textContent="3D preview unavailable: "+error.message;}
@@ -16,7 +19,7 @@ function setStatus(message,state="ready"){status.textContent=message;status.data
 function finishWorker(){worker?.terminate();worker=null;clearTimeout(timer);$("cancel-design").hidden=true;runButton.disabled=!catalogue;}
 let testedRevision = null, previousBrief = null;
 function invalidate(message="Brief changed. Plan again to update the assembly."){
-  analysisController?.abort();analysisController=null;analysisGeneration++;$("cancel-interpretation").hidden=true;$("analyse-description").disabled=!$("interpretation-endpoint").value.trim()||!responseSchema;
+  analysisController?.abort();analysisController=null;analysisGeneration++;$("cancel-interpretation").hidden=true;updateInterpretationControls();
   stopPdf();
   $("pick-list").hidden=true;
   $("pick-list").open=false;
@@ -47,6 +50,7 @@ function components(spec,plan){
     const state=document.createElement("span");state.className="component-state";const count=plan?.parts?.filter(p=>p.component_id===component.id).length;state.textContent=plan?.status==="planned"?`${count} ${count===1?"part":"parts"}`:component.geometry;
     button.append(swatch,text,state);button.addEventListener("click",()=>{const on=button.getAttribute("aria-pressed")!=="true";for(const b of $("component-list").children)b.setAttribute("aria-pressed","false");button.setAttribute("aria-pressed",String(on));viewer?.select(on?component.id:null);editComponent(on?component:null);});$("component-list").append(button);
   }
+  for(const assumption of spec.assumptions||[]){const note=document.createElement("p");note.className="muted";note.textContent=assumption;$("component-list").append(note);}
   if(spec.negative_spaces?.length){const note=document.createElement("p");note.className="muted";note.textContent=spec.negative_spaces.length+" declared openings or clearances";$("component-list").append(note);}
 }
 function loadExample(id){
@@ -78,7 +82,7 @@ function run(){
   invalidate("Validating design specification…");
   let spec;try{spec=JSON.parse(editor.value);const validation=validateDesignSpec(spec);if(!validation.valid)throw new Error(validation.errors.join(" "));}catch(error){setStatus(error.message,"blocked");$("engine-report").textContent=error.message;return;}
   components(spec);activeSpec=spec;runButton.disabled=true;$("cancel-design").hidden=false;setStatus("Searching catalogue parts and connected layouts…","planning");
-  const started=performance.now();worker=new Worker(new URL("./design-worker.js?v=ea85888e5541",import.meta.url),{type:"module"});
+  const started=performance.now();worker=new Worker(new URL("./design-worker.js?v=76b0ed28438a",import.meta.url),{type:"module"});
   worker.onmessage=({data})=>{
     finishWorker();if(data.error){setStatus(data.error,"blocked");$("engine-report").textContent=data.error;return;}
     result=data.result;showEvidence(result);components(spec,result);
@@ -140,6 +144,7 @@ $("share-design").addEventListener("click",async()=>{try{const spec=JSON.parse(e
 for(const [id,view] of [["view-iso","iso"],["view-top","top"],["view-front","front"],["view-fit","iso"]])$(id).addEventListener("click",()=>viewer?.fit(view));
 $("course-slider").addEventListener("input",()=>{const input=$("course-slider");$("course-value").textContent=input.value+"/"+input.max;viewer?.course(Number(input.value));});
 initialise();
+deviceModelState().then(state=>{deviceState=state;updateInterpretationControls();});
 
 let pdfWorker = null;
 function stopPdf(){
@@ -159,7 +164,7 @@ $("download-pdf").addEventListener("click", () => {
   $("cancel-pdf").hidden = false;
   setStatus("Preparing illustrated instruction booklet…", "exporting");
   try {
-    const job = new Worker(new URL("./instruction-pdf-worker.js?v=ea85888e5541", import.meta.url), {type:"module"});
+    const job = new Worker(new URL("./instruction-pdf-worker.js?v=76b0ed28438a", import.meta.url), {type:"module"});
     pdfWorker = job;
     job.onmessage = ({data}) => {
       if (job !== pdfWorker) return;
@@ -218,11 +223,48 @@ function editComponent(c){
  $("component-colour").value=c.colour??4;$("component-tolerance").value=c.fit_tolerance_mm||0;$("component-position-tolerance").value=c.position_tolerance_mm||0;
 }
 $("apply-component").addEventListener('click',()=>{try{const spec=JSON.parse(editor.value),c=spec.components.find(c=>c.id===selectedComponent);if(!c)throw new Error('Select a component.');for(const a of ['x','y','z'])c.position_mm[a]=Number($("component-"+a).value);if(c.geometry==='rectangular_prism')for(const a of ['width','depth','height'])c.dimensions_mm[a]=Number($("component-"+a).value);c.colour=Number($("component-colour").value);c.fit_tolerance_mm=Number($("component-tolerance").value);c.position_tolerance_mm=Number($("component-position-tolerance").value);if(['sphere','cylinder'].includes(c.geometry))c.shape_tolerance_mm=Number($('component-shape-tolerance').value);if(c.geometry==='extruded_profile'){const facing=$('component-facing').value;if(facing)Object.assign(c,reorientExtrudedComponent(c,facing));else delete c.orientation;}const check=validateDesignSpec(spec);if(!check.valid)throw new Error(check.errors.join(' '));editor.value=JSON.stringify(spec,null,2);invalidate('Component changed. Plan again to check its fit.');components(spec);editComponent(c);}catch(error){setStatus(error.message,'blocked');}});
-$("interpretation-endpoint").addEventListener('input',()=>{$("analyse-description").disabled=!responseSchema||!$("interpretation-endpoint").value.trim();});
-$("analyse-description").addEventListener('click',async()=>{
- invalidate('Analysing the description using your selected gateway…');const generation=analysisGeneration;analysisController=new AbortController();$("analyse-description").disabled=true;$("cancel-interpretation").hidden=false;
- try{const {specification}=await interpretDescription($("description-input").value,{responseSchema,signal:analysisController.signal,provider:endpointProvider($("interpretation-endpoint").value)});if(generation!==analysisGeneration)return;editor.value=JSON.stringify(specification,null,2);invalidate('Interpretation ready. Review the components, then plan construction.');selector.selectedIndex=-1;components(specification);$("fixture-description").textContent='Interpreted object specification · review inferred choices before planning';}
- catch(error){if(error.name!=='AbortError'&&generation===analysisGeneration){setStatus(error.message,'blocked');$("cancel-interpretation").hidden=true;$("analyse-description").disabled=false;}}
+function updateInterpretationControls(){
+ const choice=$("interpretation-provider").value,local=choice==="device",plate=choice==="plate";
+ $("gateway-address").hidden=choice!=="gateway";
+ const messages={checking:"Checking on-device model availability…",available:"English descriptions are interpreted on this device.",
+   downloadable:"Your browser will download its language model the first time you analyse a description.",downloading:"The browser model is downloading.",
+   unavailable:"The on-device model is unavailable here. Select your model gateway or export a request."};
+ $("provider-status").textContent=plate?"Describe a plate in studs, square through-holes and side walls. Example: an 8 by 6 stud plate with four holes and two side walls.":local?(messages[deviceState]||messages.unavailable):"Analyse sends the description and design schema to the gateway URL you enter.";
+ const ready=plate|| (local?["available","downloadable","downloading"].includes(deviceState):!!$("interpretation-endpoint").value.trim());
+ $("analyse-description").disabled=!!analysisController||!responseSchema||!ready;
+ $("analyse-description").textContent=local && deviceState==="downloadable"?"Download model and analyse":"Analyse description";
+}
+function interpretationInputChanged(){
+ if(analysisController)invalidate("Description analysis cancelled after an edit.");
+ else updateInterpretationControls();
+}
+$("interpretation-provider").addEventListener("change",interpretationInputChanged);
+$("interpretation-endpoint").addEventListener("input",interpretationInputChanged);
+$("description-input").addEventListener("input",interpretationInputChanged);
+$("analyse-description").addEventListener("click",async()=>{
+ const choice=$("interpretation-provider").value,local=choice==="device",plate=choice==="plate";
+ invalidate(plate?"Reading the plate description…":local?"Preparing the on-device model…":"Analysing the description using your gateway…");
+ const generation=analysisGeneration,controller=new AbortController();
+ analysisController=controller;
+ $("analyse-description").disabled=true;
+ $("cancel-interpretation").hidden=false;
+ try{
+   const provider=plate?(request=>interpretPlate(request.input)):local?deviceProvider(globalThis.LanguageModel,percent=>{
+     if(generation!==analysisGeneration)return;
+     if(percent===null){deviceState="available";setStatus("Interpreting the description on this device…","planning");}
+     else setStatus(`Downloading the browser model · ${percent}%`,"planning");
+   }):endpointProvider($("interpretation-endpoint").value);
+   const {specification}=await interpretDescription($("description-input").value,{responseSchema,signal:controller.signal,provider});
+   if(generation!==analysisGeneration)return;
+   editor.value=JSON.stringify(specification,null,2);
+   invalidate("Interpretation ready. Review the components, then plan construction.");
+   selector.selectedIndex=-1;components(specification);
+   $("fixture-description").textContent="Interpreted object specification · review inferred choices before planning";
+ }catch(error){
+   if(generation===analysisGeneration)setStatus(error.message,"blocked");
+ }finally{
+   if(generation===analysisGeneration){analysisController=null;$("cancel-interpretation").hidden=true;updateInterpretationControls();}
+ }
 });
 $("cancel-interpretation").addEventListener('click',()=>invalidate('Description analysis cancelled.'));
 $("export-interpretation").addEventListener('click',()=>{try{download('brickforge-interpretation-request.json',JSON.stringify(buildInterpretationRequest($("description-input").value,responseSchema),null,2));}catch(error){setStatus(error.message,'blocked');}});
@@ -236,7 +278,7 @@ showRevisions();
 const revisionFieldNames = {position_tolerance_mm: 'position allowance per axis', fit_tolerance_mm: 'dimension allowance', shape_tolerance_mm: 'radial shape allowance'};
 $("find-revision").addEventListener("click", () => {
   if (result?.status !== "blocked" || worker) return;
-  const search = new Worker(new URL("./design-worker.js?v=ea85888e5541", import.meta.url), {type: "module"});
+  const search = new Worker(new URL("./design-worker.js?v=76b0ed28438a", import.meta.url), {type: "module"});
   worker = search;
   const preview = $("revision-preview");
   $("find-revision").disabled = true;

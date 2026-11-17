@@ -176,8 +176,27 @@ try{
  await page.screenshot({path:'/tmp/brickforge-inset-window-house.png',fullPage:true});
  await page.selectOption('#fixture-select','joint-sized-platform');await page.click('#run-design');await page.waitForFunction(()=>document.querySelector('#engine-status').dataset.state==='planned');const jointSize=JSON.parse(await page.locator('#engine-report').innerText());assert.equal(jointSize.component_reports[0].realised_dimensions_mm.width,24);assert.ok(jointSize.relationship_checks.every(c=>c.status==='passed'));
  await page.selectOption('#fixture-select','joint-height-platform');await page.click('#run-design');await page.waitForFunction(()=>document.querySelector('#engine-status').dataset.state==='planned');const jointHeight=JSON.parse(await page.locator('#engine-report').innerText());assert.ok(Math.abs(jointHeight.component_reports[0].realised_dimensions_mm.height-25.6)<1e-6);assert.equal(jointHeight.component_reports[0].selected_construction_method,'exact_prism_material_cover');await page.screenshot({path:'/tmp/brickforge-joint-height.png',fullPage:true});
+ // Exercise the description parser through the product controls and real planner.
+ await page.locator(".description-panel").evaluate(el=>el.open=true);
+ await page.selectOption("#interpretation-provider","plate");
+ await page.fill("#description-input","a plate with four holes and two side walls");
+ await page.click("#analyse-description");
+ await page.waitForFunction(()=>document.querySelector("#engine-status").textContent.startsWith("Interpretation ready"));
+ const plateBrief=JSON.parse(await page.locator("#design-spec").inputValue());
+ assert.equal(plateBrief.negative_spaces.length,4);
+ assert.equal(plateBrief.components.filter(c=>c.role==="wall").length,2);
+ assert.match(await page.locator("#component-list").innerText(),/one stud square/);
+ await page.click("#run-design");
+ await page.waitForFunction(()=>document.querySelector("#engine-status").dataset.state==="planned");
+ const platePlan=JSON.parse(await page.locator("#engine-report").innerText());
+ assert.equal(platePlan.validation.checks.find(c=>c.id==="graph_connectivity").status,"passed");
+ await page.screenshot({path:"/tmp/brickforge-description-plate.png",fullPage:true});
+ await page.fill("#description-input","a plate with four holes and a propeller");
+ await page.click("#analyse-description");
+ await page.waitForFunction(()=>document.querySelector("#engine-status").dataset.state==="blocked");
+ assert.equal(await page.locator("#download-ldraw").isEnabled(),false);
  // A gateway is mocked only as transport/contract evidence, not real LLM quality.
- await page.locator(".description-panel").evaluate(el=>el.open=true);await page.fill("#description-input","A small vehicle with four rotating wheels.");await page.fill("#interpretation-endpoint","https://brickforge-gateway.example/interpret");
+ await page.locator(".description-panel").evaluate(el=>el.open=true);await page.selectOption("#interpretation-provider","gateway");await page.fill("#description-input","A small vehicle with four rotating wheels.");await page.fill("#interpretation-endpoint","https://brickforge-gateway.example/interpret");
  const cors={'Access-Control-Allow-Origin':'*','Access-Control-Allow-Methods':'POST, OPTIONS','Access-Control-Allow-Headers':'Content-Type'};
  const authored=await page.evaluate(async()=>{const r=await fetch('./data/design-spec-fixtures.json');return (await r.json()).fixtures.find(f=>f.design_id==='small-road-car');});
  await page.route('https://brickforge-gateway.example/interpret',route=>route.fulfill({status:route.request().method()==='OPTIONS'?204:200,headers:cors,contentType:'application/json',body:route.request().method()==='OPTIONS'?'':JSON.stringify({specification:authored})}));

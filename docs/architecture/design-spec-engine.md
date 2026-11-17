@@ -78,8 +78,17 @@ revision re-plans it rather than trusting stale generated geometry.
 `text-design.js` provides a provider-neutral prompt/request/schema and validates
 returned specifications. The optional gateway transport sends only the explicit
 request, omits browser credentials, supports cancellation and has a timeout. No
-provider, authentication scheme, billing or real-model quality is represented as
-implemented. Exporting the request and importing its returned JSON is supported.
+hosted provider or billing is bundled. The on-device adapter uses the browser's
+Prompt API with structured output and cancellation. Model availability and
+downloads belong to the browser. Adapter tests use a simulated model, so actual
+model interpretation quality remains unevaluated.
+
+The fully consumed plate-description grammar accepts dimensions in studs,
+colours, square openings, plate layers and side walls. It records default choices
+in assumptions and submits the specification to the regular planner. Unsupported
+phrases produce an explicit error. The planner reuses the footprint engine's
+bounded interlocking sampler for perforated courses and retains connected layouts
+before ranking part count.
 
 ## Release and regression evidence
 

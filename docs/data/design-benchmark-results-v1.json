@@ -64,7 +64,7 @@
       "expectation": "planned",
       "status": "planned",
       "expectation_matches": true,
-      "parts": 15,
+      "parts": 16,
       "nominal_approach_unassessed": 0,
       "physical_insertion": "not_assessed",
       "failures": []

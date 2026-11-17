@@ -1,18 +1,19 @@
-import {chassisInserts} from './wheel-mount-layout.js?v=ea85888e5541';
-import {rectangularDimensionVariants} from './dimension-variants.js?v=ea85888e5541';
-import {combineCourseTilings} from './course-beam-search.js?v=ea85888e5541';
-import {roundedShapeOccupancy} from './rounded-shape.js?v=ea85888e5541';
-import {composeExtrudedProfile} from './profile-composition.js?v=ea85888e5541';
-import { evaluateDesignRelationships as evaluateRelationships } from "./design-relations.js?v=ea85888e5541";
-import { featureCompatibility, axesCompatible } from "./connection-types.js?v=ea85888e5541";
-import { fitAttachmentPoses } from "./attachment-fitting.js?v=ea85888e5541";
-import { assertValidDesignSpec } from "./design-spec.js?v=ea85888e5541";
-import { discoverPartCandidates, validatePartCapabilityCatalogue } from "./part-catalogue.js?v=ea85888e5541";
-import { translateComponentRequirements } from "./design-translation.js?v=ea85888e5541";
-import { planTechnicBeamJoint } from "./technic-planner.js?v=ea85888e5541";
-import { specialistComponentCandidates } from "./specialist-placement.js?v=ea85888e5541";
-import { partBodyBounds, analyzeAssembly,findBodyCollisions } from "./assembly-analysis.js?v=ea85888e5541";
-import { createAssemblyInstructions } from "./assembly-instructions.js?v=ea85888e5541";
+import {sampleInterlockingFootprints} from './construction-engine.js?v=76b0ed28438a';
+import {chassisInserts} from './wheel-mount-layout.js?v=76b0ed28438a';
+import {rectangularDimensionVariants} from './dimension-variants.js?v=76b0ed28438a';
+import {combineCourseTilings} from './course-beam-search.js?v=76b0ed28438a';
+import {roundedShapeOccupancy} from './rounded-shape.js?v=76b0ed28438a';
+import {composeExtrudedProfile} from './profile-composition.js?v=76b0ed28438a';
+import { evaluateDesignRelationships as evaluateRelationships } from "./design-relations.js?v=76b0ed28438a";
+import { featureCompatibility, axesCompatible } from "./connection-types.js?v=76b0ed28438a";
+import { fitAttachmentPoses } from "./attachment-fitting.js?v=76b0ed28438a";
+import { assertValidDesignSpec } from "./design-spec.js?v=76b0ed28438a";
+import { discoverPartCandidates, validatePartCapabilityCatalogue } from "./part-catalogue.js?v=76b0ed28438a";
+import { translateComponentRequirements } from "./design-translation.js?v=76b0ed28438a";
+import { planTechnicBeamJoint } from "./technic-planner.js?v=76b0ed28438a";
+import { specialistComponentCandidates } from "./specialist-placement.js?v=76b0ed28438a";
+import { partBodyBounds, analyzeAssembly,findBodyCollisions } from "./assembly-analysis.js?v=76b0ed28438a";
+import { createAssemblyInstructions } from "./assembly-instructions.js?v=76b0ed28438a";
 
 const LDU_TO_MM = 0.4;
 const STUD_PITCH_MM = 8;
@@ -222,6 +223,19 @@ function componentCandidates(component,catalogue,options,partCatalogue,designTra
     if(!search) {
       if(remainingNodes<=0)return {error:"Search node budget exhausted while tiling component "+component.id+"."};
       search=enumerateTilings(width,depth,candidates,options.maxTilings,remainingNodes,excluded);
+      if(options.negativeSpaces.length && excluded.length && courses>1 && width*depth<=256){
+        const cells=new Set();
+        for(let z=0;z<depth;z++)for(let x=0;x<width;x++)if(!excluded.includes(z*width+x))cells.add(x+','+z);
+        const attempts=Math.min(128,Math.floor((remainingNodes-search.nodes)/Math.max(1,cells.size)));
+        if(attempts>0){
+          const profiles=new Map(candidates.map(c=>[c.profile.part_id,c.profile]));
+          const pair=sampleInterlockingFootprints(cells,profiles,[...profiles.keys()],attempts);
+          search.nodes+=attempts*cells.size;
+          if(pair)search.tilings.push(...pair.map(tiling=>tiling.map(t=>({
+            x:t.x,z:t.z,sx:t.width,sz:t.depth,rotated:t.rotated,candidate:candidates.find(c=>c.profile.part_id===t.part_id)
+          }))));
+        }
+      }
       nodes+=search.nodes;remainingNodes-=search.nodes;cached.set(key,search);
     }
     if(!search.tilings.length)return {error:"No exact part tiling found for component "+component.id+" course "+(course+1)+" within the search budget."};
@@ -252,11 +266,11 @@ function componentCandidates(component,catalogue,options,partCatalogue,designTra
     }
   }
   let courseSearch=null;
-  if(options.shapeOccupancy||options.useCourseBeam){
+  if(options.shapeOccupancy||options.useCourseBeam||options.negativeSpaces.length){
     courseSearch=combineCourseTilings(courseTilings,width,depth,{maxNodes:options.maxSearchNodes,beamWidth:48});
     for(const state of courseSearch.states){const parts=[];state.plans.forEach((tiling,level)=>tiling.forEach((item,index)=>parts.push(placementFor(item,component,level,component.colour??options.defaultColour,component.id+'-'+level+'-'+index,courseHeight/LDU_TO_MM))));const graph=assemble(parts,profileMap,false);if(!graph)continue;const score=parts.length*1000-graph.connections.length*5-graph.connections.reduce((sum,edge)=>sum+edge.mating_pairs.length,0);alternatives.push({parts,graph,score,tiling:state.plans.map(layer=>layer.map(item=>item.candidate.profile.part_id))});combinations++;}
   }else search(0);
-  alternatives.sort((a,b)=>a.score-b.score||a.tiling.flat().join(",").localeCompare(b.tiling.flat().join(",")));
+  alternatives.sort((a,b)=>(options.negativeSpaces.length ? Number(b.graph.connected)-Number(a.graph.connected) : 0)||a.score-b.score||a.tiling.flat().join(",").localeCompare(b.tiling.flat().join(",")));
   const unique=[];
   const signatures=new Set();
   for(const alternative of alternatives) {
