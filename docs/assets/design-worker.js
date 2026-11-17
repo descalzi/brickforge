@@ -1,6 +1,12 @@
-import { planDesign } from "./design-engine.js?v=cb7f60a0af7d";
+import { planDesign } from "./design-engine.js?v=3ae726348844";
+import {findTestedRevision} from './brief-revisions.js?v=3ae726348844';
 self.onmessage = ({data}) => {
   try {
+    if (data.action === 'find_revision') {
+      const revision = findTestedRevision(data.spec, data.catalogue, data.options, data.failure);
+      self.postMessage({revision});
+      return;
+    }
     const result = planDesign(data.spec, data.catalogue, data.options);
     self.postMessage({result});
   } catch (error) {

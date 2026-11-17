@@ -1,0 +1,74 @@
+import {planDesign} from './design-engine.js?v=3ae726348844';
+
+// Choices correspond to a plate height, half a stud and one stud. The planner
+// checks each complete candidate against the original features and relations.
+function* candidateEdits(spec, failure) {
+  const course = spec.constraints.course_type || 'auto';
+  const auto = {field: 'course_type', before: course, after: 'auto'};
+  if (course !== 'auto') yield [auto];
+
+  const blocked = new Set((failure.component_reports || [])
+    .filter(report => report.status === 'blocked')
+    .map(report => report.component_id));
+  const sorted = [...spec.components].sort((a, b) => Number(blocked.has(b.id)) - Number(blocked.has(a.id)));
+  // A fixed misplaced component can have legal dimensions but no mating pose.
+  // Try small translations for the moving ends of required relationships.
+  const movingEnds = new Set(spec.relationships
+    .filter(r => r.required !== false && r.type === 'attached_to')
+    .map(r => r.from));
+  if (!blocked.size) {
+    for (const after of [1.6, 4, 8]) {
+      for (const component of sorted.filter(c => movingEnds.has(c.id))) {
+        const before = component.position_tolerance_mm || 0;
+        if (after > before) yield [{component: component.id, field: 'position_tolerance_mm', before, after}];
+      }
+    }
+  }
+  for (const component of sorted) {
+    const rounded = ['sphere', 'cylinder'].includes(component.geometry);
+    const field = rounded ? 'shape_tolerance_mm' : 'fit_tolerance_mm';
+    const before = component[field] || 0;
+    const limits = rounded ? [3.2, 4, 4.8, 5.6, 6.4, 8] : [0.8, 1.6, 3.2, 4];
+    for (const after of limits.filter(value => value > before)) {
+      const edit = {component: component.id, field, before, after};
+      yield [edit];
+      if (course !== 'auto') yield [edit, auto];
+    }
+  }
+}
+
+function revisedBrief(spec, edits) {
+  const revised = structuredClone(spec);
+  for (const edit of edits) {
+    const target = edit.component ? revised.components.find(c => c.id === edit.component) : revised.constraints;
+    target[edit.field] = edit.after;
+  }
+  return revised;
+}
+
+export function findTestedRevision(spec, catalogue, options, failure) {
+  let attempts = 0;
+  if (failure?.status !== 'blocked') return {attempts};
+  for (const edits of candidateEdits(spec, failure)) {
+    if (attempts >= 24) break;
+    attempts++;
+    const revised = revisedBrief(spec, edits);
+    const plan = planDesign(revised, catalogue, options);
+    if (plan.status === 'planned') {
+      return {attempts, edits, specification: revised, parts: plan.parts.length,
+        positions: (plan.component_reports || [])
+          .filter(r => r.position_adjustment_mm?.some(value => Math.abs(value) > 1e-6))
+          .map(r => ({component: r.component_id, delta: r.position_adjustment_mm})),
+        dimensions: (plan.component_reports || [])
+          .filter(r => r.realised_dimensions_mm && r.requested_dimensions_mm &&
+            Object.keys(r.realised_dimensions_mm).some(k =>
+              Math.abs(r.realised_dimensions_mm[k] - r.requested_dimensions_mm[k]) > 1e-5))
+          .map(r => ({component: r.component_id, size: r.realised_dimensions_mm})),
+        approximations: plan.component_reports?.filter(r => r.approximation).map(r => ({
+          component: r.component_id, outer: r.approximation.outer_excess_bound_mm,
+          inner: r.approximation.inner_missing_band_bound_mm
+        })) || []};
+    }
+  }
+  return {attempts};
+}

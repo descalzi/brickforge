@@ -121,6 +121,20 @@ try{
  await page.click('#analyse-description');await page.waitForFunction(()=>document.querySelector('#engine-status').dataset.state==='blocked');assert.match(await page.locator('#engine-status').innerText(),/does not match the design contract/);
  await page.fill('#interpretation-endpoint','https://brickforge-gateway.example/slow');await page.route('https://brickforge-gateway.example/slow',async route=>{await new Promise(resolve=>setTimeout(resolve,500));try{await route.fulfill({status:200,headers:cors,contentType:'application/json',body:JSON.stringify(authored)});}catch{}});
  await page.click('#analyse-description');await page.click('#cancel-interpretation');assert.match(await page.locator('#engine-status').innerText(),/analysis cancelled/);
+ await page.selectOption('#fixture-select','challenge-organic-form');
+ await page.click('#run-design');
+ await page.waitForFunction(()=>document.querySelector('#engine-status').dataset.state==='blocked');
+ const exactSphere = await page.locator('#design-spec').inputValue();
+ await page.click('#find-revision');
+ await page.locator('#use-revision').waitFor({state:'visible'});
+ assert.equal(await page.locator('#design-spec').inputValue(), exactSphere);
+ assert.match(await page.locator('#revision-preview').innerText(), /4.8 mm/);
+ await page.click('#use-revision');
+ await page.waitForFunction(()=>document.querySelector('#engine-status').dataset.state==='planned');
+ assert.equal(await page.locator('#engine-parts').innerText(),'22');
+ await page.click('#undo-revision');
+ await page.waitForFunction(()=>document.querySelector('#engine-status').dataset.state==='blocked');
+ assert.equal(await page.locator('#design-spec').inputValue(), exactSphere);
  await page.selectOption("#fixture-select","challenge-car");await page.click("#run-design");await page.waitForFunction(()=>document.querySelector("#engine-status").dataset.state==="blocked");assert.equal(await page.locator("#download-ldraw").isEnabled(),false);
  await page.locator("#spec-details").evaluate(el=>el.open=true);await page.locator("#design-spec").fill("{");await page.click("#run-design");assert.equal(await page.locator("#engine-status").getAttribute("data-state"),"blocked");
  // URL transport accepts arbitrary authored specifications, independently of fixtures.
