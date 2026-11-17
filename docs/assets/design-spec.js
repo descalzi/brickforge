@@ -1,4 +1,4 @@
-import {cardinalDirections} from './part-orientation.js?v=8c466e17ba47';
+import {cardinalDirections} from './part-orientation.js?v=ea85888e5541';
 const finite = (value) => typeof value === "number" && Number.isFinite(value);
 const RELATIONSHIPS = new Set(["above","below","left_of","right_of","in_front_of","behind","attached_to","aligned_with","symmetric_to","dimension_ratio"]);
 const ROOT_KEYS = new Set(["schema_version","design_id","name","units","components","relationships","constraints","appearance","assumptions","negative_spaces"]);
@@ -78,9 +78,10 @@ export function validateDesignSpec(spec) {
     else for (const [index, space] of spec.negative_spaces.entries()) {
       const path="negative_spaces["+index+"]";
       if(!space || typeof space!=="object" || Array.isArray(space)) {errors.push(path+" must be an object.");continue;}
-      if(hasOnlyKeys(space,new Set(["id","dimensions_mm","position_mm"])).length)errors.push(path+" contains unknown properties.");
+      if(hasOnlyKeys(space,new Set(["id","dimensions_mm","position_mm","component_id"])).length)errors.push(path+" contains unknown properties.");
       if(typeof space.id!=="string" || !space.id.trim() || ids.has(space.id))errors.push(path+" requires a unique id.");
       else ids.add(space.id);
+      if(space.component_id!==undefined && !(Array.isArray(spec.components)&&spec.components.some(c=>c?.id===space.component_id)))errors.push(path+" references an unknown host component.");
       if(!space.dimensions_mm || hasOnlyKeys(space.dimensions_mm,new Set(["width","depth","height"])).length || ["width","depth","height"].some(axis=>!finite(space.dimensions_mm[axis])||space.dimensions_mm[axis]<=0))errors.push(path+" dimensions must be positive and finite.");
       if(!space.position_mm || hasOnlyKeys(space.position_mm,new Set(["x","y","z"])).length || ["x","y","z"].some(axis=>!finite(space.position_mm[axis])))errors.push(path+" position must be finite.");
     }

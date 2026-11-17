@@ -1,8 +1,10 @@
-import {planDesign} from './design-engine.js?v=8c466e17ba47';
+import {architecturalEdits} from './architectural-revisions.js?v=ea85888e5541';
+import {planDesign} from './design-engine.js?v=ea85888e5541';
 
 // Choices correspond to a plate height, half a stud and one stud. The planner
 // checks each complete candidate against the original features and relations.
-function* candidateEdits(spec, failure) {
+function* candidateEdits(spec, failure, options) {
+  yield* architecturalEdits(spec,failure,options);
   const course = spec.constraints.course_type || 'auto';
   const auto = {field: 'course_type', before: course, after: 'auto'};
   if (course !== 'auto') yield [auto];
@@ -64,7 +66,9 @@ function revisedBrief(spec, edits) {
   const revised = structuredClone(spec);
   for (const edit of edits) {
     const target = edit.component ? revised.components.find(c => c.id === edit.component) : revised.constraints;
-    target[edit.field] = edit.after;
+    if(edit.field==='negative_spaces')revised.negative_spaces=structuredClone(edit.after);
+    else if(edit.field==='outline_mm')target.geometry_parameters.outline_mm=structuredClone(edit.after);
+    else target[edit.field] = structuredClone(edit.after);
   }
   return revised;
 }
@@ -72,7 +76,7 @@ function revisedBrief(spec, edits) {
 export function findTestedRevision(spec, catalogue, options, failure) {
   let attempts = 0;
   if (failure?.status !== 'blocked') return {attempts};
-  for (const edits of candidateEdits(spec, failure)) {
+  for (const edits of candidateEdits(spec, failure, options)) {
     if (attempts >= 24) break;
     attempts++;
     const revised = revisedBrief(spec, edits);

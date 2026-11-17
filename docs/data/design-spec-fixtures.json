@@ -3100,6 +3100,224 @@
       "assumptions": [
         "Wheel size can vary by 1.6 mm per dimension and its position by 2 mm per axis to engage a real wheel pin."
       ]
+    },
+    {
+      "schema_version": 1,
+      "design_id": "inset-window-house",
+      "name": "Pitched-roof house with an inset window",
+      "units": "mm",
+      "relationships": [
+        {
+          "type": "above",
+          "from": "roof",
+          "to": "front-wall"
+        },
+        {
+          "type": "attached_to",
+          "from": "front-window",
+          "to": "front-wall"
+        }
+      ],
+      "constraints": {
+        "require_connected": true,
+        "allow_intersections": false,
+        "max_parts": 200,
+        "max_search_nodes": 100000,
+        "course_type": "brick"
+      },
+      "appearance": {
+        "preferred_colours": [
+          4
+        ]
+      },
+      "components": [
+        {
+          "id": "foundation",
+          "role": "base",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 64,
+            "depth": 64,
+            "height": 9.6
+          },
+          "position_mm": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "priority": "essential",
+          "confidence": "explicit"
+        },
+        {
+          "id": "front-wall",
+          "role": "wall",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 64,
+            "depth": 8,
+            "height": 28.8
+          },
+          "position_mm": {
+            "x": 0,
+            "y": 9.6,
+            "z": 0
+          },
+          "priority": "essential",
+          "confidence": "explicit"
+        },
+        {
+          "id": "back-wall",
+          "role": "wall",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 64,
+            "depth": 8,
+            "height": 28.8
+          },
+          "position_mm": {
+            "x": 0,
+            "y": 9.6,
+            "z": 56
+          },
+          "priority": "essential",
+          "confidence": "explicit"
+        },
+        {
+          "id": "left-wall",
+          "role": "wall",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 8,
+            "depth": 48,
+            "height": 28.8
+          },
+          "position_mm": {
+            "x": 0,
+            "y": 9.6,
+            "z": 8
+          },
+          "priority": "essential",
+          "confidence": "explicit"
+        },
+        {
+          "id": "right-wall",
+          "role": "wall",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 8,
+            "depth": 48,
+            "height": 28.8
+          },
+          "position_mm": {
+            "x": 56,
+            "y": 9.6,
+            "z": 8
+          },
+          "priority": "essential",
+          "confidence": "explicit"
+        },
+        {
+          "id": "front-window",
+          "role": "window",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 16,
+            "depth": 8,
+            "height": 19.2
+          },
+          "position_mm": {
+            "x": 24,
+            "y": 19.2,
+            "z": 0
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "required_features": [
+            "window"
+          ]
+        },
+        {
+          "id": "roof",
+          "role": "roof",
+          "geometry": "extruded_profile",
+          "dimensions_mm": {
+            "width": 64,
+            "depth": 64,
+            "height": 16
+          },
+          "position_mm": {
+            "x": 0,
+            "y": 38.4,
+            "z": 0
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "geometry_parameters": {
+            "depth_mm": 64,
+            "outline_mm": [
+              [
+                0,
+                0
+              ],
+              [
+                64,
+                0
+              ],
+              [
+                64,
+                4.8
+              ],
+              [
+                48,
+                12.8
+              ],
+              [
+                40,
+                12.8
+              ],
+              [
+                40,
+                16
+              ],
+              [
+                24,
+                16
+              ],
+              [
+                24,
+                12.8
+              ],
+              [
+                16,
+                12.8
+              ],
+              [
+                0,
+                4.8
+              ]
+            ]
+          },
+          "required_features": [
+            "sloped"
+          ]
+        }
+      ],
+      "negative_spaces": [
+        {
+          "id": "front-window-opening",
+          "component_id": "front-wall",
+          "dimensions_mm": {
+            "width": 16,
+            "depth": 8,
+            "height": 19.2
+          },
+          "position_mm": {
+            "x": 24,
+            "y": 19.2,
+            "z": 0
+          }
+        }
+      ]
     }
   ],
   "challenge_specs": [

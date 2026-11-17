@@ -71,6 +71,11 @@
                 "type": "number"
               }
             }
+          },
+          "component_id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Limit this world-coordinate cutout to the named host component. Other components must still pass joint and collision checks."
           }
         }
       }

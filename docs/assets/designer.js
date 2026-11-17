@@ -1,11 +1,11 @@
-import { instructionJointNote } from "./assembly-instructions.js?v=8c466e17ba47";
-import {reorientExtrudedComponent} from './part-orientation.js?v=8c466e17ba47';
-import { ASSET_VERSION } from "./release-version.js?v=8c466e17ba47";
-import { buildInterpretationRequest, interpretDescription, endpointProvider } from "./text-design.js?v=8c466e17ba47";
-import { buildInventory, inventoryCsv } from "./build-inventory.js?v=8c466e17ba47";
-import { partBodyBounds } from "./assembly-analysis.js?v=8c466e17ba47";
-import { validateDesignSpec } from "./design-spec.js?v=8c466e17ba47";
-import { createDesignViewer, colours } from "./design-viewer.js?v=8c466e17ba47";
+import { instructionJointNote } from "./assembly-instructions.js?v=ea85888e5541";
+import {reorientExtrudedComponent} from './part-orientation.js?v=ea85888e5541';
+import { ASSET_VERSION } from "./release-version.js?v=ea85888e5541";
+import { buildInterpretationRequest, interpretDescription, endpointProvider } from "./text-design.js?v=ea85888e5541";
+import { buildInventory, inventoryCsv } from "./build-inventory.js?v=ea85888e5541";
+import { partBodyBounds } from "./assembly-analysis.js?v=ea85888e5541";
+import { validateDesignSpec } from "./design-spec.js?v=ea85888e5541";
+import { createDesignViewer, colours } from "./design-viewer.js?v=ea85888e5541";
 const $=id=>document.getElementById(id);
 const editor=$("design-spec"),status=$("engine-status"),runButton=$("run-design"),selector=$("fixture-select");
 const downloads=[$("download-ldraw"),$("download-bom"),$("download-report"),$("download-instructions"),$("download-pdf")];
@@ -47,7 +47,7 @@ function components(spec,plan){
     const state=document.createElement("span");state.className="component-state";const count=plan?.parts?.filter(p=>p.component_id===component.id).length;state.textContent=plan?.status==="planned"?`${count} ${count===1?"part":"parts"}`:component.geometry;
     button.append(swatch,text,state);button.addEventListener("click",()=>{const on=button.getAttribute("aria-pressed")!=="true";for(const b of $("component-list").children)b.setAttribute("aria-pressed","false");button.setAttribute("aria-pressed",String(on));viewer?.select(on?component.id:null);editComponent(on?component:null);});$("component-list").append(button);
   }
-  if(spec.negative_spaces?.length){const note=document.createElement("p");note.className="muted";note.textContent=spec.negative_spaces.length+" explicit empty-space requirements";$("component-list").append(note);}
+  if(spec.negative_spaces?.length){const note=document.createElement("p");note.className="muted";note.textContent=spec.negative_spaces.length+" declared openings or clearances";$("component-list").append(note);}
 }
 function loadExample(id){
   const example=fixtures.find(f=>f.design_id===id);if(!example){invalidate("Unknown brief: "+id);setStatus("Unknown brief: "+id,"blocked");return false;}
@@ -78,7 +78,7 @@ function run(){
   invalidate("Validating design specification…");
   let spec;try{spec=JSON.parse(editor.value);const validation=validateDesignSpec(spec);if(!validation.valid)throw new Error(validation.errors.join(" "));}catch(error){setStatus(error.message,"blocked");$("engine-report").textContent=error.message;return;}
   components(spec);activeSpec=spec;runButton.disabled=true;$("cancel-design").hidden=false;setStatus("Searching catalogue parts and connected layouts…","planning");
-  const started=performance.now();worker=new Worker(new URL("./design-worker.js?v=8c466e17ba47",import.meta.url),{type:"module"});
+  const started=performance.now();worker=new Worker(new URL("./design-worker.js?v=ea85888e5541",import.meta.url),{type:"module"});
   worker.onmessage=({data})=>{
     finishWorker();if(data.error){setStatus(data.error,"blocked");$("engine-report").textContent=data.error;return;}
     result=data.result;showEvidence(result);components(spec,result);
@@ -159,7 +159,7 @@ $("download-pdf").addEventListener("click", () => {
   $("cancel-pdf").hidden = false;
   setStatus("Preparing illustrated instruction booklet…", "exporting");
   try {
-    const job = new Worker(new URL("./instruction-pdf-worker.js?v=8c466e17ba47", import.meta.url), {type:"module"});
+    const job = new Worker(new URL("./instruction-pdf-worker.js?v=ea85888e5541", import.meta.url), {type:"module"});
     pdfWorker = job;
     job.onmessage = ({data}) => {
       if (job !== pdfWorker) return;
@@ -236,11 +236,11 @@ showRevisions();
 const revisionFieldNames = {position_tolerance_mm: 'position allowance per axis', fit_tolerance_mm: 'dimension allowance', shape_tolerance_mm: 'radial shape allowance'};
 $("find-revision").addEventListener("click", () => {
   if (result?.status !== "blocked" || worker) return;
-  const search = new Worker(new URL("./design-worker.js?v=8c466e17ba47", import.meta.url), {type: "module"});
+  const search = new Worker(new URL("./design-worker.js?v=ea85888e5541", import.meta.url), {type: "module"});
   worker = search;
   const preview = $("revision-preview");
   $("find-revision").disabled = true;
-  preview.textContent = "Testing course choices, positions and dimensional allowances against the complete brief…";
+  preview.textContent = "Testing changes to the geometry and joints against the complete brief…";
   function stop(message) {
     if (worker !== search) return;
     finishWorker();
@@ -257,9 +257,17 @@ $("find-revision").addEventListener("click", () => {
       return;
     }
     testedRevision = revision.specification;
-    const changes = revision.edits.map(edit => edit.field === 'course_type'
-      ? `Course selection changes from ${edit.before} to ${edit.after}.`
-      : `${edit.component} ${revisionFieldNames[edit.field]} changes from ${edit.before} to ${edit.after} mm.`);
+    const changes=revision.edits.map(edit=>{
+      if(edit.field==='course_type')return `Course selection changes from ${edit.before} to ${edit.after}.`;
+      if(edit.field==='outline_mm')return `${edit.component} uses two sloped faces and a ridge. Maximum vertical profile change: ${edit.vertical_error_mm} mm.`;
+      if(edit.field==='negative_spaces')return edit.after.slice(edit.before.length).map(s=>`Cut ${s.id} into ${s.component_id}.`).join(' ');
+      if(edit.field==='dimensions_mm'||edit.field==='position_mm'){
+        const dimensions=edit.field==='dimensions_mm',keys=dimensions?['width','depth','height']:['x','y','z'];
+        const format=v=>keys.map(k=>v[k]).join(' × ');
+        return `${edit.component} ${dimensions?'size (width, depth, height)':'position (X, Y, Z)'} changes from ${format(edit.before)} to ${format(edit.after)} mm.`;
+      }
+      return `${edit.component} ${revisionFieldNames[edit.field]} changes from ${edit.before} to ${edit.after} mm.`;
+    });
     for (const {component, size} of revision.dimensions) {
       changes.push(`${component} builds at ${[size.width, size.depth, size.height].map(v => +v.toFixed(2)).join(' × ')} mm (width × depth × height).`);
     }

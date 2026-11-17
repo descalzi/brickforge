@@ -37,6 +37,8 @@ The Studio parts checklist groups the planned instances by LDraw part and colour
 
 A chassis can incorporate wheel-pin carriers directly into structural plate courses. Required wheel-to-chassis attachments guide carrier placement. The exact car challenge remains blocked at its wheel dimensions and offers a tested revision with per-axis size and position allowances.
 
+The house challenge offers a tested inset-frame and pitched-roof revision. Component-scoped openings let another component occupy a cutout only if final collision and connection checks pass. The roof proposal measures vertical error at every change in its piecewise-linear cross-section, including the edges of the ridge.
+
 ## Next acceptance gates
 
 1. Expand the catalogue using source geometry plus explicit interface evidence,

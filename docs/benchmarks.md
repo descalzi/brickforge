@@ -1,6 +1,6 @@
 # Structured-brief engine benchmark
 
-29 planned assemblies, 2 correctly refused negative controls, 4 original challenge gaps; 0 expectation regressions across 35 cases.
+30 planned assemblies, 2 correctly refused negative controls, 4 original challenge gaps; 0 expectation regressions across 36 cases.
 
 These are canonical studies and held-out parameter variants of supported families. They do not establish performance on unseen natural-language descriptions or physical buildability. Known gaps remain in the denominator and are not counted as successful construction.
 
@@ -29,6 +29,7 @@ These are canonical studies and held-out parameter variants of supported familie
 | curved-canopy | canonical_studio | planned | 3 | 0 |
 | composed-curved-plinth | canonical_studio | planned | 2 | 0 |
 | integrated-axle-car | canonical_studio | planned | 14 | 0 |
+| inset-window-house | canonical_studio | planned | 33 | 0 |
 | benchmark-roof-depth24 | parametric_architecture | planned | 11 | 0 |
 | benchmark-tunnel-depth24 | parametric_architecture | planned | 10 | 0 |
 | benchmark-roof-depth8 | parametric_architecture | planned | 6 | 0 |

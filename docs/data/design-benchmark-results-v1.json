@@ -7,8 +7,8 @@
     "Physical insertion, clutch, load capacity and hand access are not assessed."
   ],
   "summary": {
-    "cases": 35,
-    "planned": 29,
+    "cases": 36,
+    "planned": 30,
     "negative_controls": 2,
     "known_gaps": 4,
     "regressions": 0
@@ -263,6 +263,17 @@
       "status": "planned",
       "expectation_matches": true,
       "parts": 14,
+      "nominal_approach_unassessed": 0,
+      "physical_insertion": "not_assessed",
+      "failures": []
+    },
+    {
+      "id": "inset-window-house",
+      "scope": "canonical_studio",
+      "expectation": "planned",
+      "status": "planned",
+      "expectation_matches": true,
+      "parts": 33,
       "nominal_approach_unassessed": 0,
       "physical_insertion": "not_assessed",
       "failures": []
