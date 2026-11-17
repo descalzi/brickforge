@@ -141,6 +141,14 @@ try{
  const pages = pdfContentStreams(roundedBytes);
  assert.equal(pages.length, 27);
  assert.ok(pages[0].includes('Stepped rounded shape'));
+ const secondStep = roundedBody.instructions.steps[1];
+ assert.deepEqual(secondStep.connects_to_steps, [1]);
+ assert.ok(pages[2].includes('Attach to step 1.'));
+ await page.locator('#instruction-slider').evaluate(slider => {
+   slider.value = '2';
+   slider.dispatchEvent(new Event('input', {bubbles:true}));
+ });
+ assert.match(await page.locator('#instruction-detail').innerText(), /Attach to step 1\./);
  assert.deepEqual(pages.flatMap(page => [...page.matchAll(/\(STEP (\d+)\)/g)].map(match => Number(match[1]))),
    roundedBody.instructions.steps.map(step => step.step));
  assert.ok(pages.at(-1).includes('Your model, assembled.'));

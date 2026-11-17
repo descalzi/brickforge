@@ -1,6 +1,7 @@
-import {rasterizeInstructionFaces} from './instruction-rasterizer.js?v=7f74500584aa';
+import { instructionJointNote } from "./assembly-instructions.js?v=fc937bdf9465";
+import {rasterizeInstructionFaces} from './instruction-rasterizer.js?v=fc937bdf9465';
 // Browser-native illustrated hybrid booklet. Diagrams and inventory share the canonical plan.
-import { transformVector } from './specialist-placement.js?v=7f74500584aa';
+import { transformVector } from './specialist-placement.js?v=fc937bdf9465';
 const palette=new Map([[0,'#26343b'],[1,'#1e5aa8'],[2,'#00852b'],[4,'#b40000'],[7,'#8a928d'],[14,'#f2cd37'],[15,'#eeeeee'],[19,'#e4cd9e'],[25,'#d66b24']]);
 const colourNames=new Map([[0,'Black'],[1,'Blue'],[2,'Green'],[4,'Red'],[7,'Grey'],[14,'Yellow'],[15,'White'],[19,'Tan'],[25,'Orange']]);
 const clean=s=>String(s).normalize('NFKD').replace(/[^\x20-\x7e]/g,' ').replace(/[\\()]/g,'\\$&');
@@ -129,6 +130,8 @@ export async function createInstructionPdf(plan,catalogue,spec={},onPage=()=>{})
   out+=diagram(stepFaces,built,current,{x:44,y:y+42,w:390,h:231},{bounds:diagramBounds(stepFaces.filter(f=>built.has(f.id))),explode,yaw});
   out+=text(48,y+31,8,index===0?'Start with this part in the shown orientation.':explode?'Follow the placement arrow; keep the shown orientation.':'Place the new part in the shown orientation. Review the approach.',muted);
   if(yaw!==overviewYaw)out+=text(310,y+31,7,'View turned toward the joint',accent);
+  const jointNote=instructionJointNote(step);
+  if(jointNote)out+=lines(445,y+172,8,jointNote,22,muted);
   if(step.support_guidance?.status==='hold_recommended')out+=text(48,y+19,7.5,'Hold / support this stage: nominal balance proxy flags limited support.',accent);
   out+=rect(48,y+8,494,3,rgb('#d8e2e7'))+rect(48,y+8,494*(index+1)/steps.length,3,accent);
   if(index%2===1||index===steps.length-1){out+=footer(streams.length+1,`Steps ${index-index%2+1}-${index+1} / full colour = new / softened = previous`);await finishPage(out);}

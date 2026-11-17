@@ -1,4 +1,4 @@
-import {planDesign} from './design-engine.js?v=7f74500584aa';
+import {planDesign} from './design-engine.js?v=fc937bdf9465';
 
 // Choices correspond to a plate height, half a stud and one stud. The planner
 // checks each complete candidate against the original features and relations.
