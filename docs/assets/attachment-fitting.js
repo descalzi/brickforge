@@ -1,8 +1,8 @@
-import {nominalBodyIntersectsBox} from './nominal-collision.js?v=3ae726348844';
-import { layoutTranslationProposals } from './layout-fitting.js?v=3ae726348844';
-import { featureCompatibility, axesCompatible } from './connection-types.js?v=3ae726348844';
-import { transformVector } from './specialist-placement.js?v=3ae726348844';
-import { partBodyBounds } from './assembly-analysis.js?v=3ae726348844';
+import {nominalBodyIntersectsBox} from './nominal-collision.js?v=d0896f9f9a9d';
+import { layoutTranslationProposals } from './layout-fitting.js?v=d0896f9f9a9d';
+import { featureCompatibility, axesCompatible } from './connection-types.js?v=d0896f9f9a9d';
+import { transformVector } from './specialist-placement.js?v=d0896f9f9a9d';
+import { partBodyBounds } from './assembly-analysis.js?v=d0896f9f9a9d';
 /** Propagate relation- and connector-derived translations only inside explicitly uncertain
  * component positions. Orientations and geometry come from catalogue candidates;
  * no fixture or object-category recipe participates in the search. */

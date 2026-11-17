@@ -50,3 +50,28 @@ test('search preserves an essential curved-surface requirement and refuses an un
   assert.equal(revision.specification, undefined);
   assert.ok(revision.attempts > 0 && revision.attempts <= 24);
 });
+
+test('all independent wheel and house component failures are visible in one run', () => {
+  for (const [id, expected] of [
+    ['challenge-car', ['front-left-wheel', 'front-right-wheel', 'rear-left-wheel', 'rear-right-wheel']],
+    ['challenge-house', ['front-window', 'roof']]
+  ]) {
+    const spec = fixtures.challenge_specs.find(s => s.design_id === id);
+    const plan = planDesign(spec, catalogue, options);
+    assert.deepEqual(plan.component_reports.filter(r => r.status === 'blocked').map(r => r.component_id), expected);
+    assert.equal(plan.component_reports.length, spec.components.length);
+    assert.ok(plan.component_reports.some(r => r.status === 'candidates_found'));
+    assert.equal(plan.parts.length, 0);
+  }
+});
+
+test('related blocked components can be revised together', () => {
+  const spec = structuredClone(fixtures.fixtures.find(s => s.design_id === 'side-mounted-panel'));
+  spec.components = [0, 1].map(i => ({id: 'layer-' + i, role: 'structural', geometry: 'rectangular_prism',
+    dimensions_mm: {width: 15.5, depth: 16, height: 9.6}, position_mm: {x: 0, y: i * 9.6, z: 0}, priority: 'essential'}));
+  spec.relationships = [{type:'attached_to', from:'layer-1', to:'layer-0'}];
+  const revision = search(spec);
+  assert.deepEqual(revision.edits.map(e => e.component), ['layer-0', 'layer-1']);
+  assert.equal(revision.dimensions.length, 2);
+  assert.equal(revision.parts, 2);
+});

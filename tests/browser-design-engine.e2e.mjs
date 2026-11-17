@@ -136,6 +136,8 @@ try{
  await page.waitForFunction(()=>document.querySelector('#engine-status').dataset.state==='blocked');
  assert.equal(await page.locator('#design-spec').inputValue(), exactSphere);
  await page.selectOption("#fixture-select","challenge-car");await page.click("#run-design");await page.waitForFunction(()=>document.querySelector("#engine-status").dataset.state==="blocked");assert.equal(await page.locator("#download-ldraw").isEnabled(),false);
+ assert.equal(await page.locator('#validation-list [data-state="blocked"]').count(),4);
+ assert.match(await page.locator('#engine-status').innerText(), /4 components/);
  await page.locator("#spec-details").evaluate(el=>el.open=true);await page.locator("#design-spec").fill("{");await page.click("#run-design");assert.equal(await page.locator("#engine-status").getAttribute("data-state"),"blocked");
  // URL transport accepts arbitrary authored specifications, independently of fixtures.
  const spec=await page.evaluate(async()=>{const r=await fetch("./data/design-spec-fixtures.json");return (await r.json()).fixtures[3];});

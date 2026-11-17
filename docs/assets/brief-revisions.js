@@ -1,4 +1,4 @@
-import {planDesign} from './design-engine.js?v=3ae726348844';
+import {planDesign} from './design-engine.js?v=d0896f9f9a9d';
 
 // Choices correspond to a plate height, half a stud and one stud. The planner
 // checks each complete candidate against the original features and relations.
@@ -24,15 +24,25 @@ function* candidateEdits(spec, failure) {
       }
     }
   }
+  // Repeated requirements often fail together. A single component edit cannot
+  // resolve a second independent failure, so try matching blocked peers together.
+  const visited = new Set();
   for (const component of sorted) {
+    if (visited.has(component.id)) continue;
+    const peers = blocked.has(component.id) ? sorted.filter(c =>
+      blocked.has(c.id) && c.geometry === component.geometry && c.role === component.role &&
+      ['width', 'depth', 'height'].every(axis => c.dimensions_mm[axis] === component.dimensions_mm[axis])) : [component];
+    for (const peer of peers) visited.add(peer.id);
     const rounded = ['sphere', 'cylinder'].includes(component.geometry);
     const field = rounded ? 'shape_tolerance_mm' : 'fit_tolerance_mm';
-    const before = component[field] || 0;
+
     const limits = rounded ? [3.2, 4, 4.8, 5.6, 6.4, 8] : [0.8, 1.6, 3.2, 4];
-    for (const after of limits.filter(value => value > before)) {
-      const edit = {component: component.id, field, before, after};
-      yield [edit];
-      if (course !== 'auto') yield [edit, auto];
+    for (const after of limits) {
+      const edits = peers.filter(c => after > (c[field] || 0))
+        .map(c => ({component: c.id, field, before: c[field] || 0, after}));
+      if (!edits.length) continue;
+      yield edits;
+      if (course !== 'auto') yield [...edits, auto];
     }
   }
 }
@@ -53,7 +63,7 @@ export function findTestedRevision(spec, catalogue, options, failure) {
     if (attempts >= 24) break;
     attempts++;
     const revised = revisedBrief(spec, edits);
-    const plan = planDesign(revised, catalogue, options);
+    const plan = planDesign(revised, catalogue, {...options, stopOnFirstComponentFailure: true});
     if (plan.status === 'planned') {
       return {attempts, edits, specification: revised, parts: plan.parts.length,
         positions: (plan.component_reports || [])

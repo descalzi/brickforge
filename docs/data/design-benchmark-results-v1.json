@@ -358,7 +358,10 @@
       "nominal_approach_unassessed": null,
       "physical_insertion": "not_assessed",
       "failures": [
-        "Measured specialist candidates exist for front-left-wheel (small-wheel-and-tyre), but none preserves its dimensions, cross-section, extrusion direction and empty-space constraints. No bounding-box substitution was made."
+        "Measured specialist candidates exist for front-left-wheel (small-wheel-and-tyre), but none preserves its dimensions, cross-section, extrusion direction and empty-space constraints. No bounding-box substitution was made.",
+        "Measured specialist candidates exist for front-right-wheel (small-wheel-and-tyre), but none preserves its dimensions, cross-section, extrusion direction and empty-space constraints. No bounding-box substitution was made.",
+        "Measured specialist candidates exist for rear-left-wheel (small-wheel-and-tyre), but none preserves its dimensions, cross-section, extrusion direction and empty-space constraints. No bounding-box substitution was made.",
+        "Measured specialist candidates exist for rear-right-wheel (small-wheel-and-tyre), but none preserves its dimensions, cross-section, extrusion direction and empty-space constraints. No bounding-box substitution was made."
       ]
     },
     {
@@ -371,7 +374,8 @@
       "nominal_approach_unassessed": null,
       "physical_insertion": "not_assessed",
       "failures": [
-        "Measured specialist candidates exist for front-window (60592), but none preserves its dimensions, cross-section, extrusion direction and empty-space constraints. No bounding-box substitution was made."
+        "Measured specialist candidates exist for front-window (60592), but none preserves its dimensions, cross-section, extrusion direction and empty-space constraints. No bounding-box substitution was made.",
+        "Measured specialist candidates exist for roof (3037, 3298, 3039, 15068, 3040b), but none preserves its dimensions, cross-section, extrusion direction and empty-space constraints. No bounding-box substitution was made. No candidate prism has a fully supportable material boundary within the placement limits."
       ]
     },
     {

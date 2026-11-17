@@ -31,6 +31,8 @@ be converted to a different successful model.
 
 The reproducible [structured-brief benchmark](benchmarks.md) reports working studies, parameter variants, negative controls and unchanged original challenges separately. It is not an evaluation of unseen natural-language interpretation.
 
+Blocked Studio briefs list independent component fitting failures. “Test changes to this brief” runs a bounded search over course selection, attachment positions and shape or dimension allowances. The preview reports the edits and realised geometry for a complete planned assembly. Apply the revision to build it, or restore the original brief.
+
 ## Next acceptance gates
 
 1. Expand the catalogue using source geometry plus explicit interface evidence,
