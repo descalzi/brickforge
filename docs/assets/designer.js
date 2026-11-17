@@ -1,10 +1,10 @@
-import {reorientExtrudedComponent} from './part-orientation.js?v=cb7f60a0af7d';
-import { ASSET_VERSION } from "./release-version.js?v=cb7f60a0af7d";
-import { buildInterpretationRequest, interpretDescription, endpointProvider } from "./text-design.js?v=cb7f60a0af7d";
-import { createInstructionPdf } from "./instruction-pdf.js?v=cb7f60a0af7d";
-import { partBodyBounds } from "./assembly-analysis.js?v=cb7f60a0af7d";
-import { validateDesignSpec } from "./design-spec.js?v=cb7f60a0af7d";
-import { createDesignViewer, colours } from "./design-viewer.js?v=cb7f60a0af7d";
+import {reorientExtrudedComponent} from './part-orientation.js?v=3ae726348844';
+import { ASSET_VERSION } from "./release-version.js?v=3ae726348844";
+import { buildInterpretationRequest, interpretDescription, endpointProvider } from "./text-design.js?v=3ae726348844";
+import { createInstructionPdf } from "./instruction-pdf.js?v=3ae726348844";
+import { partBodyBounds } from "./assembly-analysis.js?v=3ae726348844";
+import { validateDesignSpec } from "./design-spec.js?v=3ae726348844";
+import { createDesignViewer, colours } from "./design-viewer.js?v=3ae726348844";
 const $=id=>document.getElementById(id);
 const editor=$("design-spec"),status=$("engine-status"),runButton=$("run-design"),selector=$("fixture-select");
 const downloads=[$("download-ldraw"),$("download-bom"),$("download-report"),$("download-instructions"),$("download-pdf")];
@@ -13,8 +13,17 @@ let catalogue,displayCatalogue,options,fixtures=[],result=null,activeSpec=null,w
 try{viewer=createDesignViewer($("studio-viewport"));}catch(error){$("viewer-empty").textContent="3D preview unavailable: "+error.message;}
 function setStatus(message,state="ready"){status.textContent=message;status.dataset.state=state;}
 function finishWorker(){worker?.terminate();worker=null;clearTimeout(timer);$("cancel-design").hidden=true;runButton.disabled=!catalogue;}
+let testedRevision = null, previousBrief = null;
 function invalidate(message="Brief changed. Plan again to update the assembly."){
   analysisController?.abort();analysisController=null;analysisGeneration++;$("cancel-interpretation").hidden=true;$("analyse-description").disabled=!$("interpretation-endpoint").value.trim()||!responseSchema;
+  testedRevision = null;
+  previousBrief = null;
+  $("brief-repair").hidden = true;
+  $("cancel-revision").hidden = true;
+  $("undo-revision").hidden = true;
+  $("find-revision").disabled = false;
+  $("use-revision").hidden = true;
+  $("revision-preview").textContent = "";
   editComponent(null);finishWorker();result=null;activeSpec=null;downloads.forEach(b=>b.disabled=true);$("share-design").disabled=!catalogue;
   for(const id of ["engine-parts","engine-connections","engine-pairs","engine-size"])$(id).textContent="—";
   viewer?.clear();if(viewer){$("viewer-empty").textContent="Plan this brief to inspect its assembly.";$("viewer-empty").hidden=false;}
@@ -52,11 +61,11 @@ function run(){
   invalidate("Validating design specification…");
   let spec;try{spec=JSON.parse(editor.value);const validation=validateDesignSpec(spec);if(!validation.valid)throw new Error(validation.errors.join(" "));}catch(error){setStatus(error.message,"blocked");$("engine-report").textContent=error.message;return;}
   components(spec);activeSpec=spec;runButton.disabled=true;$("cancel-design").hidden=false;setStatus("Searching catalogue parts and connected layouts…","planning");
-  const started=performance.now();worker=new Worker(new URL("./design-worker.js?v=cb7f60a0af7d",import.meta.url),{type:"module"});
+  const started=performance.now();worker=new Worker(new URL("./design-worker.js?v=3ae726348844",import.meta.url),{type:"module"});
   worker.onmessage=({data})=>{
     finishWorker();if(data.error){setStatus(data.error,"blocked");$("engine-report").textContent=data.error;return;}
     result=data.result;showEvidence(result);components(spec,result);
-    if(result.status!=="planned"){setStatus((result.failures||["No plan found."]).join(" "),"blocked");return;}
+    if(result.status!=="planned"){$("brief-repair").hidden=false;setStatus((result.failures||["No plan found."]).join(" "),"blocked");return;}
     $("engine-parts").textContent=result.parts.length;$("engine-connections").textContent=result.connections.length;$("engine-pairs").textContent=result.total_mating_pairs??"—";
     const d=result.dimensions_mm;$("engine-size").textContent=d?`${+d.width.toFixed(1)} × ${+d.depth.toFixed(1)} × ${+d.height.toFixed(1)}`:"See report";
     const pitch=spec.constraints.course_type==="brick"?9.6:3.2;
@@ -141,3 +150,63 @@ function showRevisions(){const select=$("revision-select");select.replaceChildre
 $("save-revision").addEventListener('click',()=>{try{const spec=JSON.parse(editor.value),check=validateDesignSpec(spec);if(!check.valid)throw new Error(check.errors.join(' '));const next=[{id:crypto.randomUUID(),name:spec.name||spec.design_id,saved_at:new Date().toISOString(),specification:spec},...revisions()].slice(0,20);localStorage.setItem(revisionKey,JSON.stringify(next));showRevisions();setStatus('Revision saved on this browser.');}catch(error){setStatus('Could not save revision: '+error.message,'blocked');}});
 $("revision-select").addEventListener('change',()=>{const revision=revisions().find(r=>r.id===$("revision-select").value);if(!revision)return;editor.value=JSON.stringify(revision.specification,null,2);invalidate('Saved revision restored. Plan to regenerate its assembly.');selector.selectedIndex=-1;components(revision.specification);});
 showRevisions();
+
+const revisionFieldNames = {position_tolerance_mm: 'position allowance per axis', fit_tolerance_mm: 'dimension allowance', shape_tolerance_mm: 'radial shape allowance'};
+$("find-revision").addEventListener("click", () => {
+  if (result?.status !== "blocked" || worker) return;
+  const search = new Worker(new URL("./design-worker.js?v=3ae726348844", import.meta.url), {type: "module"});
+  worker = search;
+  const preview = $("revision-preview");
+  $("find-revision").disabled = true;
+  preview.textContent = "Testing course choices, positions and dimensional allowances against the complete brief…";
+  function stop(message) {
+    if (worker !== search) return;
+    finishWorker();
+    $("cancel-revision").hidden = true;
+    preview.textContent = message;
+  }
+  $("cancel-revision").hidden = false;
+  $("cancel-revision").onclick = () => { stop("Search cancelled."); $("find-revision").disabled = false; };
+  search.onmessage = ({data}) => {
+    if (worker !== search) return;
+    const revision = data.revision;
+    if (!revision?.specification) {
+      stop(data.error || `Found no working revision in ${revision.attempts} trials.`);
+      return;
+    }
+    testedRevision = revision.specification;
+    const changes = revision.edits.map(edit => edit.field === 'course_type'
+      ? `Course selection changes from ${edit.before} to ${edit.after}.`
+      : `${edit.component} ${revisionFieldNames[edit.field]} changes from ${edit.before} to ${edit.after} mm.`);
+    for (const {component, size} of revision.dimensions) {
+      changes.push(`${component} builds at ${[size.width, size.depth, size.height].map(v => +v.toFixed(2)).join(' × ')} mm (width × depth × height).`);
+    }
+    for (const position of revision.positions) {
+      changes.push(`${position.component} moves by (${position.delta.map(v => +v.toFixed(2)).join(', ')}) mm on X, Y and Z.`);
+    }
+    for (const evidence of revision.approximations) {
+      changes.push(`${evidence.component} extends at most ${(Math.ceil(evidence.outer * 100) / 100).toFixed(2)} mm outside and misses at most ${(Math.ceil(evidence.inner * 100) / 100).toFixed(2)} mm inside the requested surface.`);
+    }
+    stop(`Tested a ${revision.parts}-part assembly. ` + changes.join(' '));
+    $("use-revision").hidden = false;
+  };
+  search.onerror = event => stop(event.message);
+  timer = setTimeout(() => stop("Revision search reached the 30-second limit."), 30000);
+  search.postMessage({action: 'find_revision', spec: activeSpec, catalogue, options,
+    failure: {status: result.status, component_reports: result.component_reports || []}});
+});
+$("use-revision").addEventListener("click", () => {
+  if (!testedRevision) return;
+  const previous = {text: editor.value, selected: selector.value};
+  editor.value = JSON.stringify(testedRevision, null, 2);
+  selector.selectedIndex = -1;
+  run();
+  previousBrief = previous;
+  $("undo-revision").hidden = false;
+});
+$("undo-revision").addEventListener("click", () => {
+  if (!previousBrief) return;
+  editor.value = previousBrief.text;
+  selector.value = previousBrief.selected;
+  run();
+});
