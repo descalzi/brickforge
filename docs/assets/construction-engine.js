@@ -895,7 +895,7 @@ function footprintTilingsConnect(lower, upper) {
 }
 
 
-function sampleInterlockingFootprints(cells, profiles, tilePartIds = FOOTPRINT_TILE_PART_IDS) {
+export function sampleInterlockingFootprints(cells, profiles, tilePartIds = FOOTPRINT_TILE_PART_IDS, maxAttempts = 512) {
   if (cells.size <= 18) return null;
   const sortedCells = [...cells].map((key) => key.split(",").map(Number))
     .sort((a, b) => a[1] - b[1] || a[0] - b[0]);
@@ -945,7 +945,7 @@ function sampleInterlockingFootprints(cells, profiles, tilePartIds = FOOTPRINT_T
   let bestPair = null;
   let bestPartCount = Infinity;
   let firstPairAttempt = null;
-  for (let attempt = 0; attempt < 512; attempt += 1) {
+  for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
     const remaining = new Set(cells);
     const chosen = [];
     while (remaining.size) {

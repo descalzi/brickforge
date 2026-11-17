@@ -1,4 +1,4 @@
-import {cross2} from './polygon-geometry.js?v=ea85888e5541';
+import {cross2} from './polygon-geometry.js?v=76b0ed28438a';
 const onSegment=(p,a,b)=>Math.abs(cross2(a,b,p))<=1e-5*Math.max(1,Math.hypot(b[0]-a[0],b[1]-a[1]))&&[0,1].every(i=>p[i]>=Math.min(a[i],b[i])-1e-5&&p[i]<=Math.max(a[i],b[i])+1e-5);
 function edges(polygon,lo,hi,index=-1){return polygon.map((a,i)=>{const b=polygon[(i+1)%polygon.length],length=Math.hypot(b[0]-a[0],b[1]-a[1]);let dx=(b[0]-a[0])/length,dy=(b[1]-a[1])/length,side=1;if(dx< -1e-8||Math.abs(dx)<1e-8&&dy<0){dx=-dx;dy=-dy;side=-1;}return {a,b,lo,hi,index,side,key:[dx,dy,dx*a[1]-dy*a[0]].map(v=>(Math.abs(v)<.00005?0:v).toFixed(4)).join(',')};});}
 /** Necessary boundary-support pruning before material arrangement. Every

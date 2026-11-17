@@ -58,6 +58,8 @@ jobs:
             /tmp/brickforge-shallow-canopy*
             /tmp/brickforge-curved-canopy*
             /tmp/brickforge-composed-curved-plinth*
+            /tmp/brickforge-description-plate.png
+            /tmp/brickforge-inset-window-house.png
             /tmp/brickforge-studio.png
             /tmp/brickforge-pavilion.png
             /tmp/brickforge-car.png

@@ -10,7 +10,7 @@ These are canonical studies and held-out parameter variants of supported familie
 | two-opening-wall | canonical_studio | planned | 8 | 0 |
 | table | canonical_studio | planned | 12 | 0 |
 | stepped-platform | canonical_studio | planned | 5 | 0 |
-| open-courtyard | canonical_studio | planned | 15 | 0 |
+| open-courtyard | canonical_studio | planned | 16 | 0 |
 | windowed-pavilion | canonical_studio | planned | 17 | 0 |
 | sloped-canopy | canonical_studio | planned | 5 | 0 |
 | small-road-car | canonical_studio | planned | 17 | 0 |

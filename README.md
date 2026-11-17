@@ -20,8 +20,9 @@ An object-first, browser-based brick construction engine.
   with physical clutch, stability, insertion and strength kept unverified.
 - Interactive inspection, editable components, browser-local brief revisions,
   LDraw STEP export, BOM/report JSON and compressed illustrated PDF booklets.
-- A provider-neutral text interpretation contract and optional HTTPS gateway
-  adapter. No hosted model service, API key or default provider is bundled.
+- A local description parser for dimensioned plates, square through-openings and
+  side walls. An optional browser language-model adapter and HTTPS gateway use
+  the same validated object contract. On-device availability depends on the browser.
 
 The catalogue and geometry solver are curated and bounded. These proofs are not
 an arbitrary-object generator or a physical buildability certification. See the
