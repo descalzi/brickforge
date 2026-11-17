@@ -2287,6 +2287,612 @@
         ]
       },
       "connection_evidence": "Nominal 3x3 top stud grid from stug-3x3.dat in 11212.dat. The central stud is at x=z=0; underside grid datums are nominal."
+    },
+    {
+      "id": "3040b",
+      "slope": true,
+      "width": 8,
+      "depth": 16,
+      "height": 9.6
+    },
+    {
+      "id": "3298",
+      "width": 16,
+      "height": 9.6,
+      "depth": 24,
+      "roles": [
+        "roof",
+        "slope"
+      ],
+      "capabilities": [
+        "sloped_surface",
+        "top_studs",
+        "underside_stud_receivers"
+      ],
+      "supported_geometry": [
+        "extruded_profile"
+      ],
+      "body_vertices_mm": [
+        [
+          -8,
+          9.6,
+          -20
+        ],
+        [
+          -8,
+          8,
+          -20
+        ],
+        [
+          -8,
+          0,
+          -4
+        ],
+        [
+          -8,
+          0,
+          4
+        ],
+        [
+          -8,
+          9.6,
+          4
+        ],
+        [
+          8,
+          9.6,
+          -20
+        ],
+        [
+          8,
+          8,
+          -20
+        ],
+        [
+          8,
+          0,
+          -4
+        ],
+        [
+          8,
+          0,
+          4
+        ],
+        [
+          8,
+          9.6,
+          4
+        ]
+      ],
+      "features": [
+        {
+          "feature_id": "receiver--10--40",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10,
+            24,
+            -40
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "receiver--10--20",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10,
+            24,
+            -20
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "receiver--10-0",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10,
+            24,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud--10",
+          "kind": "stud",
+          "position_ldu": [
+            -10,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "receiver-10--40",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10,
+            24,
+            -40
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "receiver-10--20",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10,
+            24,
+            -20
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "receiver-10-0",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10,
+            24,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-10",
+          "kind": "stud",
+          "position_ldu": [
+            10,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        }
+      ],
+      "orientation_frame": {
+        "up": [
+          0,
+          -1,
+          0
+        ],
+        "forward": [
+          0,
+          0,
+          -1
+        ]
+      },
+      "extrusion_axes_ldraw": [
+        "x"
+      ],
+      "body_geometry_evidence": "source_silhouette_vertices"
+    },
+    {
+      "id": "15068",
+      "width": 16,
+      "height": 6.4,
+      "depth": 16,
+      "roles": [
+        "roof",
+        "slope",
+        "organic_form",
+        "body"
+      ],
+      "capabilities": [
+        "curved_surface",
+        "sloped_surface",
+        "underside_stud_receivers"
+      ],
+      "supported_geometry": [
+        "extruded_profile"
+      ],
+      "body_vertices_mm": [],
+      "features": [
+        {
+          "feature_id": "receiver--10",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10,
+            0,
+            -10
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "receiver-10",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10,
+            0,
+            -10
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        }
+      ],
+      "derive_convex_extrusion": {
+        "axis": "x",
+        "cap_coordinate_mm": 8
+      },
+      "extrusion_axes_ldraw": [
+        "x"
+      ],
+      "orientation_frame": {
+        "up": [
+          0,
+          -1,
+          0
+        ],
+        "forward": [
+          0,
+          0,
+          -1
+        ]
+      },
+      "body_geometry_evidence": "source_silhouette_vertices",
+      "connection_evidence": "Only the two front receivers on the flat source underside are profiled. Rear recessed contacts are not inferred; physical clutch is not verified."
+    },
+    {
+      "id": "3941",
+      "width": 16,
+      "height": 9.6,
+      "depth": 16,
+      "roles": [
+        "support",
+        "organic_form",
+        "body"
+      ],
+      "capabilities": [
+        "curved_surface",
+        "round_column",
+        "top_studs",
+        "underside_stud_receivers"
+      ],
+      "supported_geometry": [
+        "cylinder"
+      ],
+      "body_vertices_mm": [
+        [
+          -8.0,
+          0,
+          -8.0
+        ],
+        [
+          -8.0,
+          0,
+          8.0
+        ],
+        [
+          -8.0,
+          9.6,
+          -8.0
+        ],
+        [
+          -8.0,
+          9.6,
+          8.0
+        ],
+        [
+          8.0,
+          0,
+          -8.0
+        ],
+        [
+          8.0,
+          0,
+          8.0
+        ],
+        [
+          8.0,
+          9.6,
+          -8.0
+        ],
+        [
+          8.0,
+          9.6,
+          8.0
+        ]
+      ],
+      "features": [
+        {
+          "feature_id": "stud--10--10",
+          "kind": "stud",
+          "position_ldu": [
+            -10,
+            0,
+            -10
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver--10--10",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10,
+            24,
+            -10
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud--10-10",
+          "kind": "stud",
+          "position_ldu": [
+            -10,
+            0,
+            10
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver--10-10",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10,
+            24,
+            10
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-10--10",
+          "kind": "stud",
+          "position_ldu": [
+            10,
+            0,
+            -10
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-10--10",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10,
+            24,
+            -10
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-10-10",
+          "kind": "stud",
+          "position_ldu": [
+            10,
+            0,
+            10
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-10-10",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10,
+            24,
+            10
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        }
+      ],
+      "cylinder_axis_ldraw": "y",
+      "orientation_frame": {
+        "up": [
+          0,
+          -1,
+          0
+        ]
+      }
+    },
+    {
+      "id": "4070",
+      "width": 8,
+      "height": 9.6,
+      "depth": 8,
+      "roles": [
+        "side_mount",
+        "connector"
+      ],
+      "capabilities": [
+        "side_stud",
+        "top_studs",
+        "underside_stud_receivers"
+      ],
+      "supported_geometry": [
+        "rectangular_prism"
+      ],
+      "body_vertices_mm": [
+        [
+          -4.0,
+          0,
+          -4.0
+        ],
+        [
+          -4.0,
+          0,
+          4.0
+        ],
+        [
+          -4.0,
+          9.6,
+          -4.0
+        ],
+        [
+          -4.0,
+          9.6,
+          4.0
+        ],
+        [
+          4.0,
+          0,
+          -4.0
+        ],
+        [
+          4.0,
+          0,
+          4.0
+        ],
+        [
+          4.0,
+          9.6,
+          -4.0
+        ],
+        [
+          4.0,
+          9.6,
+          4.0
+        ]
+      ],
+      "features": [
+        {
+          "feature_id": "top",
+          "kind": "stud",
+          "position_ldu": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "bottom",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            0,
+            24,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "side",
+          "kind": "stud",
+          "position_ldu": [
+            0,
+            10,
+            -6
+          ],
+          "axis": [
+            0,
+            0,
+            -1
+          ]
+        }
+      ],
+      "orientation_frame": {
+        "up": [
+          0,
+          -1,
+          0
+        ],
+        "forward": [
+          0,
+          0,
+          -1
+        ]
+      },
+      "body_boxes_mm": [
+        {
+          "min": [
+            -4,
+            0,
+            -2.4
+          ],
+          "max": [
+            4,
+            8,
+            4
+          ]
+        },
+        {
+          "min": [
+            -4,
+            8,
+            -4
+          ],
+          "max": [
+            4,
+            9.6,
+            4
+          ]
+        }
+      ],
+      "connection_evidence": "Nominal top/bottom grid datums and recessed side-stud datum at source (0,10,-6) LDU. Bulk body follows upper recess and bottom lip; studs and cavities excluded. Physical clutch is not verified."
     }
   ],
   "assemblies": [

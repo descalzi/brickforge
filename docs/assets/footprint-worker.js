@@ -1,4 +1,4 @@
-import { buildFootprintBlock } from "./construction-engine.js?v=1b52eaceae39";
+import { buildFootprintBlock } from "./construction-engine.js?v=7cab87a13250";
 
 self.addEventListener("message", (event) => {
   const { cells, height, catalogue, options } = event.data;

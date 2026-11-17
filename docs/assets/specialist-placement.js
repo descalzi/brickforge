@@ -1,7 +1,7 @@
-import {nominalBodyIntersectsBox} from './nominal-collision.js?v=1b52eaceae39';
-import {orientationMatches} from './part-orientation.js?v=1b52eaceae39';
-import { discoverPartCandidates } from './part-catalogue.js?v=1b52eaceae39';
-import { translateComponentRequirements } from './design-translation.js?v=1b52eaceae39';
+import {nominalBodyIntersectsBox} from './nominal-collision.js?v=7cab87a13250';
+import {orientationMatches} from './part-orientation.js?v=7cab87a13250';
+import { discoverPartCandidates } from './part-catalogue.js?v=7cab87a13250';
+import { translateComponentRequirements } from './design-translation.js?v=7cab87a13250';
 
 const yawRotations = [[1,0,0,0,1,0,0,0,1],[0,0,1,0,1,0,-1,0,0],[-1,0,0,0,1,0,0,0,-1],[0,0,-1,0,1,0,1,0,0]];
 const permutations=[[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]];
@@ -36,13 +36,14 @@ export function worldBodyBounds(part,profile) {
 
 /** Rigid placements independent of object category. Constant-section elements
  * may repeat along an extrusion, whose cross-section must match exactly. */
-export function specialistComponentCandidates(component,options,partCatalogue,mapping,specialists) {
- if(!specialists?.profiles?.length)return null;
+export function specialistComponentCandidates(component,options,partCatalogue,mapping,specialists,basicProfiles=[]) {
+ const structural=component.orientation&&component.geometry==='rectangular_prism'?basicProfiles.map(p=>({...p,body_vertices_mm:[-1,1].flatMap(x=>[0,p.body_height_ldu*.4].flatMap(y=>[-1,1].map(z=>[x*p.footprint_studs_x*4,y,z*p.footprint_studs_z*4]))),supported_geometry:['rectangular_prism'],orientation_frame:{up:[0,-1,0]}})):[];
+ if(!specialists?.profiles?.length&&!structural.length)return null;
  const translated=translateComponentRequirements(component,mapping);
  if(!translated.valid)return null;
  const search=discoverPartCandidates({roles:translated.part_roles,required_capabilities:translated.required_capabilities,forbidden_capabilities:translated.forbidden_capabilities,dimensions_mm:component.dimensions_mm},partCatalogue);
- const profiles=new Map(specialists.profiles.map(p=>[p.part_id,p]));
- const assemblies=(specialists.assemblies||[]).filter(a=>a.roles.some(r=>translated.part_roles.includes(r))&&translated.required_capabilities.every(c=>a.capabilities.includes(c))&&!translated.forbidden_capabilities.some(c=>a.capabilities.includes(c))&&a.geometry===component.geometry);
+ const profiles=new Map([...(specialists?.profiles||[]),...structural].map(p=>[p.part_id,p]));
+ const assemblies=(specialists?.assemblies||[]).filter(a=>a.roles.some(r=>translated.part_roles.includes(r))&&translated.required_capabilities.every(c=>a.capabilities.includes(c))&&!translated.forbidden_capabilities.some(c=>a.capabilities.includes(c))&&a.geometry===component.geometry);
  for(const a of assemblies)profiles.set(a.assembly_id,{...a,part_id:a.assembly_id,supported_geometry:[a.geometry]});
  const candidates=[...search.candidates,...assemblies.map(a=>({...a,part_id:a.assembly_id,description:"Catalogue assembly: "+a.assembly_id,score:100,dimension_error_mm:0}))].filter(c=>profiles.get(c.part_id)?.supported_geometry.includes(component.geometry));
  if(!candidates.length)return null;

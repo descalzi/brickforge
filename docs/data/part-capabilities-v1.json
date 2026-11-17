@@ -338,6 +338,85 @@
       }
     },
     {
+      "part_id": "15068",
+      "description": "Slope Brick Curved  2 x  2 x  0.667",
+      "roles": [
+        "roof",
+        "slope",
+        "organic_form",
+        "body"
+      ],
+      "capabilities": [
+        "curved_surface",
+        "sloped_surface",
+        "underside_stud_receivers"
+      ],
+      "dimensions_mm": {
+        "width": 16,
+        "depth": 16,
+        "height": 6.4
+      },
+      "candidate_status": "geometry_measured",
+      "interfaces": [
+        {
+          "interface_id": "receiver--10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            0,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "receiver-10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            0,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        }
+      ],
+      "source": {
+        "file": "parts/15068.dat",
+        "revision": "2014-01",
+        "license": "Licensed under CC BY 4.0 : see CAreadme.txt",
+        "author": "Owen Burgoyne [C3POwen]",
+        "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
+      },
+      "geometry_measurement": {
+        "source_library_commit": "c70360d1c588be894997b2168c61909bc8058c4d",
+        "triangle_count": 286,
+        "method": "recursive_ldraw_surface_bounds",
+        "bounds_mm": [
+          [
+            -8,
+            -6.400024392000001,
+            -8
+          ],
+          [
+            8,
+            0,
+            8
+          ]
+        ]
+      }
+    },
+    {
       "part_id": "2493b",
       "description": "Window 1 x 4 x 5 with Hollow Studs",
       "roles": [
@@ -5118,6 +5197,99 @@
       }
     },
     {
+      "part_id": "3040b",
+      "description": "Slope Brick 45  2 x  1",
+      "roles": [
+        "roof",
+        "slope"
+      ],
+      "capabilities": [
+        "sloped_surface",
+        "top_studs",
+        "underside_stud_receivers"
+      ],
+      "dimensions_mm": {
+        "width": 8,
+        "depth": 16,
+        "height": 9.6
+      },
+      "candidate_status": "geometry_measured",
+      "interfaces": [
+        {
+          "interface_id": "receiver-0-0",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            0,
+            9.6,
+            -8
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "receiver-0-1",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            0,
+            9.6,
+            0
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "stud-0-1",
+          "interface_type": "stud",
+          "position_mm": [
+            0,
+            0,
+            0
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        }
+      ],
+      "source": {
+        "file": "parts/3040b.dat",
+        "revision": "2004-04",
+        "license": "Licensed under CC BY 4.0 : see CAreadme.txt",
+        "author": "James Jessiman",
+        "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
+      },
+      "geometry_measurement": {
+        "source_library_commit": "c70360d1c588be894997b2168c61909bc8058c4d",
+        "triangle_count": 178,
+        "method": "recursive_ldraw_surface_bounds",
+        "bounds_mm": [
+          [
+            -4,
+            -1.6,
+            -12
+          ],
+          [
+            4,
+            9.600000000000001,
+            4
+          ]
+        ]
+      }
+    },
+    {
       "part_id": "3062b",
       "description": "Brick  1 x  1 Round with Hollow Stud",
       "roles": [
@@ -5214,6 +5386,179 @@
         "license": "CC BY 2.0 and CC BY 4.0",
         "author": null,
         "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
+      }
+    },
+    {
+      "part_id": "3298",
+      "description": "Slope Brick 33  3 x  2",
+      "roles": [
+        "roof",
+        "slope"
+      ],
+      "capabilities": [
+        "sloped_surface",
+        "top_studs",
+        "underside_stud_receivers"
+      ],
+      "dimensions_mm": {
+        "width": 16,
+        "depth": 24,
+        "height": 9.6
+      },
+      "candidate_status": "geometry_measured",
+      "interfaces": [
+        {
+          "interface_id": "receiver--10--40",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            9.600000000000001,
+            -16
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "receiver--10--20",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            9.600000000000001,
+            -8
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "receiver--10-0",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            9.600000000000001,
+            0
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "stud--10",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            0
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "receiver-10--40",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            9.600000000000001,
+            -16
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "receiver-10--20",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            9.600000000000001,
+            -8
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "receiver-10-0",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            9.600000000000001,
+            0
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "stud-10",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            0
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        }
+      ],
+      "source": {
+        "file": "parts/3298.dat",
+        "revision": "2004-02",
+        "license": "Licensed under CC BY 4.0 : see CAreadme.txt",
+        "author": "James Jessiman",
+        "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
+      },
+      "geometry_measurement": {
+        "source_library_commit": "c70360d1c588be894997b2168c61909bc8058c4d",
+        "triangle_count": 512,
+        "method": "recursive_ldraw_surface_bounds",
+        "bounds_mm": [
+          [
+            -8,
+            -1.6,
+            -20
+          ],
+          [
+            8,
+            9.600000000000001,
+            4
+          ]
+        ]
       }
     },
     {
@@ -8950,6 +9295,274 @@
         "license": "Licensed under CC BY 4.0; see CAreadme.txt",
         "author": "Philippe Hurbain [Philo]",
         "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
+      }
+    },
+    {
+      "part_id": "3941",
+      "description": "Brick  2 x  2 Round without Reinforcement",
+      "roles": [
+        "support",
+        "organic_form",
+        "body"
+      ],
+      "capabilities": [
+        "curved_surface",
+        "round_column",
+        "top_studs",
+        "underside_stud_receivers"
+      ],
+      "dimensions_mm": {
+        "width": 16,
+        "depth": 16,
+        "height": 9.6
+      },
+      "candidate_status": "geometry_measured",
+      "interfaces": [
+        {
+          "interface_id": "stud--10--10",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "stud_receiver--10--10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            9.600000000000001,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "stud--10-10",
+          "interface_type": "stud",
+          "position_mm": [
+            -4,
+            0,
+            4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "stud_receiver--10-10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            -4,
+            9.600000000000001,
+            4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "stud-10--10",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "stud_receiver-10--10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            9.600000000000001,
+            -4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "stud-10-10",
+          "interface_type": "stud",
+          "position_mm": [
+            4,
+            0,
+            4
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "stud_receiver-10-10",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            4,
+            9.600000000000001,
+            4
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        }
+      ],
+      "source": {
+        "file": "parts/3941.dat",
+        "revision": "2020-01",
+        "license": "Licensed under CC BY 4.0 : see CAreadme.txt",
+        "author": "James Jessiman",
+        "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
+      },
+      "geometry_measurement": {
+        "source_library_commit": "c70360d1c588be894997b2168c61909bc8058c4d",
+        "triangle_count": 624,
+        "method": "recursive_ldraw_surface_bounds",
+        "bounds_mm": [
+          [
+            -8.000201964000002,
+            -1.6,
+            -8.000201964000002
+          ],
+          [
+            8.000201964000002,
+            9.600000000000001,
+            8.000201964000002
+          ]
+        ]
+      }
+    },
+    {
+      "part_id": "4070",
+      "description": "Brick  1 x  1 with Headlight",
+      "roles": [
+        "side_mount",
+        "connector"
+      ],
+      "capabilities": [
+        "side_stud",
+        "top_studs",
+        "underside_stud_receivers"
+      ],
+      "dimensions_mm": {
+        "width": 8,
+        "depth": 8,
+        "height": 9.6
+      },
+      "candidate_status": "geometry_measured",
+      "interfaces": [
+        {
+          "interface_id": "top",
+          "interface_type": "stud",
+          "position_mm": [
+            0,
+            0,
+            0
+          ],
+          "axis_vector": [
+            0,
+            -1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "bottom",
+          "interface_type": "stud_receiver",
+          "position_mm": [
+            0,
+            9.600000000000001,
+            0
+          ],
+          "axis_vector": [
+            0,
+            1,
+            0
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        },
+        {
+          "interface_id": "side",
+          "interface_type": "stud",
+          "position_mm": [
+            0,
+            4,
+            -2.4000000000000004
+          ],
+          "axis_vector": [
+            0,
+            0,
+            -1
+          ],
+          "nominal_diameter_mm": null,
+          "evidence_status": "authored_nominal_grid_from_ldraw"
+        }
+      ],
+      "source": {
+        "file": "parts/4070.dat",
+        "revision": "2003-02",
+        "license": "Licensed under CC BY 4.0 : see CAreadme.txt",
+        "author": "James Jessiman",
+        "library_commit": "c70360d1c588be894997b2168c61909bc8058c4d"
+      },
+      "geometry_measurement": {
+        "source_library_commit": "c70360d1c588be894997b2168c61909bc8058c4d",
+        "triangle_count": 276,
+        "method": "recursive_ldraw_surface_bounds",
+        "bounds_mm": [
+          [
+            -4,
+            -1.6,
+            -4
+          ],
+          [
+            4,
+            9.600000000000001,
+            4
+          ]
+        ]
       }
     },
     {

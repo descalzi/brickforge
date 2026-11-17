@@ -8,7 +8,11 @@ const read=async p=>JSON.parse(await readFile(new URL("../docs/data/"+p,import.m
 const catalogue=await read("connection-profiles/basic-bricks.json"),fixtures=await read("design-spec-fixtures.json");
 const options={partCatalogue:await read("part-capabilities-v1.json"),designTranslation:await read("design-translation-v1.json"),specialistCatalogue:await read("specialist-profiles-v1.json")};
 const profileMap=new Map([...catalogue.profiles,...options.specialistCatalogue.profiles].map(p=>[p.part_id,p]));
-function bounds(part){const p=profileMap.get(part.part_id);if(p.body_vertices_mm)return worldBodyBounds(part,p);const rotated=Math.abs(part.matrix[0])<.5,w=(rotated?p.footprint_studs_z:p.footprint_studs_x)*8,d=(rotated?p.footprint_studs_x:p.footprint_studs_z)*8,h=p.body_height_ldu*.4,[x,y,z]=[part.translation_ldu[0]*.4,-part.translation_ldu[1]*.4,-part.translation_ldu[2]*.4];return {min:[x-w/2,y-h,z-d/2],max:[x+w/2,y,z+d/2]};}
+function bounds(part){const p=profileMap.get(part.part_id);if(p.body_vertices_mm)return worldBodyBounds(part,p);
+ // Independently rotate all eight corners; yaw-only width swapping misses side-mounted plates.
+ const points=[-1,1].flatMap(x=>[0,p.body_height_ldu*.4].flatMap(y=>[-1,1].map(z=>[x*p.footprint_studs_x*4,y,z*p.footprint_studs_z*4]))).map(v=>[0,1,2].map(i=>(part.matrix[i*3]*v[0]+part.matrix[i*3+1]*v[1]+part.matrix[i*3+2]*v[2]+part.translation_ldu[i]*.4)*(i===0?1:-1)));
+ return {min:[0,1,2].map(i=>Math.min(...points.map(v=>v[i]))),max:[0,1,2].map(i=>Math.max(...points.map(v=>v[i])))};
+}
 for(const spec of fixtures.fixtures)test("studio brief constructs with actual nominal body clearances: "+spec.design_id,()=>{
  const plan=planDesign(spec,catalogue,options);assert.equal(plan.status,"planned",plan.failures?.join(" "));
  assert.equal(plan.bom.items.reduce((n,p)=>n+p.quantity,0),plan.parts.length);assert.equal(plan.ldraw.split("\n").filter(line=>line.startsWith("1 ")).length,plan.parts.length);

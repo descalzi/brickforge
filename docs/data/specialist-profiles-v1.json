@@ -2782,6 +2782,800 @@
         ]
       },
       "body_geometry_evidence": "authored_nominal_envelope"
+    },
+    {
+      "part_id": "3040b",
+      "description": "Slope Brick 45  2 x  1",
+      "features": [
+        {
+          "feature_id": "receiver-0-0",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            0,
+            23.999999999999996,
+            -20
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "receiver-0-1",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            0,
+            23.999999999999996,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-0-1",
+          "kind": "stud",
+          "position_ldu": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        }
+      ],
+      "body_vertices_mm": [
+        [
+          -4,
+          9.6,
+          -12
+        ],
+        [
+          -4,
+          8,
+          -12
+        ],
+        [
+          -4,
+          0,
+          -4
+        ],
+        [
+          -4,
+          0,
+          4
+        ],
+        [
+          -4,
+          9.6,
+          4
+        ],
+        [
+          4,
+          9.6,
+          -12
+        ],
+        [
+          4,
+          8,
+          -12
+        ],
+        [
+          4,
+          0,
+          -4
+        ],
+        [
+          4,
+          0,
+          4
+        ],
+        [
+          4,
+          9.6,
+          4
+        ]
+      ],
+      "supported_geometry": [
+        "extruded_profile"
+      ],
+      "extrusion_axes_ldraw": [
+        "x"
+      ],
+      "body_height_ldu": 23.999999999999996,
+      "mesh_file": "part-meshes/3040b.json",
+      "source_filename": "parts/3040b.dat",
+      "source_library_commit": "c70360d1c588be894997b2168c61909bc8058c4d",
+      "connection_evidence": "BrickForge-authored nominal stud-grid datums checked against source top studs and underside envelope; physical clutch not verified.",
+      "orientation_frame": {
+        "up": [
+          0,
+          -1,
+          0
+        ],
+        "forward": [
+          0,
+          0,
+          -1
+        ]
+      },
+      "body_geometry_evidence": "source_silhouette_vertices"
+    },
+    {
+      "part_id": "3298",
+      "description": "Slope Brick 33  3 x  2",
+      "features": [
+        {
+          "feature_id": "receiver--10--40",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10,
+            24,
+            -40
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "receiver--10--20",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10,
+            24,
+            -20
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "receiver--10-0",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10,
+            24,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud--10",
+          "kind": "stud",
+          "position_ldu": [
+            -10,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "receiver-10--40",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10,
+            24,
+            -40
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "receiver-10--20",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10,
+            24,
+            -20
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "receiver-10-0",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10,
+            24,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-10",
+          "kind": "stud",
+          "position_ldu": [
+            10,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        }
+      ],
+      "body_vertices_mm": [
+        [
+          -8,
+          9.6,
+          -20
+        ],
+        [
+          -8,
+          8,
+          -20
+        ],
+        [
+          -8,
+          0,
+          -4
+        ],
+        [
+          -8,
+          0,
+          4
+        ],
+        [
+          -8,
+          9.6,
+          4
+        ],
+        [
+          8,
+          9.6,
+          -20
+        ],
+        [
+          8,
+          8,
+          -20
+        ],
+        [
+          8,
+          0,
+          -4
+        ],
+        [
+          8,
+          0,
+          4
+        ],
+        [
+          8,
+          9.6,
+          4
+        ]
+      ],
+      "supported_geometry": [
+        "extruded_profile"
+      ],
+      "extrusion_axes_ldraw": [
+        "x"
+      ],
+      "body_height_ldu": 23.999999999999996,
+      "mesh_file": "part-meshes/3298.json",
+      "source_filename": "parts/3298.dat",
+      "source_library_commit": "c70360d1c588be894997b2168c61909bc8058c4d",
+      "connection_evidence": "BrickForge-authored nominal stud-grid datums checked against source top studs and underside envelope; physical clutch not verified.",
+      "orientation_frame": {
+        "up": [
+          0,
+          -1,
+          0
+        ],
+        "forward": [
+          0,
+          0,
+          -1
+        ]
+      },
+      "body_geometry_evidence": "source_silhouette_vertices"
+    },
+    {
+      "part_id": "15068",
+      "description": "Slope Brick Curved  2 x  2 x  0.667",
+      "features": [
+        {
+          "feature_id": "receiver--10",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10,
+            0,
+            -10
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "receiver-10",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10,
+            0,
+            -10
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        }
+      ],
+      "body_vertices_mm": [
+        [
+          -8,
+          -6.400024392000001,
+          8
+        ],
+        [
+          -8,
+          -6.260959272,
+          5.0464
+        ],
+        [
+          -8,
+          -5.841446160000001,
+          2.1439999999999997
+        ],
+        [
+          -8,
+          -5.153073816000003,
+          -0.6592000000000013
+        ],
+        [
+          -8,
+          -4.203954372000001,
+          -3.3135999999999997
+        ],
+        [
+          -8,
+          -3.012629844,
+          -5.7744
+        ],
+        [
+          -8,
+          -1.6,
+          -8
+        ],
+        [
+          -8,
+          0,
+          -8
+        ],
+        [
+          -8,
+          0,
+          0
+        ],
+        [
+          -8,
+          -3.2,
+          8
+        ],
+        [
+          8,
+          -6.400024392000001,
+          8
+        ],
+        [
+          8,
+          -6.260959272,
+          5.0464
+        ],
+        [
+          8,
+          -5.841446160000001,
+          2.1439999999999997
+        ],
+        [
+          8,
+          -5.153073816000003,
+          -0.6592000000000013
+        ],
+        [
+          8,
+          -4.203954372000001,
+          -3.3135999999999997
+        ],
+        [
+          8,
+          -3.012629844,
+          -5.7744
+        ],
+        [
+          8,
+          -1.6,
+          -8
+        ],
+        [
+          8,
+          0,
+          -8
+        ],
+        [
+          8,
+          0,
+          0
+        ],
+        [
+          8,
+          -3.2,
+          8
+        ]
+      ],
+      "supported_geometry": [
+        "extruded_profile"
+      ],
+      "extrusion_axes_ldraw": [
+        "x"
+      ],
+      "body_height_ldu": 16,
+      "mesh_file": "part-meshes/15068.json",
+      "source_filename": "parts/15068.dat",
+      "source_library_commit": "c70360d1c588be894997b2168c61909bc8058c4d",
+      "connection_evidence": "Only the two front receivers on the flat source underside are profiled. Rear recessed contacts are not inferred; physical clutch is not verified.",
+      "orientation_frame": {
+        "up": [
+          0,
+          -1,
+          0
+        ],
+        "forward": [
+          0,
+          0,
+          -1
+        ]
+      },
+      "body_geometry_evidence": "source_silhouette_vertices"
+    },
+    {
+      "part_id": "3941",
+      "description": "Brick  2 x  2 Round without Reinforcement",
+      "features": [
+        {
+          "feature_id": "stud--10--10",
+          "kind": "stud",
+          "position_ldu": [
+            -10,
+            0,
+            -10
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver--10--10",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10,
+            24,
+            -10
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud--10-10",
+          "kind": "stud",
+          "position_ldu": [
+            -10,
+            0,
+            10
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver--10-10",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            -10,
+            24,
+            10
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-10--10",
+          "kind": "stud",
+          "position_ldu": [
+            10,
+            0,
+            -10
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-10--10",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10,
+            24,
+            -10
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud-10-10",
+          "kind": "stud",
+          "position_ldu": [
+            10,
+            0,
+            10
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "stud_receiver-10-10",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            10,
+            24,
+            10
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        }
+      ],
+      "body_vertices_mm": [
+        [
+          -8,
+          0,
+          -8
+        ],
+        [
+          -8,
+          0,
+          8
+        ],
+        [
+          -8,
+          9.6,
+          -8
+        ],
+        [
+          -8,
+          9.6,
+          8
+        ],
+        [
+          8,
+          0,
+          -8
+        ],
+        [
+          8,
+          0,
+          8
+        ],
+        [
+          8,
+          9.6,
+          -8
+        ],
+        [
+          8,
+          9.6,
+          8
+        ]
+      ],
+      "supported_geometry": [
+        "cylinder"
+      ],
+      "extrusion_axes_ldraw": [],
+      "body_height_ldu": 23.999999999999996,
+      "mesh_file": "part-meshes/3941.json",
+      "source_filename": "parts/3941.dat",
+      "source_library_commit": "c70360d1c588be894997b2168c61909bc8058c4d",
+      "connection_evidence": "BrickForge-authored nominal stud-grid datums checked against source top studs and underside envelope; physical clutch not verified.",
+      "cylinder_axis_ldraw": "y",
+      "orientation_frame": {
+        "up": [
+          0,
+          -1,
+          0
+        ]
+      },
+      "body_geometry_evidence": "authored_nominal_envelope"
+    },
+    {
+      "part_id": "4070",
+      "description": "Brick  1 x  1 with Headlight",
+      "features": [
+        {
+          "feature_id": "top",
+          "kind": "stud",
+          "position_ldu": [
+            0,
+            0,
+            0
+          ],
+          "axis": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "feature_id": "bottom",
+          "kind": "stud_receiver",
+          "position_ldu": [
+            0,
+            24,
+            0
+          ],
+          "axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "feature_id": "side",
+          "kind": "stud",
+          "position_ldu": [
+            0,
+            10,
+            -6
+          ],
+          "axis": [
+            0,
+            0,
+            -1
+          ]
+        }
+      ],
+      "body_vertices_mm": [
+        [
+          -4,
+          0,
+          -4
+        ],
+        [
+          -4,
+          0,
+          4
+        ],
+        [
+          -4,
+          9.6,
+          -4
+        ],
+        [
+          -4,
+          9.6,
+          4
+        ],
+        [
+          4,
+          0,
+          -4
+        ],
+        [
+          4,
+          0,
+          4
+        ],
+        [
+          4,
+          9.6,
+          -4
+        ],
+        [
+          4,
+          9.6,
+          4
+        ]
+      ],
+      "supported_geometry": [
+        "rectangular_prism"
+      ],
+      "extrusion_axes_ldraw": [],
+      "body_height_ldu": 23.999999999999996,
+      "mesh_file": "part-meshes/4070.json",
+      "source_filename": "parts/4070.dat",
+      "source_library_commit": "c70360d1c588be894997b2168c61909bc8058c4d",
+      "connection_evidence": "Nominal top/bottom grid datums and recessed side-stud datum at source (0,10,-6) LDU. Bulk body follows upper recess and bottom lip; studs and cavities excluded. Physical clutch is not verified.",
+      "body_boxes_mm": [
+        {
+          "min": [
+            -4,
+            0,
+            -2.4
+          ],
+          "max": [
+            4,
+            8,
+            4
+          ]
+        },
+        {
+          "min": [
+            -4,
+            8,
+            -4
+          ],
+          "max": [
+            4,
+            9.6,
+            4
+          ]
+        }
+      ],
+      "orientation_frame": {
+        "up": [
+          0,
+          -1,
+          0
+        ],
+        "forward": [
+          0,
+          0,
+          -1
+        ]
+      },
+      "body_geometry_evidence": "authored_nominal_envelope"
     }
   ],
   "assemblies": [

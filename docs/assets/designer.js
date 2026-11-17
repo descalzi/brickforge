@@ -1,10 +1,10 @@
-import {reorientExtrudedComponent} from './part-orientation.js?v=1b52eaceae39';
-import { ASSET_VERSION } from "./release-version.js?v=1b52eaceae39";
-import { buildInterpretationRequest, interpretDescription, endpointProvider } from "./text-design.js?v=1b52eaceae39";
-import { createInstructionPdf } from "./instruction-pdf.js?v=1b52eaceae39";
-import { partBodyBounds } from "./assembly-analysis.js?v=1b52eaceae39";
-import { validateDesignSpec } from "./design-spec.js?v=1b52eaceae39";
-import { createDesignViewer, colours } from "./design-viewer.js?v=1b52eaceae39";
+import {reorientExtrudedComponent} from './part-orientation.js?v=7cab87a13250';
+import { ASSET_VERSION } from "./release-version.js?v=7cab87a13250";
+import { buildInterpretationRequest, interpretDescription, endpointProvider } from "./text-design.js?v=7cab87a13250";
+import { createInstructionPdf } from "./instruction-pdf.js?v=7cab87a13250";
+import { partBodyBounds } from "./assembly-analysis.js?v=7cab87a13250";
+import { validateDesignSpec } from "./design-spec.js?v=7cab87a13250";
+import { createDesignViewer, colours } from "./design-viewer.js?v=7cab87a13250";
 const $=id=>document.getElementById(id);
 const editor=$("design-spec"),status=$("engine-status"),runButton=$("run-design"),selector=$("fixture-select");
 const downloads=[$("download-ldraw"),$("download-bom"),$("download-report"),$("download-instructions"),$("download-pdf")];
@@ -52,7 +52,7 @@ function run(){
   invalidate("Validating design specification…");
   let spec;try{spec=JSON.parse(editor.value);const validation=validateDesignSpec(spec);if(!validation.valid)throw new Error(validation.errors.join(" "));}catch(error){setStatus(error.message,"blocked");$("engine-report").textContent=error.message;return;}
   components(spec);activeSpec=spec;runButton.disabled=true;$("cancel-design").hidden=false;setStatus("Searching catalogue parts and connected layouts…","planning");
-  const started=performance.now();worker=new Worker(new URL("./design-worker.js?v=1b52eaceae39",import.meta.url),{type:"module"});
+  const started=performance.now();worker=new Worker(new URL("./design-worker.js?v=7cab87a13250",import.meta.url),{type:"module"});
   worker.onmessage=({data})=>{
     finishWorker();if(data.error){setStatus(data.error,"blocked");$("engine-report").textContent=data.error;return;}
     result=data.result;showEvidence(result);components(spec,result);
