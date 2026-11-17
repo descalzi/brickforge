@@ -35,6 +35,8 @@ Blocked Studio briefs list independent component fitting failures. “Test chang
 
 The Studio parts checklist groups the planned instances by LDraw part and colour, shows the first assembly step that uses each group, and exports those quantities as CSV. The illustrated booklet renders in a cancellable browser worker with page progress. Step cards and the Studio slider identify earlier attachment steps. When a sweep fails, the sequence report distinguishes conflicting joint directions from a body blocking a candidate direction and identifies the associated earlier parts.
 
+A chassis can incorporate wheel-pin carriers directly into structural plate courses. Required wheel-to-chassis attachments guide carrier placement. The exact car challenge remains blocked at its wheel dimensions and offers a tested revision with per-axis size and position allowances.
+
 ## Next acceptance gates
 
 1. Expand the catalogue using source geometry plus explicit interface evidence,

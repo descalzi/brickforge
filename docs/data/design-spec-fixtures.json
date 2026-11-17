@@ -2906,6 +2906,200 @@
       "assumptions": [
         "The 0.001 mm dimension allowance covers source faceting precision; the measured curve and rear recess remain explicit. Only the front flat row has nominal receivers."
       ]
+    },
+    {
+      "schema_version": 1,
+      "design_id": "integrated-axle-car",
+      "name": "Compact car with integrated axle carriers",
+      "units": "mm",
+      "relationships": [
+        {
+          "type": "above",
+          "from": "cabin",
+          "to": "chassis"
+        },
+        {
+          "type": "attached_to",
+          "from": "front-left-wheel",
+          "to": "chassis"
+        },
+        {
+          "type": "attached_to",
+          "from": "front-right-wheel",
+          "to": "chassis"
+        },
+        {
+          "type": "attached_to",
+          "from": "rear-left-wheel",
+          "to": "chassis"
+        },
+        {
+          "type": "attached_to",
+          "from": "rear-right-wheel",
+          "to": "chassis"
+        }
+      ],
+      "constraints": {
+        "require_connected": true,
+        "allow_intersections": false,
+        "max_parts": 200,
+        "max_search_nodes": 100000,
+        "course_type": "auto"
+      },
+      "appearance": {
+        "preferred_colours": [
+          4
+        ]
+      },
+      "components": [
+        {
+          "id": "chassis",
+          "role": "chassis",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 32,
+            "depth": 16,
+            "height": 9.6
+          },
+          "position_mm": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "function": [
+            "supports cabin and axles"
+          ]
+        },
+        {
+          "id": "cabin",
+          "role": "cabin",
+          "geometry": "rectangular_prism",
+          "dimensions_mm": {
+            "width": 16,
+            "depth": 16,
+            "height": 19.2
+          },
+          "position_mm": {
+            "x": 8,
+            "y": 9.6,
+            "z": 0
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "function": [
+            "encloses passenger space"
+          ]
+        },
+        {
+          "id": "front-left-wheel",
+          "role": "wheel",
+          "geometry": "cylinder",
+          "dimensions_mm": {
+            "width": 16,
+            "depth": 8,
+            "height": 16
+          },
+          "position_mm": {
+            "x": 0,
+            "y": -8,
+            "z": -8
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "geometry_parameters": {
+            "axis": "z",
+            "diameter_mm": 16
+          },
+          "required_features": [
+            "rotating"
+          ],
+          "fit_tolerance_mm": 1.6,
+          "position_tolerance_mm": 2
+        },
+        {
+          "id": "front-right-wheel",
+          "role": "wheel",
+          "geometry": "cylinder",
+          "dimensions_mm": {
+            "width": 16,
+            "depth": 8,
+            "height": 16
+          },
+          "position_mm": {
+            "x": 16,
+            "y": -8,
+            "z": -8
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "geometry_parameters": {
+            "axis": "z",
+            "diameter_mm": 16
+          },
+          "required_features": [
+            "rotating"
+          ],
+          "fit_tolerance_mm": 1.6,
+          "position_tolerance_mm": 2
+        },
+        {
+          "id": "rear-left-wheel",
+          "role": "wheel",
+          "geometry": "cylinder",
+          "dimensions_mm": {
+            "width": 16,
+            "depth": 8,
+            "height": 16
+          },
+          "position_mm": {
+            "x": 0,
+            "y": -8,
+            "z": 16
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "geometry_parameters": {
+            "axis": "z",
+            "diameter_mm": 16
+          },
+          "required_features": [
+            "rotating"
+          ],
+          "fit_tolerance_mm": 1.6,
+          "position_tolerance_mm": 2
+        },
+        {
+          "id": "rear-right-wheel",
+          "role": "wheel",
+          "geometry": "cylinder",
+          "dimensions_mm": {
+            "width": 16,
+            "depth": 8,
+            "height": 16
+          },
+          "position_mm": {
+            "x": 16,
+            "y": -8,
+            "z": 16
+          },
+          "priority": "essential",
+          "confidence": "explicit",
+          "geometry_parameters": {
+            "axis": "z",
+            "diameter_mm": 16
+          },
+          "required_features": [
+            "rotating"
+          ],
+          "fit_tolerance_mm": 1.6,
+          "position_tolerance_mm": 2
+        }
+      ],
+      "assumptions": [
+        "Wheel size can vary by 1.6 mm per dimension and its position by 2 mm per axis to engage a real wheel pin."
+      ]
     }
   ],
   "challenge_specs": [

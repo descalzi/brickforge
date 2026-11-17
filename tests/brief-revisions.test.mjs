@@ -75,3 +75,43 @@ test('related blocked components can be revised together', () => {
   assert.equal(revision.dimensions.length, 2);
   assert.equal(revision.parts, 2);
 });
+
+test('the car challenge can keep its chassis envelope and get four fitted rotating wheels', () => {
+  const spec = fixtures.challenge_specs.find(s=>s.design_id==='challenge-car');
+  const revision = search(spec);
+  assert.ok(revision.specification);
+  assert.deepEqual(revision.specification.relationships,spec.relationships);
+  assert.deepEqual(revision.specification.components.map(c=>c.dimensions_mm),spec.components.map(c=>c.dimensions_mm));
+  assert.equal(revision.dimensions.length,4);
+  assert.equal(revision.positions.length,4);
+  const plan = planDesign(revision.specification,catalogue,options);
+  assert.equal(plan.status,'planned');
+  assert.equal(plan.parts.filter(p=>p.part_id==='4600' && p.component_id==='chassis').length,2);
+  const pairs = plan.connections.flatMap(c=>c.mating_pairs);
+  assert.equal(pairs.filter(p=>p.connection_type==='wheel_pin_bore').length,4);
+  assert.equal(pairs.filter(p=>p.connection_type==='rim_tyre_seat').length,4);
+  assert.ok(plan.relationship_checks.every(r=>r.status==='passed'));
+  assert.ok(plan.instructions.steps.every(s=>s.nominal_approach_clear));
+});
+
+test('integrated carriers also fit a rotated exact layout and respect fixed limits', () => {
+  const spec=structuredClone(fixtures.fixtures.find(s=>s.design_id==='integrated-axle-car'));
+  for (const c of spec.components) {
+    if(c.role==='wheel'){
+      c.position_mm.x+=.8;c.position_mm.y+=2;c.position_mm.z+=.8;
+      c.dimensions_mm={width:14.4,height:14.4,depth:6.4};c.geometry_parameters={axis:'x',diameter_mm:14.4};
+      delete c.fit_tolerance_mm;delete c.position_tolerance_mm;
+    }
+    [c.position_mm.x,c.position_mm.z]=[c.position_mm.z,c.position_mm.x];
+    [c.dimensions_mm.width,c.dimensions_mm.depth]=[c.dimensions_mm.depth,c.dimensions_mm.width];
+  }
+  const p=planDesign(spec,catalogue,options);
+  assert.equal(p.status,'planned',p.failures?.join(' '));
+  assert.equal(p.component_reports[0].selected_construction_method,'integrated_wheel_carrier_courses');
+  for (const [axis,value] of Object.entries(spec.components[0].dimensions_mm)) assert.ok(Math.abs(p.component_reports[0].realised_dimensions_mm[axis]-value)<1e-6);
+  spec.constraints.course_type='brick';
+  assert.equal(planDesign(spec,catalogue,options).status,'blocked');
+  spec.constraints.course_type='auto';
+  spec.negative_spaces=[{id:'empty-bay',position_mm:{x:0,y:0,z:0},dimensions_mm:{width:8,depth:8,height:3.2}}];
+  assert.equal(planDesign(spec,catalogue,options).status,'blocked');
+});

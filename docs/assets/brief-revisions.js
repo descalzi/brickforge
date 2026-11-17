@@ -1,4 +1,4 @@
-import {planDesign} from './design-engine.js?v=fc937bdf9465';
+import {planDesign} from './design-engine.js?v=8c466e17ba47';
 
 // Choices correspond to a plate height, half a stud and one stud. The planner
 // checks each complete candidate against the original features and relations.
@@ -33,6 +33,19 @@ function* candidateEdits(spec, failure) {
       blocked.has(c.id) && c.geometry === component.geometry && c.role === component.role &&
       ['width', 'depth', 'height'].every(axis => c.dimensions_mm[axis] === component.dimensions_mm[axis])) : [component];
     for (const peer of peers) visited.add(peer.id);
+    if (component.role==='wheel' && component.geometry==='cylinder' && spec.relationships.some(r=>r.required!==false && r.type==='attached_to' && [r.from,r.to].includes(component.id))) {
+      // A smaller rigid wheel changes the bore centre relative to the requested
+      // bounding-box origin. Try size and mating-pose allowances together.
+      for (const size of [0.8,1.6,3.2,4]) {
+        const edits=[];
+        for(const peer of peers)for(const [field,allowance] of [['fit_tolerance_mm',size],['position_tolerance_mm',size+0.4]]) {
+          const before=peer[field]||0;
+          if(before<allowance)edits.push({component:peer.id,field,before,after:+allowance.toFixed(2)});
+        }
+        if(course!=='auto')edits.push(auto);
+        if(edits.length)yield edits;
+      }
+    }
     const rounded = ['sphere', 'cylinder'].includes(component.geometry);
     const field = rounded ? 'shape_tolerance_mm' : 'fit_tolerance_mm';
 
