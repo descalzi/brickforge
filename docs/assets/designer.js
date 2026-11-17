@@ -1,10 +1,11 @@
-import {reorientExtrudedComponent} from './part-orientation.js?v=7f74500584aa';
-import { ASSET_VERSION } from "./release-version.js?v=7f74500584aa";
-import { buildInterpretationRequest, interpretDescription, endpointProvider } from "./text-design.js?v=7f74500584aa";
-import { buildInventory, inventoryCsv } from "./build-inventory.js?v=7f74500584aa";
-import { partBodyBounds } from "./assembly-analysis.js?v=7f74500584aa";
-import { validateDesignSpec } from "./design-spec.js?v=7f74500584aa";
-import { createDesignViewer, colours } from "./design-viewer.js?v=7f74500584aa";
+import { instructionJointNote } from "./assembly-instructions.js?v=fc937bdf9465";
+import {reorientExtrudedComponent} from './part-orientation.js?v=fc937bdf9465';
+import { ASSET_VERSION } from "./release-version.js?v=fc937bdf9465";
+import { buildInterpretationRequest, interpretDescription, endpointProvider } from "./text-design.js?v=fc937bdf9465";
+import { buildInventory, inventoryCsv } from "./build-inventory.js?v=fc937bdf9465";
+import { partBodyBounds } from "./assembly-analysis.js?v=fc937bdf9465";
+import { validateDesignSpec } from "./design-spec.js?v=fc937bdf9465";
+import { createDesignViewer, colours } from "./design-viewer.js?v=fc937bdf9465";
 const $=id=>document.getElementById(id);
 const editor=$("design-spec"),status=$("engine-status"),runButton=$("run-design"),selector=$("fixture-select");
 const downloads=[$("download-ldraw"),$("download-bom"),$("download-report"),$("download-instructions"),$("download-pdf")];
@@ -77,7 +78,7 @@ function run(){
   invalidate("Validating design specification…");
   let spec;try{spec=JSON.parse(editor.value);const validation=validateDesignSpec(spec);if(!validation.valid)throw new Error(validation.errors.join(" "));}catch(error){setStatus(error.message,"blocked");$("engine-report").textContent=error.message;return;}
   components(spec);activeSpec=spec;runButton.disabled=true;$("cancel-design").hidden=false;setStatus("Searching catalogue parts and connected layouts…","planning");
-  const started=performance.now();worker=new Worker(new URL("./design-worker.js?v=7f74500584aa",import.meta.url),{type:"module"});
+  const started=performance.now();worker=new Worker(new URL("./design-worker.js?v=fc937bdf9465",import.meta.url),{type:"module"});
   worker.onmessage=({data})=>{
     finishWorker();if(data.error){setStatus(data.error,"blocked");$("engine-report").textContent=data.error;return;}
     result=data.result;showEvidence(result);components(spec,result);
@@ -131,7 +132,7 @@ $("instruction-slider").addEventListener("input",()=>{
   const course=$("course-slider");course.value=course.max;viewer?.course(Number(course.max));$("course-value").textContent=course.max+"/"+course.max;
   $("instruction-value").textContent=count+"/"+steps.length;
   const part=result.parts.find(p=>p.instance_id===step?.parts?.[0]),component=activeSpec?.components.find(c=>c.id===part?.component_id);
-  $("instruction-detail").textContent=step?`Step ${count}: Add ${part?.part_id||'the element'} to ${component?.label||component?.id||'the assembly'}. ${step.nominal_approach_clear?'Nominal approach is clear.':'Review the approach.'} ${step.support_guidance?.status==='hold_recommended'?'Hold or support this stage; its nominal balance proxy flags limited support. ':''}Physical insertion is unverified.`:"";
+  $("instruction-detail").textContent=step?`Step ${count}: Add ${part?.part_id||'the element'} to ${component?.label||component?.id||'the assembly'}. ${instructionJointNote(step)} ${step.nominal_approach_clear?'Nominal approach is clear.':'Review the approach.'} ${step.support_guidance?.status==='hold_recommended'?'Hold or support this stage; its nominal balance proxy flags limited support. ':''}Physical insertion is unverified.`:"";
 });
 $("download-bom").addEventListener("click",()=>result&&download(result.design_id+".bom.json",JSON.stringify(result.bom,null,2)));
 $("download-report").addEventListener("click",()=>result&&download(result.design_id+".assembly.json",JSON.stringify({specification:activeSpec,...result},null,2)));
@@ -158,7 +159,7 @@ $("download-pdf").addEventListener("click", () => {
   $("cancel-pdf").hidden = false;
   setStatus("Preparing illustrated instruction booklet…", "exporting");
   try {
-    const job = new Worker(new URL("./instruction-pdf-worker.js?v=7f74500584aa", import.meta.url), {type:"module"});
+    const job = new Worker(new URL("./instruction-pdf-worker.js?v=fc937bdf9465", import.meta.url), {type:"module"});
     pdfWorker = job;
     job.onmessage = ({data}) => {
       if (job !== pdfWorker) return;
@@ -235,7 +236,7 @@ showRevisions();
 const revisionFieldNames = {position_tolerance_mm: 'position allowance per axis', fit_tolerance_mm: 'dimension allowance', shape_tolerance_mm: 'radial shape allowance'};
 $("find-revision").addEventListener("click", () => {
   if (result?.status !== "blocked" || worker) return;
-  const search = new Worker(new URL("./design-worker.js?v=7f74500584aa", import.meta.url), {type: "module"});
+  const search = new Worker(new URL("./design-worker.js?v=fc937bdf9465", import.meta.url), {type: "module"});
   worker = search;
   const preview = $("revision-preview");
   $("find-revision").disabled = true;

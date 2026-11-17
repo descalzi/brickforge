@@ -1,5 +1,5 @@
-import {nominalBodiesIntersect,nominalBodySweepIntersects} from './nominal-collision.js?v=7f74500584aa';
-import { transformVector } from './specialist-placement.js?v=7f74500584aa';
+import {nominalBodiesIntersect,nominalBodySweepIntersects} from './nominal-collision.js?v=fc937bdf9465';
+import { transformVector } from './specialist-placement.js?v=fc937bdf9465';
 export function partBodyBounds(part,profile){
  const vertices=profile.body_vertices_mm||[-1,1].flatMap(x=>[0,profile.body_height_ldu*.4].flatMap(y=>[-1,1].map(z=>[x*profile.footprint_studs_x*4,y,z*profile.footprint_studs_z*4])));
  const points=vertices.map(p=>transformVector(part.matrix,p).map((v,i)=>(v+part.translation_ldu[i]*.4)*(i===0?1:-1)));
@@ -35,17 +35,51 @@ export function analyzeAssembly(parts,connections,profiles){
  return {nominal_dimensions_mm:{width:max[0]-min[0],height:max[1]-min[1],depth:max[2]-min[2]},body_envelope_collisions:collisions,support};
 }
 export function clearApproach(part,built,partsById,connections,profiles){
- const b=partBodyBounds(part,profiles.get(part.part_id)),directions=[],requirements=[];
- for(const e of connections){const isA=e.instance_a===part.instance_id,isB=e.instance_b===part.instance_id;if(!isA&&!isB)continue;const other=isA?e.instance_b:e.instance_a;if(!built.has(other))continue;
-  for(const match of e.mating_pairs||[]){const id=isA?match.feature_a:match.feature_b,f=profiles.get(part.part_id).features.find(f=>f.feature_id===id);if(!f)continue;
-   const axis=transformVector(part.matrix,f.axis).map((v,i)=>(-v*(i===0?1:-1))||0);const allowed=match.connection_type==='rim_tyre_seat'?[axis,axis.map(v=>-v)]:[axis];directions.push(...allowed);requirements.push(allowed);
+ if (!built.size) return {clear:true, direction:null, evidence:'initial_part'};
+ const profile = profiles.get(part.part_id);
+ const requirements = [];
+ const seatPartners = new Set();
+ const directions = new Map();
+ for (const joint of connections) {
+  const movingIsA = joint.instance_a === part.instance_id;
+  if (!movingIsA && joint.instance_b !== part.instance_id) continue;
+  const other = movingIsA ? joint.instance_b : joint.instance_a;
+  if (!built.has(other)) continue;
+  for (const pair of joint.mating_pairs || []) {
+   const seat = pair.connection_type === 'rim_tyre_seat';
+   if (seat) seatPartners.add(other);
+   const featureId = movingIsA ? pair.feature_a : pair.feature_b;
+   const feature = profile.features.find(f => f.feature_id === featureId);
+   if (!feature) continue;
+   const axis = transformVector(part.matrix,feature.axis).map((v,i) => (-v*(i===0?1:-1)) || 0);
+   const allowed = seat ? [axis, axis.map(v => -v)] : [axis];
+   requirements.push({instance_id:other, feature_id:featureId, allowed});
+   for (const direction of allowed) directions.set(direction.join(','), direction);
   }
  }
- for(const direction of directions){if(!requirements.every(allowed=>allowed.some(a=>a.every((v,i)=>Math.abs(v-direction[i])<1e-6))))continue;const axis=direction.findIndex(v=>Math.abs(v)>.999);if(axis<0)continue;const length=Math.max(1,...[...built].map(id=>{const other=partBodyBounds(partsById.get(id),profiles.get(partsById.get(id).part_id));return Math.max(Math.abs(other.min[axis]-b.max[axis]),Math.abs(other.max[axis]-b.min[axis]));}))+1;
-  const clear=[...built].every(id=>{
-   const exempt=connections.some(e=>new Set([e.instance_a,e.instance_b]).has(id)&&new Set([e.instance_a,e.instance_b]).has(part.instance_id)&&e.mating_pairs?.some(m=>m.connection_type==='rim_tyre_seat'));
-   const other=partsById.get(id);return exempt||!nominalBodySweepIntersects(part,profiles.get(part.part_id),direction,length,other,profiles.get(other.part_id));
-  });if(clear)return {clear:true,direction,evidence:'continuous_nominal_body_sweep'};
+ const compatible = [...directions.values()].filter(direction =>
+  requirements.every(joint => joint.allowed.some(axis => axis.every((v,i) => Math.abs(v-direction[i])<1e-6)))
+ );
+ const moving = partBodyBounds(part,profile);
+ const blockers = [];
+ for (const direction of compatible) {
+  const axis = direction.findIndex(v => Math.abs(v)>.999);
+  if (axis<0) continue;
+  let distance = 1;
+  for (const id of built) {
+   const other = partsById.get(id), bounds = partBodyBounds(other,profiles.get(other.part_id));
+   distance = Math.max(distance, Math.abs(bounds.min[axis]-moving.max[axis]), Math.abs(bounds.max[axis]-moving.min[axis]));
+  }
+  const obstruction = [...built].find(id => {
+   if (seatPartners.has(id)) return false;
+   const other = partsById.get(id);
+   return nominalBodySweepIntersects(part,profile,direction,distance+1,other,profiles.get(other.part_id));
+  });
+  if (obstruction === undefined) return {clear:true, direction, evidence:'continuous_nominal_body_sweep'};
+  blockers.push({direction, instance_id:obstruction});
  }
- return {clear:built.size===0,direction:null,evidence:built.size===0?'initial_part':'no_clear_nominal_axis_sweep'};
+ const reason = blockers.length ? 'obstructed_sweep' : !requirements.length ? 'no_profiled_joint' :
+  compatible.length ? 'unsupported_sweep_axis' : 'conflicting_joint_axes';
+ return {clear:false, direction:null, evidence:'no_clear_nominal_axis_sweep',
+  diagnostic:{reason, joints:requirements, blockers}};
 }

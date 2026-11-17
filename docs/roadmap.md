@@ -33,7 +33,7 @@ The reproducible [structured-brief benchmark](benchmarks.md) reports working stu
 
 Blocked Studio briefs list independent component fitting failures. “Test changes to this brief” runs a bounded search over course selection, attachment positions and shape or dimension allowances. The preview reports the edits and realised geometry for a complete planned assembly. Apply the revision to build it, or restore the original brief.
 
-The Studio parts checklist groups the planned instances by LDraw part and colour, shows the first assembly step that uses each group, and exports those quantities as CSV. The illustrated booklet renders in a cancellable browser worker with page progress.
+The Studio parts checklist groups the planned instances by LDraw part and colour, shows the first assembly step that uses each group, and exports those quantities as CSV. The illustrated booklet renders in a cancellable browser worker with page progress. Step cards and the Studio slider identify earlier attachment steps. When a sweep fails, the sequence report distinguishes conflicting joint directions from a body blocking a candidate direction and identifies the associated earlier parts.
 
 ## Next acceptance gates
 
