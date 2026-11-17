@@ -1,17 +1,18 @@
-import {rectangularDimensionVariants} from './dimension-variants.js?v=fc937bdf9465';
-import {combineCourseTilings} from './course-beam-search.js?v=fc937bdf9465';
-import {roundedShapeOccupancy} from './rounded-shape.js?v=fc937bdf9465';
-import {composeExtrudedProfile} from './profile-composition.js?v=fc937bdf9465';
-import { evaluateDesignRelationships as evaluateRelationships } from "./design-relations.js?v=fc937bdf9465";
-import { featureCompatibility, axesCompatible } from "./connection-types.js?v=fc937bdf9465";
-import { fitAttachmentPoses } from "./attachment-fitting.js?v=fc937bdf9465";
-import { assertValidDesignSpec } from "./design-spec.js?v=fc937bdf9465";
-import { discoverPartCandidates, validatePartCapabilityCatalogue } from "./part-catalogue.js?v=fc937bdf9465";
-import { translateComponentRequirements } from "./design-translation.js?v=fc937bdf9465";
-import { planTechnicBeamJoint } from "./technic-planner.js?v=fc937bdf9465";
-import { specialistComponentCandidates } from "./specialist-placement.js?v=fc937bdf9465";
-import { partBodyBounds, analyzeAssembly,findBodyCollisions } from "./assembly-analysis.js?v=fc937bdf9465";
-import { createAssemblyInstructions } from "./assembly-instructions.js?v=fc937bdf9465";
+import {chassisInserts} from './wheel-mount-layout.js?v=8c466e17ba47';
+import {rectangularDimensionVariants} from './dimension-variants.js?v=8c466e17ba47';
+import {combineCourseTilings} from './course-beam-search.js?v=8c466e17ba47';
+import {roundedShapeOccupancy} from './rounded-shape.js?v=8c466e17ba47';
+import {composeExtrudedProfile} from './profile-composition.js?v=8c466e17ba47';
+import { evaluateDesignRelationships as evaluateRelationships } from "./design-relations.js?v=8c466e17ba47";
+import { featureCompatibility, axesCompatible } from "./connection-types.js?v=8c466e17ba47";
+import { fitAttachmentPoses } from "./attachment-fitting.js?v=8c466e17ba47";
+import { assertValidDesignSpec } from "./design-spec.js?v=8c466e17ba47";
+import { discoverPartCandidates, validatePartCapabilityCatalogue } from "./part-catalogue.js?v=8c466e17ba47";
+import { translateComponentRequirements } from "./design-translation.js?v=8c466e17ba47";
+import { planTechnicBeamJoint } from "./technic-planner.js?v=8c466e17ba47";
+import { specialistComponentCandidates } from "./specialist-placement.js?v=8c466e17ba47";
+import { partBodyBounds, analyzeAssembly,findBodyCollisions } from "./assembly-analysis.js?v=8c466e17ba47";
+import { createAssemblyInstructions } from "./assembly-instructions.js?v=8c466e17ba47";
 
 const LDU_TO_MM = 0.4;
 const STUD_PITCH_MM = 8;
@@ -136,19 +137,24 @@ function assemble(parts, profileMap, requireConnected) {
 function componentCandidates(component,catalogue,options,partCatalogue,designTranslation) {
   const requestedCourseType=options.courseType;
   if(component.geometry==='rectangular_prism'&&component.fit_tolerance_mm&&!options.dimensionVariant)return fitRectangularDimensions(component,catalogue,options,partCatalogue,designTranslation);
+  const gridSize=component.dimensions_mm;
+  const onGrid=(v,pitch)=>Math.abs(v/pitch-Math.round(v/pitch))<1e-6;
+  const inserts=requestedCourseType!=='brick' && onGrid(gridSize.width,8) && onGrid(gridSize.depth,8) && onGrid(gridSize.height,3.2)
+    ? chassisInserts(component,options.wheelTargets,options.specialistCatalogue?.profiles||[]) : [];
+  if(inserts.length) options={...options,courseType:'plate',useCourseBeam:true};
   if(options.courseType==='auto'){
     const h=component.dimensions_mm.height,t=component.fit_tolerance_mm||0;
     options={...options,courseType:Math.abs(h-Math.round(h/9.6)*9.6)<=Math.max(t,1e-6)?'brick':'plate'};
   }
   const specialised=specialistComponentCandidates(component,options,partCatalogue,designTranslation,options.specialistCatalogue,catalogue.profiles);
-  if(specialised?.alternatives)return specialised;
-  const mixed=component.geometry==='rectangular_prism'&&!options.shapeOccupancy&&(options.allowMixedStructural||(requestedCourseType==='auto'&&component.dimensions_mm.height>9.6&&Math.abs(component.dimensions_mm.height/9.6-Math.round(component.dimensions_mm.height/9.6))>1e-6));
+  if(!inserts.length&&specialised?.alternatives)return specialised;
+  const mixed=!inserts.length&&component.geometry==='rectangular_prism'&&!options.shapeOccupancy&&(options.allowMixedStructural||(requestedCourseType==='auto'&&component.dimensions_mm.height>9.6&&Math.abs(component.dimensions_mm.height/9.6-Math.round(component.dimensions_mm.height/9.6))>1e-6));
   const d=component.dimensions_mm,profileTarget=mixed?{...component,geometry:'extruded_profile',geometry_parameters:{depth_mm:d.depth,outline_mm:[[0,0],[d.width,0],[d.width,d.height],[0,d.height]]}}:component;
   const composed=composeExtrudedProfile(profileTarget,catalogue,options,partCatalogue,designTranslation,options.specialistCatalogue);
   if(composed?.alternatives)return composed;
   const rounded=roundedShapeOccupancy(component,options.negativeSpaces,requestedCourseType);
   if(rounded){if(rounded.error)return rounded;const result=componentCandidates(rounded.component,catalogue,{...options,courseType:rounded.courseType,shapeOccupancy:rounded.occupancy},partCatalogue,designTranslation);return {...result,approximation:rounded.approximation};}
-  if(specialised)return {...specialised,error:specialised.error+(composed?.error?' '+composed.error:'')};
+  if(!inserts.length&&specialised)return {...specialised,error:specialised.error+(composed?.error?' '+composed.error:'')};
   if(composed)return composed;
   if(component.orientation)return {error:'Component '+component.id+' requires a semantic orientation frame that none of its measured specialist candidates supports.'};
   const translated=translateComponentRequirements(component,designTranslation);
@@ -199,6 +205,12 @@ function componentCandidates(component,catalogue,options,partCatalogue,designTra
         excluded.push(z*width+x);break;
       }
     }
+    const fixed=inserts.filter(item=>item.course===course);
+    for(const item of fixed)for(let z=item.z;z<item.z+item.sz;z++)for(let x=item.x;x<item.x+item.sx;x++){
+      const cell=z*width+x;
+      if(excluded.includes(cell))return {error:'The required wheel carrier intersects a declared empty space in '+component.id+'.'};
+      excluded.push(cell);
+    }
     excluded.sort((a,b)=>a-b);
     const key=excluded.join(",");
     let search=cached.get(key);
@@ -208,10 +220,10 @@ function componentCandidates(component,catalogue,options,partCatalogue,designTra
       nodes+=search.nodes;remainingNodes-=search.nodes;cached.set(key,search);
     }
     if(!search.tilings.length)return {error:"No exact part tiling found for component "+component.id+" course "+(course+1)+" within the search budget."};
-    courseTilings.push(search.tilings);
+    courseTilings.push(fixed.length?search.tilings.map(tiling=>[...fixed,...tiling]):search.tilings);
   }
   if(courseTilings.every(tilings=>tilings.every(tiling=>!tiling.length)))return {error:"Negative spaces remove the entire required component "+component.id+"."};
-  const profileMap=new Map(catalogue.profiles.map(profile=>[profile.part_id,profile]));
+  const profileMap=new Map([...catalogue.profiles,...inserts.map(item=>item.candidate.profile)].map(profile=>[profile.part_id,profile]));
   const alternatives=[];
   let combinations=0;
   const chosen=[];
@@ -248,6 +260,7 @@ function componentCandidates(component,catalogue,options,partCatalogue,designTra
     signatures.add(signature);unique.push(alternative);
     if(unique.length>=options.maxComponentAlternatives) break;
   }
+  if(inserts.length) for(const layout of unique)layout.integrated_mounts=inserts.length;
   return unique.length?{alternatives:unique,semantic_candidates:semanticSearch.candidates,search_nodes:nodes+(courseSearch?.nodes||0),combinations,course_search:courseSearch?{...courseSearch,states:undefined}:null}:{error:"No fully connected course arrangement found for component "+component.id+".",search_nodes:nodes,combinations,course_search:courseSearch?{...courseSearch,states:undefined}:null};
 }
 
@@ -312,7 +325,10 @@ export function planDesign(spec,catalogue,overrides={}) {
   const profileMap=new Map(allProfiles.map(profile=>[profile.part_id,profile]));
   const componentReports=[],candidateSets=[];
   for(const component of spec.components) {
-    const result=componentCandidates(component,catalogue,options,partCatalogue,designTranslation);
+    const targets=new Set(spec.relationships.filter(r=>r.type==='attached_to' && r.required!==false && (r.from===component.id||r.to===component.id))
+      .map(r=>r.from===component.id?r.to:r.from));
+    const wheelTargets=component.role==='chassis'?spec.components.filter(c=>targets.has(c.id) && c.role==='wheel' && c.geometry==='cylinder'):null;
+    const result=componentCandidates(component,catalogue,{...options,wheelTargets},partCatalogue,designTranslation);
     if (result.error) {
       componentReports.push({
         component_id: component.id, status: 'blocked', reason: result.error,
@@ -380,7 +396,7 @@ export function planDesign(spec,catalogue,overrides={}) {
         check.status=matched?'passed':check.required?'failed':'warning';if(!matched&&!check.required)realisedRelationships.warnings.push('Optional attachment between '+check.from+' and '+check.to+' was not realised.');
       }
       const score=parts.length*1000-graph.connections.length*5-graph.connections.reduce((sum,edge)=>sum+edge.mating_pairs.length,0);
-      if(!best||score<best.score)best={parts,graph,score,chosen:chosen.map(item=>item.tiling),poses:chosen.map(item=>item.pose_offset_ldu||[0,0,0]),methods:chosen.map(item=>item.composition?'exact_prism_material_cover':item.specialist?'profiled_rigid':'uniform_course_tiling'),relationship_report:realisedRelationships};
+      if(!best||score<best.score)best={parts,graph,score,chosen:chosen.map(item=>item.tiling),poses:chosen.map(item=>item.pose_offset_ldu||[0,0,0]),methods:chosen.map(item=>item.composition?'exact_prism_material_cover':item.integrated_mounts?'integrated_wheel_carrier_courses':item.specialist?'profiled_rigid':'uniform_course_tiling'),relationship_report:realisedRelationships};
       return;
     }
     const component=order[index];

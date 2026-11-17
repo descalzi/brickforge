@@ -156,6 +156,12 @@ try{
  page.off('download', recordDownload);
  console.log(`Rounded study booklet: ${pages.length} pages in ${((performance.now()-exportStarted)/1000).toFixed(1)}s`);
  await writeFile('/tmp/brickforge-rounded-body.instructions.pdf',roundedBytes);
+ await page.selectOption('#fixture-select','integrated-axle-car');
+ await page.click('#run-design');
+ await page.waitForFunction(()=>document.querySelector('#engine-status').dataset.state==='planned');
+ const integratedCar=JSON.parse(await page.locator('#engine-report').innerText());
+ assert.equal(integratedCar.parts.filter(p=>p.component_id==='chassis' && p.part_id==='4600').length,2);
+ assert.equal(integratedCar.connections.flatMap(e=>e.mating_pairs).filter(p=>p.connection_type==='wheel_pin_bore').length,4);
  await page.selectOption('#fixture-select','joint-sized-platform');await page.click('#run-design');await page.waitForFunction(()=>document.querySelector('#engine-status').dataset.state==='planned');const jointSize=JSON.parse(await page.locator('#engine-report').innerText());assert.equal(jointSize.component_reports[0].realised_dimensions_mm.width,24);assert.ok(jointSize.relationship_checks.every(c=>c.status==='passed'));
  await page.selectOption('#fixture-select','joint-height-platform');await page.click('#run-design');await page.waitForFunction(()=>document.querySelector('#engine-status').dataset.state==='planned');const jointHeight=JSON.parse(await page.locator('#engine-report').innerText());assert.ok(Math.abs(jointHeight.component_reports[0].realised_dimensions_mm.height-25.6)<1e-6);assert.equal(jointHeight.component_reports[0].selected_construction_method,'exact_prism_material_cover');await page.screenshot({path:'/tmp/brickforge-joint-height.png',fullPage:true});
  // A gateway is mocked only as transport/contract evidence, not real LLM quality.

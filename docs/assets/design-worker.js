@@ -1,5 +1,5 @@
-import { planDesign } from "./design-engine.js?v=fc937bdf9465";
-import {findTestedRevision} from './brief-revisions.js?v=fc937bdf9465';
+import { planDesign } from "./design-engine.js?v=8c466e17ba47";
+import {findTestedRevision} from './brief-revisions.js?v=8c466e17ba47';
 self.onmessage = ({data}) => {
   try {
     if (data.action === 'find_revision') {
