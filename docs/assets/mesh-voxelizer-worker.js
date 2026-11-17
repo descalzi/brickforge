@@ -1,4 +1,4 @@
-import { voxelizeMesh } from "./mesh-voxelizer.js?v=7cab87a13250";
+import { voxelizeMesh } from "./mesh-voxelizer.js?v=cb7f60a0af7d";
 
 self.addEventListener("message", (event) => {
   const { vertices, indices, units, pitchMm, maxCells } = event.data;

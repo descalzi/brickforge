@@ -14,3 +14,13 @@ const boundsOverlap=(a,b)=>[0,1,2].every(i=>Math.min(a.max[i],b.max[i])-Math.max
 function intersect(a,b){if(!boundsOverlap(a,b))return false;if(a.children||b.children)return (a.children||[a]).some(x=>(b.children||[b]).some(y=>intersect(x,y)));if(!a.exact||!b.exact)return true;const axes=uniqueAxes([...a.normals,...b.normals,...a.edges.flatMap(e=>b.edges.map(f=>cross(e,f)))]);for(const axis of axes){const x=a.vertices.map(p=>dot(axis,p)),y=b.vertices.map(p=>dot(axis,p));if(Math.min(Math.max(...x),Math.max(...y))-Math.max(Math.min(...x),Math.min(...y))<=1e-5)return false;}return true;}
 export const nominalBodiesIntersect=(a,ap,b,bp)=>intersect(shape(a,ap),shape(b,bp));
 export function nominalBodyIntersectsBox(part,profile,box){return intersect(shape(part,profile),{...box,vertices:boxVertices(box.min,box.max),exact:true,normals:[[1,0,0],[0,1,0],[0,0,1]],edges:[[1,0,0],[0,1,0],[0,0,1]]});}
+
+/** Continuous straight sweep of nominal bulk material, including the final
+ * pose. Convex prisms sweep to a convex hull; compound bodies sweep each child.
+ * Unprofiled shapes retain conservative swept envelopes. Studs/cavities remain
+ * excluded, so a clear result is not a physical insertion certificate. */
+export function nominalBodySweepIntersects(a,ap,direction,distance,b,bp){
+ if(!Array.isArray(direction)||direction.length!==3||!direction.every(Number.isFinite)||Math.abs(Math.hypot(...direction)-1)>1e-6||!Number.isFinite(distance)||distance<0)throw new TypeError('A unit direction and non-negative finite sweep distance are required.');
+ const delta=direction.map(v=>v*distance),sweep=s=>{const vertices=[...s.vertices,...s.vertices.map(p=>p.map((v,i)=>v+delta[i]))];return {vertices,exact:s.exact,children:s.children?.map(sweep),normals:uniqueAxes([...s.normals,...s.edges.map(e=>cross(e,direction))]),edges:uniqueAxes([...s.edges,direction]),min:s.min.map((v,i)=>v+Math.min(0,delta[i])),max:s.max.map((v,i)=>v+Math.max(0,delta[i]))};};
+ return intersect(sweep(shape(a,ap)),shape(b,bp));
+}
