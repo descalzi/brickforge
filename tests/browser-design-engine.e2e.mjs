@@ -36,6 +36,22 @@ try{
  assert.match(report,/physical_clutch_strength/);
  assert.match(report,/not_assessed/);
  assert.equal(errors.length,0,errors.join(" | "));
+ await page.locator('#pick-list summary').click();
+ const boxes = page.locator('#pick-rows input');
+ for (const box of await boxes.all()) await box.check();
+ assert.equal(await page.locator('#pick-count').innerText(), '4 of 4 parts gathered');
+ const [csv] = await Promise.all([page.waitForEvent('download'), page.click('#download-csv')]);
+ const csvChunks = [];
+ for await (const chunk of await csv.createReadStream()) csvChunks.push(chunk);
+ const csvRows = Buffer.concat(csvChunks).toString().trim().split('\r\n');
+ assert.equal(csvRows.shift(), 'LDraw part,LDraw colour,Quantity,First step');
+ const firstPlan = JSON.parse(report);
+ const expectedInventory = firstPlan.bom.items.map(item => {
+   const first = firstPlan.instructions.steps.find(step => step.part_id === item.part_id && step.colour_code === item.colour_code);
+   return [item.part_id, item.colour_code, item.quantity, first.step].join(',');
+ });
+ assert.deepEqual(csvRows.slice().sort(), expectedInventory.sort());
+ await page.locator('#pick-list summary').click();
  // Exercise the actual page controls, worker, keepouts and downloaded model.
  await page.selectOption("#fixture-select","two-opening-wall");
  assert.equal(await page.locator("#download-ldraw").isEnabled(),false);
@@ -107,7 +123,31 @@ try{
  await page.selectOption('#fixture-select','composed-pitched-roof');await page.click('#run-design');await page.waitForFunction(()=>document.querySelector('#engine-status').dataset.state==='planned');const composedRoof=JSON.parse(await page.locator('#engine-report').innerText());assert.equal(composedRoof.parts.length,7);assert.ok(composedRoof.component_reports.find(c=>c.component_id==='roof').composition);await page.screenshot({path:'/tmp/brickforge-composed-roof.png',fullPage:true});
  await page.selectOption('#fixture-select','composed-roof-tunnel');await page.click('#run-design');await page.waitForFunction(()=>document.querySelector('#engine-status').dataset.state==='planned');const tunnelRoof=JSON.parse(await page.locator('#engine-report').innerText());assert.equal(tunnelRoof.parts.filter(p=>p.component_id==='roof').length,4);
  await page.selectOption('#fixture-select','stepped-rounded-body');await page.click('#run-design');await page.waitForFunction(()=>document.querySelector('#engine-status').dataset.state==='planned');const roundedBody=JSON.parse(await page.locator('#engine-report').innerText());assert.equal(roundedBody.parts.length,48);assert.equal(roundedBody.component_reports[0].approximation.shape_tolerance_mm,6.4);assert.ok(roundedBody.component_reports[0].approximation.outer_excess_bound_mm<=6.4);await page.screenshot({path:'/tmp/brickforge-rounded-body.png',fullPage:true});
- const roundedDownload=page.waitForEvent('download');await page.click('#download-pdf');const roundedPdf=await roundedDownload,roundedStream=await roundedPdf.createReadStream(),roundedChunks=[];for await(const chunk of roundedStream)roundedChunks.push(chunk);const roundedBytes=Buffer.concat(roundedChunks);assert.ok(pdfContentStreams(roundedBytes).some(s=>s.includes('Stepped rounded shape')));await writeFile('/tmp/brickforge-rounded-body.instructions.pdf',roundedBytes);
+ const observedDownloads = [];
+ const recordDownload = download => observedDownloads.push(download.suggestedFilename());
+ page.on('download', recordDownload);
+ await page.click('#download-pdf');
+ await page.waitForFunction(() => document.querySelector('#engine-status').textContent.includes('of 27'));
+ await page.click('#cancel-pdf');
+ assert.match(await page.locator('#engine-status').innerText(), /cancelled/);
+ assert.equal(await page.locator('#download-pdf').isEnabled(), true);
+ const exportStarted = performance.now();
+ const [roundedPdf] = await Promise.all([
+   page.waitForEvent('download', {timeout:90000}), page.click('#download-pdf')
+ ]);
+ const roundedChunks = [];
+ for await (const chunk of await roundedPdf.createReadStream()) roundedChunks.push(chunk);
+ const roundedBytes = Buffer.concat(roundedChunks);
+ const pages = pdfContentStreams(roundedBytes);
+ assert.equal(pages.length, 27);
+ assert.ok(pages[0].includes('Stepped rounded shape'));
+ assert.deepEqual(pages.flatMap(page => [...page.matchAll(/\(STEP (\d+)\)/g)].map(match => Number(match[1]))),
+   roundedBody.instructions.steps.map(step => step.step));
+ assert.ok(pages.at(-1).includes('Your model, assembled.'));
+ assert.deepEqual(observedDownloads, ['stepped-rounded-body.instructions.pdf']);
+ page.off('download', recordDownload);
+ console.log(`Rounded study booklet: ${pages.length} pages in ${((performance.now()-exportStarted)/1000).toFixed(1)}s`);
+ await writeFile('/tmp/brickforge-rounded-body.instructions.pdf',roundedBytes);
  await page.selectOption('#fixture-select','joint-sized-platform');await page.click('#run-design');await page.waitForFunction(()=>document.querySelector('#engine-status').dataset.state==='planned');const jointSize=JSON.parse(await page.locator('#engine-report').innerText());assert.equal(jointSize.component_reports[0].realised_dimensions_mm.width,24);assert.ok(jointSize.relationship_checks.every(c=>c.status==='passed'));
  await page.selectOption('#fixture-select','joint-height-platform');await page.click('#run-design');await page.waitForFunction(()=>document.querySelector('#engine-status').dataset.state==='planned');const jointHeight=JSON.parse(await page.locator('#engine-report').innerText());assert.ok(Math.abs(jointHeight.component_reports[0].realised_dimensions_mm.height-25.6)<1e-6);assert.equal(jointHeight.component_reports[0].selected_construction_method,'exact_prism_material_cover');await page.screenshot({path:'/tmp/brickforge-joint-height.png',fullPage:true});
  // A gateway is mocked only as transport/contract evidence, not real LLM quality.

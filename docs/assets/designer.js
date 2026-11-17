@@ -1,10 +1,10 @@
-import {reorientExtrudedComponent} from './part-orientation.js?v=d0896f9f9a9d';
-import { ASSET_VERSION } from "./release-version.js?v=d0896f9f9a9d";
-import { buildInterpretationRequest, interpretDescription, endpointProvider } from "./text-design.js?v=d0896f9f9a9d";
-import { createInstructionPdf } from "./instruction-pdf.js?v=d0896f9f9a9d";
-import { partBodyBounds } from "./assembly-analysis.js?v=d0896f9f9a9d";
-import { validateDesignSpec } from "./design-spec.js?v=d0896f9f9a9d";
-import { createDesignViewer, colours } from "./design-viewer.js?v=d0896f9f9a9d";
+import {reorientExtrudedComponent} from './part-orientation.js?v=7f74500584aa';
+import { ASSET_VERSION } from "./release-version.js?v=7f74500584aa";
+import { buildInterpretationRequest, interpretDescription, endpointProvider } from "./text-design.js?v=7f74500584aa";
+import { buildInventory, inventoryCsv } from "./build-inventory.js?v=7f74500584aa";
+import { partBodyBounds } from "./assembly-analysis.js?v=7f74500584aa";
+import { validateDesignSpec } from "./design-spec.js?v=7f74500584aa";
+import { createDesignViewer, colours } from "./design-viewer.js?v=7f74500584aa";
 const $=id=>document.getElementById(id);
 const editor=$("design-spec"),status=$("engine-status"),runButton=$("run-design"),selector=$("fixture-select");
 const downloads=[$("download-ldraw"),$("download-bom"),$("download-report"),$("download-instructions"),$("download-pdf")];
@@ -16,6 +16,10 @@ function finishWorker(){worker?.terminate();worker=null;clearTimeout(timer);$("c
 let testedRevision = null, previousBrief = null;
 function invalidate(message="Brief changed. Plan again to update the assembly."){
   analysisController?.abort();analysisController=null;analysisGeneration++;$("cancel-interpretation").hidden=true;$("analyse-description").disabled=!$("interpretation-endpoint").value.trim()||!responseSchema;
+  stopPdf();
+  $("pick-list").hidden=true;
+  $("pick-list").open=false;
+  $("pick-rows").replaceChildren();
   testedRevision = null;
   previousBrief = null;
   $("brief-repair").hidden = true;
@@ -73,7 +77,7 @@ function run(){
   invalidate("Validating design specification…");
   let spec;try{spec=JSON.parse(editor.value);const validation=validateDesignSpec(spec);if(!validation.valid)throw new Error(validation.errors.join(" "));}catch(error){setStatus(error.message,"blocked");$("engine-report").textContent=error.message;return;}
   components(spec);activeSpec=spec;runButton.disabled=true;$("cancel-design").hidden=false;setStatus("Searching catalogue parts and connected layouts…","planning");
-  const started=performance.now();worker=new Worker(new URL("./design-worker.js?v=d0896f9f9a9d",import.meta.url),{type:"module"});
+  const started=performance.now();worker=new Worker(new URL("./design-worker.js?v=7f74500584aa",import.meta.url),{type:"module"});
   worker.onmessage=({data})=>{
     finishWorker();if(data.error){setStatus(data.error,"blocked");$("engine-report").textContent=data.error;return;}
     result=data.result;showEvidence(result);components(spec,result);
@@ -90,6 +94,7 @@ function run(){
     const steps=result.instructions?.steps||result.instructions||[];
     $("instruction-slider").max=steps.length;$("instruction-slider").value=steps.length;$("instruction-slider").disabled=!steps.length;$("instruction-value").textContent=steps.length?`All ${steps.length}`:"—";
     $("instruction-detail").textContent="Nominal connection order. Use the slider to inspect each addition. Insertion paths and stability are unverified.";
+    showPickList(result);
     downloads.forEach(b=>b.disabled=false);setStatus(`Plan found · ${result.parts.length} parts · ${((performance.now()-started)/1000).toFixed(2)} s. Nominal checks passed; physical stability remains unverified.`,"planned");
   };
   worker.onerror=event=>{finishWorker();setStatus("Planner error: "+event.message,"blocked");};
@@ -135,10 +140,73 @@ for(const [id,view] of [["view-iso","iso"],["view-top","top"],["view-front","fro
 $("course-slider").addEventListener("input",()=>{const input=$("course-slider");$("course-value").textContent=input.value+"/"+input.max;viewer?.course(Number(input.value));});
 initialise();
 
-$("download-pdf").addEventListener("click",async()=>{
- if(!result)return;const plan=result,specification=activeSpec,message=status.textContent;$("download-pdf").disabled=true;setStatus('Preparing illustrated instruction booklet…','exporting');
- try{await new Promise(resolve=>setTimeout(resolve,0));if(!displayCatalogue.pdf_font){const font=await fetch(`./data/pdf-font-v1.json?v=${ASSET_VERSION}`);if(!font.ok)throw new Error("Could not load the instruction font.");displayCatalogue.pdf_font=await font.json();}if(result!==plan)return;const bytes=await createInstructionPdf(plan,displayCatalogue,specification);if(result!==plan)return;download(plan.design_id+".instructions.pdf",bytes,"application/pdf");setStatus(message,'planned');}catch(error){if(result===plan)setStatus(error.message,"blocked");}finally{if(result===plan)$("download-pdf").disabled=false;}
+let pdfWorker = null;
+function stopPdf(){
+  pdfWorker?.terminate();
+  pdfWorker = null;
+  $("cancel-pdf").hidden = true;
+  $("download-pdf").disabled = result?.status !== "planned";
+}
+$("cancel-pdf").addEventListener("click", () => {
+  stopPdf();
+  setStatus("Booklet export cancelled. Your assembly is ready.", "planned");
 });
+$("download-pdf").addEventListener("click", () => {
+  if (result?.status !== "planned" || pdfWorker) return;
+  const plan = result;
+  $("download-pdf").disabled = true;
+  $("cancel-pdf").hidden = false;
+  setStatus("Preparing illustrated instruction booklet…", "exporting");
+  try {
+    const job = new Worker(new URL("./instruction-pdf-worker.js?v=7f74500584aa", import.meta.url), {type:"module"});
+    pdfWorker = job;
+    job.onmessage = ({data}) => {
+      if (job !== pdfWorker) return;
+      if (data.page) {
+        setStatus(`Rendering booklet · page ${data.page} of ${data.total}`, "exporting");
+        return;
+      }
+      stopPdf();
+      if (data.error) { setStatus(data.error, "export-error"); return; }
+      download(plan.design_id + ".instructions.pdf", data.bytes, "application/pdf");
+      setStatus("Instruction booklet downloaded. Your assembly is ready.", "planned");
+    };
+    job.onerror = event => {
+      if (job !== pdfWorker) return;
+      stopPdf();
+      setStatus("Booklet export failed. " + event.message, "export-error");
+    };
+    const used = new Set(plan.parts.map(part => part.part_id));
+    const profiles = displayCatalogue.profiles.filter(profile => used.has(profile.part_id));
+    const {status, design_id, parts, instructions, bom, dimensions_mm, component_reports} = plan;
+    job.postMessage({plan:{status, design_id, parts, instructions, bom, dimensions_mm, component_reports}, profiles, spec:activeSpec});
+  } catch (error) {
+    stopPdf();
+    setStatus(error.message, "export-error");
+  }
+});
+
+function showPickList(plan) {
+  const inventory = buildInventory(plan);
+  const update = () => {
+    const gathered = Array.from($("pick-rows").querySelectorAll("input:checked"))
+      .reduce((sum, input) => sum + Number(input.value), 0);
+    $("pick-count").textContent = `${gathered} of ${plan.parts.length} parts gathered`;
+  };
+  for (const item of inventory) {
+    const row = $("pick-rows").insertRow();
+    const input = document.createElement("input");
+    input.type = "checkbox";
+    input.value = item.quantity;
+    input.setAttribute("aria-label", `Gathered ${item.quantity} of part ${item.part_id}, colour ${item.colour_code}`);
+    input.addEventListener("change", update);
+    row.insertCell().append(input);
+    for (const value of [item.part_id, item.colour_code, item.quantity, item.first_step]) row.insertCell().textContent = value;
+  }
+  $("download-csv").onclick = () => download(plan.design_id + ".parts.csv", inventoryCsv(inventory), "text/csv;charset=utf-8");
+  $("pick-list").hidden = false;
+  update();
+}
 
 function editComponent(c){
  selectedComponent=c?.id||null;$("component-editor").hidden=!c;if(!c)return;$("component-editor").open=true;$("component-editor-name").textContent=c.label||c.id;
@@ -167,7 +235,7 @@ showRevisions();
 const revisionFieldNames = {position_tolerance_mm: 'position allowance per axis', fit_tolerance_mm: 'dimension allowance', shape_tolerance_mm: 'radial shape allowance'};
 $("find-revision").addEventListener("click", () => {
   if (result?.status !== "blocked" || worker) return;
-  const search = new Worker(new URL("./design-worker.js?v=d0896f9f9a9d", import.meta.url), {type: "module"});
+  const search = new Worker(new URL("./design-worker.js?v=7f74500584aa", import.meta.url), {type: "module"});
   worker = search;
   const preview = $("revision-preview");
   $("find-revision").disabled = true;
