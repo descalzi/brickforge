@@ -1,7 +1,7 @@
-import { createSvgDesignViewer } from "./design-svg-viewer.js?v=db3639e20a8c";
+import { createSvgDesignViewer } from "./design-svg-viewer.js?v=059b51e9d8f0";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { colourHex, isTransparent } from "./brick-colours.js?v=db3639e20a8c";
+import { colourHex, isTransparent } from "./brick-colours.js?v=059b51e9d8f0";
 export const colours = colourHex;
 
 const geometryCache=new Map(),materialCache=new Map(),edgeCache=new Map();
@@ -114,5 +114,17 @@ export function createDesignViewer(viewport) {
   }
   let courseCount=Infinity;
   function visibility(){if(instanced){let shown=0;for(const e of instanced.entries){const on=e.course<courseCount&&(!stepParts||stepParts.has(e.id));e.batch.mesh.setMatrixAt(e.index,on?e.matrix:hidden);if(on)shown++;}for(const b of instanced.batches)b.mesh.instanceMatrix.needsUpdate=true;renderer.domElement.dataset.visibleParts=String(shown);return;}for(const group of model.children)group.visible=group.userData.course<courseCount&&(!stepParts||stepParts.has(group.userData.instanceId));renderer.domElement.dataset.visibleParts=String(model.children.filter(g=>g.visible).length);}
-  return {show:(...args)=>{courseCount=Infinity;stepParts=null;show(...args);},clear,fit,select,course:count=>{courseCount=count;visibility();},step:ids=>{stepParts=ids?new Set(ids):null;visibility();}};
+  // Three views side by side (front, side, three-quarter) as a PNG data URL, for a
+  // language model to compare with the description. The live view is restored.
+  function snapshot(size=512){
+    const saved={position:camera.position.clone(),target:controls.target.clone(),aspect:camera.aspect},w=renderer.domElement.width,h=renderer.domElement.height;
+    const out=document.createElement('canvas');out.width=size*3;out.height=size;const g=out.getContext('2d');g.fillStyle='#f4f7f9';g.fillRect(0,0,out.width,out.height);
+    renderer.setSize(size,size,false);camera.aspect=1;camera.updateProjectionMatrix();grid.visible=false;
+    const views=[[0,.12,-1],[1,.12,0],[1,.8,-1.2]];
+    views.forEach((d,i)=>{const direction=new THREE.Vector3(...d).normalize(),distance=radius/Math.sin(THREE.MathUtils.degToRad(camera.fov)/2)*1.1;camera.position.copy(centre).add(direction.multiplyScalar(distance));camera.lookAt(centre);renderer.render(scene,camera);g.drawImage(renderer.domElement,i*size,0,size,size);});
+    grid.visible=true;renderer.setSize(w/renderer.getPixelRatio(),h/renderer.getPixelRatio(),false);camera.aspect=saved.aspect;camera.updateProjectionMatrix();camera.position.copy(saved.position);controls.target.copy(saved.target);controls.update();
+    g.fillStyle='#20343c';g.font='14px sans-serif';['front','side','three-quarter'].forEach((t,i)=>g.fillText(t,i*size+10,size-12));
+    return out.toDataURL('image/png');
+  }
+  return {show:(...args)=>{courseCount=Infinity;stepParts=null;show(...args);},clear,fit,select,snapshot,course:count=>{courseCount=count;visibility();},step:ids=>{stepParts=ids?new Set(ids):null;visibility();}};
 }

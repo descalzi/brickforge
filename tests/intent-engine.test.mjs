@@ -270,3 +270,46 @@ test('eyes become round tiles on brackets facing out of the head', () => {
   assert.ok(plan.intent_report.connectivity.connected);
   assert.equal(plan.analysis.body_envelope_collisions.length, 0);
 });
+
+test('a sideways bulge becomes a studs-out panel hung on side-stud bricks', () => {
+  const plan = planIntent(intent([{id: 'ball', role: 'body', shape: 'sphere', center: [0, 120, 0], size: [240, 240, 240], colour: 'red'}], {build: {target_longest_studs: 30}}), full, {surfaceFit: false});
+  const panels = plan.intent_report.panels;
+  assert.ok(panels.panels >= 2 && panels.anchors >= 2, JSON.stringify(panels));
+  assert.ok(plan.parts.some(p => p.part_id === '87087'), 'side-stud anchor bricks');
+  // Panel parts are turned so their studs point sideways.
+  assert.ok(plan.parts.some(p => Math.abs(p.matrix[4]) < 1e-6));
+  assert.ok(plan.intent_report.connectivity.connected);
+  assert.equal(plan.analysis.body_envelope_collisions.length, 0);
+});
+
+test('ears stand up as flat modules on clip-and-bar hinges', () => {
+  const head = {id: 'head', role: 'head', shape: 'sphere', center: [0, 60, 0], size: [140, 120, 120], colour: 'light grey'};
+  const ear = (id, x) => ({id, role: 'ear', shape: 'cone', axis: 'y', top_scale: 0, center: [x, 125, 0], size: [44, 60, 14], colour: 'light grey', attach_to: 'head'});
+  const plan = planIntent(intent([head, ear('left-ear', -35), ear('right-ear', 35)], {build: {target_longest_studs: 32}}), full);
+  assert.equal(plan.intent_report.modules.modules, 2, JSON.stringify(plan.intent_report.modules));
+  assert.equal(plan.parts.filter(p => p.part_id === '48336').length, 2);
+  assert.equal(plan.parts.filter(p => p.part_id === '60470b').length, 2);
+  assert.equal(plan.connections.filter(e => e.kind === 'clip_on_bar').length, 2);
+  assert.ok(plan.intent_report.connectivity.connected);
+  assert.equal(plan.analysis.body_envelope_collisions.length, 0);
+});
+
+test('features smaller than the build resolution become surface detail', () => {
+  const plan = planIntent(intent([
+    {id: 'head', role: 'head', shape: 'sphere', center: [0, 40, 0], size: [80, 80, 80], colour: 'yellow'},
+    {id: 'eye', role: 'eye', shape: 'sphere', center: [20, 50, -38], size: [8, 8, 4], colour: 'black'},
+    {id: 'whiskers', role: 'whiskers', importance: 'detail', shape: 'tube', points: [[0, 40, -40, 0.3], [40, 42, -44, 0.2]], colour: 'white'}], {build: {target_longest_studs: 12}}), full);
+  assert.match(plan.warnings.join(' '), /Shown as surface detail at this size: eye, whiskers/);
+  assert.ok(plan.intent_report.brackets.eyes >= 1);
+  assert.ok(!plan.parts.some(p => p.component_id === 'whiskers'));
+});
+
+test('a review request carries the description, intent, report and views', async () => {
+  const {buildReviewRequest, reviewPromptText, REVIEW_INSTRUCTIONS} = await import('../docs/assets/object-intent.js');
+  const i = intent([box('a', [0, 5, 0], [10, 10, 10])]);
+  const r = buildReviewRequest('a red cube', i, {parts: 3}, {type: 'object'}, 'iVBORw0KGgo=');
+  assert.equal(r.kind, 'review'); assert.equal(r.current_intent, i); assert.equal(r.image.media_type, 'image/png');
+  assert.match(reviewPromptText('a red cube', i, {parts: 3}), /Current object intent/);
+  assert.match(REVIEW_INSTRUCTIONS, /"Review:"/);
+  assert.throws(() => buildReviewRequest('a red cube', null, {}, {}), /Build a model first/);
+});

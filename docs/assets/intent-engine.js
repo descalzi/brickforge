@@ -5,19 +5,19 @@
 // and wedges with real slopes and road wheels with real wheel assemblies.
 // The engine always returns its best model and reports how far it deviates from
 // the intent; it blocks only on an invalid intent or an empty result.
-import {normaliseIntent} from './object-intent.js?v=db3639e20a8c';
-import {rasteriseIntent, exteriorAir, hollowInterior, scaleForTarget, STUD_MM, PLATE_MM} from './intent-voxels.js?v=db3639e20a8c';
-import {elementTypes, tileGrid} from './brick-tiler.js?v=db3639e20a8c';
-import {planSlopes} from './slope-detailing.js?v=db3639e20a8c';
-import {planWheels} from './wheel-detailing.js?v=db3639e20a8c';
-import {surfacePatterns, fitSurfaces} from './surface-fitting.js?v=db3639e20a8c';
-import {planOpenings} from './opening-detailing.js?v=db3639e20a8c';
-import {planBrackets} from './bracket-detailing.js?v=db3639e20a8c';
-import {planPanels} from './snot-panels.js?v=db3639e20a8c';
-import {planModules} from './module-detailing.js?v=db3639e20a8c';
-import {connectionEdges} from './connection-graph.js?v=db3639e20a8c';
-import {partBodyBounds} from './assembly-analysis.js?v=db3639e20a8c';
-import {analyzeLargeAssembly, createLargeAssemblyInstructions} from './large-assembly.js?v=db3639e20a8c';
+import {normaliseIntent} from './object-intent.js?v=059b51e9d8f0';
+import {rasteriseIntent, exteriorAir, hollowInterior, scaleForTarget, STUD_MM, PLATE_MM} from './intent-voxels.js?v=059b51e9d8f0';
+import {elementTypes, tileGrid} from './brick-tiler.js?v=059b51e9d8f0';
+import {planSlopes} from './slope-detailing.js?v=059b51e9d8f0';
+import {planWheels} from './wheel-detailing.js?v=059b51e9d8f0';
+import {surfacePatterns, fitSurfaces} from './surface-fitting.js?v=059b51e9d8f0';
+import {planOpenings} from './opening-detailing.js?v=059b51e9d8f0';
+import {planBrackets} from './bracket-detailing.js?v=059b51e9d8f0';
+import {planPanels} from './snot-panels.js?v=059b51e9d8f0';
+import {planModules} from './module-detailing.js?v=059b51e9d8f0';
+import {connectionEdges} from './connection-graph.js?v=059b51e9d8f0';
+import {partBodyBounds} from './assembly-analysis.js?v=059b51e9d8f0';
+import {analyzeLargeAssembly, createLargeAssemblyInstructions} from './large-assembly.js?v=059b51e9d8f0';
 
 const LDU = 0.4;
 const IDENTITY = [1, 0, 0, 0, 1, 0, 0, 0, 1];
@@ -146,6 +146,12 @@ export function planIntent(input, catalogue, options = {}) {
   for (const w of modules.warnings) warnings.push(w);
   claimDetail(modules.reserved);
   for (const r of modules.reserved) for (const c of r.clearance) { keepClear[c] = 1; claimedByDetail[c] = 1; }
+  // Eyes and lamps: round tiles on sideways brackets.
+  const brackets = options.brackets === false ? {reserved: [], warnings: [], summary: {eyes: 0}}
+    : planBrackets(grid, profileMap, {claimed: claimedByDetail.slice(), exteriorAir: exteriorAir(grid)});
+  for (const w of brackets.warnings) warnings.push(w);
+  for (const r of brackets.reserved) for (const c of r.clearance || []) keepClear[c] = 1;
+  claimDetail(brackets.reserved);
   // Sideways bulges as studs-out panels hung on side-stud bricks.
   const panels = options.panels === false || !catalogue.vocabulary?.length ? {reserved: [], warnings: [], summary: {panels: 0, parts: 0, anchors: 0}}
     : planPanels(grid, profileMap, {types: elementTypes(catalogue.regular), tileGrid, fitSurfaces, patterns: patternsFor(catalogue), smooth: intent.build.finish === 'smooth'}, {claimed: claimedByDetail.slice(), debug: options.panelDebug});
@@ -153,12 +159,6 @@ export function planIntent(input, catalogue, options = {}) {
   claimDetail(panels.reserved);
   for (const r of panels.reserved) for (const c of r.clearance) keepClear[c] = 1;
   lap('panels');
-  // Eyes and lamps: round tiles on sideways brackets.
-  const brackets = options.brackets === false ? {reserved: [], warnings: [], summary: {eyes: 0}}
-    : planBrackets(grid, profileMap, {claimed: claimedByDetail.slice(), exteriorAir: exteriorAir(grid)});
-  for (const w of brackets.warnings) warnings.push(w);
-  for (const r of brackets.reserved) for (const c of r.clearance || []) keepClear[c] = 1;
-  claimDetail(brackets.reserved);
   const surface = options.surfaceFit === false || !catalogue.vocabulary?.length ? {reserved: [], summary: {}, candidates: 0, error_cells: 0}
     : fitSurfaces(grid, patternsFor(catalogue), c => claimedByDetail[c] === 1, {minGain: options.surfaceMinGain, debug: options.surfaceDebug});
   lap('surface_fit');

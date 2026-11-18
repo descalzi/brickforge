@@ -27,12 +27,18 @@ parts list and step-by-step instructions.
    wheel wells. Window and door components become real frames with glass or a
    door set into the wall; small eyes and lamps become round tiles facing out on
    1×1 brackets. Elsewhere, *surface fitting* swaps stepped edges for straight,
-   curved and inverted slopes, cones and round parts wherever they follow the
-   intended surface more closely, without loosening any stud joint.
+   curved and inverted slopes, cones, wedge and round-corner plates wherever they
+   follow the intended surface more closely, without loosening any stud joint.
+   Sideways bulges (a haunch, a flank) are rebuilt as studs-out panels hung on
+   side-stud bricks, and flat ears or fins stand on clip-and-bar hinges
+   ([ADR 0006](docs/decisions/0006-designed-models.md)).
    The part vocabulary for this ([list](docs/data/part-vocabulary-v1.json)) is
    imported from LDraw geometry and LDCad connection data by
    `node scripts/build_part_vocabulary.mjs`.
-4. **Report and export.** The engine always returns its best model, with a
+4. **Review.** After a build the language model can look at three rendered views
+   and the build report, list what differs from the description and return a
+   revised intent to build.
+5. **Report and export.** The engine always returns its best model, with a
    deviation report (shape match, lost or thickened components, colour joints),
    LDraw with steps, a parts list and an illustrated PDF booklet in the style of a
    printed one: several parts per step, four or six steps per page, part callouts

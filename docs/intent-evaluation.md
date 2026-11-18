@@ -1,6 +1,6 @@
 # Description → model evaluation
 
-24 of 24 descriptions produced a model; 24 are a single stud-connected assembly. Median shape match (soft IoU against the intent) 0.83. 0 cases lose at least one essential component at their build size. Surface fitting placed 429 slope, curve and cone elements; the median fractional surface match rose from 0.831 (cells) to 0.854 (cells and fitted elements).
+24 of 24 descriptions produced a model; 24 are a single stud-connected assembly. Median shape match (soft IoU against the intent) 0.83. 0 cases lose at least one essential component at their build size. Surface fitting placed 368 slope, curve and cone elements; the median fractional surface match rose from 0.831 (cells) to 0.849 (cells and fitted elements).
 
 **Protocol.** Descriptions and intents were written before the v2 engine existed. The intents are a stand-in for a language model: they were authored from the description and the published interpretation instructions only, and are frozen. Engine changes must not edit them; a failing case is a finding, not a fixture to repair. Interpreter: Claude (acting as the interpretation model in a development session, 2026-11-18). The descriptions, intents and results are in [the case file](data/intent-eval-v1.json) and [the results file](data/intent-eval-results-v1.json).
 
@@ -8,30 +8,30 @@
 
 | Case | Category | Parts | Steps | Connected | Shape IoU | Real wheels | Roof slopes | Surface elements | Essential parts lost | Visible colour joints |
 | --- | --- | ---: | ---: | --- | ---: | ---: | ---: | ---: | --- | ---: |
-| [hatchback-car](eval/hatchback-car.png) | vehicle | 214 | 65 | yes | 0.94 | — | 6 | 11 | — | — |
-| [cottage](eval/cottage.png) | architecture | 189 | 44 | yes | 0.92 | — | 59 | 8 | — | — |
-| [high-wing-aeroplane](eval/high-wing-aeroplane.png) | vehicle | 52 | 29 | yes | 0.58 | — | — | 3 | — | — |
-| [apple](eval/apple.png) | organic | 268 | 98 | yes | 0.88 | — | — | 30 | — | — |
+| [hatchback-car](eval/hatchback-car.png) | vehicle | 193 | 71 | yes | 0.94 | — | 6 | 11 | — | — |
+| [cottage](eval/cottage.png) | architecture | 186 | 46 | yes | 0.92 | — | 59 | 8 | — | — |
+| [high-wing-aeroplane](eval/high-wing-aeroplane.png) | vehicle | 47 | 28 | yes | 0.57 | — | — | 5 | — | — |
+| [apple](eval/apple.png) | organic | 253 | 86 | yes | 0.88 | — | — | 35 | — | — |
 | [kitchen-table](eval/kitchen-table.png) | furniture | 45 | 41 | yes | 0.55 | — | — | — | — | — |
-| [double-decker-bus](eval/double-decker-bus.png) | vehicle | 144 | 40 | yes | 0.87 | 4 | — | — | — | — |
-| [lighthouse](eval/lighthouse.png) | architecture | 109 | 43 | yes | 0.76 | — | — | 10 | — | — |
-| [pine-tree](eval/pine-tree.png) | organic | 196 | 89 | yes | 0.82 | — | — | 22 | — | — |
-| [rubber-duck](eval/rubber-duck.png) | organic | 221 | 61 | yes | 0.86 | — | — | 22 | — | — |
-| [steam-locomotive](eval/steam-locomotive.png) | vehicle | 174 | 65 | yes | 0.72 | 8 | — | 18 | — | — |
-| [sailing-dinghy](eval/sailing-dinghy.png) | vehicle | 88 | 59 | yes | 0.63 | — | — | 20 | — | 1 |
-| [spotted-mushroom](eval/spotted-mushroom.png) | organic | 224 | 67 | yes | 0.87 | — | — | 16 | — | — |
-| [park-bench](eval/park-bench.png) | furniture | 85 | 51 | yes | 0.43 | — | — | 8 | — | 1 |
+| [double-decker-bus](eval/double-decker-bus.png) | vehicle | 139 | 40 | yes | 0.87 | 4 | — | — | — | — |
+| [lighthouse](eval/lighthouse.png) | architecture | 96 | 38 | yes | 0.76 | — | — | 15 | — | — |
+| [pine-tree](eval/pine-tree.png) | organic | 195 | 88 | yes | 0.82 | — | — | 22 | — | — |
+| [rubber-duck](eval/rubber-duck.png) | organic | 218 | 93 | yes | 0.86 | — | — | 12 | — | — |
+| [steam-locomotive](eval/steam-locomotive.png) | vehicle | 145 | 71 | yes | 0.78 | 8 | — | 17 | — | — |
+| [sailing-dinghy](eval/sailing-dinghy.png) | vehicle | 88 | 65 | yes | 0.63 | — | — | 23 | — | 1 |
+| [spotted-mushroom](eval/spotted-mushroom.png) | organic | 224 | 116 | yes | 0.87 | — | — | 8 | — | — |
+| [park-bench](eval/park-bench.png) | furniture | 91 | 61 | yes | 0.43 | — | — | 8 | — | — |
 | [rocket-on-pad](eval/rocket-on-pad.png) | vehicle | 46 | 23 | yes | 0.77 | — | — | 5 | — | — |
-| [snowman](eval/snowman.png) | organic | 268 | 88 | yes | 0.85 | — | — | 27 | — | 2 |
-| [castle-tower](eval/castle-tower.png) | architecture | 295 | 68 | yes | 0.87 | — | — | 26 | — | — |
-| [desk-lamp](eval/desk-lamp.png) | household | 73 | 53 | yes | 0.70 | — | — | — | — | — |
-| [farm-tractor](eval/farm-tractor.png) | vehicle | 378 | 156 | yes | 0.82 | — | — | 50 | — | 2 |
-| [sitting-cat](eval/sitting-cat.png) | organic | 405 | 130 | yes | 0.87 | — | — | 51 | — | — |
-| [garden-shed](eval/garden-shed.png) | architecture | 261 | 59 | yes | 0.96 | — | — | 15 | — | — |
-| [two-seat-sofa](eval/two-seat-sofa.png) | furniture | 148 | 36 | yes | 0.93 | — | — | 17 | — | — |
-| [coffee-mug](eval/coffee-mug.png) | household | 162 | 61 | yes | 0.64 | — | — | 10 | — | — |
-| [windmill](eval/windmill.png) | architecture | 229 | 102 | yes | 0.79 | — | — | 21 | — | 1 |
-| [elephant](eval/elephant.png) | organic | 333 | 111 | yes | 0.83 | — | — | 39 | — | — |
+| [snowman](eval/snowman.png) | organic | 204 | 101 | yes | 0.85 | — | — | 11 | — | — |
+| [castle-tower](eval/castle-tower.png) | architecture | 283 | 68 | yes | 0.87 | — | — | 27 | — | — |
+| [desk-lamp](eval/desk-lamp.png) | household | 73 | 57 | yes | 0.70 | — | — | 4 | — | — |
+| [farm-tractor](eval/farm-tractor.png) | vehicle | 371 | 159 | yes | 0.82 | — | — | 50 | — | 2 |
+| [sitting-cat](eval/sitting-cat.png) | organic | 418 | 254 | yes | 0.87 | — | — | 15 | — | — |
+| [garden-shed](eval/garden-shed.png) | architecture | 255 | 57 | yes | 0.96 | — | — | 30 | — | — |
+| [two-seat-sofa](eval/two-seat-sofa.png) | furniture | 126 | 30 | yes | 0.93 | — | — | 17 | — | — |
+| [coffee-mug](eval/coffee-mug.png) | household | 161 | 57 | yes | 0.64 | — | — | 13 | — | — |
+| [windmill](eval/windmill.png) | architecture | 226 | 100 | yes | 0.79 | — | — | 22 | — | 1 |
+| [elephant](eval/elephant.png) | organic | 324 | 169 | yes | 0.83 | — | — | 10 | — | — |
 
 ### hatchback-car
 

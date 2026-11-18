@@ -5,7 +5,7 @@
 //
 // The panel hangs on bricks with studs on one side set into the body behind it,
 // at the rows where their side studs meet the panel's stud grid (every 5 plates).
-import {connectionEdges} from './connection-graph.js?v=db3639e20a8c';
+import {connectionEdges} from './connection-graph.js?v=059b51e9d8f0';
 
 const STUD = 8, PLATE = 3.2, LDU = 0.4;
 const IDENTITY = [1, 0, 0, 0, 1, 0, 0, 0, 1], ROTATE_Y_90 = [0, 0, 1, 0, 1, 0, -1, 0, 0];
@@ -145,7 +145,7 @@ export function planPanels(grid, profileMap, tools, options = {}) {
       for (const u of P) for (const v of P) for (const w of P) {
         const m = cellOf(point((i + u) * STUD, (j + v) * PLATE, (k + w) * STUD));
         if (m < 0) continue;
-        if (region.has(m)) touches = true; else if (owner[m] >= 0 || taken[m]) foreign = true;
+        if (region.has(m)) touches = true; else if (owner[m] >= 0 || taken[m] || claimed[m]) foreign = true;
       }
       if (foreign) { blockedCell[c] = 1; continue; }
       if (!touches) continue;

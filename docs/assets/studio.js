@@ -1,13 +1,13 @@
 // Describe & build: description → object intent (any language model) → brick model.
-import {ASSET_VERSION} from './release-version.js?v=db3639e20a8c';
-import {INTENT_INSTRUCTIONS, buildIntentRequest, normaliseIntent} from './object-intent.js?v=db3639e20a8c';
-import {intentCatalogue} from './intent-engine.js?v=db3639e20a8c';
-import {deviceModelState, deviceProvider, endpointProvider} from './device-interpretation.js?v=db3639e20a8c';
-import {buildInventory, inventoryCsv} from './build-inventory.js?v=db3639e20a8c';
+import {ASSET_VERSION} from './release-version.js?v=059b51e9d8f0';
+import {INTENT_INSTRUCTIONS, REVIEW_INSTRUCTIONS, buildIntentRequest, buildReviewRequest, reviewPromptText, normaliseIntent} from './object-intent.js?v=059b51e9d8f0';
+import {intentCatalogue} from './intent-engine.js?v=059b51e9d8f0';
+import {deviceModelState, deviceProvider, endpointProvider} from './device-interpretation.js?v=059b51e9d8f0';
+import {buildInventory, inventoryCsv} from './build-inventory.js?v=059b51e9d8f0';
 // Kept in step with instruction-pdf.js (not imported: the booklet loads in its worker).
 const MAX_BOOKLET_PARTS = 8000;
-import {createDesignViewer, colours} from './design-viewer.js?v=db3639e20a8c';
-import {colourByCode} from './brick-colours.js?v=db3639e20a8c';
+import {createDesignViewer, colours} from './design-viewer.js?v=059b51e9d8f0';
+import {colourByCode} from './brick-colours.js?v=059b51e9d8f0';
 
 const $ = id => document.getElementById(id);
 const status = $('engine-status'), intentInput = $('intent-input'), description = $('description-input');
@@ -100,7 +100,7 @@ function build() {
   const big = ['xlarge', 'huge'].includes(intent.build?.size) || (intent.build?.target_longest_studs || 0) > 40;
   setStatus(`Rasterising the shapes and fitting real elements…${big ? ' Large models can take a minute.' : ''}`, 'planning');
   const started = performance.now();
-  worker = new Worker(new URL('./studio-worker.js?v=db3639e20a8c', import.meta.url), {type: 'module'});
+  worker = new Worker(new URL('./studio-worker.js?v=059b51e9d8f0', import.meta.url), {type: 'module'});
   worker.onmessage = ({data}) => {
     finishWorker();
     if (data.error) { setStatus('Engine error: ' + data.error, 'blocked'); $('engine-report').textContent = data.error; return; }
@@ -138,6 +138,7 @@ function show(plan, seconds) {
   $('download-pdf').title = pdfOk ? '' : `The in-browser booklet supports up to ${MAX_BOOKLET_PARTS} parts. Open the LDraw file in BrickLink Studio or LeoCAD for larger models.`;
   showComponents(activeIntent);
   showReport(plan);
+  $('review').disabled = false; $('download-views').disabled = !viewer?.snapshot;
   const joined = report.connectivity.connected ? 'one connected model' : 'some pieces need joining by hand';
   setStatus(`Built · ${plan.parts.length} parts in ${steps.length} steps · ${joined} · ${seconds.toFixed(1)} s. Strength and stability are not verified.`, report.connectivity.connected ? 'planned' : 'blocked');
 }
@@ -153,6 +154,9 @@ function showReport(plan) {
   fidelity.append(bar); fidelity.dataset.state = r.shape_fidelity.soft_iou >= 0.6 ? 'passed' : 'warning'; summary.append(fidelity);
   check('Connected', r.connectivity.connected ? 'Every part is held by studs to the rest of the model.' : `${r.connectivity.disconnected_instance_ids.length} parts are not joined to the main model.`, r.connectivity.connected ? 'passed' : 'failed');
   if (r.wheels.length) check('Wheels', r.wheels.map(w => `${w.component_id}: ${w.construction === 'real_wheel_assembly' ? 'real wheel' : 'brick-built'}${w.reason ? ' (' + w.reason + ')' : ''}`).join('; '), 'passed');
+  const detail = [r.surface_fitting?.parts && `${r.surface_fitting.parts} slopes, curves and wedges on curved surfaces`, r.panels?.panels && `${r.panels.panels} studs-out panel${r.panels.panels > 1 ? 's' : ''} on ${r.panels.anchors} side-stud bricks`,
+    r.modules?.modules && `${r.modules.modules} hinged module${r.modules.modules > 1 ? 's' : ''} (ears, fins)`, (r.openings?.windows || r.openings?.doors) && `${r.openings.windows} window and ${r.openings.doors} door frame(s)`, r.brackets?.eyes && `${r.brackets.eyes} round tile(s) on brackets (eyes, lamps)`].filter(Boolean);
+  if (detail.length) check('Detailing', detail.join(' · '), 'passed');
   if (r.slopes.length) check('Slopes', r.slopes.map(s => `${s.component_id}: ${s.construction === 'slope_elements' ? `${s.pieces} ${s.family.replace('_', ' ')} slopes` : 'stepped (' + s.reason + ')'}`).join('; '), 'passed');
   const table = el('table', {className: 'report-table'});
   table.append(el('thead', {}, el('tr', {}, el('th', {textContent: 'Component'}), el('th', {textContent: 'Result'}), el('th', {textContent: 'Cells'}))));
@@ -170,6 +174,48 @@ function showReport(plan) {
 }
 
 function stopPdf() { pdfWorker?.terminate(); pdfWorker = null; $('cancel-pdf').hidden = true; $('download-pdf').disabled = !result || result.status !== 'planned' || result.parts.length > MAX_BOOKLET_PARTS; }
+
+// A short report for the reviewing model: what came out and where it differs.
+function reviewReport(plan) {
+  const r = plan.intent_report;
+  return {build_size_studs: r.scale.target_longest_studs, real_m_per_stud: r.scale.real_m_per_stud, parts: plan.parts.length, shape_match: r.shape_fidelity.soft_iou,
+    connected: r.connectivity.connected,
+    components: r.components.filter(c => c.status && c.status !== 'realised').map(c => ({id: c.component_id, status: c.status, model_extent_mm: c.model_extent_mm})).slice(0, 30),
+    detailing: {roof_slopes: r.slopes.length, surface_elements: r.surface_fitting?.parts, panels: r.panels?.panels, hinged_modules: r.modules?.modules, windows: r.openings?.windows, doors: r.openings?.doors, bracket_tiles: r.brackets?.eyes},
+    warnings: plan.warnings.slice(0, 12)};
+}
+const viewsImage = () => viewer?.snapshot ? viewer.snapshot(512) : null;
+async function review() {
+  const plan = result, provider = $('interpretation-provider').value, text = description.value || activeIntent?.description || activeIntent?.name || '';
+  if (!plan || plan.status !== 'planned' || !activeIntent) return;
+  const report = reviewReport(plan);
+  if (provider === 'copy') {
+    const image = viewsImage();
+    if (image) download('brickforge-views.png', Uint8Array.from(atob(image.split(',')[1]), c => c.charCodeAt(0)), 'image/png');
+    try { await Promise.race([navigator.clipboard.writeText(reviewPromptText(text, activeIntent, report)), new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 3000))]); $('review-status').textContent = 'Review prompt copied and the views image downloaded. Paste both into your assistant, then paste its JSON reply into the object intent box and build.'; }
+    catch { download('brickforge-review-prompt.txt', reviewPromptText(text, activeIntent, report), 'text/plain'); $('review-status').textContent = 'Clipboard unavailable: the review prompt and the views image were downloaded.'; }
+    intentInput.focus();
+    return;
+  }
+  let run;
+  try { run = provider === 'device' ? deviceProvider(globalThis.LanguageModel, p => { $('review-status').textContent = p === null ? 'Reviewing…' : `Downloading model ${p}%`; }) : endpointProvider($('interpretation-endpoint').value); }
+  catch (error) { $('review-status').textContent = error.message; return; }
+  $('review').disabled = true; $('review-status').textContent = 'Reviewing the model against the description…';
+  try {
+    // The on-device model reads text only; a gateway also receives the views image.
+    const request = provider === 'device'
+      ? {instructions: REVIEW_INSTRUCTIONS, input: reviewPromptText(text, activeIntent, report).slice(REVIEW_INSTRUCTIONS.length).trim(), response_schema: schema}
+      : buildReviewRequest(text, activeIntent, report, schema, viewsImage()?.split(',')[1] || null);
+    const intent = await run(request, {});
+    const checked = normaliseIntent(intent);
+    if (!checked.valid) { $('review-status').textContent = 'The model returned an invalid intent: ' + checked.errors.join(' '); return; }
+    intentInput.value = JSON.stringify(intent, null, 2); showComponents(intent);
+    const notes = (intent.assumptions || []).filter(a => /^Review:/.test(a));
+    $('review-status').textContent = (notes.length ? notes.join(' ') + ' ' : '') + 'Revised intent received. Building…';
+    build();
+  } catch (error) { $('review-status').textContent = error.message; }
+  finally { $('review').disabled = false; }
+}
 
 async function interpret() {
   const provider = $('interpretation-provider').value, text = description.value;
@@ -259,6 +305,8 @@ $('build-size').addEventListener('change', () => invalidate());
 intentInput.addEventListener('input', () => { invalidate(); $('example-select').value = ''; try { showComponents(JSON.parse(intentInput.value)); } catch { $('component-list').replaceChildren(); } });
 $('interpretation-provider').addEventListener('change', updateProvider);
 $('interpret').addEventListener('click', interpret);
+$('review').addEventListener('click', review);
+$('download-views').addEventListener('click', () => { const image = viewsImage(); if (image) download('brickforge-views.png', Uint8Array.from(atob(image.split(',')[1]), c => c.charCodeAt(0)), 'image/png'); });
 $('cancel-interpretation').addEventListener('click', () => interpretation?.abort());
 $('download-request').addEventListener('click', () => { try { download('brickforge-interpretation-request.json', JSON.stringify(buildIntentRequest(description.value, schema), null, 2)); } catch (error) { $('provider-status').textContent = error.message; } });
 $('export-intent').addEventListener('click', () => { try { const intent = JSON.parse(intentInput.value); download((intent.name || 'object').toLowerCase().replace(/\W+/g, '-') + '.intent.json', JSON.stringify(intent, null, 2)); } catch (error) { setStatus(error.message, 'blocked'); } });
@@ -288,7 +336,7 @@ $('download-pdf').addEventListener('click', () => {
   const plan = result;
   $('download-pdf').disabled = true; $('cancel-pdf').hidden = false;
   setStatus('Preparing the illustrated instruction booklet…', 'exporting');
-  const job = new Worker(new URL('./instruction-pdf-worker.js?v=db3639e20a8c', import.meta.url), {type: 'module'});
+  const job = new Worker(new URL('./instruction-pdf-worker.js?v=059b51e9d8f0', import.meta.url), {type: 'module'});
   pdfWorker = job;
   job.onmessage = ({data}) => {
     if (job !== pdfWorker) return;
