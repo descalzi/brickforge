@@ -42,3 +42,14 @@ export function deviceProvider(model=globalThis.LanguageModel,onProgress=()=>{})
     } finally {session.destroy();}
   };
 }
+
+/** A gateway you run: receives the interpretation request, returns the intent JSON. */
+export function endpointProvider(address,fetcher=fetch){
+ let url;try{url=new URL(address);}catch{throw new Error('Enter the full interpretation gateway URL.');}
+ if(url.username||url.password||url.hash||!(url.protocol==='https:'||(url.protocol==='http:'&&['localhost','127.0.0.1','[::1]'].includes(url.hostname))))throw new Error('Use an HTTPS gateway, or HTTP on localhost, without credentials or a fragment in its URL.');
+ return async(request,{signal}={})=>{
+  const response=await fetcher(url.href,{method:'POST',credentials:'omit',referrerPolicy:'no-referrer',headers:{'Content-Type':'application/json'},body:JSON.stringify(request),signal:AbortSignal.any([signal,AbortSignal.timeout(60000)].filter(Boolean))});
+  if(!response.ok)throw new Error('Interpretation gateway returned HTTP '+response.status+'.');
+  return response.json();
+ };
+}

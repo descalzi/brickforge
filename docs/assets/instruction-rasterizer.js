@@ -1,10 +1,11 @@
 /** Orthographic depth-buffer renderer for PDF diagrams. It handles intersecting
  * LDraw triangles without relying on BFC winding or whole-face painter order.
  * Text, arrows and page furniture remain vector PDF content. */
-export function rasterizeInstructionFaces(faces,width,height,background=[1,1,1]){
- const pixels=new Uint8Array(width*height*3),depth=new Float64Array(width*height).fill(-Infinity);
+export function rasterizeInstructionFaces(faces,width,height,background=[1,1,1],buffers=null){
+ // With buffers, draw on top of an existing image and depth (incremental step views).
+ const pixels=buffers?.pixels||new Uint8Array(width*height*3),depth=buffers?.depth||new Float64Array(width*height).fill(-Infinity);
  const [red,green,blue]=background.map(v=>Math.round(v*255));
- for(let i=0;i<pixels.length;i+=3){pixels[i]=red;pixels[i+1]=green;pixels[i+2]=blue;}
+ if(!buffers)for(let i=0;i<pixels.length;i+=3){pixels[i]=red;pixels[i+1]=green;pixels[i+2]=blue;}
  const edge=(a,b,x,y)=>(b[0]-a[0])*(y-a[1])-(b[1]-a[1])*(x-a[0]);
  for(const f of faces){const [a,b,c]=f.points,area=edge(a,b,c[0],c[1]);if(Math.abs(area)<1e-10)continue;
   const minX=Math.max(0,Math.floor(Math.min(a[0],b[0],c[0]))),maxX=Math.min(width-1,Math.ceil(Math.max(a[0],b[0],c[0]))),minY=Math.max(0,Math.floor(Math.min(a[1],b[1],c[1]))),maxY=Math.min(height-1,Math.ceil(Math.max(a[1],b[1],c[1]))),colour=f.colour.map(v=>Math.max(0,Math.min(255,Math.round(v*255))));

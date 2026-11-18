@@ -1,10 +1,10 @@
 // Offline catalogue ingestion only. The production planner is browser JavaScript.
 // Usage: node scripts/build_specialist_profiles.mjs [local-pinned-ldraw-directory]
-import {convexHull} from '../docs/assets/polygon-geometry.js';
+import {convexHull} from './lib/polygon-geometry.js';
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
-import { createLDrawGeometryResolver } from '../docs/assets/ldraw-geometry.js';
+import { createLDrawGeometryResolver } from './lib/ldraw-geometry.js';
 const run=promisify(execFile),commit='c70360d1c588be894997b2168c61909bc8058c4d';
 const base=`https://raw.githubusercontent.com/kulits/ldraw-parts/${commit}/ldraw/`;
 const cache=process.argv[2],documents=new Map();
@@ -16,10 +16,10 @@ const resolver=createLDrawGeometryResolver({source:{geometry_base_url:base}},{fe
  }catch(error){if(error.code==='ENOENT'||error.stderr?.includes('404'))return {ok:false,status:404};throw error;}
 }});
 const definitions=[{id:'3039',width:16,depth:16,height:9.6,slope:true},{id:'3037',width:32,depth:16,height:9.6,slope:true},{id:'60592',width:16,depth:8,height:19.2}];
-const functional=JSON.parse(await readFile(new URL('../docs/data/functional-part-definitions.json',import.meta.url)));
+const functional=JSON.parse(await readFile(new URL('../data/specialist/functional-part-definitions.json',import.meta.url)));
 definitions.push(...functional.definitions);
 const index={parts:definitions.map(d=>({part_id:d.id,filename:`parts/${d.id}.dat`}))};
-const profiles=[],capabilities=JSON.parse(await readFile(new URL('../docs/data/part-capabilities-v1.json',import.meta.url)));
+const profiles=[],capabilities=JSON.parse(await readFile(new URL('../data/specialist/part-capabilities-v1.json',import.meta.url)));
 const out=new URL('../docs/data/part-meshes/',import.meta.url);await mkdir(out,{recursive:true});
 for(const d of definitions){
  const measured=await resolver.resolvePart(d.id,index,{includeTrianglePositions:true}),root=documents.get(`parts/${d.id}.dat`);
@@ -54,6 +54,6 @@ const sources=[...documents].sort(([a],[b])=>a.localeCompare(b)).map(([file,text
 for(const item of sources)oldSources.set(item.file,item);
 await writeFile(new URL('sources.json',out),JSON.stringify({source_repository:'https://github.com/kulits/ldraw-parts',source_library_commit:commit,notice:'Triangle meshes derived from the listed LDraw parts and recursively referenced subparts/primitives. Authors and licenses retained below. Nominal connection profiles are separately authored by BrickForge.',sources:[...oldSources.values()].sort((a,b)=>a.file.localeCompare(b.file))},null,2)+'\n');
 capabilities.parts.sort((a,b)=>a.part_id.localeCompare(b.part_id));
-await writeFile(new URL('../docs/data/part-capabilities-v1.json',import.meta.url),JSON.stringify(capabilities,null,2)+'\n');
+await writeFile(new URL('../data/specialist/part-capabilities-v1.json',import.meta.url),JSON.stringify(capabilities,null,2)+'\n');
 await writeFile(new URL('../docs/data/specialist-profiles-v1.json',import.meta.url),JSON.stringify({schema_version:1,coordinate_system:'LDraw',profiles,assemblies:functional.assemblies,limitations:['Specialist body envelopes and stud datums are nominal. Detailed clutch, insertion paths, strength and cavity clearance are not verified.','Only explicitly profiled elements and proper right-angle orientations are eligible for placement.']},null,2)+'\n');
 console.log(`Built ${profiles.length} source-backed profiles, meshes and attribution for ${sources.length} LDraw source files.`);

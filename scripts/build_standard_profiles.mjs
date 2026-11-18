@@ -6,7 +6,7 @@ import {readFile, writeFile, mkdir} from 'node:fs/promises';
 import {dirname} from 'node:path';
 import {execFile} from 'node:child_process';
 import {promisify} from 'node:util';
-import {createLDrawGeometryResolver} from '../docs/assets/ldraw-geometry.js';
+import {createLDrawGeometryResolver} from './lib/ldraw-geometry.js';
 
 const run = promisify(execFile);
 const commit = 'c70360d1c588be894997b2168c61909bc8058c4d';
