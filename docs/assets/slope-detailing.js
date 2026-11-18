@@ -54,7 +54,8 @@ export function planSlopes(intent, grid, profileMap, specialist) {
     for (let c = 0; c < owner.length; c++) if (owner[c] === ci) cells.push(c);
     if (!cells.length) return;
     const coord = c => [c % nx, Math.floor(c / (nx * nz)), Math.floor(c / nx) % nz];
-    const co = cells.map(coord), lo = [0, 1, 2].map(a => Math.min(...co.map(p => p[a]))), hi = [0, 1, 2].map(a => Math.max(...co.map(p => p[a])));
+    const co = cells.map(coord), lo = [Infinity, Infinity, Infinity], hi = [-Infinity, -Infinity, -Infinity];
+    for (const p of co) for (let a = 0; a < 3; a++) { lo[a] = Math.min(lo[a], p[a]); hi[a] = Math.max(hi[a], p[a]); }
     const size = component.size_mm.map(v => v * grid.scale);
     const sides = component.shape === 'roof'
       ? (component.ridge_axis === 'x' ? ['-z', '+z'] : ['-x', '+x'])

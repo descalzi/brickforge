@@ -162,3 +162,28 @@ test('regular catalogues match measured LDraw footprints', () => {
     if (p.element_kind === 'tile') assert.ok(!p.features.some(f => f.kind === 'stud'));
   }
 });
+
+test('a void cuts only the solids listed before it', () => {
+  const r = normaliseIntent(intent([
+    box('deck', [0, 8, 0], [64, 16, 64]),
+    box('walk', [0, 14, 0], [48, 6, 48], {mode: 'void', role: 'opening'}),
+    box('pole', [0, 20, 0], [4, 24, 4], {colour: 'black'})]));
+  const grid = rasteriseIntent(r.intent, 1);
+  const pole = grid.components.findIndex(c => c.id === 'pole');
+  const layers = new Set();
+  for (let c = 0; c < grid.owner.length; c++) if (grid.owner[c] === pole) layers.add(Math.floor(c / (grid.nx * grid.nz)));
+  assert.ok(Math.min(...layers) * 3.2 + grid.origin[1] <= 9, 'the pole keeps its foot inside the walkway void');
+});
+
+test('extra-large and huge builds are accepted and scale the model', () => {
+  const base = cases.find(c => c.id === 'rocket-on-pad').intent;
+  for (const [size, studs] of [['xlarge', 64], ['huge', 128]]) {
+    const r = normaliseIntent({...base, build: {size}});
+    assert.ok(r.valid, r.errors.join(' '));
+    assert.equal(r.intent.build.target_longest_studs, studs);
+  }
+  assert.match(normaliseIntent({...base, build: {target_longest_studs: 129}}).errors.join(), /6 to 128/);
+  const plan = planIntent({...base, build: {size: 'xlarge'}}, catalogue);
+  assert.ok(plan.intent_report.connectivity.connected);
+  assert.ok(Math.max(plan.dimensions_mm.width, plan.dimensions_mm.depth, plan.dimensions_mm.height) > 60 * 8, 'longest side is about 64 studs');
+});

@@ -1,7 +1,7 @@
-import {nominalBodyIntersectsBox} from './nominal-collision.js?v=10525c583bbb';
-import {orientationMatches} from './part-orientation.js?v=10525c583bbb';
-import { discoverPartCandidates } from './part-catalogue.js?v=10525c583bbb';
-import { translateComponentRequirements } from './design-translation.js?v=10525c583bbb';
+import {nominalBodyIntersectsBox} from './nominal-collision.js?v=f8118f9b6f32';
+import {orientationMatches} from './part-orientation.js?v=f8118f9b6f32';
+import { discoverPartCandidates } from './part-catalogue.js?v=f8118f9b6f32';
+import { translateComponentRequirements } from './design-translation.js?v=f8118f9b6f32';
 
 const yawRotations = [[1,0,0,0,1,0,0,0,1],[0,0,1,0,1,0,-1,0,0],[-1,0,0,0,1,0,0,0,-1],[0,0,-1,0,1,0,1,0,0]];
 const permutations=[[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]];

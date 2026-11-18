@@ -8,8 +8,8 @@
   "built": 24,
   "connected": 24,
   "median_shape_iou": 0.831,
-  "cases_losing_essential_components": 1,
-  "total_parts": 4537
+  "cases_losing_essential_components": 0,
+  "total_parts": 4553
  },
  "limitations": [
   "The interpreter was a single model acting under the published instructions; other models will write different intents.",
@@ -24,7 +24,7 @@
    "description": "A small red family hatchback car with four black wheels, a windscreen and side windows.",
    "status": "planned",
    "parts": 201,
-   "steps": 61,
+   "steps": 63,
    "connected": true,
    "shape_iou": 0.94,
    "footprint_studs": [
@@ -43,7 +43,7 @@
    "attachments_not_joined": [
     "windscreen→cabin"
    ],
-   "elapsed_ms": 2052
+   "elapsed_ms": 459
   },
   {
    "id": "cottage",
@@ -51,7 +51,7 @@
    "description": "A cottage with white walls, a red pitched roof, a front door, two windows and a chimney.",
    "status": "planned",
    "parts": 196,
-   "steps": 41,
+   "steps": 44,
    "connected": true,
    "shape_iou": 0.921,
    "footprint_studs": [
@@ -68,15 +68,15 @@
    "colour_bridges": 0,
    "visible_colour_bridges": 0,
    "attachments_not_joined": [],
-   "elapsed_ms": 1917
+   "elapsed_ms": 541
   },
   {
    "id": "high-wing-aeroplane",
    "category": "vehicle",
    "description": "A light propeller aeroplane, white with a blue stripe, high wings, a tail fin and fixed landing wheels.",
    "status": "planned",
-   "parts": 36,
-   "steps": 24,
+   "parts": 44,
+   "steps": 30,
    "connected": true,
    "shape_iou": 0.576,
    "footprint_studs": [
@@ -87,28 +87,25 @@
    "real_wheels": 0,
    "slope_pieces": 0,
    "lost_components": [
-    "propeller",
-    "left-main-wheel"
+    "propeller"
    ],
-   "lost_essential": [
-    "left-main-wheel"
-   ],
-   "fragments_removed": 6,
-   "gap_cells_filled": 2,
-   "colour_bridges": 0,
+   "lost_essential": [],
+   "fragments_removed": 3,
+   "gap_cells_filled": 6,
+   "colour_bridges": 2,
    "visible_colour_bridges": 0,
    "attachments_not_joined": [
     "right-main-wheel→fuselage",
     "nose-wheel→fuselage"
    ],
-   "elapsed_ms": 132
+   "elapsed_ms": 120
   },
   {
    "id": "apple",
    "category": "organic",
    "description": "A red apple with a short brown stalk and a green leaf.",
    "status": "planned",
-   "parts": 332,
+   "parts": 328,
    "steps": 84,
    "connected": true,
    "shape_iou": 0.88,
@@ -122,13 +119,13 @@
    "lost_components": [],
    "lost_essential": [],
    "fragments_removed": 0,
-   "gap_cells_filled": 11,
+   "gap_cells_filled": 1,
    "colour_bridges": 0,
    "visible_colour_bridges": 0,
    "attachments_not_joined": [
-    "stalk→fruit"
+    "leaf→stalk"
    ],
-   "elapsed_ms": 3452
+   "elapsed_ms": 549
   },
   {
    "id": "kitchen-table",
@@ -153,7 +150,7 @@
    "colour_bridges": 0,
    "visible_colour_bridges": 0,
    "attachments_not_joined": [],
-   "elapsed_ms": 84
+   "elapsed_ms": 40
   },
   {
    "id": "double-decker-bus",
@@ -161,7 +158,7 @@
    "description": "A classic red double-decker London bus.",
    "status": "planned",
    "parts": 144,
-   "steps": 39,
+   "steps": 40,
    "connected": true,
    "shape_iou": 0.867,
    "footprint_studs": [
@@ -178,7 +175,7 @@
    "colour_bridges": 0,
    "visible_colour_bridges": 0,
    "attachments_not_joined": [],
-   "elapsed_ms": 908
+   "elapsed_ms": 204
   },
   {
    "id": "lighthouse",
@@ -203,7 +200,7 @@
    "colour_bridges": 0,
    "visible_colour_bridges": 0,
    "attachments_not_joined": [],
-   "elapsed_ms": 272
+   "elapsed_ms": 139
   },
   {
    "id": "pine-tree",
@@ -211,7 +208,7 @@
    "description": "A green pine tree on a small grey base.",
    "status": "planned",
    "parts": 244,
-   "steps": 67,
+   "steps": 72,
    "connected": true,
    "shape_iou": 0.824,
    "footprint_studs": [
@@ -228,7 +225,7 @@
    "colour_bridges": 0,
    "visible_colour_bridges": 0,
    "attachments_not_joined": [],
-   "elapsed_ms": 5242
+   "elapsed_ms": 397
   },
   {
    "id": "rubber-duck",
@@ -236,7 +233,7 @@
    "description": "A yellow rubber duck.",
    "status": "planned",
    "parts": 249,
-   "steps": 66,
+   "steps": 65,
    "connected": true,
    "shape_iou": 0.865,
    "footprint_studs": [
@@ -253,7 +250,7 @@
    "colour_bridges": 0,
    "visible_colour_bridges": 0,
    "attachments_not_joined": [],
-   "elapsed_ms": 2050
+   "elapsed_ms": 321
   },
   {
    "id": "steam-locomotive",
@@ -261,7 +258,7 @@
    "description": "A black steam locomotive with red wheels, a tall chimney and a driver's cab at the back.",
    "status": "planned",
    "parts": 161,
-   "steps": 55,
+   "steps": 56,
    "connected": true,
    "shape_iou": 0.723,
    "footprint_studs": [
@@ -280,7 +277,7 @@
    "attachments_not_joined": [
     "chimney→smokebox"
    ],
-   "elapsed_ms": 958
+   "elapsed_ms": 152
   },
   {
    "id": "sailing-dinghy",
@@ -288,7 +285,7 @@
    "description": "A sailing boat with a white hull, a tall mast and a white sail.",
    "status": "planned",
    "parts": 85,
-   "steps": 41,
+   "steps": 39,
    "connected": true,
    "shape_iou": 0.626,
    "footprint_studs": [
@@ -305,7 +302,7 @@
    "colour_bridges": 1,
    "visible_colour_bridges": 1,
    "attachments_not_joined": [],
-   "elapsed_ms": 334
+   "elapsed_ms": 82
   },
   {
    "id": "spotted-mushroom",
@@ -313,7 +310,7 @@
    "description": "A toadstool with a red cap covered in white spots and a thick white stem.",
    "status": "planned",
    "parts": 230,
-   "steps": 64,
+   "steps": 65,
    "connected": true,
    "shape_iou": 0.868,
    "footprint_studs": [
@@ -330,15 +327,15 @@
    "colour_bridges": 0,
    "visible_colour_bridges": 0,
    "attachments_not_joined": [],
-   "elapsed_ms": 2741
+   "elapsed_ms": 338
   },
   {
    "id": "park-bench",
    "category": "furniture",
    "description": "A park bench made of brown wooden slats with black metal legs and armrests.",
    "status": "planned",
-   "parts": 75,
-   "steps": 60,
+   "parts": 85,
+   "steps": 55,
    "connected": true,
    "shape_iou": 0.434,
    "footprint_studs": [
@@ -350,16 +347,17 @@
    "slope_pieces": 0,
    "lost_components": [],
    "lost_essential": [],
-   "fragments_removed": 2,
-   "gap_cells_filled": 0,
-   "colour_bridges": 1,
-   "visible_colour_bridges": 1,
+   "fragments_removed": 0,
+   "gap_cells_filled": 7,
+   "colour_bridges": 0,
+   "visible_colour_bridges": 0,
    "attachments_not_joined": [
+    "back-leg-left→seat",
     "back-leg-right→seat",
     "armrest-left→back-leg-left",
     "armrest-right→back-leg-right"
    ],
-   "elapsed_ms": 325
+   "elapsed_ms": 99
   },
   {
    "id": "rocket-on-pad",
@@ -367,7 +365,7 @@
    "description": "A white rocket ship with red fins and a red nose cone, standing on a launch pad.",
    "status": "planned",
    "parts": 41,
-   "steps": 21,
+   "steps": 22,
    "connected": true,
    "shape_iou": 0.772,
    "footprint_studs": [
@@ -388,7 +386,7 @@
     "fin-north→body",
     "fin-south→body"
    ],
-   "elapsed_ms": 62
+   "elapsed_ms": 31
   },
   {
    "id": "snowman",
@@ -413,7 +411,7 @@
    "colour_bridges": 1,
    "visible_colour_bridges": 1,
    "attachments_not_joined": [],
-   "elapsed_ms": 2148
+   "elapsed_ms": 422
   },
   {
    "id": "castle-tower",
@@ -438,7 +436,7 @@
    "colour_bridges": 0,
    "visible_colour_bridges": 0,
    "attachments_not_joined": [],
-   "elapsed_ms": 1378
+   "elapsed_ms": 272
   },
   {
    "id": "desk-lamp",
@@ -446,7 +444,7 @@
    "description": "An adjustable desk lamp with a round black base, an angled arm and a cone-shaped shade.",
    "status": "planned",
    "parts": 73,
-   "steps": 55,
+   "steps": 53,
    "connected": true,
    "shape_iou": 0.698,
    "footprint_studs": [
@@ -465,14 +463,14 @@
    "attachments_not_joined": [
     "elbow→lower-arm"
    ],
-   "elapsed_ms": 280
+   "elapsed_ms": 40
   },
   {
    "id": "farm-tractor",
    "category": "vehicle",
    "description": "A green farm tractor with big rear wheels, small front wheels and an enclosed cab.",
    "status": "planned",
-   "parts": 317,
+   "parts": 319,
    "steps": 109,
    "connected": true,
    "shape_iou": 0.82,
@@ -486,14 +484,14 @@
    "lost_components": [],
    "lost_essential": [],
    "fragments_removed": 0,
-   "gap_cells_filled": 0,
-   "colour_bridges": 2,
-   "visible_colour_bridges": 2,
+   "gap_cells_filled": 1,
+   "colour_bridges": 1,
+   "visible_colour_bridges": 1,
    "attachments_not_joined": [
     "rear-left-wheel→rear-axle",
     "rear-right-wheel→rear-axle"
    ],
-   "elapsed_ms": 5372
+   "elapsed_ms": 653
   },
   {
    "id": "sitting-cat",
@@ -501,7 +499,7 @@
    "description": "A grey cat sitting upright with its tail curled around its feet.",
    "status": "planned",
    "parts": 479,
-   "steps": 111,
+   "steps": 113,
    "connected": true,
    "shape_iou": 0.872,
    "footprint_studs": [
@@ -520,7 +518,7 @@
    "attachments_not_joined": [
     "right-ear→head"
    ],
-   "elapsed_ms": 7730
+   "elapsed_ms": 1170
   },
   {
    "id": "garden-shed",
@@ -528,7 +526,7 @@
    "description": "A garden shed with a green door and a single-pitch roof that slopes towards the back.",
    "status": "planned",
    "parts": 203,
-   "steps": 44,
+   "steps": 49,
    "connected": true,
    "shape_iou": 0.963,
    "footprint_studs": [
@@ -545,7 +543,7 @@
    "colour_bridges": 0,
    "visible_colour_bridges": 0,
    "attachments_not_joined": [],
-   "elapsed_ms": 1341
+   "elapsed_ms": 307
   },
   {
    "id": "two-seat-sofa",
@@ -553,7 +551,7 @@
    "description": "A two-seater sofa in blue fabric with armrests and seat cushions.",
    "status": "planned",
    "parts": 138,
-   "steps": 34,
+   "steps": 35,
    "connected": true,
    "shape_iou": 0.927,
    "footprint_studs": [
@@ -570,7 +568,7 @@
    "colour_bridges": 0,
    "visible_colour_bridges": 0,
    "attachments_not_joined": [],
-   "elapsed_ms": 829
+   "elapsed_ms": 431
   },
   {
    "id": "coffee-mug",
@@ -578,7 +576,7 @@
    "description": "A coffee mug with a handle.",
    "status": "planned",
    "parts": 139,
-   "steps": 30,
+   "steps": 31,
    "connected": true,
    "shape_iou": 0.636,
    "footprint_studs": [
@@ -595,7 +593,7 @@
    "colour_bridges": 0,
    "visible_colour_bridges": 0,
    "attachments_not_joined": [],
-   "elapsed_ms": 629
+   "elapsed_ms": 122
   },
   {
    "id": "windmill",
@@ -622,7 +620,7 @@
    "attachments_not_joined": [
     "sail-a→hub"
    ],
-   "elapsed_ms": 2109
+   "elapsed_ms": 500
   },
   {
    "id": "elephant",
@@ -630,7 +628,7 @@
    "description": "An elephant standing on four legs, with big ears, a long trunk and tusks.",
    "status": "planned",
    "parts": 355,
-   "steps": 97,
+   "steps": 96,
    "connected": true,
    "shape_iou": 0.831,
    "footprint_studs": [
@@ -647,7 +645,7 @@
    "colour_bridges": 0,
    "visible_colour_bridges": 0,
    "attachments_not_joined": [],
-   "elapsed_ms": 3571
+   "elapsed_ms": 460
   }
  ]
 }

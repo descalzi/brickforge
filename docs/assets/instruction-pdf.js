@@ -1,8 +1,8 @@
-import { instructionJointNote } from "./assembly-instructions.js?v=10525c583bbb";
-import {rasterizeInstructionFaces} from './instruction-rasterizer.js?v=10525c583bbb';
+import { instructionJointNote } from "./assembly-instructions.js?v=f8118f9b6f32";
+import {rasterizeInstructionFaces} from './instruction-rasterizer.js?v=f8118f9b6f32';
 // Browser-native illustrated hybrid booklet. Diagrams and inventory share the canonical plan.
-import { transformVector } from './specialist-placement.js?v=10525c583bbb';
-import { BRICK_COLOURS, colourHex as palette } from './brick-colours.js?v=10525c583bbb';
+import { transformVector } from './specialist-placement.js?v=f8118f9b6f32';
+import { BRICK_COLOURS, colourHex as palette } from './brick-colours.js?v=f8118f9b6f32';
 const colourNames=new Map(BRICK_COLOURS.map(c=>[c.code,c.name.replace(/\b\w/g,l=>l.toUpperCase())]));
 const clean=s=>String(s).normalize('NFKD').replace(/[^\x20-\x7e]/g,' ').replace(/[\\()]/g,'\\$&');
 const n=v=>Number(v.toFixed(3));

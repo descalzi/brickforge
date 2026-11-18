@@ -49,7 +49,7 @@ jobs:
       - name: Test design specification engine in headless Chromium
         run: node tests/browser-design-engine.e2e.mjs
       - name: Check intent engine syntax
-        run: for f in object-intent brick-colours intent-voxels brick-tiler slope-detailing wheel-detailing intent-engine studio studio-worker; do node --check docs/assets/$f.js || exit 1; done
+        run: for f in object-intent brick-colours intent-voxels large-assembly brick-tiler slope-detailing wheel-detailing intent-engine studio studio-worker; do node --check docs/assets/$f.js || exit 1; done
       - name: Verify description-to-model evaluation
         run: node scripts/evaluate_intents.mjs --check
       - name: Test Describe and build studio in headless Chromium

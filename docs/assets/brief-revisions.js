@@ -1,5 +1,5 @@
-import {architecturalEdits} from './architectural-revisions.js?v=10525c583bbb';
-import {planDesign} from './design-engine.js?v=10525c583bbb';
+import {architecturalEdits} from './architectural-revisions.js?v=f8118f9b6f32';
+import {planDesign} from './design-engine.js?v=f8118f9b6f32';
 
 // Choices correspond to a plate height, half a stud and one stud. The planner
 // checks each complete candidate against the original features and relations.

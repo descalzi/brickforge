@@ -1,0 +1,1799 @@
+{
+ "schema_version": 1,
+ "note": "Extra examples written by a language model after the engine existed. They are not part of the frozen evaluation set.",
+ "cases": [
+  {
+   "id": "victorian-terrace",
+   "category": "architecture",
+   "description": "A classic English Victorian terraced house.",
+   "intent": {
+    "schema": "brickforge.object-intent/2",
+    "name": "Victorian terraced house",
+    "units": "m",
+    "build": {
+     "size": "xlarge"
+    },
+    "components": [
+     {
+      "id": "base",
+      "role": "base",
+      "shape": "box",
+      "center": [
+       0,
+       0.1,
+       -1.2
+      ],
+      "size": [
+       5.2,
+       0.2,
+       11.6
+      ],
+      "colour": "light grey"
+     },
+     {
+      "id": "walls",
+      "role": "wall",
+      "shape": "box",
+      "center": [
+       0,
+       3.6,
+       0
+      ],
+      "size": [
+       5,
+       7,
+       9
+      ],
+      "colour": "dark orange",
+      "attach_to": "base"
+     },
+     {
+      "id": "plinth",
+      "role": "detail",
+      "shape": "box",
+      "center": [
+       0,
+       0.55,
+       -4.5
+      ],
+      "size": [
+       5.1,
+       0.7,
+       0.25
+      ],
+      "colour": "dark grey",
+      "mode": "paint"
+     },
+     {
+      "id": "roof",
+      "role": "roof",
+      "shape": "roof",
+      "ridge_axis": "x",
+      "center": [
+       0,
+       8.35,
+       0
+      ],
+      "size": [
+       5.2,
+       2.5,
+       9.4
+      ],
+      "colour": "dark grey",
+      "attach_to": "walls"
+     },
+     {
+      "id": "chimney-left",
+      "role": "chimney",
+      "shape": "box",
+      "center": [
+       -2.3,
+       10.0,
+       0.6
+      ],
+      "size": [
+       0.7,
+       2.0,
+       1.4
+      ],
+      "colour": "dark orange",
+      "attach_to": "roof"
+     },
+     {
+      "id": "chimney-right",
+      "role": "chimney",
+      "shape": "box",
+      "center": [
+       2.3,
+       10.0,
+       0.6
+      ],
+      "size": [
+       0.7,
+       2.0,
+       1.4
+      ],
+      "colour": "dark orange",
+      "attach_to": "roof"
+     },
+     {
+      "id": "pots-left",
+      "role": "chimney pot",
+      "shape": "cylinder",
+      "axis": "y",
+      "center": [
+       -2.3,
+       11.2,
+       0.6
+      ],
+      "size": [
+       0.3,
+       0.5,
+       0.3
+      ],
+      "colour": "orange",
+      "importance": "detail",
+      "attach_to": "chimney-left"
+     },
+     {
+      "id": "pots-right",
+      "role": "chimney pot",
+      "shape": "cylinder",
+      "axis": "y",
+      "center": [
+       2.3,
+       11.2,
+       0.6
+      ],
+      "size": [
+       0.3,
+       0.5,
+       0.3
+      ],
+      "colour": "orange",
+      "importance": "detail",
+      "attach_to": "chimney-right"
+     },
+     {
+      "id": "bay",
+      "role": "bay window",
+      "shape": "box",
+      "center": [
+       -1.0,
+       1.8,
+       -4.85
+      ],
+      "size": [
+       2.4,
+       3.2,
+       0.8
+      ],
+      "colour": "white",
+      "attach_to": "walls"
+     },
+     {
+      "id": "bay-glass",
+      "role": "window",
+      "shape": "box",
+      "center": [
+       -1.0,
+       2.0,
+       -5.25
+      ],
+      "size": [
+       1.9,
+       1.8,
+       0.3
+      ],
+      "colour": "trans clear",
+      "mode": "paint"
+     },
+     {
+      "id": "bay-roof",
+      "role": "roof",
+      "shape": "wedge",
+      "slope": {
+       "down_toward": "-z",
+       "low_fraction": 0.2
+      },
+      "center": [
+       -1.0,
+       3.65,
+       -4.85
+      ],
+      "size": [
+       2.6,
+       0.5,
+       0.9
+      ],
+      "colour": "dark grey",
+      "attach_to": "bay"
+     },
+     {
+      "id": "door",
+      "role": "door",
+      "shape": "box",
+      "center": [
+       1.4,
+       1.45,
+       -4.5
+      ],
+      "size": [
+       1.0,
+       2.3,
+       0.3
+      ],
+      "colour": "dark blue",
+      "mode": "paint"
+     },
+     {
+      "id": "fanlight",
+      "role": "window",
+      "shape": "box",
+      "center": [
+       1.4,
+       2.85,
+       -4.5
+      ],
+      "size": [
+       1.0,
+       0.4,
+       0.3
+      ],
+      "colour": "trans clear",
+      "mode": "paint",
+      "importance": "detail"
+     },
+     {
+      "id": "porch-canopy",
+      "role": "canopy",
+      "shape": "box",
+      "center": [
+       1.4,
+       3.25,
+       -4.75
+      ],
+      "size": [
+       1.5,
+       0.2,
+       0.6
+      ],
+      "colour": "white",
+      "attach_to": "walls",
+      "importance": "detail"
+     },
+     {
+      "id": "doorstep",
+      "role": "step",
+      "shape": "box",
+      "center": [
+       1.4,
+       0.35,
+       -4.85
+      ],
+      "size": [
+       1.4,
+       0.3,
+       0.7
+      ],
+      "colour": "light grey",
+      "attach_to": "base"
+     },
+     {
+      "id": "upper-surround-left",
+      "role": "window frame",
+      "shape": "box",
+      "center": [
+       -1.0,
+       5.2,
+       -4.5
+      ],
+      "size": [
+       1.5,
+       2.2,
+       0.3
+      ],
+      "colour": "white",
+      "mode": "paint"
+     },
+     {
+      "id": "upper-glass-left",
+      "role": "window",
+      "shape": "box",
+      "center": [
+       -1.0,
+       5.2,
+       -4.5
+      ],
+      "size": [
+       1.1,
+       1.8,
+       0.3
+      ],
+      "colour": "trans clear",
+      "mode": "paint"
+     },
+     {
+      "id": "upper-surround-right",
+      "role": "window frame",
+      "shape": "box",
+      "center": [
+       1.4,
+       5.2,
+       -4.5
+      ],
+      "size": [
+       1.3,
+       2.2,
+       0.3
+      ],
+      "colour": "white",
+      "mode": "paint"
+     },
+     {
+      "id": "upper-glass-right",
+      "role": "window",
+      "shape": "box",
+      "center": [
+       1.4,
+       5.2,
+       -4.5
+      ],
+      "size": [
+       0.9,
+       1.8,
+       0.3
+      ],
+      "colour": "trans clear",
+      "mode": "paint"
+     },
+     {
+      "id": "garden-wall",
+      "role": "wall",
+      "shape": "box",
+      "center": [
+       0,
+       0.6,
+       -6.6
+      ],
+      "size": [
+       5,
+       0.8,
+       0.3
+      ],
+      "colour": "dark orange",
+      "attach_to": "base"
+     },
+     {
+      "id": "gate-gap",
+      "role": "opening",
+      "shape": "box",
+      "center": [
+       1.4,
+       0.6,
+       -6.6
+      ],
+      "size": [
+       1.0,
+       1.0,
+       0.6
+      ],
+      "mode": "void"
+     },
+     {
+      "id": "path",
+      "role": "path",
+      "shape": "box",
+      "center": [
+       1.4,
+       0.2,
+       -5.7
+      ],
+      "size": [
+       1.0,
+       0.1,
+       1.8
+      ],
+      "colour": "tan",
+      "mode": "paint"
+     },
+     {
+      "id": "neighbour-left",
+      "role": "wall",
+      "shape": "box",
+      "center": [
+       -3.0,
+       3.6,
+       0
+      ],
+      "size": [
+       1.0,
+       7,
+       9
+      ],
+      "colour": "dark orange",
+      "attach_to": "walls"
+     },
+     {
+      "id": "neighbour-right",
+      "role": "wall",
+      "shape": "box",
+      "center": [
+       3.0,
+       3.6,
+       0
+      ],
+      "size": [
+       1.0,
+       7,
+       9
+      ],
+      "colour": "dark orange",
+      "attach_to": "walls"
+     }
+    ],
+    "assumptions": [
+     "One house of a terrace, 5 m wide, with slices of the neighbouring houses either side.",
+     "Red brick front, slate roof, white stone bay and window surrounds, navy front door."
+    ],
+    "unsupported": [
+     "Sash window glazing bars",
+     "Decorative brick banding"
+    ],
+    "description": "A classic English Victorian terraced house."
+   }
+  },
+  {
+   "id": "kingfisher",
+   "category": "organic",
+   "description": "A kingfisher right before the dive to catch a fish.",
+   "intent": {
+    "schema": "brickforge.object-intent/2",
+    "name": "Kingfisher about to dive",
+    "units": "cm",
+    "build": {
+     "size": "xlarge"
+    },
+    "components": [
+     {
+      "id": "water",
+      "role": "water",
+      "shape": "box",
+      "center": [
+       0,
+       0.6,
+       -2
+      ],
+      "size": [
+       24,
+       1.2,
+       18
+      ],
+      "colour": "dark azure"
+     },
+     {
+      "id": "post",
+      "role": "post",
+      "shape": "cylinder",
+      "axis": "y",
+      "center": [
+       9,
+       6,
+       2
+      ],
+      "size": [
+       1.6,
+       11,
+       1.6
+      ],
+      "colour": "reddish brown",
+      "attach_to": "water"
+     },
+     {
+      "id": "branch",
+      "role": "branch",
+      "shape": "cylinder",
+      "axis": "x",
+      "center": [
+       3,
+       11,
+       2
+      ],
+      "size": [
+       14,
+       1.4,
+       1.4
+      ],
+      "colour": "reddish brown",
+      "attach_to": "post"
+     },
+     {
+      "id": "legs",
+      "role": "leg",
+      "shape": "box",
+      "center": [
+       0,
+       12.2,
+       1.6
+      ],
+      "size": [
+       1.4,
+       1.2,
+       0.5
+      ],
+      "colour": "red",
+      "attach_to": "branch"
+     },
+     {
+      "id": "body",
+      "role": "body",
+      "shape": "sphere",
+      "center": [
+       0,
+       15.3,
+       1.0
+      ],
+      "size": [
+       4.6,
+       7,
+       5
+      ],
+      "rotate_deg": [
+       -40,
+       0,
+       0
+      ],
+      "colour": "dark azure",
+      "attach_to": "legs"
+     },
+     {
+      "id": "breast",
+      "role": "breast",
+      "shape": "sphere",
+      "mode": "paint",
+      "center": [
+       0,
+       14.3,
+       -0.6
+      ],
+      "size": [
+       5,
+       5,
+       4
+      ],
+      "colour": "orange"
+     },
+     {
+      "id": "head",
+      "role": "head",
+      "shape": "sphere",
+      "center": [
+       0,
+       18.6,
+       -1.6
+      ],
+      "size": [
+       4,
+       3.8,
+       4.2
+      ],
+      "colour": "dark azure",
+      "attach_to": "body"
+     },
+     {
+      "id": "cheek",
+      "role": "cheek",
+      "shape": "box",
+      "mode": "paint",
+      "center": [
+       0,
+       18.2,
+       -2.6
+      ],
+      "size": [
+       4.4,
+       1.0,
+       1.6
+      ],
+      "colour": "orange"
+     },
+     {
+      "id": "throat",
+      "role": "throat",
+      "shape": "box",
+      "mode": "paint",
+      "center": [
+       0,
+       17.2,
+       -3.2
+      ],
+      "size": [
+       1.6,
+       0.8,
+       1.0
+      ],
+      "colour": "white",
+      "importance": "detail"
+     },
+     {
+      "id": "bill",
+      "role": "beak",
+      "shape": "cone",
+      "axis": "z",
+      "top_scale": 4,
+      "center": [
+       0,
+       17.0,
+       -4.8
+      ],
+      "size": [
+       0.8,
+       0.8,
+       4.0
+      ],
+      "rotate_deg": [
+       -35,
+       0,
+       0
+      ],
+      "colour": "black",
+      "attach_to": "head"
+     },
+     {
+      "id": "left-wing",
+      "role": "wing",
+      "shape": "box",
+      "center": [
+       -2.3,
+       15.6,
+       1.6
+      ],
+      "size": [
+       0.6,
+       3.6,
+       6
+      ],
+      "rotate_deg": [
+       -40,
+       0,
+       -10
+      ],
+      "colour": "blue",
+      "attach_to": "body"
+     },
+     {
+      "id": "right-wing",
+      "role": "wing",
+      "shape": "box",
+      "center": [
+       2.3,
+       15.6,
+       1.6
+      ],
+      "size": [
+       0.6,
+       3.6,
+       6
+      ],
+      "rotate_deg": [
+       -40,
+       0,
+       10
+      ],
+      "colour": "blue",
+      "attach_to": "body"
+     },
+     {
+      "id": "tail",
+      "role": "tail",
+      "shape": "box",
+      "center": [
+       0,
+       12.6,
+       4.6
+      ],
+      "size": [
+       1.6,
+       0.6,
+       3.6
+      ],
+      "rotate_deg": [
+       -50,
+       0,
+       0
+      ],
+      "colour": "dark blue",
+      "attach_to": "body"
+     },
+     {
+      "id": "eye",
+      "role": "eye",
+      "shape": "box",
+      "mode": "paint",
+      "center": [
+       0,
+       19.2,
+       -2.4
+      ],
+      "size": [
+       4.4,
+       0.6,
+       0.6
+      ],
+      "colour": "black",
+      "importance": "detail"
+     },
+     {
+      "id": "fish",
+      "role": "fish",
+      "shape": "sphere",
+      "center": [
+       -3,
+       1.4,
+       -7
+      ],
+      "size": [
+       1.2,
+       1.2,
+       4
+      ],
+      "colour": "silver",
+      "attach_to": "water"
+     }
+    ],
+    "assumptions": [
+     "A common kingfisher 16 cm long, perched on a branch over water, leaning forward with the bill angled down.",
+     "A small fish shows at the surface below."
+    ],
+    "unsupported": [
+     "Feather texture and the turquoise back stripe"
+    ],
+    "description": "A kingfisher right before the dive to catch a fish."
+   }
+  },
+  {
+   "id": "castle",
+   "category": "architecture",
+   "description": "A medieval castle.",
+   "intent": {
+    "schema": "brickforge.object-intent/2",
+    "name": "Medieval castle",
+    "units": "m",
+    "build": {
+     "size": "huge"
+    },
+    "components": [
+     {
+      "id": "ground",
+      "role": "base",
+      "shape": "box",
+      "center": [
+       0,
+       0.5,
+       0
+      ],
+      "size": [
+       80,
+       1,
+       80
+      ],
+      "colour": "green"
+     },
+     {
+      "id": "moat-s",
+      "role": "water",
+      "shape": "box",
+      "center": [
+       0,
+       0.9,
+       -33
+      ],
+      "size": [
+       74,
+       0.4,
+       6
+      ],
+      "colour": "medium blue",
+      "mode": "paint"
+     },
+     {
+      "id": "moat-n",
+      "role": "water",
+      "shape": "box",
+      "center": [
+       0,
+       0.9,
+       33
+      ],
+      "size": [
+       74,
+       0.4,
+       6
+      ],
+      "colour": "medium blue",
+      "mode": "paint"
+     },
+     {
+      "id": "moat-e",
+      "role": "water",
+      "shape": "box",
+      "center": [
+       33,
+       0.9,
+       0
+      ],
+      "size": [
+       6,
+       0.4,
+       74
+      ],
+      "colour": "medium blue",
+      "mode": "paint"
+     },
+     {
+      "id": "moat-w",
+      "role": "water",
+      "shape": "box",
+      "center": [
+       -33,
+       0.9,
+       0
+      ],
+      "size": [
+       6,
+       0.4,
+       74
+      ],
+      "colour": "medium blue",
+      "mode": "paint"
+     },
+     {
+      "id": "wall-south",
+      "role": "wall",
+      "shape": "box",
+      "center": [
+       0,
+       6,
+       -25
+      ],
+      "size": [
+       50,
+       10,
+       3
+      ],
+      "colour": "light grey",
+      "attach_to": "ground"
+     },
+     {
+      "id": "wall-north",
+      "role": "wall",
+      "shape": "box",
+      "center": [
+       0,
+       6,
+       25
+      ],
+      "size": [
+       50,
+       10,
+       3
+      ],
+      "colour": "light grey",
+      "attach_to": "ground"
+     },
+     {
+      "id": "wall-east",
+      "role": "wall",
+      "shape": "box",
+      "center": [
+       25,
+       6,
+       0
+      ],
+      "size": [
+       3,
+       10,
+       50
+      ],
+      "colour": "light grey",
+      "attach_to": "ground"
+     },
+     {
+      "id": "wall-west",
+      "role": "wall",
+      "shape": "box",
+      "center": [
+       -25,
+       6,
+       0
+      ],
+      "size": [
+       3,
+       10,
+       50
+      ],
+      "colour": "light grey",
+      "attach_to": "ground"
+     },
+     {
+      "id": "crenel-s-18",
+      "role": "opening",
+      "shape": "box",
+      "center": [
+       -18,
+       10.6,
+       -25
+      ],
+      "size": [
+       2.2,
+       1.2,
+       4
+      ],
+      "mode": "void"
+     },
+     {
+      "id": "crenel-n-18",
+      "role": "opening",
+      "shape": "box",
+      "center": [
+       -18,
+       10.6,
+       25
+      ],
+      "size": [
+       2.2,
+       1.2,
+       4
+      ],
+      "mode": "void"
+     },
+     {
+      "id": "crenel-e-18",
+      "role": "opening",
+      "shape": "box",
+      "center": [
+       25,
+       10.6,
+       -18
+      ],
+      "size": [
+       4,
+       1.2,
+       2.2
+      ],
+      "mode": "void"
+     },
+     {
+      "id": "crenel-w-18",
+      "role": "opening",
+      "shape": "box",
+      "center": [
+       -25,
+       10.6,
+       -18
+      ],
+      "size": [
+       4,
+       1.2,
+       2.2
+      ],
+      "mode": "void"
+     },
+     {
+      "id": "crenel-s-12",
+      "role": "opening",
+      "shape": "box",
+      "center": [
+       -12,
+       10.6,
+       -25
+      ],
+      "size": [
+       2.2,
+       1.2,
+       4
+      ],
+      "mode": "void"
+     },
+     {
+      "id": "crenel-n-12",
+      "role": "opening",
+      "shape": "box",
+      "center": [
+       -12,
+       10.6,
+       25
+      ],
+      "size": [
+       2.2,
+       1.2,
+       4
+      ],
+      "mode": "void"
+     },
+     {
+      "id": "crenel-e-12",
+      "role": "opening",
+      "shape": "box",
+      "center": [
+       25,
+       10.6,
+       -12
+      ],
+      "size": [
+       4,
+       1.2,
+       2.2
+      ],
+      "mode": "void"
+     },
+     {
+      "id": "crenel-w-12",
+      "role": "opening",
+      "shape": "box",
+      "center": [
+       -25,
+       10.6,
+       -12
+      ],
+      "size": [
+       4,
+       1.2,
+       2.2
+      ],
+      "mode": "void"
+     },
+     {
+      "id": "crenel-s-6",
+      "role": "opening",
+      "shape": "box",
+      "center": [
+       -6,
+       10.6,
+       -25
+      ],
+      "size": [
+       2.2,
+       1.2,
+       4
+      ],
+      "mode": "void"
+     },
+     {
+      "id": "crenel-n-6",
+      "role": "opening",
+      "shape": "box",
+      "center": [
+       -6,
+       10.6,
+       25
+      ],
+      "size": [
+       2.2,
+       1.2,
+       4
+      ],
+      "mode": "void"
+     },
+     {
+      "id": "crenel-e-6",
+      "role": "opening",
+      "shape": "box",
+      "center": [
+       25,
+       10.6,
+       -6
+      ],
+      "size": [
+       4,
+       1.2,
+       2.2
+      ],
+      "mode": "void"
+     },
+     {
+      "id": "crenel-w-6",
+      "role": "opening",
+      "shape": "box",
+      "center": [
+       -25,
+       10.6,
+       -6
+      ],
+      "size": [
+       4,
+       1.2,
+       2.2
+      ],
+      "mode": "void"
+     },
+     {
+      "id": "crenel-s6",
+      "role": "opening",
+      "shape": "box",
+      "center": [
+       6,
+       10.6,
+       -25
+      ],
+      "size": [
+       2.2,
+       1.2,
+       4
+      ],
+      "mode": "void"
+     },
+     {
+      "id": "crenel-n6",
+      "role": "opening",
+      "shape": "box",
+      "center": [
+       6,
+       10.6,
+       25
+      ],
+      "size": [
+       2.2,
+       1.2,
+       4
+      ],
+      "mode": "void"
+     },
+     {
+      "id": "crenel-e6",
+      "role": "opening",
+      "shape": "box",
+      "center": [
+       25,
+       10.6,
+       6
+      ],
+      "size": [
+       4,
+       1.2,
+       2.2
+      ],
+      "mode": "void"
+     },
+     {
+      "id": "crenel-w6",
+      "role": "opening",
+      "shape": "box",
+      "center": [
+       -25,
+       10.6,
+       6
+      ],
+      "size": [
+       4,
+       1.2,
+       2.2
+      ],
+      "mode": "void"
+     },
+     {
+      "id": "crenel-s12",
+      "role": "opening",
+      "shape": "box",
+      "center": [
+       12,
+       10.6,
+       -25
+      ],
+      "size": [
+       2.2,
+       1.2,
+       4
+      ],
+      "mode": "void"
+     },
+     {
+      "id": "crenel-n12",
+      "role": "opening",
+      "shape": "box",
+      "center": [
+       12,
+       10.6,
+       25
+      ],
+      "size": [
+       2.2,
+       1.2,
+       4
+      ],
+      "mode": "void"
+     },
+     {
+      "id": "crenel-e12",
+      "role": "opening",
+      "shape": "box",
+      "center": [
+       25,
+       10.6,
+       12
+      ],
+      "size": [
+       4,
+       1.2,
+       2.2
+      ],
+      "mode": "void"
+     },
+     {
+      "id": "crenel-w12",
+      "role": "opening",
+      "shape": "box",
+      "center": [
+       -25,
+       10.6,
+       12
+      ],
+      "size": [
+       4,
+       1.2,
+       2.2
+      ],
+      "mode": "void"
+     },
+     {
+      "id": "crenel-s18",
+      "role": "opening",
+      "shape": "box",
+      "center": [
+       18,
+       10.6,
+       -25
+      ],
+      "size": [
+       2.2,
+       1.2,
+       4
+      ],
+      "mode": "void"
+     },
+     {
+      "id": "crenel-n18",
+      "role": "opening",
+      "shape": "box",
+      "center": [
+       18,
+       10.6,
+       25
+      ],
+      "size": [
+       2.2,
+       1.2,
+       4
+      ],
+      "mode": "void"
+     },
+     {
+      "id": "crenel-e18",
+      "role": "opening",
+      "shape": "box",
+      "center": [
+       25,
+       10.6,
+       18
+      ],
+      "size": [
+       4,
+       1.2,
+       2.2
+      ],
+      "mode": "void"
+     },
+     {
+      "id": "crenel-w18",
+      "role": "opening",
+      "shape": "box",
+      "center": [
+       -25,
+       10.6,
+       18
+      ],
+      "size": [
+       4,
+       1.2,
+       2.2
+      ],
+      "mode": "void"
+     },
+     {
+      "id": "tower-sw",
+      "role": "tower",
+      "shape": "cylinder",
+      "axis": "y",
+      "center": [
+       -25,
+       8.5,
+       -25
+      ],
+      "size": [
+       9,
+       15,
+       9
+      ],
+      "colour": "light grey",
+      "attach_to": "ground"
+     },
+     {
+      "id": "tower-roof-sw",
+      "role": "roof",
+      "shape": "cone",
+      "axis": "y",
+      "top_scale": 0,
+      "center": [
+       -25,
+       19,
+       -25
+      ],
+      "size": [
+       10,
+       6,
+       10
+      ],
+      "colour": "dark grey",
+      "attach_to": "tower-sw"
+     },
+     {
+      "id": "slit-sw",
+      "role": "opening",
+      "shape": "box",
+      "center": [
+       -25,
+       9,
+       -20.5
+      ],
+      "size": [
+       0.6,
+       2,
+       2
+      ],
+      "mode": "void",
+      "importance": "detail"
+     },
+     {
+      "id": "tower-nw",
+      "role": "tower",
+      "shape": "cylinder",
+      "axis": "y",
+      "center": [
+       -25,
+       8.5,
+       25
+      ],
+      "size": [
+       9,
+       15,
+       9
+      ],
+      "colour": "light grey",
+      "attach_to": "ground"
+     },
+     {
+      "id": "tower-roof-nw",
+      "role": "roof",
+      "shape": "cone",
+      "axis": "y",
+      "top_scale": 0,
+      "center": [
+       -25,
+       19,
+       25
+      ],
+      "size": [
+       10,
+       6,
+       10
+      ],
+      "colour": "dark grey",
+      "attach_to": "tower-nw"
+     },
+     {
+      "id": "slit-nw",
+      "role": "opening",
+      "shape": "box",
+      "center": [
+       -25,
+       9,
+       20.5
+      ],
+      "size": [
+       0.6,
+       2,
+       2
+      ],
+      "mode": "void",
+      "importance": "detail"
+     },
+     {
+      "id": "tower-se",
+      "role": "tower",
+      "shape": "cylinder",
+      "axis": "y",
+      "center": [
+       25,
+       8.5,
+       -25
+      ],
+      "size": [
+       9,
+       15,
+       9
+      ],
+      "colour": "light grey",
+      "attach_to": "ground"
+     },
+     {
+      "id": "tower-roof-se",
+      "role": "roof",
+      "shape": "cone",
+      "axis": "y",
+      "top_scale": 0,
+      "center": [
+       25,
+       19,
+       -25
+      ],
+      "size": [
+       10,
+       6,
+       10
+      ],
+      "colour": "dark grey",
+      "attach_to": "tower-se"
+     },
+     {
+      "id": "slit-se",
+      "role": "opening",
+      "shape": "box",
+      "center": [
+       25,
+       9,
+       -20.5
+      ],
+      "size": [
+       0.6,
+       2,
+       2
+      ],
+      "mode": "void",
+      "importance": "detail"
+     },
+     {
+      "id": "tower-ne",
+      "role": "tower",
+      "shape": "cylinder",
+      "axis": "y",
+      "center": [
+       25,
+       8.5,
+       25
+      ],
+      "size": [
+       9,
+       15,
+       9
+      ],
+      "colour": "light grey",
+      "attach_to": "ground"
+     },
+     {
+      "id": "tower-roof-ne",
+      "role": "roof",
+      "shape": "cone",
+      "axis": "y",
+      "top_scale": 0,
+      "center": [
+       25,
+       19,
+       25
+      ],
+      "size": [
+       10,
+       6,
+       10
+      ],
+      "colour": "dark grey",
+      "attach_to": "tower-ne"
+     },
+     {
+      "id": "slit-ne",
+      "role": "opening",
+      "shape": "box",
+      "center": [
+       25,
+       9,
+       20.5
+      ],
+      "size": [
+       0.6,
+       2,
+       2
+      ],
+      "mode": "void",
+      "importance": "detail"
+     },
+     {
+      "id": "gatehouse",
+      "role": "gatehouse",
+      "shape": "box",
+      "center": [
+       0,
+       8,
+       -25
+      ],
+      "size": [
+       12,
+       14,
+       6
+      ],
+      "colour": "light grey",
+      "attach_to": "wall-south"
+     },
+     {
+      "id": "gate",
+      "role": "opening",
+      "shape": "box",
+      "center": [
+       0,
+       3,
+       -25
+      ],
+      "size": [
+       4,
+       5,
+       8
+      ],
+      "mode": "void"
+     },
+     {
+      "id": "gate-arch",
+      "role": "opening",
+      "shape": "cylinder",
+      "axis": "z",
+      "mode": "void",
+      "center": [
+       0,
+       5.5,
+       -25
+      ],
+      "size": [
+       4,
+       4,
+       8
+      ]
+     },
+     {
+      "id": "portcullis",
+      "role": "door",
+      "shape": "box",
+      "center": [
+       0,
+       3.5,
+       -27.5
+      ],
+      "size": [
+       4.2,
+       6,
+       0.6
+      ],
+      "colour": "dark grey",
+      "mode": "paint"
+     },
+     {
+      "id": "gate-crenel-1",
+      "role": "opening",
+      "shape": "box",
+      "center": [
+       -3,
+       14.6,
+       -25
+      ],
+      "size": [
+       2,
+       1.2,
+       8
+      ],
+      "mode": "void"
+     },
+     {
+      "id": "gate-crenel-2",
+      "role": "opening",
+      "shape": "box",
+      "center": [
+       3,
+       14.6,
+       -25
+      ],
+      "size": [
+       2,
+       1.2,
+       8
+      ],
+      "mode": "void"
+     },
+     {
+      "id": "drawbridge",
+      "role": "bridge",
+      "shape": "box",
+      "center": [
+       0,
+       1.2,
+       -32
+      ],
+      "size": [
+       4,
+       0.4,
+       8
+      ],
+      "colour": "reddish brown",
+      "attach_to": "ground"
+     },
+     {
+      "id": "keep",
+      "role": "keep",
+      "shape": "box",
+      "center": [
+       0,
+       11,
+       6
+      ],
+      "size": [
+       16,
+       20,
+       16
+      ],
+      "colour": "light grey",
+      "attach_to": "ground"
+     },
+     {
+      "id": "keep-walk",
+      "role": "opening",
+      "shape": "box",
+      "center": [
+       0,
+       20.6,
+       6
+      ],
+      "size": [
+       14,
+       1.2,
+       14
+      ],
+      "mode": "void"
+     },
+     {
+      "id": "keep-crenel-1",
+      "role": "opening",
+      "shape": "box",
+      "center": [
+       -4,
+       20.6,
+       -2
+      ],
+      "size": [
+       2,
+       1.2,
+       4
+      ],
+      "mode": "void"
+     },
+     {
+      "id": "keep-crenel-2",
+      "role": "opening",
+      "shape": "box",
+      "center": [
+       4,
+       20.6,
+       -2
+      ],
+      "size": [
+       2,
+       1.2,
+       4
+      ],
+      "mode": "void"
+     },
+     {
+      "id": "keep-door",
+      "role": "door",
+      "shape": "box",
+      "center": [
+       0,
+       2.5,
+       -2
+      ],
+      "size": [
+       3,
+       4,
+       0.6
+      ],
+      "colour": "reddish brown",
+      "mode": "paint"
+     },
+     {
+      "id": "keep-window-1",
+      "role": "window",
+      "shape": "box",
+      "center": [
+       -4,
+       12,
+       -2
+      ],
+      "size": [
+       1,
+       2.5,
+       0.8
+      ],
+      "mode": "void",
+      "importance": "detail"
+     },
+     {
+      "id": "keep-window-2",
+      "role": "window",
+      "shape": "box",
+      "center": [
+       4,
+       12,
+       -2
+      ],
+      "size": [
+       1,
+       2.5,
+       0.8
+      ],
+      "mode": "void",
+      "importance": "detail"
+     },
+     {
+      "id": "flagpole",
+      "role": "pole",
+      "shape": "cylinder",
+      "axis": "y",
+      "center": [
+       0,
+       23,
+       6
+      ],
+      "size": [
+       0.5,
+       5,
+       0.5
+      ],
+      "colour": "dark grey",
+      "attach_to": "keep",
+      "importance": "detail"
+     },
+     {
+      "id": "flag",
+      "role": "flag",
+      "shape": "box",
+      "center": [
+       1.8,
+       24.5,
+       6
+      ],
+      "size": [
+       3,
+       2,
+       0.3
+      ],
+      "colour": "red",
+      "attach_to": "flagpole",
+      "importance": "detail"
+     }
+    ],
+    "assumptions": [
+     "A square curtain-wall castle 50 m across with round corner towers, a gatehouse with drawbridge and a central keep, surrounded by a moat."
+    ],
+    "unsupported": [
+     "Portcullis grille",
+     "Stone texture"
+    ],
+    "description": "A medieval castle."
+   }
+  }
+ ]
+}

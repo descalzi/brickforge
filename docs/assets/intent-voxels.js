@@ -100,7 +100,7 @@ export function rasteriseIntent(intent, scale, options = {}) {
   // Allow up to one extra cell around for thin parts that round outward.
   for (const i of [0, 1, 2]) { origin[i] -= CELL[i]; n[i] += 2; }
   const [nx, ny, nz] = n, total = nx * ny * nz;
-  if (total > 400000) throw new Error(`The grid (${nx}×${ny}×${nz}) is too large; reduce the build size.`);
+  if (total > 6000000) throw new Error(`The grid (${nx}×${ny}×${nz}) is too large; reduce the build size.`);
   const index = (i, j, k) => (j * nz + k) * nx + i;
   const owner = new Int16Array(total).fill(-1);
   const reports = [];
@@ -198,38 +198,38 @@ export function rasteriseIntent(intent, scale, options = {}) {
     if (component.mode === 'solid' && exclude(component)) continue;
     sampled.set(component.id, sampleComponent(component));
   }
-  // Solids in order: later solids own shared cells.
-  order.forEach((component, ci) => {
-    if (component.mode !== 'solid' || exclude(component)) return;
-    for (const cell of sampled.get(component.id).chosen) { owner[cell] = ci; cellColour[cell] = component.colour; }
-  });
-  // Voids remove material, but never pierce a wall they do not reach through: a
-  // cell next to air or another component stays unless the void also covers it.
-  const solidBeforeVoids = owner.slice();
+  // Components apply in order: a solid adds material (later solids own shared
+  // cells); a void removes material from the solids before it, never from solids
+  // listed after it. A void never pierces a wall it does not reach through: a cell
+  // next to air or another component stays unless some void also covers that side.
   const voidFraction = new Float32Array(total);
   for (const component of order) if (component.mode === 'void') for (const [cell, f] of sampled.get(component.id).fractions) voidFraction[cell] = Math.max(voidFraction[cell], f);
-  for (const component of order) if (component.mode === 'void') for (const cell of sampled.get(component.id).chosen) {
-    if (solidBeforeVoids[cell] < 0) continue;
-    const i = cell % nx, k = Math.floor(cell / nx) % nz, j = Math.floor(cell / (nx * nz));
-    const sides = [[i - 1, j, k], [i + 1, j, k], [i, j, k - 1], [i, j, k + 1], [i, j - 1, k]];
-    const pierces = sides.some(([a, b, d]) => {
-      if (a < 0 || d < 0 || b < 0 || a >= nx || d >= nz) return true;
-      const n = index(a, b, d);
-      return (solidBeforeVoids[n] < 0 || solidBeforeVoids[n] !== solidBeforeVoids[cell]) && voidFraction[n] === 0;
-    });
-    if (pierces) continue;
-    owner[cell] = -1; cellColour[cell] = -1;
-  }
-  // Ideal material as 27 samples per cell: union of solids minus voids (excluded parts omitted).
-  const solidMask = new Uint32Array(total), voidMask = new Uint32Array(total);
-  for (const component of order) {
+  const solidMask = new Uint32Array(total);
+  order.forEach((component, ci) => {
     const s = sampled.get(component.id);
-    if (!s || component.mode === 'paint') continue;
-    const target = component.mode === 'solid' ? solidMask : voidMask;
-    for (const [cell, bits] of s.masks) target[cell] |= bits;
-  }
+    if (!s || component.mode === 'paint') return;
+    if (component.mode === 'solid') {
+      for (const cell of s.chosen) { owner[cell] = ci; cellColour[cell] = component.colour; }
+      for (const [cell, bits] of s.masks) solidMask[cell] |= bits;
+      return;
+    }
+    const before = owner.slice(), remove = [];
+    for (const cell of s.chosen) {
+      if (before[cell] < 0) continue;
+      const i = cell % nx, k = Math.floor(cell / nx) % nz, j = Math.floor(cell / (nx * nz));
+      const sides = [[i - 1, j, k], [i + 1, j, k], [i, j, k - 1], [i, j, k + 1], [i, j - 1, k]];
+      const pierces = sides.some(([a, b, d]) => {
+        if (a < 0 || d < 0 || b < 0 || a >= nx || d >= nz) return true;
+        const n = index(a, b, d);
+        return (before[n] < 0 || before[n] !== before[cell]) && voidFraction[n] === 0;
+      });
+      if (!pierces) remove.push(cell);
+    }
+    for (const cell of remove) { owner[cell] = -1; cellColour[cell] = -1; }
+    for (const [cell, bits] of s.masks) solidMask[cell] &= ~bits;
+  });
   const idealFraction = new Float32Array(total);
-  for (let c = 0; c < total; c++) if (solidMask[c]) { let b = solidMask[c] & ~voidMask[c], n = 0; while (b) { b &= b - 1; n++; } idealFraction[c] = n / 27; }
+  for (let c = 0; c < total; c++) if (solidMask[c]) { let b = solidMask[c], n = 0; while (b) { b &= b - 1; n++; } idealFraction[c] = n / 27; }
   const filled = cell => owner[cell] >= 0;
   const neighbours = cell => {
     const i = cell % nx, k = Math.floor(cell / nx) % nz, j = Math.floor(cell / (nx * nz)), out = [];
