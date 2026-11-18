@@ -1,9 +1,9 @@
-import { instructionJointNote } from "./assembly-instructions.js?v=76b0ed28438a";
-import {rasterizeInstructionFaces} from './instruction-rasterizer.js?v=76b0ed28438a';
+import { instructionJointNote } from "./assembly-instructions.js?v=fab991c95518";
+import {rasterizeInstructionFaces} from './instruction-rasterizer.js?v=fab991c95518';
 // Browser-native illustrated hybrid booklet. Diagrams and inventory share the canonical plan.
-import { transformVector } from './specialist-placement.js?v=76b0ed28438a';
-const palette=new Map([[0,'#26343b'],[1,'#1e5aa8'],[2,'#00852b'],[4,'#b40000'],[7,'#8a928d'],[14,'#f2cd37'],[15,'#eeeeee'],[19,'#e4cd9e'],[25,'#d66b24']]);
-const colourNames=new Map([[0,'Black'],[1,'Blue'],[2,'Green'],[4,'Red'],[7,'Grey'],[14,'Yellow'],[15,'White'],[19,'Tan'],[25,'Orange']]);
+import { transformVector } from './specialist-placement.js?v=fab991c95518';
+import { BRICK_COLOURS, colourHex as palette } from './brick-colours.js?v=fab991c95518';
+const colourNames=new Map(BRICK_COLOURS.map(c=>[c.code,c.name.replace(/\b\w/g,l=>l.toUpperCase())]));
 const clean=s=>String(s).normalize('NFKD').replace(/[^\x20-\x7e]/g,' ').replace(/[\\()]/g,'\\$&');
 const n=v=>Number(v.toFixed(3));
 const rgb=hex=>hex.slice(1).match(/../g).map(v=>parseInt(v,16)/255);
@@ -92,7 +92,7 @@ async function documentBytes(streams,font,images){
 }
 export async function createInstructionPdf(plan,catalogue,spec={},onPage=()=>{}){
  if(plan.status!=='planned')throw new Error('A planned assembly is required for instruction export.');
- if(plan.parts.length>120)throw new Error('PDF diagrams are limited to 120 parts. Use the full assembly report and LDraw STEP export for larger plans.');
+ if(plan.parts.length>800||(plan.instructions?.steps?.length||0)>200)throw new Error('PDF diagrams are limited to 800 parts in 200 steps. Use the full assembly report and LDraw STEP export for larger plans.');
  const steps=plan.instructions?.steps;if(!steps?.length)throw new Error('No canonical assembly sequence is available.');
  const profiles=new Map(catalogue.profiles.map(p=>[p.part_id,p]));
  const sideStep=steps.find(s=>s.approach_direction&&Math.abs(s.approach_direction[1])<1e-6&&s.parts.some(id=>{const part=plan.parts.find(p=>p.instance_id===id);return profiles.get(part.part_id).features.some(f=>f.kind==='stud_receiver');})),overviewYaw=instructionViewYaw(sideStep?.approach_direction),faces=sceneFaces(plan,profiles,overviewYaw),bounds=diagramBounds(faces),all=new Set(plan.parts.map(p=>p.instance_id)),streams=[],title=spec.name||plan.design_id,items=plan.bom.items||plan.bom;

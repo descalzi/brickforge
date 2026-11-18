@@ -1,9 +1,27 @@
 # BrickForge roadmap
 
-The goal is **description → object specification → real-element assembly → instructions**.
+The goal is **description → object intent → real-element assembly → instructions**.
 Browser JavaScript is the production construction engine. Geometry import is an
 optional reference tool. The old mesh-first programme is retained in the
 [research archive](roadmap-mesh-archive.md); it does not define product priorities.
+
+## Direction (November 2026)
+
+The main pipeline is now **description → object intent v2 → massing + detailing →
+instructions** ([ADR 0003](decisions/0003-intent-v2-massing-and-detailing.md)). The
+interpreter describes appearance at real size; the engine owns scale and parts and
+always returns its best model with a deviation report. The exact v1 brief engine
+below remains as the Brief workbench and its benchmark.
+
+### Intent engine status
+
+| Area | Done | Next |
+| --- | --- | --- |
+| Interpretation | v2 schema and instructions; copy-prompt, on-device and gateway routes; 24 frozen unseen descriptions | Run a real model (not a stand-in) over the case set and new cases; compare models; measure intent errors |
+| Massing | Scale choice, primitives with rotation, thin-part preservation, voids that do not pierce walls, paint, hollowing, course-aligned interlocking tiling with connectivity repair | Phase search for better grid alignment; smarter part choice (fewer 1x1s); stability-aware tiling (support under overhangs) |
+| Detailing | 45°/33° slopes for roofs and wedges; real wheel assemblies with wheel wells; tiles for smooth tops; colour joints across boundaries | Inverted and curved slopes on spheres/cones, double slopes at ridges, larger wheels, windows/doors as real elements, SNOT for side details |
+| Validation | Nominal connection graph, body envelopes, support proxy, evaluation in CI, real-geometry LDraw renders | Force-based stability, colour availability per element, physical build trials |
+| Instructions | Grouped steps (one layer, up to 8 parts), PDF booklet up to 800 parts | Sub-assemblies, callouts, better step views for large models |
 
 ## Capability milestones
 

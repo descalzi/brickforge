@@ -1,0 +1,18 @@
+/* Describe & build studio: extends the design studio layout. */
+.design-panel .spaced{margin-top:16px}
+#description-input,#interpretation-endpoint{width:100%;padding:9px;border:1px solid #cad6df;border-radius:5px;font:12px/1.5 inherit;margin-bottom:12px;resize:vertical}
+#intent-details{margin:16px 0 4px}
+#intent-details summary span{color:#7a8a96;font:10px monospace;margin-left:6px}
+#intent-input{display:block;width:100%;min-height:260px;margin:12px 0 10px;padding:12px;resize:vertical;background:#f7f9fb;border:1px solid #d3dfe7;border-radius:6px;font:11px/1.6 monospace;tab-size:2}
+#build-size{margin-bottom:16px}
+.report-table{width:100%;border-collapse:collapse;font-size:12px;margin:6px 0 16px}
+.report-table th{text-align:left;font-weight:600;color:#536573;border-bottom:1px solid #dce3e8;padding:6px 4px}
+.report-table td{border-bottom:1px solid #eef2f5;padding:6px 4px;vertical-align:top}
+.status-pill{display:inline-block;font:10px/1.4 monospace;padding:2px 6px;border-radius:10px;background:#e8f4ef;color:#13795b}
+.status-pill[data-state="thickened"],.status-pill[data-state="stepped"]{background:#fff4e0;color:#9a6200}
+.status-pill[data-state="lost"]{background:#fde8ea;color:#c22b35}
+.status-pill[data-state="real_wheel_assembly"],.status-pill[data-state="slope_elements"]{background:#e7f0fb;color:#1e5aa8}
+.fidelity-bar{height:6px;border-radius:3px;background:#e1e9ed;overflow:hidden;margin-top:6px}
+.fidelity-bar span{display:block;height:100%;background:#c73e0a}
+.file-label input{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden}
+.file-label{position:relative}

@@ -1,9 +1,9 @@
-import {pruneUnsupportedPrismFaces} from './prism-face-pruning.js?v=76b0ed28438a';
-import {orientationMatches} from './part-orientation.js?v=76b0ed28438a';
-import {transformVector} from './specialist-placement.js?v=76b0ed28438a';
-import {translateComponentRequirements} from './design-translation.js?v=76b0ed28438a';
-import {discoverPartCandidates} from './part-catalogue.js?v=76b0ed28438a';
-import {convexHull,polygonArea,pointInPolygon,clipConvex,triangulatePolygon} from './polygon-geometry.js?v=76b0ed28438a';
+import {pruneUnsupportedPrismFaces} from './prism-face-pruning.js?v=fab991c95518';
+import {orientationMatches} from './part-orientation.js?v=fab991c95518';
+import {transformVector} from './specialist-placement.js?v=fab991c95518';
+import {translateComponentRequirements} from './design-translation.js?v=fab991c95518';
+import {discoverPartCandidates} from './part-catalogue.js?v=fab991c95518';
+import {convexHull,polygonArea,pointInPolygon,clipConvex,triangulatePolygon} from './polygon-geometry.js?v=fab991c95518';
 const EPS=1e-6,yaws=[[1,0,0,0,1,0,0,0,1],[0,0,1,0,1,0,-1,0,0],[-1,0,0,0,1,0,0,0,-1],[0,0,-1,0,1,0,1,0,0]];
 const unique=values=>[...new Set(values.map(v=>+v.toFixed(7)))].sort((a,b)=>a-b);
 const rect=(x0,y0,x1,y1)=>[[x0,y0],[x1,y0],[x1,y1],[x0,y1]];
