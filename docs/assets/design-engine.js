@@ -1,19 +1,19 @@
-import {sampleInterlockingFootprints} from './construction-engine.js?v=76b0ed28438a';
-import {chassisInserts} from './wheel-mount-layout.js?v=76b0ed28438a';
-import {rectangularDimensionVariants} from './dimension-variants.js?v=76b0ed28438a';
-import {combineCourseTilings} from './course-beam-search.js?v=76b0ed28438a';
-import {roundedShapeOccupancy} from './rounded-shape.js?v=76b0ed28438a';
-import {composeExtrudedProfile} from './profile-composition.js?v=76b0ed28438a';
-import { evaluateDesignRelationships as evaluateRelationships } from "./design-relations.js?v=76b0ed28438a";
-import { featureCompatibility, axesCompatible } from "./connection-types.js?v=76b0ed28438a";
-import { fitAttachmentPoses } from "./attachment-fitting.js?v=76b0ed28438a";
-import { assertValidDesignSpec } from "./design-spec.js?v=76b0ed28438a";
-import { discoverPartCandidates, validatePartCapabilityCatalogue } from "./part-catalogue.js?v=76b0ed28438a";
-import { translateComponentRequirements } from "./design-translation.js?v=76b0ed28438a";
-import { planTechnicBeamJoint } from "./technic-planner.js?v=76b0ed28438a";
-import { specialistComponentCandidates } from "./specialist-placement.js?v=76b0ed28438a";
-import { partBodyBounds, analyzeAssembly,findBodyCollisions } from "./assembly-analysis.js?v=76b0ed28438a";
-import { createAssemblyInstructions } from "./assembly-instructions.js?v=76b0ed28438a";
+import {sampleInterlockingFootprints} from './construction-engine.js?v=fab991c95518';
+import {chassisInserts} from './wheel-mount-layout.js?v=fab991c95518';
+import {rectangularDimensionVariants} from './dimension-variants.js?v=fab991c95518';
+import {combineCourseTilings} from './course-beam-search.js?v=fab991c95518';
+import {roundedShapeOccupancy} from './rounded-shape.js?v=fab991c95518';
+import {composeExtrudedProfile} from './profile-composition.js?v=fab991c95518';
+import { evaluateDesignRelationships as evaluateRelationships } from "./design-relations.js?v=fab991c95518";
+import { featureCompatibility, axesCompatible } from "./connection-types.js?v=fab991c95518";
+import { fitAttachmentPoses } from "./attachment-fitting.js?v=fab991c95518";
+import { assertValidDesignSpec } from "./design-spec.js?v=fab991c95518";
+import { discoverPartCandidates, validatePartCapabilityCatalogue } from "./part-catalogue.js?v=fab991c95518";
+import { translateComponentRequirements } from "./design-translation.js?v=fab991c95518";
+import { planTechnicBeamJoint } from "./technic-planner.js?v=fab991c95518";
+import { specialistComponentCandidates } from "./specialist-placement.js?v=fab991c95518";
+import { partBodyBounds, analyzeAssembly,findBodyCollisions } from "./assembly-analysis.js?v=fab991c95518";
+import { createAssemblyInstructions } from "./assembly-instructions.js?v=fab991c95518";
 
 const LDU_TO_MM = 0.4;
 const STUD_PITCH_MM = 8;
@@ -117,7 +117,7 @@ function matingPairs(profileA, a, profileB, b, tolerance=0.25, worldA, worldB) {
   return matches;
 }
 
-function connectionEdges(parts, profileMap, split = null) {
+export function connectionEdges(parts, profileMap, split = null) {
   const connections=[];
   const world=parts.map(part=>profileMap.get(part.part_id).features.map(feature=>({...feature,position:point(part,feature.position_ldu),direction:transform(part.matrix,feature.axis)})));
   const bounds=world.map(features=>({min:[0,1,2].map(axis=>Math.min(...features.map(f=>f.position[axis]))),max:[0,1,2].map(axis=>Math.max(...features.map(f=>f.position[axis])))}));
