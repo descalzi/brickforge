@@ -3,9 +3,9 @@
 // Produces the same records as analyzeAssembly and createAssemblyInstructions,
 // but tests each part only against nearby parts, so models of thousands of parts
 // stay interactive. Sweeps and support guidance use the same nominal evidence.
-import {partBodyBounds, createSupportTracker, clearApproach} from './assembly-analysis.js?v=9b8d8e12b3f3';
-import {nominalBodiesIntersect} from './nominal-collision.js?v=9b8d8e12b3f3';
-import {transformVector} from './connection-graph.js?v=9b8d8e12b3f3';
+import {partBodyBounds, createSupportTracker, clearApproach} from './assembly-analysis.js?v=059b51e9d8f0';
+import {nominalBodiesIntersect} from './nominal-collision.js?v=059b51e9d8f0';
+import {transformVector} from './connection-graph.js?v=059b51e9d8f0';
 
 const BUCKET = 16;
 
@@ -31,7 +31,8 @@ export function boundsIndex(items) {
 
 export function analyzeLargeAssembly(parts, connections, profiles) {
   const bounds = parts.map(p => partBodyBounds(p, profiles.get(p.part_id))), index = boundsIndex(bounds);
-  const coupled = new Set(connections.filter(e => e.mating_pairs?.some(p => p.connection_type === 'rim_tyre_seat')).map(e => [e.instance_a, e.instance_b].sort().join('|')));
+  // Seated pairs whose envelopes overlap by design: tyres on rims, clips on bars.
+  const coupled = new Set(connections.filter(e => e.kind === 'clip_on_bar' || e.mating_pairs?.some(p => p.connection_type === 'rim_tyre_seat')).map(e => [e.instance_a, e.instance_b].sort().join('|')));
   const collisions = [];
   bounds.forEach((b, i) => {
     for (const j of index.query(b.min, b.max)) {

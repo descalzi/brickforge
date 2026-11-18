@@ -1,6 +1,6 @@
 // Nominal connection graph: which placed parts mate, stud to receiver (and the
 // wheel and tyre seats), within 0.25 LDU and with opposing axes.
-import {featureCompatibility, axesCompatible} from './connection-types.js?v=9b8d8e12b3f3';
+import {featureCompatibility, axesCompatible} from './connection-types.js?v=059b51e9d8f0';
 
 const compare = (a,b) => a < b ? -1 : a > b ? 1 : 0;
 export const transformVector = (m,p) => [0,1,2].map(i=>m[i*3]*p[0]+m[i*3+1]*p[1]+m[i*3+2]*p[2]);

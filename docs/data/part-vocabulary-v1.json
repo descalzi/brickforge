@@ -1,6 +1,6 @@
 {
  "schema_version": 1,
- "purpose": "Curated specialised parts used by detailing: surface smoothing, round parts, role recipes and side details.",
+ "purpose": "Curated specialised parts used by detailing: surface smoothing (slopes, curves, wedge and round-corner plates), round parts, role recipes, side-stud bricks for studs-out panels and side details.",
  "parts": [
   {
    "part_id": "3040b",
@@ -303,6 +303,105 @@
    "family": "bracket",
    "roles": [
     "bracket_down"
+   ]
+  },
+  {
+   "part_id": "26601",
+   "family": "wedge_plate"
+  },
+  {
+   "part_id": "2450",
+   "family": "wedge_plate"
+  },
+  {
+   "part_id": "41769a",
+   "family": "wedge_plate"
+  },
+  {
+   "part_id": "41770a",
+   "family": "wedge_plate"
+  },
+  {
+   "part_id": "43722a",
+   "family": "wedge_plate"
+  },
+  {
+   "part_id": "43723a",
+   "family": "wedge_plate"
+  },
+  {
+   "part_id": "51739",
+   "family": "wedge_plate"
+  },
+  {
+   "part_id": "24299",
+   "family": "wedge_plate"
+  },
+  {
+   "part_id": "24307",
+   "family": "wedge_plate"
+  },
+  {
+   "part_id": "2419",
+   "family": "wedge_plate"
+  },
+  {
+   "part_id": "79491",
+   "family": "round_corner"
+  },
+  {
+   "part_id": "30357",
+   "family": "round_corner"
+  },
+  {
+   "part_id": "30565",
+   "family": "round_corner"
+  },
+  {
+   "part_id": "27925",
+   "family": "round_corner"
+  },
+  {
+   "part_id": "25269",
+   "family": "round_corner"
+  },
+  {
+   "part_id": "2577",
+   "family": "round_corner"
+  },
+  {
+   "part_id": "87087",
+   "family": "snot",
+   "roles": [
+    "side_studs"
+   ]
+  },
+  {
+   "part_id": "11211",
+   "family": "snot",
+   "roles": [
+    "side_studs"
+   ]
+  },
+  {
+   "part_id": "30414",
+   "family": "snot",
+   "roles": [
+    "side_studs"
+   ]
+  },
+  {
+   "part_id": "48336",
+   "family": "hinge",
+   "roles": [
+    "bar_plate"
+   ]
+  },
+  {
+   "part_id": "60470b",
+   "family": "hinge",
+   "roles": [
+    "clip_plate"
    ]
   }
  ]

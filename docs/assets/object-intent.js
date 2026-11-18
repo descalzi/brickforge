@@ -3,7 +3,7 @@
 // The interpreter describes what the object looks like at its real-world size,
 // using a few overlapping primitives. It never chooses scale, parts, studs or
 // placements; the engine owns quantisation and construction.
-import {BRICK_COLOURS, closestColour, resolveColour} from './brick-colours.js?v=9b8d8e12b3f3';
+import {BRICK_COLOURS, closestColour, resolveColour} from './brick-colours.js?v=059b51e9d8f0';
 
 export const INTENT_SCHEMA_ID = 'brickforge.object-intent/2';
 export const SHAPES = Object.freeze(['box', 'cylinder', 'cone', 'sphere', 'dome', 'wedge', 'roof', 'tube']);
@@ -181,6 +181,26 @@ export function assertValidIntent(input) {
 }
 
 /** Provider-neutral request: what a language model gateway receives. */
+export const REVIEW_INSTRUCTIONS = `You are reviewing a brick model that a building engine made from an object intent you (or another model) wrote. Compare the model with the description: look at the attached images (front, side and three-quarter views) when you have them, and at the build report.
+
+Find the three to five biggest visual differences from the real object: wrong proportions, missing or misplaced features, parts that came out too thin to build, colours, the overall silhouette. Then return ONE revised object intent (same schema) that fixes them. Keep everything that already looks right; change sizes, positions, shapes or add and remove components only where it helps. Remember the engine's limits from the report: features smaller than about one stud at the chosen size become surface paint or disappear, so make small features a little larger, merge tiny details, or leave them out.
+
+Answer with the JSON object only. Put your list of differences in its "assumptions" array, each starting with "Review:".`;
+
+/** A review request: the description, the current intent, a short build report and
+ *  optionally a PNG of three views (base64, no data: prefix). */
+export function buildReviewRequest(description, intent, report, responseSchema, image = null) {
+  if (typeof description !== 'string' || !description.trim()) throw new Error('The description is needed for a review.');
+  if (!intent || typeof intent !== 'object') throw new Error('Build a model first.');
+  return {schema_version: 2, kind: 'review', input: description.trim(), current_intent: intent, build_report: report, instructions: REVIEW_INSTRUCTIONS, response_schema: responseSchema,
+    ...(image ? {image: {media_type: 'image/png', data_base64: image}} : {})};
+}
+
+/** The review as one text prompt (for pasting into a chat assistant with the image). */
+export function reviewPromptText(description, intent, report) {
+  return `${REVIEW_INSTRUCTIONS}\n\nDescription:\n${description.trim()}\n\nBuild report:\n${JSON.stringify(report, null, 2)}\n\nCurrent object intent:\n${JSON.stringify(intent, null, 2)}`;
+}
+
 export function buildIntentRequest(description, responseSchema) {
   if (typeof description !== 'string' || !description.trim() || description.length > 12000) throw new Error('Enter a description of up to 12,000 characters.');
   if (!responseSchema || typeof responseSchema !== 'object') throw new Error('The object intent schema is required.');

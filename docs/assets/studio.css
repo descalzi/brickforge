@@ -16,3 +16,6 @@
 .fidelity-bar span{display:block;height:100%;background:#c73e0a}
 .file-label input{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden}
 .file-label{position:relative}
+
+.review-block{margin:14px 0;padding:12px 14px;border:1px solid var(--line,#d7e0e4);border-radius:8px;background:var(--paper,#f4f7f9)}
+.review-block h3{margin:0 0 6px;font-size:14px}

@@ -44,6 +44,25 @@ try {
   const [pdf] = await Promise.all([page.waitForEvent('download', {timeout: 120000}), page.locator('#download-pdf').click()]);
   const bytes = Buffer.concat(await (await pdf.createReadStream()).toArray());
   assert.equal(bytes.subarray(0, 5).toString(), '%PDF-');
+  // Review and refine through a gateway: it receives the intent, the report and three
+  // rendered views, and its revised intent is built.
+  const current = JSON.parse(await page.locator('#intent-input').inputValue());
+  let received = null;
+  await page.route('**/review-gateway', async route => {
+    received = JSON.parse(route.request().postData());
+    await route.fulfill({json: {...current, assumptions: [...(current.assumptions || []), 'Review: chimney a little taller.']}});
+  });
+  await page.locator('#interpretation-provider').selectOption('gateway');
+  await page.locator('#interpretation-endpoint').fill('http://127.0.0.1:4176/review-gateway');
+  await page.locator('#review').click();
+  await page.waitForFunction(() => /Revised intent received|invalid|error/i.test(document.querySelector('#review-status').textContent), null, {timeout: 30000});
+  assert.match(await page.locator('#review-status').innerText(), /Review: chimney a little taller\./);
+  assert.equal(received.kind, 'review');
+  assert.equal(received.current_intent.name, current.name);
+  assert.ok(received.build_report.parts > 50);
+  if (await page.locator('#studio-viewport canvas').count()) assert.ok(received.image?.data_base64?.length > 1000, 'views image sent');
+  await page.waitForFunction(() => document.querySelector('#engine-status')?.dataset.state === 'planned', null, {timeout: 60000});
+  await page.locator('#interpretation-provider').selectOption('copy');
   // The copy-prompt route needs no provider.
   await page.context().grantPermissions(['clipboard-read', 'clipboard-write']).catch(() => {});
   await page.locator('#interpret').click();

@@ -11,7 +11,11 @@ function localShape(profile){if(localCache.has(profile))return localCache.get(pr
 }
 function shape(part,profile){const signature=part.matrix.join(',')+':'+part.translation_ldu.join(',');if(worldCache.get(part)?.profile===profile&&worldCache.get(part)?.signature===signature)return worldCache.get(part).value;const local=localShape(profile),transform=p=>[0,1,2].map(i=>(part.matrix[i*3]*p[0]+part.matrix[i*3+1]*p[1]+part.matrix[i*3+2]*p[2])*(i===0?1:-1));const world=l=>{const vertices=l.vertices.map(p=>transform(p).map((v,i)=>v+part.translation_ldu[i]*.4*(i===0?1:-1)));return {vertices,exact:l.exact,normals:l.normals.map(transform),edges:l.edges.map(transform),children:l.children?.map(world),min:[0,1,2].map(i=>Math.min(...vertices.map(p=>p[i]))),max:[0,1,2].map(i=>Math.max(...vertices.map(p=>p[i])))};};const value=world(local);worldCache.set(part,{profile,signature,value});return value;}
 const boundsOverlap=(a,b)=>[0,1,2].every(i=>Math.min(a.max[i],b.max[i])-Math.max(a.min[i],b.min[i])>1e-5);
-function intersect(a,b){if(!boundsOverlap(a,b))return false;if(a.children||b.children)return (a.children||[a]).some(x=>(b.children||[b]).some(y=>intersect(x,y)));if(!a.exact||!b.exact)return true;const axes=uniqueAxes([...a.normals,...b.normals,...a.edges.flatMap(e=>b.edges.map(f=>cross(e,f)))]);for(const axis of axes){const x=a.vertices.map(p=>dot(axis,p)),y=b.vertices.map(p=>dot(axis,p));if(Math.min(Math.max(...x),Math.max(...y))-Math.max(Math.min(...x),Math.min(...y))<=1e-5)return false;}return true;}
+// Axis-aligned boxes (box children, or hulls whose faces are all axis-aligned, placed
+// with right-angle rotations) overlap exactly when their bounds do.
+const axisAligned=v=>v.every(n=>n.filter(x=>Math.abs(x)>1e-9).length===1);
+function intersect(a,b){if(!boundsOverlap(a,b))return false;if(a.children||b.children)return (a.children||[a]).some(x=>(b.children||[b]).some(y=>intersect(x,y)));if(!a.exact||!b.exact)return true;
+ if(a.aligned===undefined)a.aligned=a.normals.length>0&&axisAligned(a.normals);if(b.aligned===undefined)b.aligned=b.normals.length>0&&axisAligned(b.normals);if(a.aligned&&b.aligned)return true;const axes=uniqueAxes([...a.normals,...b.normals,...a.edges.flatMap(e=>b.edges.map(f=>cross(e,f)))]);for(const axis of axes){const x=a.vertices.map(p=>dot(axis,p)),y=b.vertices.map(p=>dot(axis,p));if(Math.min(Math.max(...x),Math.max(...y))-Math.max(Math.min(...x),Math.min(...y))<=1e-5)return false;}return true;}
 export const nominalBodiesIntersect=(a,ap,b,bp)=>intersect(shape(a,ap),shape(b,bp));
 export function nominalBodyIntersectsBox(part,profile,box){return intersect(shape(part,profile),{...box,vertices:boxVertices(box.min,box.max),exact:true,normals:[[1,0,0],[0,1,0],[0,0,1]],edges:[[1,0,0],[0,1,0],[0,0,1]]});}
 
@@ -21,6 +25,14 @@ export function nominalBodyIntersectsBox(part,profile,box){return intersect(shap
  * excluded, so a clear result is not a physical insertion certificate. */
 export function nominalBodySweepIntersects(a,ap,direction,distance,b,bp){
  if(!Array.isArray(direction)||direction.length!==3||!direction.every(Number.isFinite)||Math.abs(Math.hypot(...direction)-1)>1e-6||!Number.isFinite(distance)||distance<0)throw new TypeError('A unit direction and non-negative finite sweep distance are required.');
- const delta=direction.map(v=>v*distance),sweep=s=>{const vertices=[...s.vertices,...s.vertices.map(p=>p.map((v,i)=>v+delta[i]))];return {vertices,exact:s.exact,children:s.children?.map(sweep),normals:uniqueAxes([...s.normals,...s.edges.map(e=>cross(e,direction))]),edges:uniqueAxes([...s.edges,direction]),min:s.min.map((v,i)=>v+Math.min(0,delta[i])),max:s.max.map((v,i)=>v+Math.max(0,delta[i]))};};
- return intersect(sweep(shape(a,ap)),shape(b,bp));
+ const delta=direction.map(v=>v*distance),target=shape(b,bp),source=shape(a,ap);
+ // Cheap rejection on the swept bounds before building any separating axes.
+ if(!boundsOverlap({min:source.min.map((v,i)=>v+Math.min(0,delta[i])),max:source.max.map((v,i)=>v+Math.max(0,delta[i]))},target))return false;
+ // An axis-aligned box swept along an axis stays an axis-aligned box.
+ const alongAxis=direction.filter(v=>Math.abs(v)>1e-9).length===1;
+ const sweep=s=>{const vertices=[...s.vertices,...s.vertices.map(p=>p.map((v,i)=>v+delta[i]))],min=s.min.map((v,i)=>v+Math.min(0,delta[i])),max=s.max.map((v,i)=>v+Math.max(0,delta[i]));
+  if(s.children)return {vertices,exact:s.exact,children:s.children.map(sweep),normals:[],edges:[],min,max};
+  if(alongAxis&&s.exact&&s.normals.length&&axisAligned(s.normals))return {vertices,exact:true,normals:s.normals,edges:s.edges,aligned:true,min,max};
+  return {vertices,exact:s.exact,normals:uniqueAxes([...s.normals,...s.edges.map(e=>cross(e,direction))]),edges:uniqueAxes([...s.edges,direction]),min,max};};
+ return intersect(sweep(source),target);
 }

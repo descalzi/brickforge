@@ -16,7 +16,7 @@
   }
  },
  "limitations": [
-  "Only radius-6 stud and anti-stud connections join parts in the engine; bars, clips, pins and hinges are listed as other connectors with their datums and used only by fixed recipes (window glass, doors).",
+  "Only radius-6 stud and anti-stud connections join parts in the engine; bars, clips, pins and hinges are listed as other connectors (centre datum, axis, length) and used only by fixed recipes (window glass, doors, clip-hinged modules).",
   "Bodies are convex hulls of each part without its studs; concave details are filled. Collision checks use the bounding box.",
   "Nominal datums do not prove clutch force or stability."
  ],
@@ -5090,14 +5090,15 @@
      "type": "F-R4",
      "position_ldu": [
       0,
-      -4,
+      -2,
       0
      ],
      "axis": [
       0,
       1,
       0
-     ]
+     ],
+     "length_ldu": 4
     }
    ],
    "body_vertices_mm": [
@@ -6859,14 +6860,15 @@
      "type": "M-R4",
      "position_ldu": [
       0,
-      0,
+      -2.5,
       0
      ],
      "axis": [
       0,
       -1,
       0
-     ]
+     ],
+     "length_ldu": 5
     }
    ],
    "body_vertices_mm": [
@@ -8136,14 +8138,15 @@
      "type": "M-R4",
      "position_ldu": [
       0,
-      -12,
+      -10,
       10
      ],
      "axis": [
       0,
       1,
       0
-     ]
+     ],
+     "length_ldu": 4
     }
    ],
    "body_vertices_mm": [
@@ -9381,14 +9384,15 @@
      "type": "M-R4",
      "position_ldu": [
       0,
-      4,
+      6,
       30
      ],
      "axis": [
       0,
       1,
       0
-     ]
+     ],
+     "length_ldu": 4
     }
    ],
    "body_vertices_mm": [
@@ -10392,14 +10396,15 @@
      "type": "F-R4",
      "position_ldu": [
       0,
-      0,
+      -2,
       -20
      ],
      "axis": [
       0,
       -1,
       0
-     ]
+     ],
+     "length_ldu": 4
     }
    ],
    "body_vertices_mm": [
@@ -11891,27 +11896,29 @@
      "type": "F-R4",
      "position_ldu": [
       0,
-      -4,
+      -2,
       0
      ],
      "axis": [
       0,
       1,
       0
-     ]
+     ],
+     "length_ldu": 4
     },
     {
      "type": "F-R4",
      "position_ldu": [
       0,
-      -4,
+      -2,
       -20
      ],
      "axis": [
       0,
       1,
       0
-     ]
+     ],
+     "length_ldu": 4
     }
    ],
    "body_vertices_mm": [
@@ -13037,7 +13044,7 @@
      "min": [
       -4,
       0,
-      -28.001
+      -28
      ],
      "max": [
       4,
@@ -13208,14 +13215,15 @@
      "type": "M-R4",
      "position_ldu": [
       0,
-      4,
+      13.8,
       0
      ],
      "axis": [
       0,
       4.9,
       0
-     ]
+     ],
+     "length_ldu": 4
     }
    ],
    "body_vertices_mm": [
@@ -13531,14 +13539,15 @@
      "type": "M-R10",
      "position_ldu": [
       0,
-      0,
+      4,
       0
      ],
      "axis": [
       0,
       1,
       0
-     ]
+     ],
+     "length_ldu": 8
     }
    ],
    "body_vertices_mm": [
@@ -14161,7 +14170,8 @@
       0,
       -1,
       0
-     ]
+     ],
+     "length_ldu": 5
     }
    ],
    "body_vertices_mm": [
@@ -15520,27 +15530,29 @@
      "type": "F-S16",
      "position_ldu": [
       0,
-      8,
+      6,
       0
      ],
      "axis": [
       0,
       -1,
       0
-     ]
+     ],
+     "length_ldu": 4
     },
     {
      "type": "F-A6",
      "position_ldu": [
       0,
-      4,
+      2,
       0
      ],
      "axis": [
       0,
       -4,
       0
-     ]
+     ],
+     "length_ldu": 1
     }
    ],
    "body_vertices_mm": [
@@ -16162,14 +16174,15 @@
      "type": "F-R16",
      "position_ldu": [
       0,
-      8,
+      6,
       0
      ],
      "axis": [
       0,
       -1,
       0
-     ]
+     ],
+     "length_ldu": 4
     }
    ],
    "body_vertices_mm": [
@@ -17210,14 +17223,15 @@
      "type": "F-R16",
      "position_ldu": [
       0,
-      24,
+      14,
       0
      ],
      "axis": [
       0,
       -1,
       0
-     ]
+     ],
+     "length_ldu": 20
     }
    ],
    "body_vertices_mm": [
@@ -19515,14 +19529,15 @@
      "type": "M-R8",
      "position_ldu": [
       0,
-      19,
+      21.5,
       0
      ],
      "axis": [
       0,
       1,
       0
-     ]
+     ],
+     "length_ldu": 5
     }
    ],
    "body_vertices_mm": [
@@ -20175,14 +20190,15 @@
      "type": "F-S16",
      "position_ldu": [
       0,
-      48,
+      46,
       0
      ],
      "axis": [
       0,
       -1,
       0
-     ]
+     ],
+     "length_ldu": 4
     }
    ],
    "body_vertices_mm": [
@@ -21120,14 +21136,15 @@
      "type": "F-R4",
      "position_ldu": [
       0,
-      -4,
+      -2,
       0
      ],
      "axis": [
       0,
       1,
       0
-     ]
+     ],
+     "length_ldu": 4
     }
    ],
    "body_vertices_mm": [
@@ -23928,66 +23945,71 @@
      "type": "F-R4",
      "position_ldu": [
       -10,
-      -4,
+      0,
       10
      ],
      "axis": [
       0,
       1,
       0
-     ]
+     ],
+     "length_ldu": 8
     },
     {
      "type": "F-R4",
      "position_ldu": [
       -10,
-      -4,
+      0,
       -10
      ],
      "axis": [
       0,
       1,
       0
-     ]
+     ],
+     "length_ldu": 8
     },
     {
      "type": "F-R4",
      "position_ldu": [
       10,
-      -4,
+      0,
       10
      ],
      "axis": [
       0,
       1,
       0
-     ]
+     ],
+     "length_ldu": 8
     },
     {
      "type": "F-R4",
      "position_ldu": [
       10,
-      -4,
+      0,
       -10
      ],
      "axis": [
       0,
       1,
       0
-     ]
+     ],
+     "length_ldu": 8
     },
     {
      "type": "M-R8",
      "position_ldu": [
       0,
-      43,
+      45.5,
       0
      ],
      "axis": [
       0,
       1,
       0
-     ]
+     ],
+     "length_ldu": 5
     }
    ],
    "body_vertices_mm": [
@@ -24896,14 +24918,15 @@
      "type": "M-R20",
      "position_ldu": [
       0,
-      6,
+      7,
       0
      ],
      "axis": [
       0,
       1,
       0
-     ]
+     ],
+     "length_ldu": 2
     }
    ],
    "body_vertices_mm": [
@@ -32134,27 +32157,29 @@
      "type": "F-R4",
      "position_ldu": [
       -10,
-      -4,
+      -2,
       0
      ],
      "axis": [
       0,
       1,
       0
-     ]
+     ],
+     "length_ldu": 4
     },
     {
      "type": "F-R4",
      "position_ldu": [
       10,
-      -4,
+      -2,
       0
      ],
      "axis": [
       0,
       1,
       0
-     ]
+     ],
+     "length_ldu": 4
     }
    ],
    "body_vertices_mm": [
@@ -32744,27 +32769,29 @@
      "type": "F-R4",
      "position_ldu": [
       -10,
-      -4,
+      -2,
       0
      ],
      "axis": [
       0,
       1,
       0
-     ]
+     ],
+     "length_ldu": 4
     },
     {
      "type": "F-R4",
      "position_ldu": [
       10,
-      -4,
+      -2,
       0
      ],
      "axis": [
       0,
       1,
       0
-     ]
+     ],
+     "length_ldu": 4
     }
    ],
    "body_vertices_mm": [
@@ -33391,66 +33418,71 @@
      "type": "M-R4",
      "position_ldu": [
       20,
-      140,
+      142,
       0
      ],
      "axis": [
       0,
       1,
       0
-     ]
+     ],
+     "length_ldu": 4
     },
     {
      "type": "M-R4",
      "position_ldu": [
       0,
-      140,
+      142,
       0
      ],
      "axis": [
       0,
       1,
       0
-     ]
+     ],
+     "length_ldu": 4
     },
     {
      "type": "M-R4",
      "position_ldu": [
       -20,
-      140,
+      142,
       0
      ],
      "axis": [
       0,
       1,
       0
-     ]
+     ],
+     "length_ldu": 4
     },
     {
      "type": "F-R4",
      "position_ldu": [
       10,
-      -4,
+      -2,
       0
      ],
      "axis": [
       0,
       1,
       0
-     ]
+     ],
+     "length_ldu": 4
     },
     {
      "type": "F-R4",
      "position_ldu": [
       -10,
-      -4,
+      -2,
       0
      ],
      "axis": [
       0,
       1,
       0
-     ]
+     ],
+     "length_ldu": 4
     }
    ],
    "body_vertices_mm": [
@@ -33970,26 +34002,28 @@
      "position_ldu": [
       57,
       70,
-      -7.75
+      -5.75
      ],
      "axis": [
       0,
       0,
       1
-     ]
+     ],
+     "length_ldu": 4
     },
     {
      "type": "F-R4",
      "position_ldu": [
       57,
       70,
-      7.75
+      5.75
      ],
      "axis": [
       0,
       0,
       -1
-     ]
+     ],
+     "length_ldu": 4
     }
    ],
    "body_vertices_mm": [
@@ -34838,13 +34872,14 @@
      "position_ldu": [
       0,
       -2,
-      -18
+      -16
      ],
      "axis": [
       0,
       0,
       1
-     ]
+     ],
+     "length_ldu": 4
     }
    ],
    "body_vertices_mm": [
@@ -35257,13 +35292,14 @@
      "position_ldu": [
       0,
       10,
-      -18
+      -16
      ],
      "axis": [
       0,
       0,
       1
-     ]
+     ],
+     "length_ldu": 4
     }
    ],
    "body_vertices_mm": [
@@ -35578,6 +35614,9185 @@
    "footprint_studs_z": 1,
    "body_height_ldu": 20,
    "mesh_file": "part-meshes/36841.json"
+  },
+  {
+   "part_id": "26601",
+   "description": "Plate 2 x 2 without Corner",
+   "family": "wedge_plate",
+   "roles": [],
+   "source_filename": "parts/26601.dat",
+   "source_author": "Magnus Forsberg [MagFors]",
+   "source_license_notice": "Licensed under CC BY 4.0 : see CAreadme.txt",
+   "source_library_commit": "c70360d1c588be894997b2168c61909bc8058c4d",
+   "connection_source": "ldcad_shadow",
+   "features": [
+    {
+     "feature_id": "stud_receiver-0",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      -10,
+      8,
+      -10
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-1",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      -10,
+      8,
+      10
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-2",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      10,
+      8,
+      10
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-0",
+     "kind": "stud",
+     "position_ldu": [
+      10,
+      0,
+      10
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-1",
+     "kind": "stud",
+     "position_ldu": [
+      -10,
+      0,
+      10
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-2",
+     "kind": "stud",
+     "position_ldu": [
+      -10,
+      0,
+      -10
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    }
+   ],
+   "other_connectors": [],
+   "body_vertices_mm": [
+    [
+     0,
+     3.2,
+     -8
+    ],
+    [
+     -8,
+     3.2,
+     8
+    ],
+    [
+     2.217,
+     3.2,
+     0.918
+    ],
+    [
+     2.4,
+     3.2,
+     0
+    ],
+    [
+     1.697,
+     3.2,
+     1.697
+    ],
+    [
+     0.918,
+     3.2,
+     2.217
+    ],
+    [
+     2.217,
+     3.2,
+     -0.918
+    ],
+    [
+     2.956,
+     3.2,
+     1.225
+    ],
+    [
+     3.2,
+     3.2,
+     0
+    ],
+    [
+     2.263,
+     3.2,
+     2.263
+    ],
+    [
+     1.225,
+     3.2,
+     2.956
+    ],
+    [
+     2.956,
+     3.2,
+     -1.225
+    ],
+    [
+     -6.4,
+     3.2,
+     -6.4
+    ],
+    [
+     6.4,
+     3.2,
+     6.4
+    ],
+    [
+     6.4,
+     3.2,
+     0.663
+    ],
+    [
+     5.697,
+     3.2,
+     -2.303
+    ],
+    [
+     5.697,
+     1.6,
+     -2.303
+    ],
+    [
+     2.303,
+     1.6,
+     -5.697
+    ],
+    [
+     8,
+     3.2,
+     8
+    ],
+    [
+     8,
+     3.2,
+     0
+    ],
+    [
+     -8,
+     0,
+     -8
+    ],
+    [
+     -8,
+     3.2,
+     -8
+    ],
+    [
+     8,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     -8
+    ],
+    [
+     -8,
+     0,
+     8
+    ],
+    [
+     8,
+     0,
+     8
+    ]
+   ],
+   "body_planes_mm": [
+    [
+     0,
+     1,
+     0,
+     3.2
+    ],
+    [
+     0.707107,
+     0,
+     -0.707107,
+     5.6569
+    ],
+    [
+     0.707107,
+     0,
+     -0.707107,
+     5.6569
+    ],
+    [
+     0,
+     0,
+     -1,
+     8
+    ],
+    [
+     -1,
+     0,
+     0,
+     8
+    ],
+    [
+     1,
+     0,
+     0,
+     8
+    ],
+    [
+     0,
+     -1,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     1,
+     8
+    ]
+   ],
+   "body_bounds_mm": {
+    "min": [
+     -8,
+     0,
+     -8
+    ],
+    "max": [
+     8,
+     3.2,
+     8
+    ]
+   },
+   "collision_boxes_mm": [
+    {
+     "min": [
+      -8,
+      0,
+      -8
+     ],
+     "max": [
+      8,
+      3.2,
+      8
+     ]
+    }
+   ],
+   "footprint_studs_x": 2,
+   "footprint_studs_z": 2,
+   "body_height_ldu": 8,
+   "mesh_file": "part-meshes/26601.json"
+  },
+  {
+   "part_id": "2450",
+   "description": "Plate 3 x 3 without Corner",
+   "family": "wedge_plate",
+   "roles": [],
+   "source_filename": "parts/2450.dat",
+   "source_author": "James Jessiman",
+   "source_license_notice": "Licensed under CC BY 4.0 : see CAreadme.txt",
+   "source_library_commit": "c70360d1c588be894997b2168c61909bc8058c4d",
+   "connection_source": "ldcad_shadow",
+   "features": [
+    {
+     "feature_id": "stud_receiver-0",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      -20,
+      8,
+      -20
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-1",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      -20,
+      8,
+      0
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-2",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      0,
+      8,
+      0
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-3",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      -20,
+      8,
+      20
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-4",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      0,
+      8,
+      20
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-5",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      20,
+      8,
+      20
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-0",
+     "kind": "stud",
+     "position_ldu": [
+      20,
+      0,
+      20
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-1",
+     "kind": "stud",
+     "position_ldu": [
+      0,
+      0,
+      0
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-2",
+     "kind": "stud",
+     "position_ldu": [
+      0,
+      0,
+      20
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-3",
+     "kind": "stud",
+     "position_ldu": [
+      -20,
+      0,
+      0
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-4",
+     "kind": "stud",
+     "position_ldu": [
+      -20,
+      0,
+      20
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-5",
+     "kind": "stud",
+     "position_ldu": [
+      -20,
+      0,
+      -20
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    }
+   ],
+   "other_connectors": [],
+   "body_vertices_mm": [
+    [
+     -4,
+     3.2,
+     -12
+    ],
+    [
+     -12,
+     3.2,
+     12
+    ],
+    [
+     6.217,
+     3.2,
+     4.918
+    ],
+    [
+     6.4,
+     3.2,
+     4
+    ],
+    [
+     5.697,
+     3.2,
+     5.697
+    ],
+    [
+     4.918,
+     3.2,
+     6.217
+    ],
+    [
+     5.697,
+     3.2,
+     2.303
+    ],
+    [
+     6.217,
+     3.2,
+     3.082
+    ],
+    [
+     6.956,
+     3.2,
+     5.225
+    ],
+    [
+     7.2,
+     3.2,
+     4
+    ],
+    [
+     6.263,
+     3.2,
+     6.263
+    ],
+    [
+     5.225,
+     3.2,
+     6.956
+    ],
+    [
+     5.225,
+     3.2,
+     1.044
+    ],
+    [
+     6.263,
+     3.2,
+     1.737
+    ],
+    [
+     6.956,
+     3.2,
+     2.775
+    ],
+    [
+     -7.2,
+     3.2,
+     -4
+    ],
+    [
+     -6.956,
+     3.2,
+     -5.225
+    ],
+    [
+     12,
+     3.2,
+     12
+    ],
+    [
+     12,
+     0,
+     12
+    ],
+    [
+     -12,
+     0,
+     -12
+    ],
+    [
+     -12,
+     0,
+     12
+    ],
+    [
+     -12,
+     3.2,
+     -12
+    ],
+    [
+     -4,
+     0,
+     -12
+    ],
+    [
+     12,
+     3.2,
+     4
+    ],
+    [
+     12,
+     0,
+     4
+    ]
+   ],
+   "body_planes_mm": [
+    [
+     0,
+     1,
+     0,
+     3.2
+    ],
+    [
+     0,
+     0,
+     1,
+     12
+    ],
+    [
+     -1,
+     0,
+     0,
+     12
+    ],
+    [
+     0,
+     -1,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     -1,
+     12
+    ],
+    [
+     1,
+     0,
+     0,
+     12
+    ],
+    [
+     0.707107,
+     0,
+     -0.707107,
+     5.6569
+    ]
+   ],
+   "body_bounds_mm": {
+    "min": [
+     -12,
+     0,
+     -12
+    ],
+    "max": [
+     12,
+     3.2,
+     12
+    ]
+   },
+   "collision_boxes_mm": [
+    {
+     "min": [
+      -12,
+      0,
+      -12
+     ],
+     "max": [
+      12,
+      3.2,
+      12
+     ]
+    }
+   ],
+   "footprint_studs_x": 3,
+   "footprint_studs_z": 3,
+   "body_height_ldu": 8,
+   "mesh_file": "part-meshes/2450.json"
+  },
+  {
+   "part_id": "41769a",
+   "description": "Wing 2 x 4 Right without Chamfer",
+   "family": "wedge_plate",
+   "roles": [],
+   "source_filename": "parts/41769a.dat",
+   "source_author": "Takeshi Takahashi [RainbowDolphin]",
+   "source_license_notice": "Licensed under CC BY 4.0 : see CAreadme.txt",
+   "source_library_commit": "c70360d1c588be894997b2168c61909bc8058c4d",
+   "connection_source": "ldcad_shadow",
+   "features": [
+    {
+     "feature_id": "stud_receiver-0",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      10,
+      8,
+      -30
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-1",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      10,
+      8,
+      -10
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-2",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      10,
+      8,
+      10
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-3",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      10,
+      8,
+      30
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-4",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      -10,
+      8,
+      30
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-0",
+     "kind": "stud",
+     "position_ldu": [
+      10,
+      0,
+      -30
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-1",
+     "kind": "stud",
+     "position_ldu": [
+      10,
+      0,
+      -10
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-2",
+     "kind": "stud",
+     "position_ldu": [
+      10,
+      0,
+      10
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-3",
+     "kind": "stud",
+     "position_ldu": [
+      10,
+      0,
+      30
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    }
+   ],
+   "other_connectors": [],
+   "body_vertices_mm": [
+    [
+     0,
+     3.2,
+     -16
+    ],
+    [
+     2.217,
+     3.2,
+     8.918
+    ],
+    [
+     2.4,
+     3.2,
+     8
+    ],
+    [
+     1.697,
+     3.2,
+     9.697
+    ],
+    [
+     0.918,
+     3.2,
+     10.217
+    ],
+    [
+     0,
+     3.2,
+     10.4
+    ],
+    [
+     -0.918,
+     3.2,
+     10.217
+    ],
+    [
+     -1.697,
+     3.2,
+     9.697
+    ],
+    [
+     -2.217,
+     3.2,
+     8.918
+    ],
+    [
+     -2.4,
+     3.2,
+     8
+    ],
+    [
+     2.956,
+     3.2,
+     9.225
+    ],
+    [
+     3.2,
+     3.2,
+     8
+    ],
+    [
+     2.263,
+     3.2,
+     10.263
+    ],
+    [
+     1.225,
+     3.2,
+     10.956
+    ],
+    [
+     0,
+     3.2,
+     11.2
+    ],
+    [
+     -1.225,
+     3.2,
+     10.956
+    ],
+    [
+     -2.263,
+     3.2,
+     10.263
+    ],
+    [
+     -2.956,
+     3.2,
+     9.225
+    ],
+    [
+     -3.2,
+     3.2,
+     8
+    ],
+    [
+     -2.263,
+     3.2,
+     -5.737
+    ],
+    [
+     1.697,
+     3.2,
+     -6.303
+    ],
+    [
+     2.217,
+     3.2,
+     -7.082
+    ],
+    [
+     2.4,
+     3.2,
+     -8
+    ],
+    [
+     2.956,
+     3.2,
+     -6.775
+    ],
+    [
+     3.2,
+     3.2,
+     -8
+    ],
+    [
+     2.956,
+     3.2,
+     -9.225
+    ],
+    [
+     -2.782,
+     3.2,
+     -1.486
+    ],
+    [
+     8,
+     0,
+     -16
+    ],
+    [
+     -8,
+     0,
+     16
+    ],
+    [
+     0,
+     0,
+     -16
+    ],
+    [
+     8,
+     3.2,
+     -16
+    ],
+    [
+     -8,
+     3.2,
+     16
+    ],
+    [
+     8,
+     3.2,
+     16
+    ],
+    [
+     8,
+     0,
+     16
+    ],
+    [
+     -7.308,
+     1.6,
+     13.224
+    ],
+    [
+     -7.308,
+     3.2,
+     13.224
+    ],
+    [
+     -3.58,
+     3.2,
+     -1.684
+    ],
+    [
+     -4.364,
+     3.2,
+     1.448
+    ],
+    [
+     -4.364,
+     1.6,
+     1.448
+    ]
+   ],
+   "body_planes_mm": [
+    [
+     0,
+     1,
+     0,
+     3.2
+    ],
+    [
+     0,
+     -1,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     -1,
+     16
+    ],
+    [
+     1,
+     0,
+     0,
+     8
+    ],
+    [
+     0,
+     0,
+     1,
+     16
+    ],
+    [
+     -0.970142,
+     -0.001213,
+     -0.242535,
+     3.8806
+    ],
+    [
+     -0.970307,
+     0,
+     -0.241878,
+     3.8924
+    ],
+    [
+     -0.970116,
+     0,
+     -0.24264,
+     3.8822
+    ],
+    [
+     -0.970143,
+     0,
+     -0.242536,
+     3.8825
+    ]
+   ],
+   "body_bounds_mm": {
+    "min": [
+     -8,
+     0,
+     -16
+    ],
+    "max": [
+     8,
+     3.2,
+     16
+    ]
+   },
+   "collision_boxes_mm": [
+    {
+     "min": [
+      -8,
+      0,
+      -16
+     ],
+     "max": [
+      8,
+      3.2,
+      16
+     ]
+    }
+   ],
+   "footprint_studs_x": 2,
+   "footprint_studs_z": 4,
+   "body_height_ldu": 8,
+   "mesh_file": "part-meshes/41769a.json"
+  },
+  {
+   "part_id": "41770a",
+   "description": "Wing 2 x 4 Left without Chamfer",
+   "family": "wedge_plate",
+   "roles": [],
+   "source_filename": "parts/41770a.dat",
+   "source_author": "Takeshi Takahashi [RainbowDolphin]",
+   "source_license_notice": "Licensed under CC BY 4.0 : see CAreadme.txt",
+   "source_library_commit": "c70360d1c588be894997b2168c61909bc8058c4d",
+   "connection_source": "ldcad_shadow",
+   "features": [
+    {
+     "feature_id": "stud_receiver-0",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      -10,
+      8,
+      -30
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-1",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      -10,
+      8,
+      -10
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-2",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      -10,
+      8,
+      10
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-3",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      -10,
+      8,
+      30
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-4",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      10,
+      8,
+      30
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-0",
+     "kind": "stud",
+     "position_ldu": [
+      -10,
+      0,
+      -30
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-1",
+     "kind": "stud",
+     "position_ldu": [
+      -10,
+      0,
+      -10
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-2",
+     "kind": "stud",
+     "position_ldu": [
+      -10,
+      0,
+      10
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-3",
+     "kind": "stud",
+     "position_ldu": [
+      -10,
+      0,
+      30
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    }
+   ],
+   "other_connectors": [],
+   "body_vertices_mm": [
+    [
+     -2.217,
+     3.2,
+     8.918
+    ],
+    [
+     0,
+     3.2,
+     -16
+    ],
+    [
+     -2.4,
+     3.2,
+     8
+    ],
+    [
+     -1.697,
+     3.2,
+     9.697
+    ],
+    [
+     -0.918,
+     3.2,
+     10.217
+    ],
+    [
+     0,
+     3.2,
+     10.4
+    ],
+    [
+     0.918,
+     3.2,
+     10.217
+    ],
+    [
+     1.697,
+     3.2,
+     9.697
+    ],
+    [
+     2.217,
+     3.2,
+     8.918
+    ],
+    [
+     2.4,
+     3.2,
+     8
+    ],
+    [
+     -2.956,
+     3.2,
+     9.225
+    ],
+    [
+     -3.2,
+     3.2,
+     8
+    ],
+    [
+     -2.263,
+     3.2,
+     10.263
+    ],
+    [
+     -1.225,
+     3.2,
+     10.956
+    ],
+    [
+     0,
+     3.2,
+     11.2
+    ],
+    [
+     1.225,
+     3.2,
+     10.956
+    ],
+    [
+     2.263,
+     3.2,
+     10.263
+    ],
+    [
+     2.956,
+     3.2,
+     9.225
+    ],
+    [
+     3.2,
+     3.2,
+     8
+    ],
+    [
+     2.263,
+     3.2,
+     -5.737
+    ],
+    [
+     -1.697,
+     3.2,
+     -6.303
+    ],
+    [
+     -2.217,
+     3.2,
+     -7.082
+    ],
+    [
+     -2.4,
+     3.2,
+     -8
+    ],
+    [
+     -2.956,
+     3.2,
+     -6.775
+    ],
+    [
+     -3.2,
+     3.2,
+     -8
+    ],
+    [
+     -2.956,
+     3.2,
+     -9.225
+    ],
+    [
+     2.782,
+     3.2,
+     -1.486
+    ],
+    [
+     -8,
+     0,
+     -16
+    ],
+    [
+     0,
+     0,
+     -16
+    ],
+    [
+     8,
+     0,
+     16
+    ],
+    [
+     -8,
+     3.2,
+     -16
+    ],
+    [
+     8,
+     3.2,
+     16
+    ],
+    [
+     -8,
+     3.2,
+     16
+    ],
+    [
+     -8,
+     0,
+     16
+    ],
+    [
+     7.308,
+     1.6,
+     13.224
+    ],
+    [
+     7.308,
+     3.2,
+     13.224
+    ],
+    [
+     3.58,
+     3.2,
+     -1.684
+    ],
+    [
+     4.364,
+     3.2,
+     1.448
+    ],
+    [
+     4.364,
+     1.6,
+     1.448
+    ]
+   ],
+   "body_planes_mm": [
+    [
+     0,
+     1,
+     0,
+     3.2
+    ],
+    [
+     0,
+     0,
+     -1,
+     16
+    ],
+    [
+     0,
+     -1,
+     0,
+     0
+    ],
+    [
+     -1,
+     0,
+     0,
+     8
+    ],
+    [
+     0,
+     0,
+     1,
+     16
+    ],
+    [
+     0.970142,
+     -0.001213,
+     -0.242535,
+     3.8806
+    ],
+    [
+     0.970307,
+     0,
+     -0.241878,
+     3.8924
+    ],
+    [
+     0.970116,
+     0,
+     -0.24264,
+     3.8822
+    ],
+    [
+     0.970143,
+     0,
+     -0.242536,
+     3.8825
+    ]
+   ],
+   "body_bounds_mm": {
+    "min": [
+     -8,
+     0,
+     -16
+    ],
+    "max": [
+     8,
+     3.2,
+     16
+    ]
+   },
+   "collision_boxes_mm": [
+    {
+     "min": [
+      -8,
+      0,
+      -16
+     ],
+     "max": [
+      8,
+      3.2,
+      16
+     ]
+    }
+   ],
+   "footprint_studs_x": 2,
+   "footprint_studs_z": 4,
+   "body_height_ldu": 8,
+   "mesh_file": "part-meshes/41770a.json"
+  },
+  {
+   "part_id": "43722a",
+   "description": "Wing 2 x 3 Right without Chamfer",
+   "family": "wedge_plate",
+   "roles": [],
+   "source_filename": "parts/43722a.dat",
+   "source_author": "Donald Sutter [technog]",
+   "source_license_notice": "Licensed under CC BY 4.0 : see CAreadme.txt",
+   "source_library_commit": "c70360d1c588be894997b2168c61909bc8058c4d",
+   "connection_source": "measured_flat_underside",
+   "features": [
+    {
+     "feature_id": "stud-0",
+     "kind": "stud",
+     "position_ldu": [
+      10,
+      0,
+      -20
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-1",
+     "kind": "stud",
+     "position_ldu": [
+      10,
+      0,
+      0
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-2",
+     "kind": "stud",
+     "position_ldu": [
+      10,
+      0,
+      20
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-0",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      -10,
+      8,
+      20
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-1",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      10,
+      8,
+      -20
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-2",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      10,
+      8,
+      0
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-3",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      10,
+      8,
+      20
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    }
+   ],
+   "other_connectors": [],
+   "body_vertices_mm": [
+    [
+     8,
+     0,
+     -12
+    ],
+    [
+     8,
+     0,
+     12
+    ],
+    [
+     -8,
+     0,
+     12
+    ],
+    [
+     -5.7,
+     3.2,
+     9.704
+    ],
+    [
+     -5.932,
+     3.2,
+     10.4
+    ],
+    [
+     6.4,
+     3.2,
+     10.4
+    ],
+    [
+     6.4,
+     3.2,
+     -10.4
+    ],
+    [
+     1,
+     3.2,
+     -10.4
+    ],
+    [
+     -0.076,
+     3.2,
+     -7.188
+    ],
+    [
+     8,
+     3.2,
+     12
+    ],
+    [
+     8,
+     3.2,
+     -12
+    ],
+    [
+     -8,
+     3.2,
+     12
+    ],
+    [
+     0,
+     0,
+     -12
+    ],
+    [
+     0,
+     3.2,
+     -12
+    ]
+   ],
+   "body_planes_mm": [
+    [
+     0,
+     -1,
+     0,
+     0
+    ],
+    [
+     0,
+     1,
+     0,
+     3.2
+    ],
+    [
+     0,
+     0,
+     1,
+     12
+    ],
+    [
+     1,
+     0,
+     0,
+     8
+    ],
+    [
+     0,
+     0,
+     -1,
+     12
+    ],
+    [
+     -0.948683,
+     0,
+     -0.316228,
+     3.7947
+    ]
+   ],
+   "body_bounds_mm": {
+    "min": [
+     -8,
+     0,
+     -12
+    ],
+    "max": [
+     8,
+     3.2,
+     12
+    ]
+   },
+   "collision_boxes_mm": [
+    {
+     "min": [
+      -8,
+      0,
+      -12
+     ],
+     "max": [
+      8,
+      3.2,
+      12
+     ]
+    }
+   ],
+   "footprint_studs_x": 2,
+   "footprint_studs_z": 3,
+   "body_height_ldu": 8,
+   "mesh_file": "part-meshes/43722a.json"
+  },
+  {
+   "part_id": "43723a",
+   "description": "Wing 2 x 3 Left without Chamfer",
+   "family": "wedge_plate",
+   "roles": [],
+   "source_filename": "parts/43723a.dat",
+   "source_author": "Donald Sutter [technog]",
+   "source_license_notice": "Licensed under CC BY 4.0 : see CAreadme.txt",
+   "source_library_commit": "c70360d1c588be894997b2168c61909bc8058c4d",
+   "connection_source": "measured_flat_underside",
+   "features": [
+    {
+     "feature_id": "stud-0",
+     "kind": "stud",
+     "position_ldu": [
+      -10,
+      0,
+      -20
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-1",
+     "kind": "stud",
+     "position_ldu": [
+      -10,
+      0,
+      0
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-2",
+     "kind": "stud",
+     "position_ldu": [
+      -10,
+      0,
+      20
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-0",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      -10,
+      8,
+      -20
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-1",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      -10,
+      8,
+      0
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-2",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      -10,
+      8,
+      20
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-3",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      10,
+      8,
+      20
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    }
+   ],
+   "other_connectors": [],
+   "body_vertices_mm": [
+    [
+     -8,
+     0,
+     -12
+    ],
+    [
+     8,
+     0,
+     12
+    ],
+    [
+     -8,
+     0,
+     12
+    ],
+    [
+     5.932,
+     3.2,
+     10.4
+    ],
+    [
+     5.7,
+     3.2,
+     9.704
+    ],
+    [
+     -6.4,
+     3.2,
+     10.4
+    ],
+    [
+     -6.4,
+     3.2,
+     -10.4
+    ],
+    [
+     -1,
+     3.2,
+     -10.4
+    ],
+    [
+     0.076,
+     3.2,
+     -7.188
+    ],
+    [
+     -8,
+     3.2,
+     12
+    ],
+    [
+     -8,
+     3.2,
+     -12
+    ],
+    [
+     8,
+     3.2,
+     12
+    ],
+    [
+     0,
+     0,
+     -12
+    ],
+    [
+     0,
+     3.2,
+     -12
+    ]
+   ],
+   "body_planes_mm": [
+    [
+     0,
+     -1,
+     0,
+     0
+    ],
+    [
+     0,
+     1,
+     0,
+     3.2
+    ],
+    [
+     0,
+     0,
+     1,
+     12
+    ],
+    [
+     -1,
+     0,
+     0,
+     8
+    ],
+    [
+     0,
+     0,
+     -1,
+     12
+    ],
+    [
+     0.948683,
+     0,
+     -0.316228,
+     3.7947
+    ]
+   ],
+   "body_bounds_mm": {
+    "min": [
+     -8,
+     0,
+     -12
+    ],
+    "max": [
+     8,
+     3.2,
+     12
+    ]
+   },
+   "collision_boxes_mm": [
+    {
+     "min": [
+      -8,
+      0,
+      -12
+     ],
+     "max": [
+      8,
+      3.2,
+      12
+     ]
+    }
+   ],
+   "footprint_studs_x": 2,
+   "footprint_studs_z": 3,
+   "body_height_ldu": 8,
+   "mesh_file": "part-meshes/43723a.json"
+  },
+  {
+   "part_id": "51739",
+   "description": "Wing 2 x 4",
+   "family": "wedge_plate",
+   "roles": [],
+   "source_filename": "parts/51739.dat",
+   "source_author": "Chris Dee [cwdee]",
+   "source_license_notice": "Licensed under CC BY 4.0 : see CAreadme.txt",
+   "source_library_commit": "c70360d1c588be894997b2168c61909bc8058c4d",
+   "connection_source": "ldcad_shadow",
+   "features": [
+    {
+     "feature_id": "stud_receiver-0",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      -10,
+      8,
+      -10
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-1",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      -10,
+      8,
+      10
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-2",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      10,
+      8,
+      -10
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-3",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      10,
+      8,
+      10
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-4",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      -30,
+      8,
+      10
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-5",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      30,
+      8,
+      10
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-0",
+     "kind": "stud",
+     "position_ldu": [
+      10,
+      0,
+      -10
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-1",
+     "kind": "stud",
+     "position_ldu": [
+      10,
+      0,
+      10
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-2",
+     "kind": "stud",
+     "position_ldu": [
+      -10,
+      0,
+      -10
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-3",
+     "kind": "stud",
+     "position_ldu": [
+      -10,
+      0,
+      10
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    }
+   ],
+   "other_connectors": [
+    {
+     "type": "F-S16",
+     "position_ldu": [
+      0,
+      6,
+      0
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ],
+     "length_ldu": 4
+    }
+   ],
+   "body_vertices_mm": [
+    [
+     -15.4,
+     0,
+     8
+    ],
+    [
+     8,
+     0,
+     -8
+    ],
+    [
+     15.4,
+     0,
+     8
+    ],
+    [
+     15.4,
+     3.2,
+     6.8
+    ],
+    [
+     -8,
+     3.2,
+     -8
+    ],
+    [
+     15.4,
+     3.2,
+     8
+    ],
+    [
+     -15.4,
+     3.2,
+     8
+    ],
+    [
+     15.4,
+     0,
+     6.8
+    ],
+    [
+     -15.4,
+     3.2,
+     6.8
+    ],
+    [
+     -15.4,
+     0,
+     6.8
+    ],
+    [
+     -8,
+     0,
+     -8
+    ],
+    [
+     8,
+     3.2,
+     -8
+    ]
+   ],
+   "body_planes_mm": [
+    [
+     0,
+     -1,
+     0,
+     0
+    ],
+    [
+     0,
+     1,
+     0,
+     3.2
+    ],
+    [
+     0,
+     0,
+     1,
+     8
+    ],
+    [
+     1,
+     0,
+     0,
+     15.4
+    ],
+    [
+     0.894427,
+     0,
+     -0.447214,
+     10.7331
+    ],
+    [
+     -1,
+     0,
+     0,
+     15.4
+    ],
+    [
+     -0.894427,
+     0,
+     -0.447214,
+     10.7331
+    ],
+    [
+     0,
+     0,
+     -1,
+     8
+    ]
+   ],
+   "body_bounds_mm": {
+    "min": [
+     -15.4,
+     0,
+     -8
+    ],
+    "max": [
+     15.4,
+     3.2,
+     8
+    ]
+   },
+   "collision_boxes_mm": [
+    {
+     "min": [
+      -16,
+      0,
+      -8
+     ],
+     "max": [
+      16,
+      3.2,
+      8
+     ]
+    }
+   ],
+   "footprint_studs_x": 4,
+   "footprint_studs_z": 2,
+   "body_height_ldu": 8,
+   "mesh_file": "part-meshes/51739.json"
+  },
+  {
+   "part_id": "24299",
+   "description": "Wing 2 x 2 Left",
+   "family": "wedge_plate",
+   "roles": [],
+   "source_filename": "parts/24299.dat",
+   "source_author": "Magnus Forsberg [MagFors]",
+   "source_license_notice": "Licensed under CC BY 4.0 : see CAreadme.txt",
+   "source_library_commit": "c70360d1c588be894997b2168c61909bc8058c4d",
+   "connection_source": "ldcad_shadow",
+   "features": [
+    {
+     "feature_id": "stud_receiver-0",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      -10,
+      8,
+      -10
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-1",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      -10,
+      8,
+      10
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-0",
+     "kind": "stud",
+     "position_ldu": [
+      -10,
+      0,
+      -10
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-1",
+     "kind": "stud",
+     "position_ldu": [
+      -10,
+      0,
+      10
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    }
+   ],
+   "other_connectors": [
+    {
+     "type": "M-R4",
+     "position_ldu": [
+      -10,
+      5.5,
+      0
+     ],
+     "axis": [
+      0,
+      1.25,
+      0
+     ],
+     "length_ldu": 4
+    }
+   ],
+   "body_vertices_mm": [
+    [
+     -8,
+     0,
+     -8
+    ],
+    [
+     -8,
+     0,
+     8
+    ],
+    [
+     -8,
+     3.2,
+     8
+    ],
+    [
+     7.4,
+     3.2,
+     8
+    ],
+    [
+     -8,
+     3.2,
+     -8
+    ],
+    [
+     0,
+     3.2,
+     -8
+    ],
+    [
+     0,
+     0,
+     -8
+    ],
+    [
+     7.4,
+     0,
+     8
+    ],
+    [
+     7.4,
+     0,
+     6.8
+    ],
+    [
+     7.4,
+     3.2,
+     6.8
+    ]
+   ],
+   "body_planes_mm": [
+    [
+     -1,
+     0,
+     0,
+     8
+    ],
+    [
+     0,
+     0,
+     1,
+     8
+    ],
+    [
+     0,
+     1,
+     0,
+     3.2
+    ],
+    [
+     0,
+     0,
+     -1,
+     8
+    ],
+    [
+     0,
+     -1,
+     0,
+     0
+    ],
+    [
+     0.894427,
+     0,
+     -0.447214,
+     3.5777
+    ],
+    [
+     1,
+     0,
+     0,
+     7.4
+    ]
+   ],
+   "body_bounds_mm": {
+    "min": [
+     -8,
+     0,
+     -8
+    ],
+    "max": [
+     7.4,
+     3.2,
+     8
+    ]
+   },
+   "collision_boxes_mm": [
+    {
+     "min": [
+      -8,
+      0,
+      -8
+     ],
+     "max": [
+      8,
+      3.2,
+      8
+     ]
+    }
+   ],
+   "footprint_studs_x": 2,
+   "footprint_studs_z": 2,
+   "body_height_ldu": 8,
+   "mesh_file": "part-meshes/24299.json"
+  },
+  {
+   "part_id": "24307",
+   "description": "Wing 2 x 2 Right",
+   "family": "wedge_plate",
+   "roles": [],
+   "source_filename": "parts/24307.dat",
+   "source_author": "Magnus Forsberg [MagFors]",
+   "source_license_notice": "Licensed under CC BY 4.0 : see CAreadme.txt",
+   "source_library_commit": "c70360d1c588be894997b2168c61909bc8058c4d",
+   "connection_source": "ldcad_shadow",
+   "features": [
+    {
+     "feature_id": "stud_receiver-0",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      10,
+      8,
+      -10
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-1",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      10,
+      8,
+      10
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-0",
+     "kind": "stud",
+     "position_ldu": [
+      10,
+      0,
+      -10
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-1",
+     "kind": "stud",
+     "position_ldu": [
+      10,
+      0,
+      10
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    }
+   ],
+   "other_connectors": [
+    {
+     "type": "M-R4",
+     "position_ldu": [
+      10,
+      5.5,
+      0
+     ],
+     "axis": [
+      0,
+      1.25,
+      0
+     ],
+     "length_ldu": 4
+    }
+   ],
+   "body_vertices_mm": [
+    [
+     8,
+     0,
+     -8
+    ],
+    [
+     8,
+     3.2,
+     8
+    ],
+    [
+     8,
+     0,
+     8
+    ],
+    [
+     -7.4,
+     3.2,
+     8
+    ],
+    [
+     8,
+     3.2,
+     -8
+    ],
+    [
+     0,
+     3.2,
+     -8
+    ],
+    [
+     0,
+     0,
+     -8
+    ],
+    [
+     -7.4,
+     0,
+     8
+    ],
+    [
+     -7.4,
+     0,
+     6.8
+    ],
+    [
+     -7.4,
+     3.2,
+     6.8
+    ]
+   ],
+   "body_planes_mm": [
+    [
+     1,
+     0,
+     0,
+     8
+    ],
+    [
+     0,
+     0,
+     1,
+     8
+    ],
+    [
+     0,
+     1,
+     0,
+     3.2
+    ],
+    [
+     0,
+     0,
+     -1,
+     8
+    ],
+    [
+     0,
+     -1,
+     0,
+     0
+    ],
+    [
+     -0.894427,
+     0,
+     -0.447214,
+     3.5777
+    ],
+    [
+     -1,
+     0,
+     0,
+     7.4
+    ]
+   ],
+   "body_bounds_mm": {
+    "min": [
+     -7.4,
+     0,
+     -8
+    ],
+    "max": [
+     8,
+     3.2,
+     8
+    ]
+   },
+   "collision_boxes_mm": [
+    {
+     "min": [
+      -8,
+      0,
+      -8
+     ],
+     "max": [
+      8,
+      3.2,
+      8
+     ]
+    }
+   ],
+   "footprint_studs_x": 2,
+   "footprint_studs_z": 2,
+   "body_height_ldu": 8,
+   "mesh_file": "part-meshes/24307.json"
+  },
+  {
+   "part_id": "2419",
+   "description": "Plate 3 x 6 without Corners",
+   "family": "wedge_plate",
+   "roles": [],
+   "source_filename": "parts/2419.dat",
+   "source_author": "James Jessiman",
+   "source_license_notice": "Licensed under CC BY 4.0 : see CAreadme.txt",
+   "source_library_commit": "c70360d1c588be894997b2168c61909bc8058c4d",
+   "connection_source": "ldcad_shadow",
+   "features": [
+    {
+     "feature_id": "stud_receiver-0",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      -10,
+      8,
+      -20
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-1",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      10,
+      8,
+      -20
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-2",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      -30,
+      8,
+      0
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-3",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      -10,
+      8,
+      0
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-4",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      10,
+      8,
+      0
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-5",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      30,
+      8,
+      0
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-6",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      -50,
+      8,
+      20
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-7",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      -30,
+      8,
+      20
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-8",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      -10,
+      8,
+      20
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-9",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      10,
+      8,
+      20
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-10",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      30,
+      8,
+      20
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-11",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      50,
+      8,
+      20
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-0",
+     "kind": "stud",
+     "position_ldu": [
+      -50,
+      0,
+      20
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-1",
+     "kind": "stud",
+     "position_ldu": [
+      -10,
+      0,
+      0
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-2",
+     "kind": "stud",
+     "position_ldu": [
+      -10,
+      0,
+      20
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-3",
+     "kind": "stud",
+     "position_ldu": [
+      -30,
+      0,
+      0
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-4",
+     "kind": "stud",
+     "position_ldu": [
+      -30,
+      0,
+      20
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-5",
+     "kind": "stud",
+     "position_ldu": [
+      30,
+      0,
+      0
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-6",
+     "kind": "stud",
+     "position_ldu": [
+      30,
+      0,
+      20
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-7",
+     "kind": "stud",
+     "position_ldu": [
+      10,
+      0,
+      0
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-8",
+     "kind": "stud",
+     "position_ldu": [
+      10,
+      0,
+      20
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-9",
+     "kind": "stud",
+     "position_ldu": [
+      50,
+      0,
+      20
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-10",
+     "kind": "stud",
+     "position_ldu": [
+      -10,
+      0,
+      -20
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-11",
+     "kind": "stud",
+     "position_ldu": [
+      10,
+      0,
+      -20
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    }
+   ],
+   "other_connectors": [],
+   "body_vertices_mm": [
+    [
+     8,
+     3.2,
+     -12
+    ],
+    [
+     -24,
+     3.2,
+     12
+    ],
+    [
+     18.217,
+     3.2,
+     4.918
+    ],
+    [
+     18.4,
+     3.2,
+     4
+    ],
+    [
+     17.697,
+     3.2,
+     5.697
+    ],
+    [
+     16.918,
+     3.2,
+     6.217
+    ],
+    [
+     16,
+     3.2,
+     6.4
+    ],
+    [
+     17.697,
+     3.2,
+     2.303
+    ],
+    [
+     18.217,
+     3.2,
+     3.082
+    ],
+    [
+     18.956,
+     3.2,
+     5.225
+    ],
+    [
+     19.2,
+     3.2,
+     4
+    ],
+    [
+     18.263,
+     3.2,
+     6.263
+    ],
+    [
+     17.225,
+     3.2,
+     6.956
+    ],
+    [
+     16,
+     3.2,
+     7.2
+    ],
+    [
+     17.225,
+     3.2,
+     1.044
+    ],
+    [
+     18.263,
+     3.2,
+     1.737
+    ],
+    [
+     18.956,
+     3.2,
+     2.775
+    ],
+    [
+     -13.6,
+     3.2,
+     4
+    ],
+    [
+     -16.918,
+     3.2,
+     6.217
+    ],
+    [
+     -17.697,
+     3.2,
+     5.697
+    ],
+    [
+     -18.217,
+     3.2,
+     4.918
+    ],
+    [
+     -18.4,
+     3.2,
+     4
+    ],
+    [
+     -18.217,
+     3.2,
+     3.082
+    ],
+    [
+     -17.697,
+     3.2,
+     2.303
+    ],
+    [
+     -16.918,
+     3.2,
+     1.783
+    ],
+    [
+     -19.2,
+     3.2,
+     4
+    ],
+    [
+     -18.956,
+     3.2,
+     2.775
+    ],
+    [
+     -18.263,
+     3.2,
+     1.737
+    ],
+    [
+     -17.225,
+     3.2,
+     1.044
+    ],
+    [
+     -10.217,
+     3.2,
+     -3.082
+    ],
+    [
+     -10.4,
+     3.2,
+     -4
+    ],
+    [
+     -10.217,
+     3.2,
+     -4.918
+    ],
+    [
+     -9.697,
+     3.2,
+     -5.697
+    ],
+    [
+     -8.918,
+     3.2,
+     -6.217
+    ],
+    [
+     -10.956,
+     3.2,
+     -5.225
+    ],
+    [
+     -10.263,
+     3.2,
+     -6.263
+    ],
+    [
+     -9.225,
+     3.2,
+     -6.956
+    ],
+    [
+     10.296,
+     1.6,
+     -9.704
+    ],
+    [
+     13.704,
+     1.6,
+     -6.296
+    ],
+    [
+     15.272,
+     3.2,
+     -2.472
+    ],
+    [
+     13.704,
+     3.2,
+     -6.296
+    ],
+    [
+     18.296,
+     3.2,
+     -1.704
+    ],
+    [
+     21.704,
+     1.6,
+     1.704
+    ],
+    [
+     -8,
+     0,
+     -12
+    ],
+    [
+     -21.704,
+     1.6,
+     1.704
+    ],
+    [
+     -18.296,
+     1.6,
+     -1.704
+    ],
+    [
+     -14.472,
+     3.2,
+     -3.272
+    ],
+    [
+     -15.272,
+     3.2,
+     -2.472
+    ],
+    [
+     -18.296,
+     3.2,
+     -1.704
+    ],
+    [
+     -13.704,
+     3.2,
+     -6.296
+    ],
+    [
+     -10.296,
+     1.6,
+     -9.704
+    ],
+    [
+     20.576,
+     3.2,
+     2.832
+    ],
+    [
+     22.4,
+     3.2,
+     4.664
+    ],
+    [
+     21.696,
+     3.2,
+     1.696
+    ],
+    [
+     -9.168,
+     3.2,
+     -8.576
+    ],
+    [
+     -7.336,
+     3.2,
+     -10.4
+    ],
+    [
+     -10.304,
+     3.2,
+     -9.696
+    ],
+    [
+     -20.576,
+     3.2,
+     2.832
+    ],
+    [
+     -22.4,
+     3.2,
+     4.664
+    ],
+    [
+     -21.696,
+     3.2,
+     1.696
+    ],
+    [
+     -24,
+     1.6,
+     4
+    ],
+    [
+     -8,
+     1.6,
+     -12
+    ],
+    [
+     -24,
+     0,
+     4
+    ],
+    [
+     -8,
+     3.2,
+     -12
+    ],
+    [
+     -24,
+     3.2,
+     4
+    ],
+    [
+     24,
+     1.6,
+     4
+    ],
+    [
+     8,
+     1.6,
+     -12
+    ],
+    [
+     8,
+     0,
+     -12
+    ],
+    [
+     24,
+     0,
+     4
+    ],
+    [
+     24,
+     3.2,
+     4
+    ],
+    [
+     24,
+     3.2,
+     12
+    ],
+    [
+     24,
+     0,
+     12
+    ],
+    [
+     -24,
+     0,
+     12
+    ]
+   ],
+   "body_planes_mm": [
+    [
+     0,
+     1,
+     0,
+     3.2
+    ],
+    [
+     0.707107,
+     0,
+     -0.707107,
+     14.1421
+    ],
+    [
+     -0.707107,
+     0,
+     -0.707107,
+     14.1421
+    ],
+    [
+     -0.707107,
+     0,
+     -0.707107,
+     14.1421
+    ],
+    [
+     0,
+     0,
+     -1,
+     12
+    ],
+    [
+     -1,
+     0,
+     0,
+     24
+    ],
+    [
+     0.707107,
+     0,
+     -0.707107,
+     14.1421
+    ],
+    [
+     0,
+     -1,
+     0,
+     0
+    ],
+    [
+     1,
+     0,
+     0,
+     24
+    ],
+    [
+     0,
+     0,
+     1,
+     12
+    ]
+   ],
+   "body_bounds_mm": {
+    "min": [
+     -24,
+     0,
+     -12
+    ],
+    "max": [
+     24,
+     3.2,
+     12
+    ]
+   },
+   "collision_boxes_mm": [
+    {
+     "min": [
+      -24,
+      0,
+      -12
+     ],
+     "max": [
+      24,
+      3.2,
+      12
+     ]
+    }
+   ],
+   "footprint_studs_x": 6,
+   "footprint_studs_z": 3,
+   "body_height_ldu": 8,
+   "mesh_file": "part-meshes/2419.json"
+  },
+  {
+   "part_id": "79491",
+   "description": "Plate 2 x 2 with Corner Round",
+   "family": "round_corner",
+   "roles": [],
+   "source_filename": "parts/79491.dat",
+   "source_author": "Gerald Lasser [GeraldLasser]",
+   "source_license_notice": "Licensed under CC BY 4.0 : see CAreadme.txt",
+   "source_library_commit": "c70360d1c588be894997b2168c61909bc8058c4d",
+   "connection_source": "ldcad_shadow",
+   "features": [
+    {
+     "feature_id": "stud_receiver-0",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      0,
+      8,
+      20
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-1",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      20,
+      8,
+      0
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-0",
+     "kind": "stud",
+     "position_ldu": [
+      0,
+      0,
+      20
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-1",
+     "kind": "stud",
+     "position_ldu": [
+      20,
+      0,
+      0
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    }
+   ],
+   "other_connectors": [
+    {
+     "type": "M-R4",
+     "position_ldu": [
+      0,
+      5.5,
+      10
+     ],
+     "axis": [
+      0,
+      1.25,
+      0
+     ],
+     "length_ldu": 4
+    },
+    {
+     "type": "M-R4",
+     "position_ldu": [
+      10,
+      5.5,
+      0
+     ],
+     "axis": [
+      0,
+      1.25,
+      0
+     ],
+     "length_ldu": 4
+    }
+   ],
+   "body_vertices_mm": [
+    [
+     4,
+     3.2,
+     12
+    ],
+    [
+     0.938,
+     3.2,
+     -3.391
+    ],
+    [
+     2.4,
+     3.2,
+     10.4
+    ],
+    [
+     -2.4,
+     3.2,
+     10.4
+    ],
+    [
+     -4,
+     3.2,
+     12
+    ],
+    [
+     10.4,
+     3.2,
+     -2.4
+    ],
+    [
+     10.4,
+     3.2,
+     2.4
+    ],
+    [
+     12,
+     3.2,
+     4
+    ],
+    [
+     12,
+     3.2,
+     -4
+    ],
+    [
+     12,
+     0,
+     -4
+    ],
+    [
+     -2.4,
+     3.2,
+     4
+    ],
+    [
+     -4,
+     3.2,
+     4
+    ],
+    [
+     4,
+     3.2,
+     -4
+    ],
+    [
+     -2.791,
+     3.2,
+     1.138
+    ],
+    [
+     -3.391,
+     3.2,
+     0.938
+    ],
+    [
+     -3.391,
+     0,
+     0.938
+    ],
+    [
+     0.938,
+     1.2,
+     -3.391
+    ],
+    [
+     0.938,
+     0,
+     -3.391
+    ],
+    [
+     4,
+     0,
+     -4
+    ],
+    [
+     -4,
+     0,
+     4
+    ],
+    [
+     -1.657,
+     0,
+     -1.657
+    ],
+    [
+     -1.657,
+     1.2,
+     -1.657
+    ],
+    [
+     12,
+     0,
+     4
+    ],
+    [
+     4,
+     0,
+     12
+    ],
+    [
+     -4,
+     0,
+     12
+    ]
+   ],
+   "body_planes_mm": [
+    [
+     0,
+     1,
+     0,
+     3.2
+    ],
+    [
+     1,
+     0,
+     0,
+     12
+    ],
+    [
+     0,
+     0,
+     -1,
+     4
+    ],
+    [
+     -0.980797,
+     0,
+     -0.195032,
+     3.1431
+    ],
+    [
+     -0.195032,
+     0,
+     -0.980797,
+     3.1431
+    ],
+    [
+     0,
+     -1,
+     0,
+     0
+    ],
+    [
+     -1,
+     0,
+     0,
+     4
+    ],
+    [
+     -0.831465,
+     0,
+     -0.555576,
+     2.2983
+    ],
+    [
+     -0.831419,
+     -0.000218,
+     -0.555646,
+     2.2981
+    ],
+    [
+     -0.676446,
+     0.291276,
+     -0.676446,
+     2.5913
+    ],
+    [
+     -0.55557,
+     0,
+     -0.83147,
+     2.2983
+    ],
+    [
+     -0.555646,
+     -0.000238,
+     -0.831419,
+     2.2981
+    ],
+    [
+     0.707107,
+     0,
+     0.707107,
+     11.3137
+    ],
+    [
+     0,
+     0,
+     1,
+     12
+    ]
+   ],
+   "body_bounds_mm": {
+    "min": [
+     -4,
+     0,
+     -4
+    ],
+    "max": [
+     12,
+     3.2,
+     12
+    ]
+   },
+   "collision_boxes_mm": [
+    {
+     "min": [
+      -4,
+      0,
+      -4
+     ],
+     "max": [
+      12,
+      3.2,
+      12
+     ]
+    }
+   ],
+   "footprint_studs_x": 2,
+   "footprint_studs_z": 2,
+   "body_height_ldu": 8,
+   "mesh_file": "part-meshes/79491.json"
+  },
+  {
+   "part_id": "30357",
+   "description": "Plate 3 x 3 with 2 x 2 Corner Round",
+   "family": "round_corner",
+   "roles": [],
+   "source_filename": "parts/30357.dat",
+   "source_author": "Vincent Messenet [Cheenzo]",
+   "source_license_notice": "Licensed under CC BY 4.0 : see CAreadme.txt",
+   "source_library_commit": "c70360d1c588be894997b2168c61909bc8058c4d",
+   "connection_source": "ldcad_shadow",
+   "features": [
+    {
+     "feature_id": "stud_receiver-0",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      0,
+      8,
+      0
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-1",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      0,
+      8,
+      20
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-2",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      20,
+      8,
+      0
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-3",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      20,
+      8,
+      20
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-4",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      40,
+      8,
+      0
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-5",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      40,
+      8,
+      20
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-6",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      0,
+      8,
+      40
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-7",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      20,
+      8,
+      40
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-0",
+     "kind": "stud",
+     "position_ldu": [
+      0,
+      0,
+      40
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-1",
+     "kind": "stud",
+     "position_ldu": [
+      0,
+      0,
+      20
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-2",
+     "kind": "stud",
+     "position_ldu": [
+      0,
+      0,
+      0
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-3",
+     "kind": "stud",
+     "position_ldu": [
+      20,
+      0,
+      40
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-4",
+     "kind": "stud",
+     "position_ldu": [
+      20,
+      0,
+      20
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-5",
+     "kind": "stud",
+     "position_ldu": [
+      20,
+      0,
+      0
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-6",
+     "kind": "stud",
+     "position_ldu": [
+      40,
+      0,
+      20
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-7",
+     "kind": "stud",
+     "position_ldu": [
+      40,
+      0,
+      0
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    }
+   ],
+   "other_connectors": [],
+   "body_vertices_mm": [
+    [
+     -4,
+     3.2,
+     -4
+    ],
+    [
+     4,
+     3.2,
+     20
+    ],
+    [
+     20,
+     3.2,
+     -4
+    ],
+    [
+     13.74,
+     0,
+     16.693
+    ],
+    [
+     12,
+     0,
+     17.856
+    ],
+    [
+     4,
+     0,
+     20
+    ],
+    [
+     15.314,
+     0,
+     15.314
+    ],
+    [
+     5.6,
+     3.2,
+     18.4
+    ],
+    [
+     8,
+     3.2,
+     18.4
+    ],
+    [
+     9.697,
+     3.2,
+     18.4
+    ],
+    [
+     12,
+     3.2,
+     17.856
+    ],
+    [
+     13.391,
+     3.2,
+     16.926
+    ],
+    [
+     6.088,
+     0,
+     19.862
+    ],
+    [
+     6.088,
+     3.2,
+     19.862
+    ],
+    [
+     8.141,
+     0,
+     19.454
+    ],
+    [
+     8.141,
+     3.2,
+     19.454
+    ],
+    [
+     10.123,
+     0,
+     18.782
+    ],
+    [
+     10.123,
+     3.2,
+     18.782
+    ],
+    [
+     13.74,
+     1.6,
+     16.693
+    ],
+    [
+     15.314,
+     1.6,
+     15.314
+    ],
+    [
+     13.391,
+     1.6,
+     16.926
+    ],
+    [
+     16.693,
+     0,
+     13.74
+    ],
+    [
+     17.856,
+     0,
+     12
+    ],
+    [
+     20,
+     0,
+     4
+    ],
+    [
+     18.4,
+     3.2,
+     5.6
+    ],
+    [
+     20,
+     3.2,
+     4
+    ],
+    [
+     18.4,
+     3.2,
+     8
+    ],
+    [
+     18.4,
+     3.2,
+     9.697
+    ],
+    [
+     17.856,
+     3.2,
+     12
+    ],
+    [
+     16.926,
+     3.2,
+     13.391
+    ],
+    [
+     19.862,
+     0,
+     6.088
+    ],
+    [
+     19.862,
+     3.2,
+     6.088
+    ],
+    [
+     19.454,
+     0,
+     8.141
+    ],
+    [
+     19.454,
+     3.2,
+     8.141
+    ],
+    [
+     18.782,
+     0,
+     10.123
+    ],
+    [
+     18.782,
+     3.2,
+     10.123
+    ],
+    [
+     16.693,
+     1.6,
+     13.74
+    ],
+    [
+     16.926,
+     1.6,
+     13.391
+    ],
+    [
+     1.044,
+     3.2,
+     13.225
+    ],
+    [
+     20,
+     0,
+     -4
+    ],
+    [
+     -4,
+     0,
+     -4
+    ],
+    [
+     -4,
+     0,
+     20
+    ],
+    [
+     -4,
+     3.2,
+     20
+    ]
+   ],
+   "body_planes_mm": [
+    [
+     0,
+     1,
+     0,
+     3.2
+    ],
+    [
+     0,
+     -1,
+     0,
+     0
+    ],
+    [
+     0.555748,
+     0,
+     0.831351,
+     21.5136
+    ],
+    [
+     0.065758,
+     0,
+     0.997836,
+     20.2197
+    ],
+    [
+     0.19494,
+     0,
+     0.980815,
+     20.6681
+    ],
+    [
+     0.442621,
+     0,
+     0.896709,
+     21.3231
+    ],
+    [
+     0.321039,
+     0,
+     0.947066,
+     21.0381
+    ],
+    [
+     0.659072,
+     0,
+     0.752079,
+     21.61
+    ],
+    [
+     0.55575,
+     0,
+     0.83135,
+     21.5136
+    ],
+    [
+     0.658689,
+     0.034089,
+     0.751642,
+     21.652
+    ],
+    [
+     0.555748,
+     0,
+     0.831351,
+     21.5136
+    ],
+    [
+     0.752079,
+     0,
+     0.659072,
+     21.61
+    ],
+    [
+     1,
+     0,
+     0,
+     20
+    ],
+    [
+     0.831351,
+     0,
+     0.555748,
+     21.5136
+    ],
+    [
+     0.700548,
+     0.135889,
+     0.700548,
+     21.6734
+    ],
+    [
+     0.997836,
+     0,
+     0.065758,
+     20.2197
+    ],
+    [
+     0.980815,
+     0,
+     0.19494,
+     20.6681
+    ],
+    [
+     0.896709,
+     0,
+     0.442621,
+     21.3231
+    ],
+    [
+     0.947066,
+     0,
+     0.321039,
+     21.0381
+    ],
+    [
+     0.83135,
+     0,
+     0.55575,
+     21.5136
+    ],
+    [
+     0.751642,
+     0.034089,
+     0.658689,
+     21.652
+    ],
+    [
+     0.831351,
+     0,
+     0.555748,
+     21.5136
+    ],
+    [
+     0,
+     0,
+     -1,
+     4
+    ],
+    [
+     0,
+     0,
+     1,
+     20
+    ],
+    [
+     -1,
+     0,
+     0,
+     4
+    ]
+   ],
+   "body_bounds_mm": {
+    "min": [
+     -4,
+     0,
+     -4
+    ],
+    "max": [
+     20,
+     3.2,
+     20
+    ]
+   },
+   "collision_boxes_mm": [
+    {
+     "min": [
+      -4,
+      0,
+      -4
+     ],
+     "max": [
+      20,
+      3.2,
+      20
+     ]
+    }
+   ],
+   "footprint_studs_x": 3,
+   "footprint_studs_z": 3,
+   "body_height_ldu": 8,
+   "mesh_file": "part-meshes/30357.json"
+  },
+  {
+   "part_id": "30565",
+   "description": "Plate 4 x 4 with Corner Round",
+   "family": "round_corner",
+   "roles": [],
+   "source_filename": "parts/30565.dat",
+   "source_author": "Gerald Lasser [GeraldLasser]",
+   "source_license_notice": "Licensed under CC BY 4.0 : see CAreadme.txt",
+   "source_library_commit": "c70360d1c588be894997b2168c61909bc8058c4d",
+   "connection_source": "ldcad_shadow",
+   "features": [
+    {
+     "feature_id": "stud_receiver-0",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      -30,
+      8,
+      -10
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-1",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      -30,
+      8,
+      10
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-2",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      -30,
+      8,
+      30
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-3",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      -10,
+      8,
+      -10
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-4",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      -10,
+      8,
+      10
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-5",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      -10,
+      8,
+      30
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-6",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      10,
+      8,
+      -10
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-7",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      10,
+      8,
+      10
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-8",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      10,
+      8,
+      30
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-9",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      -30,
+      8,
+      -30
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-10",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      30,
+      8,
+      30
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-0",
+     "kind": "stud",
+     "position_ldu": [
+      10,
+      0,
+      30
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-1",
+     "kind": "stud",
+     "position_ldu": [
+      10,
+      0,
+      10
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-2",
+     "kind": "stud",
+     "position_ldu": [
+      10,
+      0,
+      -10
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-3",
+     "kind": "stud",
+     "position_ldu": [
+      -10,
+      0,
+      30
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-4",
+     "kind": "stud",
+     "position_ldu": [
+      -10,
+      0,
+      10
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-5",
+     "kind": "stud",
+     "position_ldu": [
+      -10,
+      0,
+      -10
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-6",
+     "kind": "stud",
+     "position_ldu": [
+      -30,
+      0,
+      30
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-7",
+     "kind": "stud",
+     "position_ldu": [
+      -30,
+      0,
+      10
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-8",
+     "kind": "stud",
+     "position_ldu": [
+      -30,
+      0,
+      -10
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-9",
+     "kind": "stud",
+     "position_ldu": [
+      30,
+      0,
+      30
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-10",
+     "kind": "stud",
+     "position_ldu": [
+      -30,
+      0,
+      -30
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    }
+   ],
+   "other_connectors": [],
+   "body_vertices_mm": [
+    [
+     -16,
+     0,
+     -16
+    ],
+    [
+     16,
+     0,
+     16
+    ],
+    [
+     -16,
+     0,
+     16
+    ],
+    [
+     12.853,
+     3.2,
+     6.626
+    ],
+    [
+     13.363,
+     3.2,
+     8.132
+    ],
+    [
+     14.909,
+     3.2,
+     7.718
+    ],
+    [
+     14.371,
+     3.2,
+     6.132
+    ],
+    [
+     13.697,
+     3.2,
+     9.811
+    ],
+    [
+     14.4,
+     3.2,
+     9.108
+    ],
+    [
+     14.4,
+     3.2,
+     11.508
+    ],
+    [
+     15.725,
+     3.2,
+     11.824
+    ],
+    [
+     16,
+     3.2,
+     16
+    ],
+    [
+     14.4,
+     3.2,
+     14.4
+    ],
+    [
+     11.712,
+     3.2,
+     0
+    ],
+    [
+     9.389,
+     3.2,
+     -3.482
+    ],
+    [
+     8.22,
+     3.2,
+     -2.356
+    ],
+    [
+     5.839,
+     3.2,
+     -5.839
+    ],
+    [
+     6.627,
+     3.2,
+     -6.627
+    ],
+    [
+     15.725,
+     0,
+     11.824
+    ],
+    [
+     14.909,
+     0,
+     7.718
+    ],
+    [
+     14.371,
+     1.6,
+     6.132
+    ],
+    [
+     13.565,
+     1.6,
+     3.754
+    ],
+    [
+     13.565,
+     0,
+     3.754
+    ],
+    [
+     12.123,
+     3.2,
+     0.833
+    ],
+    [
+     12.123,
+     1.6,
+     0.833
+    ],
+    [
+     11.712,
+     0,
+     0
+    ],
+    [
+     9.389,
+     0,
+     -3.482
+    ],
+    [
+     6.627,
+     0,
+     -6.627
+    ],
+    [
+     8,
+     3.2,
+     3.2
+    ],
+    [
+     5.783,
+     3.2,
+     -0.918
+    ],
+    [
+     5.044,
+     3.2,
+     -1.225
+    ],
+    [
+     5.783,
+     3.2,
+     0.918
+    ],
+    [
+     5.044,
+     3.2,
+     1.225
+    ],
+    [
+     4.8,
+     3.2,
+     0
+    ],
+    [
+     5.737,
+     3.2,
+     2.263
+    ],
+    [
+     -6.626,
+     3.2,
+     -12.853
+    ],
+    [
+     -8.132,
+     3.2,
+     -13.363
+    ],
+    [
+     -7.718,
+     3.2,
+     -14.909
+    ],
+    [
+     -6.132,
+     3.2,
+     -14.371
+    ],
+    [
+     -9.811,
+     3.2,
+     -13.697
+    ],
+    [
+     -9.108,
+     3.2,
+     -14.4
+    ],
+    [
+     -11.508,
+     3.2,
+     -14.4
+    ],
+    [
+     -11.824,
+     3.2,
+     -15.725
+    ],
+    [
+     -16,
+     3.2,
+     -16
+    ],
+    [
+     0,
+     3.2,
+     -11.712
+    ],
+    [
+     3.482,
+     3.2,
+     -9.389
+    ],
+    [
+     -11.824,
+     0,
+     -15.725
+    ],
+    [
+     -7.718,
+     0,
+     -14.909
+    ],
+    [
+     -6.132,
+     1.6,
+     -14.371
+    ],
+    [
+     -3.754,
+     1.6,
+     -13.565
+    ],
+    [
+     -3.754,
+     0,
+     -13.565
+    ],
+    [
+     -0.833,
+     3.2,
+     -12.123
+    ],
+    [
+     -0.833,
+     1.6,
+     -12.123
+    ],
+    [
+     0,
+     0,
+     -11.712
+    ],
+    [
+     3.482,
+     0,
+     -9.389
+    ],
+    [
+     -5.783,
+     3.2,
+     0.918
+    ],
+    [
+     -6.303,
+     3.2,
+     1.697
+    ],
+    [
+     -7.082,
+     3.2,
+     2.217
+    ],
+    [
+     -8,
+     3.2,
+     2.4
+    ],
+    [
+     -8.918,
+     3.2,
+     2.217
+    ],
+    [
+     -9.697,
+     3.2,
+     1.697
+    ],
+    [
+     -10.217,
+     3.2,
+     0.918
+    ],
+    [
+     -8,
+     3.2,
+     3.2
+    ],
+    [
+     -9.225,
+     3.2,
+     2.956
+    ],
+    [
+     -10.263,
+     3.2,
+     2.263
+    ],
+    [
+     -10.956,
+     3.2,
+     1.225
+    ],
+    [
+     -5.783,
+     3.2,
+     8.918
+    ],
+    [
+     -6.303,
+     3.2,
+     9.697
+    ],
+    [
+     -7.082,
+     3.2,
+     10.217
+    ],
+    [
+     -8,
+     3.2,
+     10.4
+    ],
+    [
+     -8.918,
+     3.2,
+     10.217
+    ],
+    [
+     -9.697,
+     3.2,
+     9.697
+    ],
+    [
+     -10.217,
+     3.2,
+     8.918
+    ],
+    [
+     -6.775,
+     3.2,
+     10.956
+    ],
+    [
+     -8,
+     3.2,
+     11.2
+    ],
+    [
+     -9.225,
+     3.2,
+     10.956
+    ],
+    [
+     -10.263,
+     3.2,
+     10.263
+    ],
+    [
+     -10.956,
+     3.2,
+     9.225
+    ],
+    [
+     -14.4,
+     3.2,
+     14.4
+    ],
+    [
+     -16,
+     3.2,
+     16
+    ]
+   ],
+   "body_planes_mm": [
+    [
+     0,
+     -1,
+     0,
+     0
+    ],
+    [
+     0,
+     1,
+     0,
+     3.2
+    ],
+    [
+     0,
+     0,
+     1,
+     16
+    ],
+    [
+     0.997836,
+     0,
+     -0.065758,
+     14.9132
+    ],
+    [
+     0.980815,
+     0,
+     -0.19494,
+     13.1182
+    ],
+    [
+     0.947066,
+     0,
+     -0.321039,
+     11.6417
+    ],
+    [
+     0.980815,
+     0,
+     -0.19494,
+     13.1182
+    ],
+    [
+     0.947066,
+     0,
+     -0.321039,
+     11.6417
+    ],
+    [
+     0.914398,
+     0.115851,
+     -0.387885,
+     11.133
+    ],
+    [
+     0.896709,
+     0,
+     -0.442621,
+     10.5023
+    ],
+    [
+     0.896709,
+     0,
+     -0.442621,
+     10.5023
+    ],
+    [
+     0.831815,
+     0,
+     -0.555053,
+     9.7422
+    ],
+    [
+     0.751486,
+     0,
+     -0.659749,
+     9.3525
+    ],
+    [
+     0.751486,
+     0,
+     -0.659749,
+     9.3525
+    ],
+    [
+     -1,
+     0,
+     0,
+     16
+    ],
+    [
+     0.065758,
+     0,
+     -0.997836,
+     14.9132
+    ],
+    [
+     0.659749,
+     0,
+     -0.751486,
+     9.3525
+    ],
+    [
+     0.19494,
+     0,
+     -0.980815,
+     13.1182
+    ],
+    [
+     0.321039,
+     0,
+     -0.947066,
+     11.6417
+    ],
+    [
+     0.19494,
+     0,
+     -0.980815,
+     13.1182
+    ],
+    [
+     0.321039,
+     0,
+     -0.947066,
+     11.6417
+    ],
+    [
+     0.387885,
+     0.115851,
+     -0.914398,
+     11.133
+    ],
+    [
+     0.442621,
+     0,
+     -0.896709,
+     10.5023
+    ],
+    [
+     0.555053,
+     0,
+     -0.831815,
+     9.7422
+    ],
+    [
+     0.442621,
+     0,
+     -0.896709,
+     10.5023
+    ],
+    [
+     0.659749,
+     0,
+     -0.751486,
+     9.3525
+    ]
+   ],
+   "body_bounds_mm": {
+    "min": [
+     -16,
+     0,
+     -16
+    ],
+    "max": [
+     16,
+     3.2,
+     16
+    ]
+   },
+   "collision_boxes_mm": [
+    {
+     "min": [
+      -16,
+      0,
+      -16
+     ],
+     "max": [
+      16,
+      3.2,
+      16
+     ]
+    }
+   ],
+   "footprint_studs_x": 4,
+   "footprint_studs_z": 4,
+   "body_height_ldu": 8,
+   "mesh_file": "part-meshes/30565.json"
+  },
+  {
+   "part_id": "27925",
+   "description": "Tile 2 x 2 Corner Round",
+   "family": "round_corner",
+   "roles": [],
+   "source_filename": "parts/27925.dat",
+   "source_author": "Philippe Hurbain [Philo]",
+   "source_license_notice": "Licensed under CC BY 4.0 : see CAreadme.txt",
+   "source_library_commit": "c70360d1c588be894997b2168c61909bc8058c4d",
+   "connection_source": "ldcad_shadow",
+   "features": [
+    {
+     "feature_id": "stud_receiver-0",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      0,
+      8,
+      -20
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-1",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      20,
+      8,
+      0
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    }
+   ],
+   "other_connectors": [],
+   "body_vertices_mm": [
+    [
+     -4,
+     0,
+     -12
+    ],
+    [
+     10.782,
+     0,
+     -2.123
+    ],
+    [
+     3.391,
+     0,
+     0.938
+    ],
+    [
+     4,
+     0,
+     4
+    ],
+    [
+     -0.938,
+     0,
+     -3.391
+    ],
+    [
+     4,
+     2.8,
+     4
+    ],
+    [
+     -4,
+     2.8,
+     -4
+    ],
+    [
+     -4,
+     0,
+     -4
+    ],
+    [
+     4.284,
+     3.2,
+     3.609
+    ],
+    [
+     4,
+     3.2,
+     -9.405
+    ],
+    [
+     3.658,
+     3.2,
+     0.613
+    ],
+    [
+     1.939,
+     3.2,
+     -1.939
+    ],
+    [
+     -0.613,
+     3.2,
+     -3.658
+    ],
+    [
+     -3.609,
+     3.2,
+     -4.284
+    ],
+    [
+     4.268,
+     3.2,
+     2.055
+    ],
+    [
+     4.4,
+     2.8,
+     4
+    ],
+    [
+     -4,
+     2.8,
+     -4.4
+    ],
+    [
+     11.862,
+     0,
+     1.912
+    ],
+    [
+     12,
+     0,
+     4
+    ],
+    [
+     12,
+     2.8,
+     4
+    ],
+    [
+     11.862,
+     2.8,
+     1.912
+    ],
+    [
+     11.454,
+     0,
+     -0.141
+    ],
+    [
+     11.454,
+     2.8,
+     -0.141
+    ],
+    [
+     10.782,
+     2.8,
+     -2.123
+    ],
+    [
+     9.856,
+     0,
+     -4
+    ],
+    [
+     9.856,
+     2.8,
+     -4
+    ],
+    [
+     11.6,
+     3.2,
+     3.6
+    ],
+    [
+     11.459,
+     3.2,
+     1.616
+    ],
+    [
+     11.041,
+     3.2,
+     -0.334
+    ],
+    [
+     10.353,
+     3.2,
+     -2.217
+    ],
+    [
+     9.405,
+     3.2,
+     -4
+    ],
+    [
+     8.927,
+     2.8,
+     -5.392
+    ],
+    [
+     8.927,
+     0,
+     -5.392
+    ],
+    [
+     8.694,
+     0,
+     -5.741
+    ],
+    [
+     8.693,
+     1.6,
+     -5.74
+    ],
+    [
+     7.313,
+     1.6,
+     -7.313
+    ],
+    [
+     7.314,
+     0,
+     -7.314
+    ],
+    [
+     5.741,
+     0,
+     -8.694
+    ],
+    [
+     5.74,
+     1.6,
+     -8.693
+    ],
+    [
+     5.392,
+     0,
+     -8.927
+    ],
+    [
+     4,
+     0,
+     -9.856
+    ],
+    [
+     4,
+     2.8,
+     -9.856
+    ],
+    [
+     5.392,
+     2.8,
+     -8.927
+    ],
+    [
+     -1.912,
+     0,
+     -11.862
+    ],
+    [
+     -4,
+     2.8,
+     -12
+    ],
+    [
+     -1.912,
+     2.8,
+     -11.862
+    ],
+    [
+     0.141,
+     0,
+     -11.454
+    ],
+    [
+     0.141,
+     2.8,
+     -11.454
+    ],
+    [
+     2.123,
+     0,
+     -10.782
+    ],
+    [
+     2.123,
+     2.8,
+     -10.782
+    ],
+    [
+     8.644,
+     3.2,
+     -5.109
+    ],
+    [
+     5.109,
+     3.2,
+     -8.644
+    ],
+    [
+     3.023,
+     3.2,
+     -9.257
+    ],
+    [
+     0.918,
+     3.2,
+     -10.217
+    ],
+    [
+     -3.6,
+     3.2,
+     -11.6
+    ],
+    [
+     -1.616,
+     3.2,
+     -11.459
+    ],
+    [
+     0.334,
+     3.2,
+     -11.041
+    ],
+    [
+     2.217,
+     3.2,
+     -10.353
+    ]
+   ],
+   "body_planes_mm": [
+    [
+     0,
+     -1,
+     0,
+     0
+    ],
+    [
+     -0.707107,
+     0,
+     0.707107,
+     0
+    ],
+    [
+     -1,
+     0,
+     0,
+     4
+    ],
+    [
+     -0.45425,
+     0.766365,
+     0.45425,
+     2.1458
+    ],
+    [
+     0,
+     1,
+     0,
+     3.2
+    ],
+    [
+     0,
+     0,
+     1,
+     4
+    ],
+    [
+     0,
+     0.698943,
+     0.715177,
+     4.8177
+    ],
+    [
+     -0.715177,
+     0.698943,
+     0,
+     4.8177
+    ],
+    [
+     0.997836,
+     0,
+     -0.065758,
+     11.711
+    ],
+    [
+     0.980815,
+     0,
+     -0.19494,
+     11.2621
+    ],
+    [
+     0.980815,
+     0,
+     -0.19494,
+     11.2621
+    ],
+    [
+     0.947066,
+     0,
+     -0.321039,
+     10.8933
+    ],
+    [
+     0.947066,
+     0,
+     -0.321039,
+     10.8933
+    ],
+    [
+     0.896709,
+     0,
+     -0.442621,
+     10.6084
+    ],
+    [
+     0.000877,
+     0.707545,
+     0.706668,
+     4.8183
+    ],
+    [
+     0.72993,
+     0.681827,
+     -0.048103,
+     10.4759
+    ],
+    [
+     0.749253,
+     0.645325,
+     -0.148916,
+     10.4101
+    ],
+    [
+     0.721992,
+     0.689999,
+     -0.051273,
+     10.3985
+    ],
+    [
+     0.731303,
+     0.635407,
+     -0.247899,
+     10.1907
+    ],
+    [
+     0.723754,
+     0.672421,
+     -0.155015,
+     10.1948
+    ],
+    [
+     0.680646,
+     0.651034,
+     -0.335971,
+     9.8752
+    ],
+    [
+     0.688949,
+     0.679714,
+     -0.251672,
+     9.8661
+    ],
+    [
+     0.625764,
+     0.705424,
+     -0.33286,
+     9.4742
+    ],
+    [
+     0.606775,
+     0.684017,
+     -0.4049,
+     9.5152
+    ],
+    [
+     0.831807,
+     0.00001,
+     -0.555064,
+     10.4186
+    ],
+    [
+     0.828466,
+     0.000908,
+     -0.560038,
+     10.4181
+    ],
+    [
+     0.750988,
+     0.044689,
+     -0.658802,
+     10.3815
+    ],
+    [
+     0.751738,
+     0.000896,
+     -0.659461,
+     10.3217
+    ],
+    [
+     0.751486,
+     0.000396,
+     -0.659748,
+     10.3212
+    ],
+    [
+     0.659446,
+     0.000896,
+     -0.751752,
+     10.3218
+    ],
+    [
+     0.659748,
+     0.00037,
+     -0.751486,
+     10.3212
+    ],
+    [
+     0.555064,
+     0.00001,
+     -0.831807,
+     10.4186
+    ],
+    [
+     0.560038,
+     0.000908,
+     -0.828466,
+     10.4181
+    ],
+    [
+     0.4049,
+     0.684017,
+     -0.606775,
+     9.5152
+    ],
+    [
+     0.695792,
+     0.178176,
+     -0.695792,
+     10.462
+    ],
+    [
+     0.658787,
+     0.044682,
+     -0.751001,
+     10.3815
+    ],
+    [
+     0.065758,
+     0,
+     -0.997836,
+     11.711
+    ],
+    [
+     0.19494,
+     0,
+     -0.980815,
+     11.2621
+    ],
+    [
+     0.19494,
+     0,
+     -0.980815,
+     11.2621
+    ],
+    [
+     0.442621,
+     0,
+     -0.896709,
+     10.6084
+    ],
+    [
+     0.321039,
+     0,
+     -0.947066,
+     10.8933
+    ],
+    [
+     0.321039,
+     0,
+     -0.947066,
+     10.8933
+    ],
+    [
+     0.588068,
+     0.701047,
+     -0.403372,
+     9.3877
+    ],
+    [
+     0.500002,
+     0.707103,
+     -0.500002,
+     9.1394
+    ],
+    [
+     0.403372,
+     0.701047,
+     -0.588068,
+     9.3877
+    ],
+    [
+     0.048103,
+     0.681827,
+     -0.72993,
+     10.4759
+    ],
+    [
+     -0.706668,
+     0.707545,
+     -0.000877,
+     4.8183
+    ],
+    [
+     0.148916,
+     0.645325,
+     -0.749253,
+     10.4101
+    ],
+    [
+     0.051273,
+     0.689999,
+     -0.721992,
+     10.3985
+    ],
+    [
+     0.247899,
+     0.635407,
+     -0.731303,
+     10.1907
+    ],
+    [
+     0.155015,
+     0.672421,
+     -0.723754,
+     10.1948
+    ],
+    [
+     0.33286,
+     0.705424,
+     -0.625764,
+     9.4742
+    ],
+    [
+     0.335971,
+     0.651034,
+     -0.680646,
+     9.8752
+    ],
+    [
+     0.251672,
+     0.679714,
+     -0.688949,
+     9.8661
+    ]
+   ],
+   "body_bounds_mm": {
+    "min": [
+     -4,
+     0,
+     -12
+    ],
+    "max": [
+     12,
+     3.2,
+     4
+    ]
+   },
+   "collision_boxes_mm": [
+    {
+     "min": [
+      -4,
+      0,
+      -12
+     ],
+     "max": [
+      12,
+      3.2,
+      4
+     ]
+    }
+   ],
+   "footprint_studs_x": 2,
+   "footprint_studs_z": 2,
+   "body_height_ldu": 8,
+   "mesh_file": "part-meshes/27925.json"
+  },
+  {
+   "part_id": "25269",
+   "description": "Tile 1 x 1 Corner Round",
+   "family": "round_corner",
+   "roles": [],
+   "source_filename": "parts/25269.dat",
+   "source_author": "Magnus Forsberg [MagFors]",
+   "source_license_notice": "Licensed under CC BY 4.0 : see CAreadme.txt",
+   "source_library_commit": "c70360d1c588be894997b2168c61909bc8058c4d",
+   "connection_source": "ldcad_shadow",
+   "features": [
+    {
+     "feature_id": "stud_receiver-0",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      0,
+      8,
+      0
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    }
+   ],
+   "other_connectors": [],
+   "body_vertices_mm": [
+    [
+     -4,
+     0,
+     4
+    ],
+    [
+     3.391,
+     0,
+     0.938
+    ],
+    [
+     4,
+     0,
+     4
+    ],
+    [
+     4,
+     2.8,
+     4
+    ],
+    [
+     -4,
+     2.8,
+     4
+    ],
+    [
+     -4,
+     2.8,
+     -4
+    ],
+    [
+     -0.938,
+     2.8,
+     -3.391
+    ],
+    [
+     -4,
+     0,
+     -4
+    ],
+    [
+     -3.6,
+     3.2,
+     3.6
+    ],
+    [
+     -3.6,
+     3.2,
+     -3.52
+    ],
+    [
+     3.52,
+     3.2,
+     3.6
+    ],
+    [
+     -0.938,
+     0,
+     -3.391
+    ],
+    [
+     1.657,
+     0,
+     -1.657
+    ],
+    [
+     -1.092,
+     3.2,
+     -3.022
+    ],
+    [
+     -0.265,
+     3.2,
+     -2.47
+    ],
+    [
+     3.391,
+     2.8,
+     0.938
+    ],
+    [
+     3.022,
+     3.2,
+     1.092
+    ],
+    [
+     2.47,
+     3.2,
+     0.265
+    ],
+    [
+     -0.068,
+     1.6,
+     -2.81
+    ],
+    [
+     1.657,
+     1.6,
+     -1.657
+    ],
+    [
+     -0.068,
+     2.8,
+     -2.81
+    ],
+    [
+     2.81,
+     1.6,
+     0.068
+    ],
+    [
+     2.81,
+     2.8,
+     0.068
+    ]
+   ],
+   "body_planes_mm": [
+    [
+     0,
+     -1,
+     0,
+     0
+    ],
+    [
+     0.980797,
+     0,
+     -0.195032,
+     3.1431
+    ],
+    [
+     0,
+     0,
+     1,
+     4
+    ],
+    [
+     -1,
+     0,
+     0,
+     4
+    ],
+    [
+     0.195032,
+     0,
+     -0.980797,
+     3.1431
+    ],
+    [
+     0,
+     0.707107,
+     0.707107,
+     4.8083
+    ],
+    [
+     -0.707107,
+     0.707107,
+     0,
+     4.8083
+    ],
+    [
+     0,
+     1,
+     0,
+     3.2
+    ],
+    [
+     0.139296,
+     0.699919,
+     -0.700507,
+     4.2046
+    ],
+    [
+     0.138921,
+     0.700763,
+     -0.699737,
+     4.2054
+    ],
+    [
+     0.699737,
+     0.700763,
+     -0.138921,
+     4.2054
+    ],
+    [
+     0.700507,
+     0.699919,
+     -0.139296,
+     4.2046
+    ],
+    [
+     0.555494,
+     0,
+     -0.831521,
+     2.2986
+    ],
+    [
+     0.555723,
+     0,
+     -0.831368,
+     2.2981
+    ],
+    [
+     0.555646,
+     -0.00012,
+     -0.831419,
+     2.2981
+    ],
+    [
+     0.396692,
+     0.700019,
+     -0.593809,
+     3.6015
+    ],
+    [
+     0.396723,
+     0.70026,
+     -0.593504,
+     3.6013
+    ],
+    [
+     0.512743,
+     0.688614,
+     -0.512743,
+     3.3339
+    ],
+    [
+     0.555723,
+     0,
+     -0.831368,
+     2.2981
+    ],
+    [
+     0.831419,
+     -0.00012,
+     -0.555646,
+     2.2981
+    ],
+    [
+     0.831368,
+     0,
+     -0.555723,
+     2.2981
+    ],
+    [
+     0.831521,
+     0,
+     -0.555494,
+     2.2986
+    ],
+    [
+     0.593809,
+     0.700019,
+     -0.396692,
+     3.6015
+    ],
+    [
+     0.593504,
+     0.70026,
+     -0.396723,
+     3.6013
+    ],
+    [
+     0.670069,
+     0.319399,
+     -0.670069,
+     2.7314
+    ],
+    [
+     0.831368,
+     0,
+     -0.555723,
+     2.2981
+    ]
+   ],
+   "body_bounds_mm": {
+    "min": [
+     -4,
+     0,
+     -4
+    ],
+    "max": [
+     4,
+     3.2,
+     4
+    ]
+   },
+   "collision_boxes_mm": [
+    {
+     "min": [
+      -4,
+      0,
+      -4
+     ],
+     "max": [
+      4,
+      3.2,
+      4
+     ]
+    }
+   ],
+   "footprint_studs_x": 1,
+   "footprint_studs_z": 1,
+   "body_height_ldu": 8,
+   "mesh_file": "part-meshes/25269.json"
+  },
+  {
+   "part_id": "2577",
+   "description": "Brick 4 x 4 Corner Round",
+   "family": "round_corner",
+   "roles": [],
+   "source_filename": "parts/2577.dat",
+   "source_author": "James Jessiman",
+   "source_license_notice": "Licensed under CC BY 4.0 : see CAreadme.txt",
+   "source_library_commit": "c70360d1c588be894997b2168c61909bc8058c4d",
+   "connection_source": "ldcad_shadow",
+   "features": [
+    {
+     "feature_id": "stud_receiver-0",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      10,
+      24,
+      -30
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-1",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      10,
+      24,
+      -10
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-2",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      30,
+      24,
+      -30
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-3",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      30,
+      24,
+      -10
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-4",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      50,
+      24,
+      -30
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-5",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      50,
+      24,
+      -10
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-6",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      70,
+      24,
+      -30
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-7",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      70,
+      24,
+      -10
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-8",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      10,
+      24,
+      -70
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-9",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      10,
+      24,
+      -50
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-10",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      30,
+      24,
+      -70
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-11",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      30,
+      24,
+      -50
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-12",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      50,
+      24,
+      -50
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-0",
+     "kind": "stud",
+     "position_ldu": [
+      70,
+      0,
+      -10
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-1",
+     "kind": "stud",
+     "position_ldu": [
+      50,
+      0,
+      -10
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-2",
+     "kind": "stud",
+     "position_ldu": [
+      50,
+      0,
+      -30
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-3",
+     "kind": "stud",
+     "position_ldu": [
+      50,
+      0,
+      -50
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-4",
+     "kind": "stud",
+     "position_ldu": [
+      30,
+      0,
+      -10
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-5",
+     "kind": "stud",
+     "position_ldu": [
+      30,
+      0,
+      -30
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-6",
+     "kind": "stud",
+     "position_ldu": [
+      30,
+      0,
+      -50
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-7",
+     "kind": "stud",
+     "position_ldu": [
+      10,
+      0,
+      -10
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-8",
+     "kind": "stud",
+     "position_ldu": [
+      10,
+      0,
+      -30
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-9",
+     "kind": "stud",
+     "position_ldu": [
+      10,
+      0,
+      -50
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-10",
+     "kind": "stud",
+     "position_ldu": [
+      10,
+      0,
+      -70
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    }
+   ],
+   "other_connectors": [],
+   "body_vertices_mm": [
+    [
+     32,
+     9.6,
+     0
+    ],
+    [
+     6.244,
+     9.6,
+     -31.384
+    ],
+    [
+     0,
+     9.6,
+     0
+    ],
+    [
+     4.8,
+     9.6,
+     -24.4
+    ],
+    [
+     18.217,
+     9.6,
+     -16.918
+    ],
+    [
+     17.697,
+     9.6,
+     -17.697
+    ],
+    [
+     19.2,
+     9.6,
+     -16
+    ],
+    [
+     18.956,
+     9.6,
+     -17.225
+    ],
+    [
+     18.263,
+     9.6,
+     -18.263
+    ],
+    [
+     26.4,
+     9.6,
+     -8
+    ],
+    [
+     26.217,
+     9.6,
+     -8.918
+    ],
+    [
+     25.697,
+     9.6,
+     -9.697
+    ],
+    [
+     27.2,
+     9.6,
+     -8
+    ],
+    [
+     26.956,
+     9.6,
+     -9.225
+    ],
+    [
+     26.263,
+     9.6,
+     -10.263
+    ],
+    [
+     1.6,
+     9.6,
+     -8.4
+    ],
+    [
+     1.6,
+     9.6,
+     -24.4
+    ],
+    [
+     31.384,
+     9.6,
+     -6.244
+    ],
+    [
+     30.124,
+     9.6,
+     -10.396
+    ],
+    [
+     29.564,
+     8,
+     -12.244
+    ],
+    [
+     28.216,
+     9.6,
+     -14.772
+    ],
+    [
+     28.216,
+     8,
+     -14.772
+    ],
+    [
+     26.608,
+     9.6,
+     -17.78
+    ],
+    [
+     22.628,
+     9.6,
+     -22.628
+    ],
+    [
+     17.78,
+     9.6,
+     -26.608
+    ],
+    [
+     14.772,
+     9.6,
+     -28.216
+    ],
+    [
+     14.772,
+     8,
+     -28.216
+    ],
+    [
+     12.244,
+     8,
+     -29.564
+    ],
+    [
+     10.396,
+     9.6,
+     -30.124
+    ],
+    [
+     0,
+     9.6,
+     -32
+    ],
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     32,
+     0,
+     0
+    ],
+    [
+     31.384,
+     0,
+     -6.244
+    ],
+    [
+     29.564,
+     0,
+     -12.244
+    ],
+    [
+     26.608,
+     0,
+     -17.78
+    ],
+    [
+     22.628,
+     0,
+     -22.628
+    ],
+    [
+     17.78,
+     0,
+     -26.608
+    ],
+    [
+     12.244,
+     0,
+     -29.564
+    ],
+    [
+     6.244,
+     0,
+     -31.384
+    ],
+    [
+     0,
+     0,
+     -32
+    ]
+   ],
+   "body_planes_mm": [
+    [
+     0,
+     1,
+     0,
+     9.6
+    ],
+    [
+     0.956908,
+     0.000484,
+     -0.290391,
+     31.8494
+    ],
+    [
+     0.907704,
+     0.13942,
+     -0.395772,
+     32.7966
+    ],
+    [
+     0.882392,
+     0,
+     -0.470516,
+     31.848
+    ],
+    [
+     0.881898,
+     0,
+     -0.47144,
+     31.8477
+    ],
+    [
+     0.47144,
+     0,
+     -0.881898,
+     31.8477
+    ],
+    [
+     0.470516,
+     0,
+     -0.882392,
+     31.848
+    ],
+    [
+     0.395772,
+     0.13942,
+     -0.907704,
+     32.7966
+    ],
+    [
+     0.290391,
+     0.000484,
+     -0.956908,
+     31.8494
+    ],
+    [
+     0,
+     0,
+     1,
+     0
+    ],
+    [
+     -1,
+     0,
+     0,
+     0
+    ],
+    [
+     0.995169,
+     0,
+     -0.098178,
+     31.8454
+    ],
+    [
+     0.956944,
+     0,
+     -0.290273,
+     31.8452
+    ],
+    [
+     0,
+     -1,
+     0,
+     0
+    ],
+    [
+     0.882123,
+     -0.000204,
+     -0.471018,
+     31.8462
+    ],
+    [
+     0.772905,
+     0,
+     -0.634522,
+     31.8473
+    ],
+    [
+     0.634522,
+     0,
+     -0.772905,
+     31.8473
+    ],
+    [
+     0.290273,
+     0,
+     -0.956944,
+     31.8452
+    ],
+    [
+     0.471018,
+     -0.000204,
+     -0.882123,
+     31.8462
+    ],
+    [
+     0.098178,
+     0,
+     -0.995169,
+     31.8454
+    ],
+    [
+     0.290273,
+     0,
+     -0.956944,
+     31.8452
+    ],
+    [
+     0.098178,
+     0,
+     -0.995169,
+     31.8454
+    ]
+   ],
+   "body_bounds_mm": {
+    "min": [
+     0,
+     0,
+     -32
+    ],
+    "max": [
+     32,
+     9.6,
+     0
+    ]
+   },
+   "collision_boxes_mm": [
+    {
+     "min": [
+      0,
+      0,
+      -32
+     ],
+     "max": [
+      32,
+      9.6,
+      0
+     ]
+    }
+   ],
+   "footprint_studs_x": 4,
+   "footprint_studs_z": 4,
+   "body_height_ldu": 24,
+   "mesh_file": "part-meshes/2577.json"
+  },
+  {
+   "part_id": "87087",
+   "description": "Brick 1 x 1 with Stud on 1 Side",
+   "family": "snot",
+   "roles": [
+    "side_studs"
+   ],
+   "source_filename": "parts/87087.dat",
+   "source_author": "Magnus Forsberg [MagFors]",
+   "source_license_notice": "Licensed under CC BY 4.0 : see CAreadme.txt",
+   "source_library_commit": "c70360d1c588be894997b2168c61909bc8058c4d",
+   "connection_source": "ldcad_shadow",
+   "features": [
+    {
+     "feature_id": "stud_receiver-0",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      0,
+      24,
+      0
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-0",
+     "kind": "stud",
+     "position_ldu": [
+      0,
+      10,
+      -10
+     ],
+     "axis": [
+      0,
+      0,
+      -1
+     ]
+    },
+    {
+     "feature_id": "stud-1",
+     "kind": "stud",
+     "position_ldu": [
+      0,
+      0,
+      0
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    }
+   ],
+   "other_connectors": [
+    {
+     "type": "F-R4",
+     "position_ldu": [
+      0,
+      10,
+      -4
+     ],
+     "axis": [
+      0,
+      0,
+      1
+     ],
+     "length_ldu": 20
+    }
+   ],
+   "body_vertices_mm": [
+    [
+     4,
+     9.6,
+     -4
+    ],
+    [
+     -2.4,
+     9.6,
+     -2.4
+    ],
+    [
+     2.4,
+     9.6,
+     -2.4
+    ],
+    [
+     -4,
+     9.6,
+     -4
+    ],
+    [
+     -4,
+     0,
+     -4
+    ],
+    [
+     2.4,
+     9.6,
+     2.4
+    ],
+    [
+     4,
+     0,
+     4
+    ],
+    [
+     4,
+     9.6,
+     4
+    ],
+    [
+     -2.4,
+     9.6,
+     2.4
+    ],
+    [
+     -4,
+     9.6,
+     4
+    ],
+    [
+     -4,
+     0,
+     4
+    ],
+    [
+     4,
+     0,
+     -4
+    ]
+   ],
+   "body_planes_mm": [
+    [
+     0,
+     1,
+     0,
+     9.6
+    ],
+    [
+     0,
+     0,
+     -1,
+     4
+    ],
+    [
+     1,
+     0,
+     0,
+     4
+    ],
+    [
+     -1,
+     0,
+     0,
+     4
+    ],
+    [
+     0,
+     0,
+     1,
+     4
+    ],
+    [
+     0,
+     -1,
+     0,
+     0
+    ]
+   ],
+   "body_bounds_mm": {
+    "min": [
+     -4,
+     0,
+     -4
+    ],
+    "max": [
+     4,
+     9.6,
+     4
+    ]
+   },
+   "collision_boxes_mm": [
+    {
+     "min": [
+      -4,
+      0,
+      -4
+     ],
+     "max": [
+      4,
+      9.6,
+      4
+     ]
+    }
+   ],
+   "footprint_studs_x": 1,
+   "footprint_studs_z": 1,
+   "body_height_ldu": 24,
+   "mesh_file": "part-meshes/87087.json"
+  },
+  {
+   "part_id": "11211",
+   "description": "Brick 1 x 2 with Two Studs on One Side",
+   "family": "snot",
+   "roles": [
+    "side_studs"
+   ],
+   "source_filename": "parts/11211.dat",
+   "source_author": "Magnus Forsberg [MagFors]",
+   "source_license_notice": "Licensed under CC BY 4.0 : see CAreadme.txt",
+   "source_library_commit": "c70360d1c588be894997b2168c61909bc8058c4d",
+   "connection_source": "ldcad_shadow",
+   "features": [
+    {
+     "feature_id": "stud_receiver-0",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      -10,
+      24,
+      0
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-1",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      10,
+      24,
+      0
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-0",
+     "kind": "stud",
+     "position_ldu": [
+      -10,
+      10,
+      -10
+     ],
+     "axis": [
+      0,
+      0,
+      -1
+     ]
+    },
+    {
+     "feature_id": "stud-1",
+     "kind": "stud",
+     "position_ldu": [
+      10,
+      10,
+      -10
+     ],
+     "axis": [
+      0,
+      0,
+      -1
+     ]
+    },
+    {
+     "feature_id": "stud-2",
+     "kind": "stud",
+     "position_ldu": [
+      10,
+      0,
+      0
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-3",
+     "kind": "stud",
+     "position_ldu": [
+      -10,
+      0,
+      0
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    }
+   ],
+   "other_connectors": [
+    {
+     "type": "F-R4",
+     "position_ldu": [
+      10,
+      10,
+      -4
+     ],
+     "axis": [
+      0,
+      0,
+      1
+     ],
+     "length_ldu": 20
+    },
+    {
+     "type": "F-R4",
+     "position_ldu": [
+      -10,
+      10,
+      -4
+     ],
+     "axis": [
+      0,
+      0,
+      1
+     ],
+     "length_ldu": 20
+    },
+    {
+     "type": "M-R4",
+     "position_ldu": [
+      0,
+      14,
+      0
+     ],
+     "axis": [
+      0,
+      5,
+      0
+     ],
+     "length_ldu": 4
+    }
+   ],
+   "body_vertices_mm": [
+    [
+     0,
+     9.6,
+     0
+    ],
+    [
+     8,
+     9.6,
+     4
+    ],
+    [
+     1.6,
+     9.6,
+     0
+    ],
+    [
+     1.131,
+     9.6,
+     1.131
+    ],
+    [
+     0.612,
+     9.6,
+     1.478
+    ],
+    [
+     0,
+     9.6,
+     1.6
+    ],
+    [
+     -0.612,
+     9.6,
+     1.478
+    ],
+    [
+     -1.131,
+     9.6,
+     1.131
+    ],
+    [
+     -1.478,
+     9.6,
+     0.612
+    ],
+    [
+     -1.6,
+     9.6,
+     0
+    ],
+    [
+     -1.478,
+     9.6,
+     -0.612
+    ],
+    [
+     -1.131,
+     9.6,
+     -1.131
+    ],
+    [
+     -0.612,
+     9.6,
+     -1.478
+    ],
+    [
+     0,
+     9.6,
+     -1.6
+    ],
+    [
+     0.612,
+     9.6,
+     -1.478
+    ],
+    [
+     1.131,
+     9.6,
+     -1.131
+    ],
+    [
+     -6.4,
+     9.6,
+     2.4
+    ],
+    [
+     -8,
+     0,
+     4
+    ],
+    [
+     -8,
+     9.6,
+     4
+    ],
+    [
+     6.4,
+     9.6,
+     2.4
+    ],
+    [
+     -6.4,
+     9.6,
+     -2.4
+    ],
+    [
+     -8,
+     9.6,
+     -4
+    ],
+    [
+     6.4,
+     9.6,
+     -2.4
+    ],
+    [
+     8,
+     0,
+     -4
+    ],
+    [
+     8,
+     9.6,
+     -4
+    ],
+    [
+     -8,
+     0,
+     -4
+    ],
+    [
+     8,
+     0,
+     4
+    ]
+   ],
+   "body_planes_mm": [
+    [
+     0,
+     1,
+     0,
+     9.6
+    ],
+    [
+     0,
+     0,
+     1,
+     4
+    ],
+    [
+     -1,
+     0,
+     0,
+     8
+    ],
+    [
+     1,
+     0,
+     0,
+     8
+    ],
+    [
+     0,
+     0,
+     -1,
+     4
+    ],
+    [
+     0,
+     -1,
+     0,
+     0
+    ]
+   ],
+   "body_bounds_mm": {
+    "min": [
+     -8,
+     0,
+     -4
+    ],
+    "max": [
+     8,
+     9.6,
+     4
+    ]
+   },
+   "collision_boxes_mm": [
+    {
+     "min": [
+      -8,
+      0,
+      -4
+     ],
+     "max": [
+      8,
+      9.6,
+      4
+     ]
+    }
+   ],
+   "footprint_studs_x": 2,
+   "footprint_studs_z": 1,
+   "body_height_ldu": 24,
+   "mesh_file": "part-meshes/11211.json"
+  },
+  {
+   "part_id": "30414",
+   "description": "Brick 1 x 4 with Studs on Side",
+   "family": "snot",
+   "roles": [
+    "side_studs"
+   ],
+   "source_filename": "parts/30414.dat",
+   "source_author": "R. M. Rodinsky [dublar]",
+   "source_license_notice": "Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt",
+   "source_library_commit": "c70360d1c588be894997b2168c61909bc8058c4d",
+   "connection_source": "ldcad_shadow",
+   "features": [
+    {
+     "feature_id": "stud_receiver-0",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      -30,
+      24,
+      0
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-1",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      -10,
+      24,
+      0
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-2",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      10,
+      24,
+      0
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-3",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      30,
+      24,
+      0
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-0",
+     "kind": "stud",
+     "position_ldu": [
+      -30,
+      10,
+      -10
+     ],
+     "axis": [
+      0,
+      0,
+      -1
+     ]
+    },
+    {
+     "feature_id": "stud-1",
+     "kind": "stud",
+     "position_ldu": [
+      -10,
+      10,
+      -10
+     ],
+     "axis": [
+      0,
+      0,
+      -1
+     ]
+    },
+    {
+     "feature_id": "stud-2",
+     "kind": "stud",
+     "position_ldu": [
+      10,
+      10,
+      -10
+     ],
+     "axis": [
+      0,
+      0,
+      -1
+     ]
+    },
+    {
+     "feature_id": "stud-3",
+     "kind": "stud",
+     "position_ldu": [
+      30,
+      10,
+      -10
+     ],
+     "axis": [
+      0,
+      0,
+      -1
+     ]
+    },
+    {
+     "feature_id": "stud-4",
+     "kind": "stud",
+     "position_ldu": [
+      -30,
+      0,
+      0
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-5",
+     "kind": "stud",
+     "position_ldu": [
+      -10,
+      0,
+      0
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-6",
+     "kind": "stud",
+     "position_ldu": [
+      10,
+      0,
+      0
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-7",
+     "kind": "stud",
+     "position_ldu": [
+      30,
+      0,
+      0
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    }
+   ],
+   "other_connectors": [
+    {
+     "type": "F-R4",
+     "position_ldu": [
+      -30,
+      10,
+      -4
+     ],
+     "axis": [
+      0,
+      0,
+      1
+     ],
+     "length_ldu": 20
+    },
+    {
+     "type": "F-R4",
+     "position_ldu": [
+      -10,
+      10,
+      -4
+     ],
+     "axis": [
+      0,
+      0,
+      1
+     ],
+     "length_ldu": 20
+    },
+    {
+     "type": "F-R4",
+     "position_ldu": [
+      10,
+      10,
+      -4
+     ],
+     "axis": [
+      0,
+      0,
+      1
+     ],
+     "length_ldu": 20
+    },
+    {
+     "type": "F-R4",
+     "position_ldu": [
+      30,
+      10,
+      -4
+     ],
+     "axis": [
+      0,
+      0,
+      1
+     ],
+     "length_ldu": 20
+    },
+    {
+     "type": "M-R4",
+     "position_ldu": [
+      -20,
+      14,
+      0
+     ],
+     "axis": [
+      0,
+      5,
+      0
+     ],
+     "length_ldu": 4
+    },
+    {
+     "type": "M-R4",
+     "position_ldu": [
+      0,
+      14,
+      0
+     ],
+     "axis": [
+      0,
+      5,
+      0
+     ],
+     "length_ldu": 4
+    },
+    {
+     "type": "M-R4",
+     "position_ldu": [
+      20,
+      14,
+      0
+     ],
+     "axis": [
+      0,
+      5,
+      0
+     ],
+     "length_ldu": 4
+    }
+   ],
+   "body_vertices_mm": [
+    [
+     16,
+     0,
+     4
+    ],
+    [
+     16,
+     9.6,
+     4
+    ],
+    [
+     -16,
+     0,
+     4
+    ],
+    [
+     -16,
+     9.6,
+     -4
+    ],
+    [
+     -16,
+     9.6,
+     4
+    ],
+    [
+     14.4,
+     9.6,
+     2.4
+    ],
+    [
+     14.4,
+     9.6,
+     -2.4
+    ],
+    [
+     -16,
+     0,
+     -4
+    ],
+    [
+     16,
+     9.6,
+     -4
+    ],
+    [
+     16,
+     0,
+     -4
+    ]
+   ],
+   "body_planes_mm": [
+    [
+     0,
+     0,
+     1,
+     4
+    ],
+    [
+     -1,
+     0,
+     0,
+     16
+    ],
+    [
+     0,
+     1,
+     0,
+     9.6
+    ],
+    [
+     0,
+     -1,
+     0,
+     0
+    ],
+    [
+     1,
+     0,
+     0,
+     16
+    ],
+    [
+     0,
+     0,
+     -1,
+     4
+    ]
+   ],
+   "body_bounds_mm": {
+    "min": [
+     -16,
+     0,
+     -4
+    ],
+    "max": [
+     16,
+     9.6,
+     4
+    ]
+   },
+   "collision_boxes_mm": [
+    {
+     "min": [
+      -16,
+      0,
+      -4
+     ],
+     "max": [
+      16,
+      9.6,
+      4
+     ]
+    }
+   ],
+   "footprint_studs_x": 4,
+   "footprint_studs_z": 1,
+   "body_height_ldu": 24,
+   "mesh_file": "part-meshes/30414.json"
+  },
+  {
+   "part_id": "48336",
+   "description": "Plate 1 x 2 with Handle Type 2",
+   "family": "hinge",
+   "roles": [
+    "bar_plate"
+   ],
+   "source_filename": "parts/48336.dat",
+   "source_author": "Guy Vivan [guyvivan]",
+   "source_license_notice": "Licensed under CC BY 2.0 and CC BY 4.0 : see CAreadme.txt",
+   "source_library_commit": "c70360d1c588be894997b2168c61909bc8058c4d",
+   "connection_source": "ldcad_shadow",
+   "features": [
+    {
+     "feature_id": "stud_receiver-0",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      -10,
+      8,
+      0
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-1",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      10,
+      8,
+      0
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-0",
+     "kind": "stud",
+     "position_ldu": [
+      -10,
+      0,
+      0
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-1",
+     "kind": "stud",
+     "position_ldu": [
+      10,
+      0,
+      0
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    }
+   ],
+   "other_connectors": [
+    {
+     "type": "M-R4",
+     "position_ldu": [
+      0,
+      2,
+      -20
+     ],
+     "axis": [
+      -1,
+      0,
+      0
+     ],
+     "length_ldu": 28
+    },
+    {
+     "type": "M-R4",
+     "position_ldu": [
+      0,
+      6,
+      0
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ],
+     "length_ldu": 4
+    }
+   ],
+   "body_vertices_mm": [
+    [
+     1.6,
+     3.2,
+     0
+    ],
+    [
+     0,
+     3.2,
+     0
+    ],
+    [
+     1.478,
+     3.2,
+     0.612
+    ],
+    [
+     1.131,
+     3.2,
+     1.131
+    ],
+    [
+     0.612,
+     3.2,
+     1.478
+    ],
+    [
+     0,
+     3.2,
+     1.6
+    ],
+    [
+     -0.612,
+     3.2,
+     1.478
+    ],
+    [
+     -1.131,
+     3.2,
+     1.131
+    ],
+    [
+     -1.478,
+     3.2,
+     0.612
+    ],
+    [
+     -1.6,
+     3.2,
+     0
+    ],
+    [
+     -1.478,
+     3.2,
+     -0.612
+    ],
+    [
+     -1.131,
+     3.2,
+     -1.131
+    ],
+    [
+     -0.612,
+     3.2,
+     -1.478
+    ],
+    [
+     0,
+     3.2,
+     -1.6
+    ],
+    [
+     0.612,
+     3.2,
+     -1.478
+    ],
+    [
+     1.131,
+     3.2,
+     -1.131
+    ],
+    [
+     1.478,
+     3.2,
+     -0.612
+    ],
+    [
+     -6.4,
+     3.2,
+     2.4
+    ],
+    [
+     6.4,
+     3.2,
+     2.4
+    ],
+    [
+     -6.4,
+     3.2,
+     -2.4
+    ],
+    [
+     6.4,
+     3.2,
+     -2.4
+    ],
+    [
+     8,
+     3.2,
+     4
+    ],
+    [
+     -8,
+     -0.118,
+     -10.217
+    ],
+    [
+     -8,
+     0,
+     4
+    ],
+    [
+     -8,
+     3.2,
+     4
+    ],
+    [
+     -8,
+     3.2,
+     -4
+    ],
+    [
+     -5.6,
+     3.2,
+     -4
+    ],
+    [
+     5.6,
+     3.2,
+     -4
+    ],
+    [
+     8,
+     3.2,
+     -4
+    ],
+    [
+     8,
+     -0.118,
+     -10.217
+    ],
+    [
+     8,
+     0,
+     4
+    ],
+    [
+     -8,
+     -0.119,
+     -5.782
+    ],
+    [
+     -8,
+     -1.417,
+     -7.082
+    ],
+    [
+     -8,
+     -1.6,
+     -8
+    ],
+    [
+     -5.6,
+     -1.6,
+     -8
+    ],
+    [
+     -5.6,
+     -1.417,
+     -8.918
+    ],
+    [
+     -8,
+     -1.417,
+     -8.918
+    ],
+    [
+     -5.6,
+     -0.897,
+     -9.697
+    ],
+    [
+     -8,
+     -0.897,
+     -9.697
+    ],
+    [
+     -5.6,
+     0.8,
+     -10.4
+    ],
+    [
+     -8,
+     0.8,
+     -10.4
+    ],
+    [
+     -5.6,
+     1.718,
+     -10.217
+    ],
+    [
+     -8,
+     1.718,
+     -10.217
+    ],
+    [
+     -5.6,
+     2.497,
+     -9.697
+    ],
+    [
+     -8,
+     2.497,
+     -9.697
+    ],
+    [
+     -5.6,
+     3.017,
+     -8.918
+    ],
+    [
+     -8,
+     3.017,
+     -8.918
+    ],
+    [
+     -5.6,
+     3.2,
+     -8
+    ],
+    [
+     -8,
+     3.2,
+     -8
+    ],
+    [
+     8,
+     -0.119,
+     -5.782
+    ],
+    [
+     8,
+     -1.417,
+     -7.082
+    ],
+    [
+     8,
+     -1.6,
+     -8
+    ],
+    [
+     5.6,
+     -1.417,
+     -8.918
+    ],
+    [
+     8,
+     -1.417,
+     -8.918
+    ],
+    [
+     5.6,
+     -0.897,
+     -9.697
+    ],
+    [
+     8,
+     -0.897,
+     -9.697
+    ],
+    [
+     5.6,
+     0.8,
+     -10.4
+    ],
+    [
+     8,
+     0.8,
+     -10.4
+    ],
+    [
+     5.6,
+     1.718,
+     -10.217
+    ],
+    [
+     8,
+     1.718,
+     -10.217
+    ],
+    [
+     5.6,
+     2.497,
+     -9.697
+    ],
+    [
+     8,
+     2.497,
+     -9.697
+    ],
+    [
+     5.6,
+     3.017,
+     -8.918
+    ],
+    [
+     8,
+     3.017,
+     -8.918
+    ],
+    [
+     5.6,
+     3.2,
+     -8
+    ],
+    [
+     8,
+     3.2,
+     -8
+    ]
+   ],
+   "body_planes_mm": [
+    [
+     0,
+     1,
+     0,
+     3.2
+    ],
+    [
+     -1,
+     0,
+     0,
+     8
+    ],
+    [
+     0,
+     0,
+     1,
+     4
+    ],
+    [
+     1,
+     0,
+     0,
+     8
+    ],
+    [
+     0,
+     -0.991228,
+     0.132164,
+     0.5287
+    ],
+    [
+     0,
+     -0.980797,
+     -0.195032,
+     3.1295
+    ],
+    [
+     0,
+     -0.555646,
+     -0.831419,
+     8.5607
+    ],
+    [
+     0,
+     -0.831419,
+     -0.555646,
+     6.1339
+    ],
+    [
+     0,
+     -0.555646,
+     -0.831419,
+     8.5607
+    ],
+    [
+     0,
+     -0.831419,
+     -0.555646,
+     6.1339
+    ],
+    [
+     0,
+     -0.195032,
+     -0.980797,
+     10.0443
+    ],
+    [
+     0,
+     0.195032,
+     -0.980797,
+     10.3563
+    ],
+    [
+     0,
+     0.555646,
+     -0.831419,
+     9.4498
+    ],
+    [
+     0,
+     0.555646,
+     -0.831419,
+     9.4498
+    ],
+    [
+     0,
+     0.831419,
+     -0.555646,
+     7.4642
+    ],
+    [
+     0,
+     0.831419,
+     -0.555646,
+     7.4642
+    ],
+    [
+     0,
+     0.980797,
+     -0.195032,
+     4.6988
+    ]
+   ],
+   "body_bounds_mm": {
+    "min": [
+     -8,
+     -1.6,
+     -10.4
+    ],
+    "max": [
+     8,
+     3.2,
+     4
+    ]
+   },
+   "collision_boxes_mm": [
+    {
+     "min": [
+      -8,
+      0,
+      -10.4
+     ],
+     "max": [
+      8,
+      3.2,
+      4
+     ]
+    }
+   ],
+   "footprint_studs_x": 2,
+   "footprint_studs_z": 2,
+   "body_height_ldu": 12,
+   "mesh_file": "part-meshes/48336.json"
+  },
+  {
+   "part_id": "60470b",
+   "description": "Plate 1 x 2 with 2 Clips Horizontal (Thick C-Clips)",
+   "family": "hinge",
+   "roles": [
+    "clip_plate"
+   ],
+   "source_filename": "parts/60470b.dat",
+   "source_author": "Max Martin Richter [MMR1988]",
+   "source_license_notice": "Licensed under CC BY 4.0 : see CAreadme.txt",
+   "source_library_commit": "c70360d1c588be894997b2168c61909bc8058c4d",
+   "connection_source": "ldcad_shadow",
+   "features": [
+    {
+     "feature_id": "stud_receiver-0",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      -10,
+      8,
+      0
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud_receiver-1",
+     "kind": "stud_receiver",
+     "position_ldu": [
+      10,
+      8,
+      0
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-0",
+     "kind": "stud",
+     "position_ldu": [
+      -10,
+      0,
+      0
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    },
+    {
+     "feature_id": "stud-1",
+     "kind": "stud",
+     "position_ldu": [
+      10,
+      0,
+      0
+     ],
+     "axis": [
+      0,
+      -1,
+      0
+     ]
+    }
+   ],
+   "other_connectors": [
+    {
+     "type": "M-R4",
+     "position_ldu": [
+      0,
+      6,
+      0
+     ],
+     "axis": [
+      0,
+      1,
+      0
+     ],
+     "length_ldu": 4
+    },
+    {
+     "type": "C-CLP4",
+     "position_ldu": [
+      -10,
+      2,
+      -20
+     ],
+     "axis": [
+      -1,
+      0,
+      0
+     ],
+     "length_ldu": 8
+    },
+    {
+     "type": "C-CLP4",
+     "position_ldu": [
+      10,
+      2,
+      -20
+     ],
+     "axis": [
+      -1,
+      0,
+      0
+     ],
+     "length_ldu": 8
+    }
+   ],
+   "body_vertices_mm": [
+    [
+     5.6,
+     3.33,
+     -9.612
+    ],
+    [
+     -5.6,
+     -1.73,
+     -9.612
+    ],
+    [
+     -5.6,
+     3.33,
+     -9.612
+    ],
+    [
+     -5.6,
+     3.779,
+     -8.482
+    ],
+    [
+     -2.4,
+     3.779,
+     -8.482
+    ],
+    [
+     -5.6,
+     3.774,
+     -7.279
+    ],
+    [
+     -2.4,
+     3.774,
+     -7.279
+    ],
+    [
+     -5.6,
+     -2.174,
+     -7.279
+    ],
+    [
+     -5.6,
+     -2.179,
+     -8.482
+    ],
+    [
+     -2.4,
+     -2.179,
+     -8.482
+    ],
+    [
+     -2.4,
+     -1.73,
+     -9.612
+    ],
+    [
+     8,
+     0,
+     4
+    ],
+    [
+     -2.4,
+     -2.174,
+     -7.279
+    ],
+    [
+     2.4,
+     -2.179,
+     -8.482
+    ],
+    [
+     2.4,
+     -1.73,
+     -9.612
+    ],
+    [
+     2.4,
+     -2.174,
+     -7.279
+    ],
+    [
+     2.4,
+     3.779,
+     -8.482
+    ],
+    [
+     2.4,
+     3.774,
+     -7.279
+    ],
+    [
+     5.6,
+     3.779,
+     -8.482
+    ],
+    [
+     5.6,
+     3.774,
+     -7.279
+    ],
+    [
+     5.6,
+     -2.179,
+     -8.482
+    ],
+    [
+     5.6,
+     -1.73,
+     -9.612
+    ],
+    [
+     5.6,
+     -2.174,
+     -7.279
+    ],
+    [
+     -8,
+     3.2,
+     4
+    ],
+    [
+     8,
+     3.2,
+     4
+    ],
+    [
+     -8,
+     0,
+     4
+    ],
+    [
+     8,
+     3.2,
+     -4
+    ],
+    [
+     8,
+     0,
+     -4
+    ],
+    [
+     -8,
+     0,
+     -4
+    ],
+    [
+     -8,
+     3.2,
+     -4
+    ]
+   ],
+   "body_planes_mm": [
+    [
+     0,
+     0,
+     -1,
+     9.6119
+    ],
+    [
+     0,
+     0.929288,
+     -0.369357,
+     6.6449
+    ],
+    [
+     0,
+     0.999992,
+     0.003928,
+     3.7458
+    ],
+    [
+     0,
+     -0.999992,
+     0.003928,
+     2.1458
+    ],
+    [
+     0,
+     -0.929288,
+     -0.369357,
+     5.158
+    ],
+    [
+     0,
+     -0.981919,
+     0.1893,
+     0.7572
+    ],
+    [
+     0.663806,
+     -0.747899,
+     0.002938,
+     5.3222
+    ],
+    [
+     -0.215694,
+     0.976454,
+     0.003836,
+     4.8655
+    ],
+    [
+     0,
+     0.998706,
+     0.050865,
+     3.3993
+    ],
+    [
+     0.215694,
+     0.976454,
+     0.003836,
+     4.8655
+    ],
+    [
+     0,
+     0,
+     1,
+     4
+    ],
+    [
+     -0.663806,
+     -0.747899,
+     0.002938,
+     5.3222
+    ],
+    [
+     0.919448,
+     0,
+     -0.393212,
+     8.9284
+    ],
+    [
+     1,
+     0,
+     0,
+     8
+    ],
+    [
+     0.67468,
+     0.685917,
+     -0.272626,
+     8.6829
+    ],
+    [
+     0.23459,
+     0.972094,
+     0,
+     4.9874
+    ],
+    [
+     0.672227,
+     -0.740345,
+     0,
+     5.3778
+    ],
+    [
+     0.837652,
+     -0.50758,
+     -0.201744,
+     7.5082
+    ],
+    [
+     -0.919448,
+     0,
+     -0.393212,
+     8.9284
+    ],
+    [
+     -0.837652,
+     -0.50758,
+     -0.201744,
+     7.5082
+    ],
+    [
+     -0.672227,
+     -0.740345,
+     0,
+     5.3778
+    ],
+    [
+     -1,
+     0,
+     0,
+     8
+    ],
+    [
+     -0.67468,
+     0.685917,
+     -0.272626,
+     8.6829
+    ],
+    [
+     -0.23459,
+     0.972094,
+     0,
+     4.9874
+    ]
+   ],
+   "body_bounds_mm": {
+    "min": [
+     -8,
+     -2.179,
+     -9.612
+    ],
+    "max": [
+     8,
+     3.779,
+     4
+    ]
+   },
+   "collision_boxes_mm": [
+    {
+     "min": [
+      -8,
+      0,
+      -9.612
+     ],
+     "max": [
+      8,
+      3.2,
+      4
+     ]
+    }
+   ],
+   "footprint_studs_x": 2,
+   "footprint_studs_z": 2,
+   "body_height_ldu": 14.896,
+   "mesh_file": "part-meshes/60470b.json"
   }
  ]
 }

@@ -7,6 +7,9 @@
 // to join it. Several randomised trials per layer keep the best layer.
 
 const W = {volume: 1, merge: 40, bind: 2, float: 30, seam: 1.5, part: 1.5, jitter: 0.6};
+// Inside the model nobody sees a part: there each extra part costs more, so the hidden
+// core is laid with fewer, larger bricks and plates and the detail goes to the skin.
+const HIDDEN_PART = 4;
 
 /** Element types from regular catalogue profiles. */
 export function elementTypes(profiles) {
@@ -53,6 +56,7 @@ export function tileGrid(grid, types, reserved = [], {seed = 1, trials = 6} = {}
   const rnd = mulberry32(seed);
   const brickTypes = types.filter(t => t.kind === 'brick'), plateTypes = types.filter(t => t.kind === 'plate'), tileTypes = types.filter(t => t.kind === 'tile');
   const filled = c => colour[c] >= 0;
+  const hiddenPart = (cells, h) => cells.every(c => { for (let d = 0; d < h; d++) if (visible[c + d * layerSize]) return false; return true; });
   const compatible = (c, C) => colour[c] === C || !visible[c];
 
   function connectBelow(cells, j, par, partId) {
@@ -87,8 +91,9 @@ export function tileGrid(grid, types, reserved = [], {seed = 1, trials = 6} = {}
     for (let c = j * layerSize; c < (j + 1) * layerSize; c++) if (filled(c) && owner[c] < 0) region.push(c);
     if (region.length) tileLayer(j, region);
     // Reserved parts resting on this layer join the parts they sit on.
-    for (const [rid, r] of parts.entries()) if (r.reserved && r.bottom_layer === j + 1)
-      for (const c of r.receivers) { const q = owner[c - layerSize]; if (q >= 0 && studTop[c - layerSize]) union(rid, q); }
+    // (Receivers may sit on several layers: a studs-out panel has one per anchor.)
+    for (const [rid, r] of parts.entries()) if (r.reserved)
+      for (const c of r.receivers) if (Math.floor(c / layerSize) === j + 1) { const q = owner[c - layerSize]; if (q >= 0 && studTop[c - layerSize]) union(rid, q); }
   }
   function tileLayer(j, region) {
     const brickable = new Uint8Array(layerSize);
@@ -149,7 +154,7 @@ export function tileGrid(grid, types, reserved = [], {seed = 1, trials = 6} = {}
             }
           }
           const score = cells.length * t.h * W.volume + Math.max(0, roots.size - 1) * W.merge + below.size * W.bind
-            - (j > 0 && !support ? W.float : 0) - seams * W.seam - W.part + rnd() * W.jitter;
+            - (j > 0 && !support ? W.float : 0) - seams * W.seam - W.part * (hiddenPart(cells, t.h) ? HIDDEN_PART : 1) + rnd() * W.jitter;
           if (!choice || score > choice.score) choice = {t, x0, z0, cells, C, score, roots};
         }
         if (!choice) throw new Error('No element covers cell ' + anchor + ' (missing 1x1 types?)');

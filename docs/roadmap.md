@@ -11,9 +11,9 @@ model with a deviation report.
 
 | Area | Done | Next |
 | --- | --- | --- |
-| Interpretation | v2 schema and instructions; copy-prompt, on-device and gateway routes; 24 frozen unseen descriptions | Run a real model (not a stand-in) over the case set and new cases; compare models; measure intent errors |
+| Interpretation | v2 schema and instructions; copy-prompt, on-device and gateway routes; a review loop (rendered views and build report back to the model for a revised intent); 24 frozen unseen descriptions | Run a real model (not a stand-in) over the case set and new cases; compare models; measure intent errors |
 | Massing | Scale choice, primitives with rotation, thin-part preservation, voids that do not pierce walls, paint, hollowing, course-aligned interlocking tiling with connectivity repair | Phase search for better grid alignment; smarter part choice (fewer 1x1s); stability-aware tiling (support under overhangs) |
-| Detailing | 45°/33° slopes for roofs and wedges; real wheel assemblies with wheel wells; tiles for smooth tops; colour joints across boundaries; scored surface fitting with straight, curved and inverted slopes, cones and round parts from an imported 62-part vocabulary (LDCad connections); window frames with glass and door frames with doors set into walls; eyes and lamps as round tiles on brackets ([ADR 0004](decisions/0004-part-vocabulary-and-surface-fitting.md)) | Double slopes at ridges, larger wheels, wider vocabulary (wedge plates, macaroni and arch parts), free SNOT panels and hinged sub-assemblies, shallow-curve fitting across several courses |
+| Detailing | 45°/33° roof slopes; real wheels in wheel wells; smooth-top tiles; colour joints; scored surface fitting with straight, curved and inverted slopes, cones, round, wedge and round-corner plates from an imported 83-part vocabulary (LDCad connections); window and door frames; bracket-mounted eye tiles; studs-out panels on side-stud bricks for sideways bulges; flat ears and fins on clip-and-bar hinges; a hidden core of fewer, larger parts ([ADR 0004](decisions/0004-part-vocabulary-and-surface-fitting.md), [ADR 0006](decisions/0006-designed-models.md)) | Free-angle hinges from the intent's tilt, hinged limbs and tails, printed eye tiles, double slopes at ridges, arches and macaroni parts |
 | Validation | Nominal connection graph, body envelopes, support proxy, evaluation in CI, real-geometry LDraw renders | Force-based stability, colour availability per element, physical build trials |
 | Scale | Sizes up to 128 studs; spatially indexed sequencing and collision checks; instanced 3D viewer for large models | Faster tiling and sweeps for huge models |
 | Instructions | Grouped steps (one layer, up to 8 parts; 16 above 1,500 parts); PDF booklet up to 8,000 parts with booklet-style steps (about 240 at most), 4 or 6 steps per page, part callouts and outlined new parts | Sub-assembly pages, zoomed step views for large models |
@@ -22,8 +22,8 @@ model with a deviation report.
 
 1. Run real language models (not a stand-in) over the frozen case set and new
    descriptions; publish coverage and failures.
-2. Designed-model quality on organic subjects: side-facing panels, angled
-   sub-assemblies, feature recipes and a hidden core (see the roadmap table).
+2. Designed-model quality on organic subjects: compare against a designed set of the
+   same subject; free-angle and limb modules (see the roadmap table).
 3. Independently validate insertion geometry and run physical build trials.
 
 ## Release gates
