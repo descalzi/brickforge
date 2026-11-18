@@ -3,12 +3,12 @@
 // The interpreter describes what the object looks like at its real-world size,
 // using a few overlapping primitives. It never chooses scale, parts, studs or
 // placements; the engine owns quantisation and construction.
-import {resolveColour} from './brick-colours.js?v=10525c583bbb';
+import {resolveColour} from './brick-colours.js?v=c008cadea6e8';
 
 export const INTENT_SCHEMA_ID = 'brickforge.object-intent/2';
 export const SHAPES = Object.freeze(['box', 'cylinder', 'cone', 'sphere', 'dome', 'wedge', 'roof']);
 export const MODES = Object.freeze(['solid', 'void', 'paint']);
-export const BUILD_SIZES = Object.freeze({small: 12, medium: 20, large: 32});
+export const BUILD_SIZES = Object.freeze({small: 12, medium: 20, large: 32, xlarge: 64, huge: 128});
 const UNIT_MM = {m: 1000, cm: 10, mm: 1};
 const AXES = ['x', 'y', 'z'];
 const DIRECTIONS = ['+x', '-x', '+z', '-z'];
@@ -36,7 +36,7 @@ Optional: "rotate_deg" [rx, ry, rz] rotates a component about its own centre (ap
 
 Modes:
 - "solid" (default) adds material. Later solids win where colours overlap.
-- "void" removes material from every solid (doorways, arches, tunnels, the gap under a table top). Give voids a role such as "opening".
+- "void" removes material from the solids listed BEFORE it (doorways, arches, tunnels, the gap under a table top). Solids listed after a void are not cut by it, so list things that stand in an opening (a flagpole on a walkway, a door in a doorway) after the void. Give voids a role such as "opening".
 - "paint" recolours existing surface material inside its volume without adding any (windows on a car body, stripes, a face). Paint must overlap the surface it colours.
 
 Rules that make the result buildable:
@@ -47,7 +47,7 @@ Rules that make the result buildable:
 - "attach_to" (id or list of ids) states that a component must be structurally joined to another.
 - "finish": "smooth" asks for a smooth top (tiles) instead of exposed studs.
 - Colours are names such as "red", "dark grey", "light grey", "white", "black", "tan", "reddish brown", "dark green", "trans clear" or "trans light blue". Use a "trans" colour for glass.
-- "build": {"size": "small" | "medium" | "large"} sets how large the model should be; omit for medium.
+- "build": {"size": "small" | "medium" | "large" | "xlarge" | "huge"} sets the length of the longest side: 12, 20, 32, 64 or 128 studs. Small objects with few features suit small or medium; houses and vehicles with doors, windows and trim need large or xlarge; castles, streets and detailed scenes need huge. Detail smaller than about 1/40 of the longest side (xlarge) or 1/120 (huge) disappears.
 - Record every choice the description did not state in "assumptions". List anything you could not express in "unsupported" rather than inventing it.
 Return JSON only.`;
 
@@ -64,10 +64,10 @@ export function normaliseIntent(input) {
   const k = UNIT_MM[units] || 1;
   const build = input.build ?? {};
   const size = build.size ?? 'medium';
-  if (!BUILD_SIZES[size]) errors.push('build.size must be small, medium or large.');
+  if (!BUILD_SIZES[size]) errors.push('build.size must be small, medium, large, xlarge or huge.');
   let target = build.target_longest_studs ?? BUILD_SIZES[size] ?? 20;
-  if (!Number.isInteger(target) || target < 6 || target > 64) {
-    errors.push('build.target_longest_studs must be an integer from 6 to 64.');
+  if (!Number.isInteger(target) || target < 6 || target > 128) {
+    errors.push('build.target_longest_studs must be an integer from 6 to 128.');
     target = 20;
   }
   const hollow = build.hollow ?? 'auto';

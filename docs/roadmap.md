@@ -21,7 +21,8 @@ below remains as the Brief workbench and its benchmark.
 | Massing | Scale choice, primitives with rotation, thin-part preservation, voids that do not pierce walls, paint, hollowing, course-aligned interlocking tiling with connectivity repair | Phase search for better grid alignment; smarter part choice (fewer 1x1s); stability-aware tiling (support under overhangs) |
 | Detailing | 45°/33° slopes for roofs and wedges; real wheel assemblies with wheel wells; tiles for smooth tops; colour joints across boundaries | Inverted and curved slopes on spheres/cones, double slopes at ridges, larger wheels, windows/doors as real elements, SNOT for side details |
 | Validation | Nominal connection graph, body envelopes, support proxy, evaluation in CI, real-geometry LDraw renders | Force-based stability, colour availability per element, physical build trials |
-| Instructions | Grouped steps (one layer, up to 8 parts), PDF booklet up to 800 parts | Sub-assemblies, callouts, better step views for large models |
+| Scale | Sizes up to 128 studs; spatially indexed sequencing and collision checks; instanced 3D viewer for large models | Faster tiling and sweeps for huge models; PDF booklets beyond 800 parts |
+| Instructions | Grouped steps (one layer, up to 8 parts; 16 above 1,500 parts), PDF booklet up to 800 parts | Sub-assemblies, callouts, better step views for large models |
 
 ## Capability milestones
 

@@ -4,20 +4,57 @@
   "title": "BrickForge object intent v2",
   "description": "What an object looks like at real-world size, as overlapping primitives. No parts, studs or scale.",
   "type": "object",
-  "required": ["schema", "name", "units", "components"],
+  "required": [
+    "schema",
+    "name",
+    "units",
+    "components"
+  ],
   "additionalProperties": false,
   "properties": {
-    "schema": {"const": "brickforge.object-intent/2"},
-    "name": {"type": "string", "minLength": 1, "maxLength": 120},
-    "description": {"type": "string", "maxLength": 12000},
-    "units": {"enum": ["m", "cm", "mm"]},
+    "schema": {
+      "const": "brickforge.object-intent/2"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 12000
+    },
+    "units": {
+      "enum": [
+        "m",
+        "cm",
+        "mm"
+      ]
+    },
     "build": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "size": {"enum": ["small", "medium", "large"]},
-        "target_longest_studs": {"type": "integer", "minimum": 6, "maximum": 64},
-        "hollow": {"enum": ["auto", "solid"]}
+        "size": {
+          "enum": [
+            "small",
+            "medium",
+            "large",
+            "xlarge",
+            "huge"
+          ]
+        },
+        "target_longest_studs": {
+          "type": "integer",
+          "minimum": 6,
+          "maximum": 128
+        },
+        "hollow": {
+          "enum": [
+            "auto",
+            "solid"
+          ]
+        }
       }
     },
     "components": {
@@ -26,42 +63,162 @@
       "maxItems": 200,
       "items": {
         "type": "object",
-        "required": ["id", "role", "shape", "center", "size"],
+        "required": [
+          "id",
+          "role",
+          "shape",
+          "center",
+          "size"
+        ],
         "additionalProperties": false,
         "properties": {
-          "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$"},
-          "label": {"type": "string", "maxLength": 80},
-          "role": {"type": "string", "maxLength": 40, "description": "Semantic role, e.g. body, wheel, window, door, roof, leg, wing, trunk, foliage, opening, detail."},
-          "shape": {"enum": ["box", "cylinder", "cone", "sphere", "dome", "wedge", "roof"]},
-          "center": {"$ref": "#/$defs/vector"},
-          "size": {"$ref": "#/$defs/positiveVector"},
-          "axis": {"enum": ["x", "y", "z"]},
-          "top_scale": {"type": "number", "minimum": 0, "maximum": 4},
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$"
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "role": {
+            "type": "string",
+            "maxLength": 40,
+            "description": "Semantic role, e.g. body, wheel, window, door, roof, leg, wing, trunk, foliage, opening, detail."
+          },
+          "shape": {
+            "enum": [
+              "box",
+              "cylinder",
+              "cone",
+              "sphere",
+              "dome",
+              "wedge",
+              "roof"
+            ]
+          },
+          "center": {
+            "$ref": "#/$defs/vector"
+          },
+          "size": {
+            "$ref": "#/$defs/positiveVector"
+          },
+          "axis": {
+            "enum": [
+              "x",
+              "y",
+              "z"
+            ]
+          },
+          "top_scale": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 4
+          },
           "slope": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["down_toward"],
+            "required": [
+              "down_toward"
+            ],
             "properties": {
-              "down_toward": {"enum": ["+x", "-x", "+z", "-z"]},
-              "low_fraction": {"type": "number", "minimum": 0, "exclusiveMaximum": 1}
+              "down_toward": {
+                "enum": [
+                  "+x",
+                  "-x",
+                  "+z",
+                  "-z"
+                ]
+              },
+              "low_fraction": {
+                "type": "number",
+                "minimum": 0,
+                "exclusiveMaximum": 1
+              }
             }
           },
-          "ridge_axis": {"enum": ["x", "z"]},
-          "eave_fraction": {"type": "number", "minimum": 0, "exclusiveMaximum": 1},
-          "rotate_deg": {"$ref": "#/$defs/vector"},
-          "mode": {"enum": ["solid", "void", "paint"]},
-          "colour": {"type": "string", "maxLength": 40},
-          "importance": {"enum": ["essential", "detail"]},
-          "finish": {"enum": ["studs", "smooth"]},
-          "attach_to": {"oneOf": [{"type": "string"}, {"type": "array", "items": {"type": "string"}}]}
+          "ridge_axis": {
+            "enum": [
+              "x",
+              "z"
+            ]
+          },
+          "eave_fraction": {
+            "type": "number",
+            "minimum": 0,
+            "exclusiveMaximum": 1
+          },
+          "rotate_deg": {
+            "$ref": "#/$defs/vector"
+          },
+          "mode": {
+            "enum": [
+              "solid",
+              "void",
+              "paint"
+            ]
+          },
+          "colour": {
+            "type": "string",
+            "maxLength": 40
+          },
+          "importance": {
+            "enum": [
+              "essential",
+              "detail"
+            ]
+          },
+          "finish": {
+            "enum": [
+              "studs",
+              "smooth"
+            ]
+          },
+          "attach_to": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            ]
+          }
         }
       }
     },
-    "assumptions": {"type": "array", "items": {"type": "string"}},
-    "unsupported": {"type": "array", "items": {"type": "string"}}
+    "assumptions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "unsupported": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
   },
   "$defs": {
-    "vector": {"type": "array", "items": {"type": "number"}, "minItems": 3, "maxItems": 3},
-    "positiveVector": {"type": "array", "items": {"type": "number", "exclusiveMinimum": 0}, "minItems": 3, "maxItems": 3}
+    "vector": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "positiveVector": {
+      "type": "array",
+      "items": {
+        "type": "number",
+        "exclusiveMinimum": 0
+      },
+      "minItems": 3,
+      "maxItems": 3
+    }
   }
 }

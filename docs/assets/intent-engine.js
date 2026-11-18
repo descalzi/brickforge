@@ -5,14 +5,14 @@
 // and wedges with real slopes and road wheels with real wheel assemblies.
 // The engine always returns its best model and reports how far it deviates from
 // the intent; it blocks only on an invalid intent or an empty result.
-import {normaliseIntent} from './object-intent.js?v=10525c583bbb';
-import {rasteriseIntent, exteriorAir, hollowInterior, scaleForTarget, STUD_MM, PLATE_MM} from './intent-voxels.js?v=10525c583bbb';
-import {elementTypes, tileGrid} from './brick-tiler.js?v=10525c583bbb';
-import {planSlopes} from './slope-detailing.js?v=10525c583bbb';
-import {planWheels} from './wheel-detailing.js?v=10525c583bbb';
-import {connectionEdges} from './design-engine.js?v=10525c583bbb';
-import {analyzeAssembly, partBodyBounds} from './assembly-analysis.js?v=10525c583bbb';
-import {createAssemblyInstructions} from './assembly-instructions.js?v=10525c583bbb';
+import {normaliseIntent} from './object-intent.js?v=c008cadea6e8';
+import {rasteriseIntent, exteriorAir, hollowInterior, scaleForTarget, STUD_MM, PLATE_MM} from './intent-voxels.js?v=c008cadea6e8';
+import {elementTypes, tileGrid} from './brick-tiler.js?v=c008cadea6e8';
+import {planSlopes} from './slope-detailing.js?v=c008cadea6e8';
+import {planWheels} from './wheel-detailing.js?v=c008cadea6e8';
+import {connectionEdges} from './design-engine.js?v=c008cadea6e8';
+import {partBodyBounds} from './assembly-analysis.js?v=c008cadea6e8';
+import {analyzeLargeAssembly, createLargeAssemblyInstructions} from './large-assembly.js?v=c008cadea6e8';
 
 const LDU = 0.4;
 const IDENTITY = [1, 0, 0, 0, 1, 0, 0, 0, 1];
@@ -48,7 +48,9 @@ function visibility(grid) {
 
 /** Plan a model. catalogue = intentCatalogue(...). */
 export function planIntent(input, catalogue, options = {}) {
-  const started = Date.now();
+  const started = Date.now(), timings = {};
+  let mark = Date.now();
+  const lap = name => { const now = Date.now(); timings[name] = (timings[name] || 0) + now - mark; mark = now; };
   const checked = normaliseIntent(input);
   if (!checked.valid) return {status: 'blocked', design_id: 'intent', failures: checked.errors, warnings: checked.warnings, parts: [], connections: []};
   const intent = checked.intent, warnings = [...checked.warnings];
@@ -71,6 +73,7 @@ export function planIntent(input, catalogue, options = {}) {
     if (!wheelLayout.failed.length) break;
     for (const id of wheelLayout.failed) { wheels.replaced.delete(id); Object.assign(wheels.details.get(id), {construction: 'voxel_material', reason: 'no body around the axle to carry a wheel-pin plate'}); }
   }
+  lap('rasterise');
   const {nx, ny, nz} = grid, total = nx * ny * nz, layerSize = nx * nz;
   for (const w of wheelLayout.warnings) warnings.push(w);
   const slopes = planSlopes(intent, grid, profileMap, catalogue.specialist);
@@ -84,6 +87,7 @@ export function planIntent(input, catalogue, options = {}) {
   }
   let hollow = {removed: 0};
   if (intent.build.hollow === 'auto') hollow = hollowInterior(grid, keep);
+  lap('detail_and_hollow');
   const visible = visibility(grid);
   const tileTop = new Uint8Array(total);
   for (let c = 0; c < total; c++) {
@@ -109,7 +113,10 @@ export function planIntent(input, catalogue, options = {}) {
     }
     return best;
   };
+  lap('visibility');
   let best = tileBest();
+  const looseCells = r => { const main = r.components[0].root; let n = 0; r.parts.forEach((p, id) => { if (r.rootOf(id) !== main) n += p.cells.length; }); return n; };
+  lap('tile');
   // Repair: hollowing can leave a piece with nothing above or below it to clutch.
   // Restore hidden material in the columns next to separate pieces and tile again.
   const hollowed = new Map((hollow.restore || []).map(([c, o, col]) => [c, [o, col]]));
@@ -119,11 +126,17 @@ export function planIntent(input, catalogue, options = {}) {
     let restored = 0;
     best.parts.forEach((part, id) => {
       if (best.rootOf(id) === mainRoot) return;
-      for (const c of part.cells) for (const dir of [layerSize, -layerSize]) for (let step = 1; step <= 3; step++) {
-        const t = c + dir * step;
-        if (t < 0 || t >= total || !hollowed.has(t)) continue;
-        const [o, col] = hollowed.get(t);
-        grid.owner[t] = o; grid.colour[t] = col; hollowed.delete(t); restored++;
+      const restore = t => { if (t < 0 || t >= total || !hollowed.has(t)) return; const [o, col] = hollowed.get(t); grid.owner[t] = o; grid.colour[t] = col; hollowed.delete(t); restored++; };
+      for (const c of part.cells) {
+        for (const dir of [layerSize, -layerSize]) for (let step = 1; step <= 3; step++) restore(c + dir * step);
+        // Sideways neighbours (and the material above and below them) where a piece
+        // pushes into a hollowed body.
+        const l = c % layerSize, i = l % nx, k = Math.floor(l / nx);
+        for (const [di, dk] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+          if (i + di < 0 || k + dk < 0 || i + di >= nx || k + dk >= nz) continue;
+          const t = c + dk * nx + di;
+          for (let step = -2; step <= 2; step++) restore(t + step * layerSize);
+        }
       }
     });
     if (!restored) break;
@@ -133,29 +146,52 @@ export function planIntent(input, catalogue, options = {}) {
     best = next;
   }
   if (restoredCells) hollow.removed -= restoredCells;
-  // Interpreters misplace parts slightly: close vertical gaps of up to two plates
-  // between a separate piece and the main model by extending the piece.
+  // Interpreters misplace parts slightly: close gaps of up to two studs or four
+  // plates (in any direction, including diagonal contact) between a separate piece
+  // and the main model with a short path of the piece's material, then tile again.
   let gapCells = 0;
-  for (let round = 0; round < 2 && best.components.length > 1; round++) {
-    const mainRoot = best.components[0].root, owner = best.owner, fill = [];
+  const cellIJK = c => [c % nx, Math.floor(c / layerSize), Math.floor(c / nx) % nz];
+  for (let round = 0; round < 3 && best.components.length > 1; round++) {
+    const mainRoot = best.components[0].root, owner = best.owner, bestPath = new Map();
     best.parts.forEach((part, id) => {
       if (part.reserved || best.rootOf(id) === mainRoot) return;
-      for (const c of part.cells) for (const dir of [-layerSize, layerSize]) {
-        const gap = [];
-        for (let step = 1; step <= 3; step++) {
-          const t = c + dir * step;
-          if (t < 0 || t >= total) break;
-          if (owner[t] >= 0) { if (best.rootOf(owner[t]) === mainRoot && gap.length && gap.length <= 2) fill.push(...gap.map(g => [g, grid.owner[c], grid.colour[c]])); break; }
-          if (grid.owner[t] >= 0) break;
-          gap.push(t);
+      const root = best.rootOf(id);
+      for (const c of part.cells) {
+        const [i, j, k] = cellIJK(c);
+        for (let dj = -4; dj <= 4; dj++) for (let dk = -2; dk <= 2; dk++) for (let di = -2; di <= 2; di++) {
+          const [a, b, d] = [i + di, j + dj, k + dk];
+          if (a < 0 || b < 0 || d < 0 || a >= nx || b >= ny || d >= nz) continue;
+          const t = grid.index(a, b, d), o = owner[t];
+          if (o < 0 || best.rootOf(o) !== mainRoot) continue;
+          // L-shaped path: across in x, then z, then vertically; empty cells only.
+          const path = [];
+          let [x, y, z] = [i, j, k], blocked = false;
+          const stepTo = (axis, target) => { while ((axis === 0 ? x : axis === 1 ? y : z) !== target) {
+            if (axis === 0) x += Math.sign(target - x); else if (axis === 1) y += Math.sign(target - y); else z += Math.sign(target - z);
+            if (x === a && y === b && z === d) return;
+            const cell = grid.index(x, y, z);
+            if (grid.owner[cell] >= 0 || owner[cell] >= 0) { if (owner[cell] >= 0 && best.rootOf(owner[cell]) === root) { path.length = 0; continue; } blocked = true; return; }
+            path.push(cell);
+          } };
+          stepTo(0, a); if (!blocked) stepTo(2, d); if (!blocked) stepTo(1, b);
+          if (blocked || !path.length) continue;
+          const cost = path.length;
+          if (!bestPath.has(root) || cost < bestPath.get(root).cost) bestPath.set(root, {cost, path, from: c});
         }
       }
     });
-    if (!fill.length) break;
-    for (const [t, o, col] of fill) { grid.owner[t] = o; grid.colour[t] = col; }
-    const next = tileBest();
-    if (next.components.length >= best.components.length) { for (const [t] of fill) { grid.owner[t] = -1; grid.colour[t] = -1; } break; }
-    gapCells += new Set(fill.map(f => f[0])).size;
+    if (!bestPath.size) break;
+    const fills = [...bestPath.values()].map(({path, from}) => ({from, cells: path.map(t => [t, grid.owner[from], grid.colour[from]])}));
+    const apply = list => { for (const f of list) for (const [t, o, col] of f.cells) { grid.owner[t] = o; grid.colour[t] = col; visible[t] = 1; } };
+    const revert = list => { for (const f of list) for (const [t] of f.cells) { grid.owner[t] = -1; grid.colour[t] = -1; } };
+    apply(fills);
+    let next = tileBest();
+    // Keep only the paths whose piece actually joined the main model.
+    const joined = f => { const p = next.owner[f.from]; return p >= 0 && next.rootOf(p) === next.components[0].root; };
+    const failed = fills.filter(f => !joined(f)), kept = fills.filter(joined);
+    if (failed.length && kept.length) { revert(failed); next = tileBest(); }
+    if (!kept.length || looseCells(next) >= looseCells(best)) { revert(kept.length ? kept : fills); break; }
+    gapCells += new Set(kept.flatMap(f => f.cells.map(c => c[0]))).size;
     best = next;
   }
   if (gapCells) warnings.push(`Closed small gaps (${gapCells} cells) so separate parts of the description touch.`);
@@ -174,41 +210,55 @@ export function planIntent(input, catalogue, options = {}) {
         if (i + di < 0 || k + dk < 0 || i + di >= nx || k + dk >= nz) continue;
         const b = a + dk * nx + di, pb = owner[b];
         if (pb < 0 || partsList[pb].reserved || best.rootOf(pb) !== mainRoot) continue;
-        // The joint plate must clutch material of each piece above or below it.
+        // Joint options: a plate in the seam itself (needs material of each piece
+        // above or below it), or a plate tucked under or laid over the seam.
         const anchored = (cell, root) => [cell - layerSize, cell + layerSize].some(t => t >= 0 && t < total && owner[t] >= 0 && best.rootOf(owner[t]) === root);
-        if (!anchored(a, best.rootOf(pa)) || !anchored(b, mainRoot)) continue;
-        const same = grid.colour[a] === grid.colour[b];
-        const recolour = same ? null : (!visible[b] ? 'main' : !visible[a] ? 'island' : partsList[pa].cells.length <= partsList[pb].cells.length ? 'island' : 'main');
-        const cost = same ? -1 : (recolour === 'main' ? visible[b] : visible[a]);
-        const root = best.rootOf(pa), previous = contact.get(root);
-        if (!previous || cost < previous.cost) contact.set(root, {a, b, cost, recolour});
+        const j = Math.floor(a / layerSize), root = best.rootOf(pa), previous = contact.get(root);
+        const consider = option => { const current = contact.get(root); if (!current || option.cost < current.cost) contact.set(root, option); };
+        if (anchored(a, root) && anchored(b, mainRoot)) {
+          const same = grid.colour[a] === grid.colour[b];
+          const recolour = same ? null : (!visible[b] ? 'main' : !visible[a] ? 'island' : partsList[pa].cells.length <= partsList[pb].cells.length ? 'island' : 'main');
+          consider({mode: 'seam', a, b, cost: same ? -1 : (recolour === 'main' ? visible[b] : visible[a]), recolour});
+        }
+        const empty = c => c >= 0 && c < total && owner[c] < 0 && grid.owner[c] < 0;
+        const bottomOf = (c, p) => Math.floor(c / layerSize) === partsList[p].y0;
+        const topOf = (c, p) => Math.floor(c / layerSize) === partsList[p].y0 + partsList[p].h - 1 && partsList[p].kind !== 'tile';
+        if (j > 0 && bottomOf(a, pa) && bottomOf(b, pb) && empty(a - layerSize) && empty(b - layerSize)) consider({mode: 'under', a, b, cost: 0.4});
+        if (topOf(a, pa) && topOf(b, pb) && empty(a + layerSize) && empty(b + layerSize)) consider({mode: 'over', a, b, cost: 0.6});
+        void previous;
       }
     }
     if (!contact.size) break;
-    const undo = {reserved: reserved.length, bridges: bridges.length, colours: []};
-    for (const {a, b, recolour} of contact.values()) {
-      undo.colours.push([a, grid.colour[a]], [b, grid.colour[b]]);
+    const undo = {reserved: reserved.length, bridges: bridges.length, colours: [], cells: []};
+    for (const {mode, a: a0, b: b0, recolour} of contact.values()) {
+      const shift = mode === 'under' ? -layerSize : mode === 'over' ? layerSize : 0, a = a0 + shift, b = b0 + shift;
+      undo.colours.push([a0, grid.colour[a0]], [b0, grid.colour[b0]]);
       if (recolour === 'main') grid.colour[b] = grid.colour[a];
       else if (recolour === 'island') grid.colour[a] = grid.colour[b];
+      if (shift) for (const c of [a, b]) { undo.cells.push(c); grid.owner[c] = grid.owner[a0]; grid.colour[c] = grid.colour[a0]; }
       // A real 1x2 plate across the joint, reserved before tiling again.
       const j = Math.floor(a / layerSize), [ia, ka, ib, kb] = [a % nx, Math.floor(a / nx) % nz, b % nx, Math.floor(b / nx) % nz];
       const alongX = ka === kb, cx = grid.origin[0] + STUD_MM * ((ia + ib) / 2 + 0.5), cz = grid.origin[2] + STUD_MM * ((ka + kb) / 2 + 0.5);
-      const top = grid.origin[1] + PLATE_MM * (j + 1), col = grid.colour[a];
+      const top = grid.origin[1] + PLATE_MM * (j + 1), col = grid.colour[shift ? a0 : a];
       reserved.push({cells: [a, b], studTop: new Set([a, b]), receivers: new Set([a, b]), bottom_layer: j, colour: col, kind: 'joint_plate',
-        component_index: grid.owner[a], placements: [{part_id: '3023', colour_code: col, matrix: [...(alongX ? IDENTITY : ROTATE_Y_90)], translation_ldu: [cx / LDU, -top / LDU, -cz / LDU]}]});
-      bridges.push({cell: recolour === 'main' ? b : a, recoloured: Boolean(recolour), visible: Boolean(recolour && (recolour === 'main' ? visible[b] : visible[a]))});
+        component_index: grid.owner[a0], placements: [{part_id: '3023', colour_code: col, matrix: [...(alongX ? IDENTITY : ROTATE_Y_90)], translation_ldu: [cx / LDU, -top / LDU, -cz / LDU]}]});
+      bridges.push({mode, cell: recolour === 'main' ? b : a, recoloured: Boolean(recolour), visible: Boolean(recolour && (recolour === 'main' ? visible[b] : visible[a])), added: Boolean(shift)});
     }
     const next = tileBest();
     if (next.components.length >= best.components.length) {
       // No improvement: undo this round's joints and colour changes.
       reserved.length = undo.reserved; bridges.length = undo.bridges;
       for (const [c, col] of undo.colours.reverse()) grid.colour[c] = col;
+      for (const c of undo.cells) { grid.owner[c] = -1; grid.colour[c] = -1; }
       break;
     }
     best = next;
   }
   const visibleBridges = bridges.filter(b => b.visible).length;
   if (visibleBridges) warnings.push(`${visibleBridges} visible cell(s) changed colour so a part could join separate pieces.`);
+  const addedJoints = bridges.filter(b => b.added).length;
+  if (addedJoints) warnings.push(`${addedJoints} joint plate(s) were added under or over a seam to join separate pieces.`);
+  lap('repair');
   // Islands: drop fragments that are too small to matter, keep and flag the rest.
   const mainRoot = best.components[0].root, cellCount = best.parts.reduce((s, p) => s + p.cells.length, 0);
   const dropped = [], kept = [];
@@ -253,15 +303,19 @@ export function planIntent(input, catalogue, options = {}) {
   // Rest the model on y = 0 (wheels may reach below the body's lowest layer).
   const lowest = Math.min(...parts.map(p => partBodyBounds(p, profileMap.get(p.part_id)).min[1]));
   for (const p of parts) p.translation_ldu[1] = +(p.translation_ldu[1] + lowest / LDU).toFixed(6);
+  lap('placements');
   const connections = connectionEdges(parts, profileMap);
+  lap('connections');
   const adjacency = new Map(parts.map(p => [p.instance_id, new Set()]));
   for (const e of connections) { adjacency.get(e.instance_a).add(e.instance_b); adjacency.get(e.instance_b).add(e.instance_a); }
   const seen = new Set();
   if (parts.length) { const queue = [parts[0].instance_id]; seen.add(queue[0]); while (queue.length) for (const next of adjacency.get(queue.shift())) if (!seen.has(next)) { seen.add(next); queue.push(next); } }
   const connected = seen.size === parts.length;
-  const analysis = analyzeAssembly(parts, connections, profileMap);
-  const instructions = groupSteps(createAssemblyInstructions(parts, connections, profileMap), parts, options.maxPartsPerStep || 8);
+  const analysis = analyzeLargeAssembly(parts, connections, profileMap);
+  lap('analysis');
+  const instructions = groupSteps(createLargeAssemblyInstructions(parts, connections, profileMap), parts, options.maxPartsPerStep || (parts.length > 1500 ? 16 : 8));
 
+  lap('instructions');
   // Per-component outcome against the intent.
   const realisedCells = new Map();
   for (const {p} of placed) if (!p.reserved) for (const c of p.cells) { const o = grid.owner[c]; if (o >= 0) realisedCells.set(o, (realisedCells.get(o) || 0) + 1); }
@@ -298,7 +352,7 @@ export function planIntent(input, catalogue, options = {}) {
     grid: {studs_x: nx, plates_y: ny, studs_z: nz, cells_before_hollowing: fidelity.realised_cells, hollowed_cells: hollow.removed},
     shape_fidelity: {soft_iou: +fidelity.iou.toFixed(3), ideal_cells: +fidelity.ideal_cells.toFixed(1), realised_cells: fidelity.realised_cells,
       evidence: 'Soft intersection-over-union of the voxelised material against 27 samples per cell of the ideal primitives, before hollowing and detailing.'},
-    connectivity: {connected, gap_cells_filled: gapCells, colour_bridges: bridges.length, visible_colour_bridges: visibleBridges, disconnected_instance_ids: parts.filter(p => !seen.has(p.instance_id)).map(p => p.instance_id), separate_pieces_kept: kept.length, fragments_removed: dropped.length, tiling_seed: best.seed},
+    connectivity: {connected, gap_cells_filled: gapCells, colour_bridges: bridges.length, added_joint_plates: addedJoints, visible_colour_bridges: visibleBridges, disconnected_instance_ids: parts.filter(p => !seen.has(p.instance_id)).map(p => p.instance_id), separate_pieces_kept: kept.length, fragments_removed: dropped.length, tiling_seed: best.seed},
     components: componentReports,
     attachments,
     wheels: [...wheels.details.values()],
@@ -306,6 +360,7 @@ export function planIntent(input, catalogue, options = {}) {
     assumptions: intent.assumptions,
     unsupported: intent.unsupported,
     elapsed_ms: Date.now() - started,
+    timings_ms: timings,
   };
   const validation = {checks: [
     {id: 'object_intent', status: 'passed', detail: `Valid ${intent.schema} intent with ${intent.components.length} components.`},

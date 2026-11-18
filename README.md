@@ -25,7 +25,13 @@ parts list and step-by-step instructions.
    wheel wells.
 4. **Report and export.** The engine always returns its best model, with a
    deviation report (shape match, lost or thickened components, colour joints),
-   LDraw with steps, a parts list and an illustrated PDF booklet.
+   LDraw with steps, a parts list and an illustrated PDF booklet (up to 800
+   parts; open the LDraw file in BrickLink Studio or LeoCAD for larger models).
+
+Build sizes set the longest side: small 12, medium 20, large 32, xlarge 64 and
+huge 128 studs. Detail below about one stud disappears, so houses and vehicles
+want large or xlarge and castles or scenes want huge (several thousand parts,
+roughly 20–40 seconds in the browser).
 
 On the [evaluation set](docs/intent-evaluation.md) all 24 descriptions produce a
 single stud-connected model (median shape match 0.83). The intents were written

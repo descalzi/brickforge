@@ -1,12 +1,12 @@
 // Describe & build: description → object intent (any language model) → brick model.
-import {ASSET_VERSION} from './release-version.js?v=10525c583bbb';
-import {INTENT_INSTRUCTIONS, buildIntentRequest, normaliseIntent} from './object-intent.js?v=10525c583bbb';
-import {intentCatalogue} from './intent-engine.js?v=10525c583bbb';
-import {deviceModelState, deviceProvider} from './device-interpretation.js?v=10525c583bbb';
-import {endpointProvider} from './text-design.js?v=10525c583bbb';
-import {buildInventory, inventoryCsv} from './build-inventory.js?v=10525c583bbb';
-import {createDesignViewer, colours} from './design-viewer.js?v=10525c583bbb';
-import {colourByCode} from './brick-colours.js?v=10525c583bbb';
+import {ASSET_VERSION} from './release-version.js?v=c008cadea6e8';
+import {INTENT_INSTRUCTIONS, buildIntentRequest, normaliseIntent} from './object-intent.js?v=c008cadea6e8';
+import {intentCatalogue} from './intent-engine.js?v=c008cadea6e8';
+import {deviceModelState, deviceProvider} from './device-interpretation.js?v=c008cadea6e8';
+import {endpointProvider} from './text-design.js?v=c008cadea6e8';
+import {buildInventory, inventoryCsv} from './build-inventory.js?v=c008cadea6e8';
+import {createDesignViewer, colours} from './design-viewer.js?v=c008cadea6e8';
+import {colourByCode} from './brick-colours.js?v=c008cadea6e8';
 
 const $ = id => document.getElementById(id);
 const status = $('engine-status'), intentInput = $('intent-input'), description = $('description-input');
@@ -89,9 +89,10 @@ function build() {
   activeIntent = intent;
   showComponents(intent);
   $('build').disabled = true; $('cancel-build').hidden = false;
-  setStatus('Rasterising the shapes and fitting real elements…', 'planning');
+  const big = ['xlarge', 'huge'].includes(intent.build?.size) || (intent.build?.target_longest_studs || 0) > 40;
+  setStatus(`Rasterising the shapes and fitting real elements…${big ? ' Large models can take a minute.' : ''}`, 'planning');
   const started = performance.now();
-  worker = new Worker(new URL('./studio-worker.js?v=10525c583bbb', import.meta.url), {type: 'module'});
+  worker = new Worker(new URL('./studio-worker.js?v=c008cadea6e8', import.meta.url), {type: 'module'});
   worker.onmessage = ({data}) => {
     finishWorker();
     if (data.error) { setStatus('Engine error: ' + data.error, 'blocked'); $('engine-report').textContent = data.error; return; }
@@ -99,7 +100,7 @@ function build() {
     show(result, (performance.now() - started) / 1000);
   };
   worker.onerror = event => { finishWorker(); setStatus('Engine error: ' + event.message, 'blocked'); };
-  timer = setTimeout(() => { finishWorker(); setStatus('Stopped after 60 seconds. Try a smaller model size.', 'blocked'); }, 60000);
+  timer = setTimeout(() => { finishWorker(); setStatus('Stopped after 4 minutes. Try a smaller model size.', 'blocked'); }, 240000);
   worker.postMessage({intent, catalogue, options: {}});
 }
 
@@ -122,7 +123,10 @@ function show(plan, seconds) {
   const d = plan.dimensions_mm;
   $('stat-size').textContent = `${Math.round(d.width / 8)} × ${Math.round(d.depth / 8)} × ${Math.round(d.height / 3.2)}`;
   $('stat-fidelity').textContent = Math.round(report.shape_fidelity.soft_iou * 100) + '%';
-  for (const id of ['download-ldraw', 'download-csv', 'download-pdf', 'download-report']) $(id).disabled = false;
+  for (const id of ['download-ldraw', 'download-csv', 'download-report']) $(id).disabled = false;
+  const pdfOk = plan.parts.length <= 800 && steps.length <= 200;
+  $('download-pdf').disabled = !pdfOk;
+  $('download-pdf').title = pdfOk ? '' : 'The in-browser booklet supports up to 800 parts. Open the LDraw file in BrickLink Studio or LeoCAD for instructions of large models.';
   showComponents(activeIntent);
   showReport(plan);
   const joined = report.connectivity.connected ? 'one connected model' : 'some pieces need joining by hand';
@@ -156,7 +160,7 @@ function showReport(plan) {
   $('validation-list').replaceChildren(...plan.validation.checks.map(c => { const row = el('div', {className: 'check'}, el('strong', {textContent: c.id.replaceAll('_', ' ')}), el('small', {textContent: c.detail})); row.dataset.state = c.status; return row; }));
 }
 
-function stopPdf() { pdfWorker?.terminate(); pdfWorker = null; $('cancel-pdf').hidden = true; $('download-pdf').disabled = !result || result.status !== 'planned'; }
+function stopPdf() { pdfWorker?.terminate(); pdfWorker = null; $('cancel-pdf').hidden = true; $('download-pdf').disabled = !result || result.status !== 'planned' || result.parts.length > 800 || result.instructions.steps.length > 200; }
 
 async function interpret() {
   const provider = $('interpretation-provider').value, text = description.value;
@@ -207,24 +211,25 @@ function loadExample(id) {
   description.value = example.description;
   intentInput.value = JSON.stringify(example.intent, null, 2);
   showComponents(example.intent);
+  $('build-size').value = '';
   invalidate('Example loaded. Its intent was written by a language model from the description; build to see the model.');
 }
 
 async function initialise() {
   try {
     const load = async path => { const r = await fetch('./data/' + path + '?v=' + ASSET_VERSION); if (!r.ok) throw new Error(`Could not load ${path} (${r.status}). Reload to retry.`); return r.json(); };
-    const [basic, standard, specialist, evaluation, intentSchema] = await Promise.all([
+    const [basic, standard, specialist, evaluation, extra, intentSchema] = await Promise.all([
       load('connection-profiles/basic-bricks.json'), load('connection-profiles/standard-elements-v1.json'), load('specialist-profiles-v1.json'),
-      load('intent-eval-v1.json'), load('object-intent-schema-v2.json')]);
+      load('intent-eval-v1.json'), load('intent-examples-v1.json'), load('object-intent-schema-v2.json')]);
     schema = intentSchema;
     catalogue = intentCatalogue(basic, standard, specialist);
     const previews = await Promise.all(specialist.profiles.map(async p => ({...p, preview_triangles_mm: (await load(p.mesh_file)).triangle_positions_mm})));
     displayCatalogue = {profiles: [...basic.profiles, ...standard.profiles, ...previews]};
-    examples = evaluation.cases;
+    examples = [...evaluation.cases, ...extra.cases.map(e => ({...e, category: 'bigger builds'}))];
     const select = $('example-select');
     select.replaceChildren(el('option', {value: '', textContent: 'Choose an example…'}));
-    const groups = new Map();
-    for (const e of examples) { if (!groups.has(e.category)) groups.set(e.category, el('optgroup', {label: e.category[0].toUpperCase() + e.category.slice(1)})); groups.get(e.category).append(el('option', {value: e.id, textContent: e.intent.name})); }
+    const groups = new Map([['bigger builds', el('optgroup', {label: 'Bigger builds (64–128 studs)'})]]);
+    for (const e of examples) { if (!groups.has(e.category)) groups.set(e.category, el('optgroup', {label: e.category[0].toUpperCase() + e.category.slice(1)})); groups.get(e.category).append(el('option', {value: e.id, textContent: e.intent.name + (e.intent.build?.size ? ` · ${e.intent.build.size}` : '')})); }
     select.append(...groups.values()); select.disabled = false;
     $('build').disabled = false;
     const params = new URLSearchParams(location.search);
@@ -271,7 +276,7 @@ $('download-pdf').addEventListener('click', () => {
   const plan = result;
   $('download-pdf').disabled = true; $('cancel-pdf').hidden = false;
   setStatus('Preparing the illustrated instruction booklet…', 'exporting');
-  const job = new Worker(new URL('./instruction-pdf-worker.js?v=10525c583bbb', import.meta.url), {type: 'module'});
+  const job = new Worker(new URL('./instruction-pdf-worker.js?v=c008cadea6e8', import.meta.url), {type: 'module'});
   pdfWorker = job;
   job.onmessage = ({data}) => {
     if (job !== pdfWorker) return;

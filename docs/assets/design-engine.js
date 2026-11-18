@@ -1,19 +1,19 @@
-import {sampleInterlockingFootprints} from './construction-engine.js?v=10525c583bbb';
-import {chassisInserts} from './wheel-mount-layout.js?v=10525c583bbb';
-import {rectangularDimensionVariants} from './dimension-variants.js?v=10525c583bbb';
-import {combineCourseTilings} from './course-beam-search.js?v=10525c583bbb';
-import {roundedShapeOccupancy} from './rounded-shape.js?v=10525c583bbb';
-import {composeExtrudedProfile} from './profile-composition.js?v=10525c583bbb';
-import { evaluateDesignRelationships as evaluateRelationships } from "./design-relations.js?v=10525c583bbb";
-import { featureCompatibility, axesCompatible } from "./connection-types.js?v=10525c583bbb";
-import { fitAttachmentPoses } from "./attachment-fitting.js?v=10525c583bbb";
-import { assertValidDesignSpec } from "./design-spec.js?v=10525c583bbb";
-import { discoverPartCandidates, validatePartCapabilityCatalogue } from "./part-catalogue.js?v=10525c583bbb";
-import { translateComponentRequirements } from "./design-translation.js?v=10525c583bbb";
-import { planTechnicBeamJoint } from "./technic-planner.js?v=10525c583bbb";
-import { specialistComponentCandidates } from "./specialist-placement.js?v=10525c583bbb";
-import { partBodyBounds, analyzeAssembly,findBodyCollisions } from "./assembly-analysis.js?v=10525c583bbb";
-import { createAssemblyInstructions } from "./assembly-instructions.js?v=10525c583bbb";
+import {sampleInterlockingFootprints} from './construction-engine.js?v=c008cadea6e8';
+import {chassisInserts} from './wheel-mount-layout.js?v=c008cadea6e8';
+import {rectangularDimensionVariants} from './dimension-variants.js?v=c008cadea6e8';
+import {combineCourseTilings} from './course-beam-search.js?v=c008cadea6e8';
+import {roundedShapeOccupancy} from './rounded-shape.js?v=c008cadea6e8';
+import {composeExtrudedProfile} from './profile-composition.js?v=c008cadea6e8';
+import { evaluateDesignRelationships as evaluateRelationships } from "./design-relations.js?v=c008cadea6e8";
+import { featureCompatibility, axesCompatible } from "./connection-types.js?v=c008cadea6e8";
+import { fitAttachmentPoses } from "./attachment-fitting.js?v=c008cadea6e8";
+import { assertValidDesignSpec } from "./design-spec.js?v=c008cadea6e8";
+import { discoverPartCandidates, validatePartCapabilityCatalogue } from "./part-catalogue.js?v=c008cadea6e8";
+import { translateComponentRequirements } from "./design-translation.js?v=c008cadea6e8";
+import { planTechnicBeamJoint } from "./technic-planner.js?v=c008cadea6e8";
+import { specialistComponentCandidates } from "./specialist-placement.js?v=c008cadea6e8";
+import { partBodyBounds, analyzeAssembly,findBodyCollisions } from "./assembly-analysis.js?v=c008cadea6e8";
+import { createAssemblyInstructions } from "./assembly-instructions.js?v=c008cadea6e8";
 
 const LDU_TO_MM = 0.4;
 const STUD_PITCH_MM = 8;
@@ -121,8 +121,17 @@ export function connectionEdges(parts, profileMap, split = null) {
   const connections=[];
   const world=parts.map(part=>profileMap.get(part.part_id).features.map(feature=>({...feature,position:point(part,feature.position_ldu),direction:transform(part.matrix,feature.axis)})));
   const bounds=world.map(features=>({min:[0,1,2].map(axis=>Math.min(...features.map(f=>f.position[axis]))),max:[0,1,2].map(axis=>Math.max(...features.map(f=>f.position[axis])))}));
+  const near=(i,j)=>![0,1,2].some(axis=>bounds[i].min[axis]>bounds[j].max[axis]+0.25 || bounds[j].min[axis]>bounds[i].max[axis]+0.25);
+  if(split===null&&parts.length>300){
+    // Sweep and prune on x for large assemblies; edges keep the pairwise order.
+    const order=parts.map((_,i)=>i).sort((a,b)=>bounds[a].min[0]-bounds[b].min[0]),pairs=[];
+    for(let s=0;s<order.length;s++)for(let t=s+1;t<order.length&&bounds[order[t]].min[0]<=bounds[order[s]].max[0]+0.25;t++){const i=Math.min(order[s],order[t]),j=Math.max(order[s],order[t]);if(near(i,j))pairs.push([i,j]);}
+    pairs.sort((a,b)=>a[0]-b[0]||a[1]-b[1]);
+    for(const [i,j] of pairs){const found=matingPairs(profileMap.get(parts[i].part_id),parts[i],profileMap.get(parts[j].part_id),parts[j],0.25,world[i],world[j]);if(found.length)connections.push({instance_a:parts[i].instance_id,instance_b:parts[j].instance_id,mating_pairs:found});}
+    return connections;
+  }
   for(let i=0;i<(split??parts.length);i++) for(let j=split??(i+1);j<parts.length;j++) {
-    if([0,1,2].some(axis=>bounds[i].min[axis]>bounds[j].max[axis]+0.25 || bounds[j].min[axis]>bounds[i].max[axis]+0.25))continue;
+    if(!near(i,j))continue;
     const pairs=matingPairs(profileMap.get(parts[i].part_id),parts[i],profileMap.get(parts[j].part_id),parts[j],0.25,world[i],world[j]);
     if(pairs.length) connections.push({instance_a:parts[i].instance_id,instance_b:parts[j].instance_id,mating_pairs:pairs});
   }
