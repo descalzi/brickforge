@@ -5,14 +5,14 @@
 // and wedges with real slopes and road wheels with real wheel assemblies.
 // The engine always returns its best model and reports how far it deviates from
 // the intent; it blocks only on an invalid intent or an empty result.
-import {normaliseIntent} from './object-intent.js?v=f8118f9b6f32';
-import {rasteriseIntent, exteriorAir, hollowInterior, scaleForTarget, STUD_MM, PLATE_MM} from './intent-voxels.js?v=f8118f9b6f32';
-import {elementTypes, tileGrid} from './brick-tiler.js?v=f8118f9b6f32';
-import {planSlopes} from './slope-detailing.js?v=f8118f9b6f32';
-import {planWheels} from './wheel-detailing.js?v=f8118f9b6f32';
-import {connectionEdges} from './design-engine.js?v=f8118f9b6f32';
-import {partBodyBounds} from './assembly-analysis.js?v=f8118f9b6f32';
-import {analyzeLargeAssembly, createLargeAssemblyInstructions} from './large-assembly.js?v=f8118f9b6f32';
+import {normaliseIntent} from './object-intent.js?v=8b12d09c0019';
+import {rasteriseIntent, exteriorAir, hollowInterior, scaleForTarget, STUD_MM, PLATE_MM} from './intent-voxels.js?v=8b12d09c0019';
+import {elementTypes, tileGrid} from './brick-tiler.js?v=8b12d09c0019';
+import {planSlopes} from './slope-detailing.js?v=8b12d09c0019';
+import {planWheels} from './wheel-detailing.js?v=8b12d09c0019';
+import {connectionEdges} from './design-engine.js?v=8b12d09c0019';
+import {partBodyBounds} from './assembly-analysis.js?v=8b12d09c0019';
+import {analyzeLargeAssembly, createLargeAssemblyInstructions} from './large-assembly.js?v=8b12d09c0019';
 
 const LDU = 0.4;
 const IDENTITY = [1, 0, 0, 0, 1, 0, 0, 0, 1];
@@ -94,7 +94,10 @@ export function planIntent(input, catalogue, options = {}) {
     if (grid.owner[c] < 0) continue;
     const component = grid.components[grid.owner[c]];
     const above = c + layerSize;
-    if (component?.finish === 'smooth' && (above >= total || grid.owner[above] < 0)) tileTop[c] = 1;
+    // Smooth tops on solid material only: thin runs (under three plates) keep their
+    // studs so the layers beneath them stay joined.
+    const thick = c - 2 * layerSize >= 0 && grid.owner[c - layerSize] >= 0 && grid.owner[c - 2 * layerSize] >= 0;
+    if ((component?.finish === 'smooth' || intent.build.finish === 'smooth') && (above >= total || grid.owner[above] < 0) && thick) tileTop[c] = 1;
   }
   const reserved = [...wheelLayout.reserved, ...slopes.reserved];
   for (const r of reserved) for (const c of r.cells) { grid.owner[c] = grid.owner[c] >= 0 ? grid.owner[c] : r.component_index ?? -1; }

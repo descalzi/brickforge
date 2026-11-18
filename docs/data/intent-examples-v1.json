@@ -1794,6 +1794,548 @@
     ],
     "description": "A medieval castle."
    }
+  },
+  {
+   "id": "elephant-tubes",
+   "category": "organic",
+   "description": "An African elephant with big ears, a long curling trunk and curved tusks.",
+   "intent": {
+    "schema": "brickforge.object-intent/2",
+    "name": "African elephant",
+    "units": "m",
+    "build": {
+     "size": "xlarge",
+     "finish": "smooth"
+    },
+    "components": [
+     {
+      "id": "chest",
+      "role": "body",
+      "shape": "sphere",
+      "center": [
+       0,
+       2.5,
+       -0.7
+      ],
+      "size": [
+       2.2,
+       2.4,
+       2.2
+      ],
+      "colour": "dark grey"
+     },
+     {
+      "id": "belly",
+      "role": "body",
+      "shape": "sphere",
+      "center": [
+       0,
+       2.2,
+       0.3
+      ],
+      "size": [
+       2.35,
+       2.2,
+       2.6
+      ],
+      "colour": "dark grey"
+     },
+     {
+      "id": "hips",
+      "role": "body",
+      "shape": "sphere",
+      "center": [
+       0,
+       2.45,
+       1.3
+      ],
+      "size": [
+       2.0,
+       2.2,
+       1.9
+      ],
+      "colour": "dark grey"
+     },
+     {
+      "id": "shoulders",
+      "role": "body",
+      "shape": "sphere",
+      "center": [
+       0,
+       2.85,
+       -0.6
+      ],
+      "size": [
+       1.9,
+       1.2,
+       1.8
+      ],
+      "colour": "dark grey"
+     },
+     {
+      "id": "leg-fl",
+      "role": "leg",
+      "shape": "tube",
+      "points": [
+       [
+        -0.65,
+        2.0,
+        -0.9,
+        0.44
+       ],
+       [
+        -0.68,
+        1.1,
+        -1.0,
+        0.34
+       ],
+       [
+        -0.68,
+        0.45,
+        -1.0,
+        0.3
+       ],
+       [
+        -0.68,
+        0.12,
+        -1.02,
+        0.41
+       ]
+      ],
+      "colour": "dark grey",
+      "attach_to": "chest"
+     },
+     {
+      "id": "leg-fr",
+      "role": "leg",
+      "shape": "tube",
+      "points": [
+       [
+        0.65,
+        2.0,
+        -0.9,
+        0.44
+       ],
+       [
+        0.68,
+        1.1,
+        -1.0,
+        0.34
+       ],
+       [
+        0.68,
+        0.45,
+        -1.0,
+        0.3
+       ],
+       [
+        0.68,
+        0.12,
+        -1.02,
+        0.41
+       ]
+      ],
+      "colour": "dark grey",
+      "attach_to": "chest"
+     },
+     {
+      "id": "leg-rl",
+      "role": "leg",
+      "shape": "tube",
+      "points": [
+       [
+        -0.62,
+        2.1,
+        1.35,
+        0.46
+       ],
+       [
+        -0.66,
+        1.25,
+        1.52,
+        0.36
+       ],
+       [
+        -0.66,
+        0.5,
+        1.42,
+        0.31
+       ],
+       [
+        -0.66,
+        0.12,
+        1.4,
+        0.42
+       ]
+      ],
+      "colour": "dark grey",
+      "attach_to": "hips"
+     },
+     {
+      "id": "leg-rr",
+      "role": "leg",
+      "shape": "tube",
+      "points": [
+       [
+        0.62,
+        2.1,
+        1.35,
+        0.46
+       ],
+       [
+        0.66,
+        1.25,
+        1.52,
+        0.36
+       ],
+       [
+        0.66,
+        0.5,
+        1.42,
+        0.31
+       ],
+       [
+        0.66,
+        0.12,
+        1.4,
+        0.42
+       ]
+      ],
+      "colour": "dark grey",
+      "attach_to": "hips"
+     },
+     {
+      "id": "head",
+      "role": "head",
+      "shape": "sphere",
+      "center": [
+       0,
+       2.95,
+       -1.85
+      ],
+      "size": [
+       1.5,
+       1.7,
+       1.4
+      ],
+      "colour": "dark grey",
+      "attach_to": "chest"
+     },
+     {
+      "id": "forehead",
+      "role": "head",
+      "shape": "sphere",
+      "center": [
+       0,
+       3.35,
+       -1.95
+      ],
+      "size": [
+       1.1,
+       0.8,
+       1.0
+      ],
+      "colour": "dark grey",
+      "attach_to": "head"
+     },
+     {
+      "id": "ear-left",
+      "role": "ear",
+      "shape": "sphere",
+      "center": [
+       -0.92,
+       2.85,
+       -1.45
+      ],
+      "size": [
+       0.22,
+       1.9,
+       1.5
+      ],
+      "colour": "dark grey",
+      "rotate_deg": [
+       0,
+       -20,
+       0
+      ],
+      "attach_to": "head"
+     },
+     {
+      "id": "ear-right",
+      "role": "ear",
+      "shape": "sphere",
+      "center": [
+       0.92,
+       2.85,
+       -1.45
+      ],
+      "size": [
+       0.22,
+       1.9,
+       1.5
+      ],
+      "colour": "dark grey",
+      "rotate_deg": [
+       0,
+       20,
+       0
+      ],
+      "attach_to": "head"
+     },
+     {
+      "id": "inner-ear-left",
+      "role": "ear",
+      "shape": "sphere",
+      "center": [
+       -0.92,
+       2.8,
+       -1.62
+      ],
+      "size": [
+       0.3,
+       1.4,
+       1.0
+      ],
+      "colour": "pink",
+      "mode": "paint",
+      "rotate_deg": [
+       0,
+       -20,
+       0
+      ],
+      "importance": "detail"
+     },
+     {
+      "id": "inner-ear-right",
+      "role": "ear",
+      "shape": "sphere",
+      "center": [
+       0.92,
+       2.8,
+       -1.62
+      ],
+      "size": [
+       0.3,
+       1.4,
+       1.0
+      ],
+      "colour": "pink",
+      "mode": "paint",
+      "rotate_deg": [
+       0,
+       20,
+       0
+      ],
+      "importance": "detail"
+     },
+     {
+      "id": "trunk",
+      "role": "trunk",
+      "shape": "tube",
+      "points": [
+       [
+        0,
+        2.65,
+        -2.4,
+        0.34
+       ],
+       [
+        0,
+        2.05,
+        -2.62,
+        0.27
+       ],
+       [
+        0,
+        1.45,
+        -2.62,
+        0.22
+       ],
+       [
+        0,
+        0.85,
+        -2.52,
+        0.18
+       ],
+       [
+        0,
+        0.35,
+        -2.55,
+        0.15
+       ],
+       [
+        0,
+        0.15,
+        -2.75,
+        0.13
+       ],
+       [
+        0,
+        0.28,
+        -2.95,
+        0.1
+       ]
+      ],
+      "colour": "dark grey",
+      "attach_to": "head"
+     },
+     {
+      "id": "tusk-left",
+      "role": "tusk",
+      "shape": "tube",
+      "points": [
+       [
+        -0.32,
+        2.3,
+        -2.3,
+        0.1
+       ],
+       [
+        -0.38,
+        1.95,
+        -2.68,
+        0.09
+       ],
+       [
+        -0.36,
+        1.85,
+        -3.05,
+        0.07
+       ],
+       [
+        -0.3,
+        1.98,
+        -3.32,
+        0.03
+       ]
+      ],
+      "colour": "tan",
+      "attach_to": "head"
+     },
+     {
+      "id": "tusk-right",
+      "role": "tusk",
+      "shape": "tube",
+      "points": [
+       [
+        0.32,
+        2.3,
+        -2.3,
+        0.1
+       ],
+       [
+        0.38,
+        1.95,
+        -2.68,
+        0.09
+       ],
+       [
+        0.36,
+        1.85,
+        -3.05,
+        0.07
+       ],
+       [
+        0.3,
+        1.98,
+        -3.32,
+        0.03
+       ]
+      ],
+      "colour": "tan",
+      "attach_to": "head"
+     },
+     {
+      "id": "eye-left",
+      "role": "eye",
+      "shape": "sphere",
+      "center": [
+       -0.6,
+       3.05,
+       -2.38
+      ],
+      "size": [
+       0.16,
+       0.16,
+       0.16
+      ],
+      "colour": "black",
+      "mode": "paint",
+      "importance": "detail"
+     },
+     {
+      "id": "eye-right",
+      "role": "eye",
+      "shape": "sphere",
+      "center": [
+       0.6,
+       3.05,
+       -2.38
+      ],
+      "size": [
+       0.16,
+       0.16,
+       0.16
+      ],
+      "colour": "black",
+      "mode": "paint",
+      "importance": "detail"
+     },
+     {
+      "id": "tail",
+      "role": "tail",
+      "shape": "tube",
+      "points": [
+       [
+        0,
+        2.6,
+        2.1,
+        0.09
+       ],
+       [
+        0,
+        2.0,
+        2.38,
+        0.07
+       ],
+       [
+        0,
+        1.45,
+        2.45,
+        0.05
+       ]
+      ],
+      "colour": "dark grey",
+      "attach_to": "hips",
+      "importance": "detail"
+     },
+     {
+      "id": "tail-tuft",
+      "role": "tail",
+      "shape": "sphere",
+      "center": [
+       0,
+       1.32,
+       2.47
+      ],
+      "size": [
+       0.18,
+       0.32,
+       0.18
+      ],
+      "colour": "black",
+      "attach_to": "tail",
+      "importance": "detail"
+     }
+    ],
+    "assumptions": [
+     "Adult African elephant, 3.6 m at the head, facing -z."
+    ],
+    "unsupported": [
+     "Skin wrinkles"
+    ],
+    "description": "An African elephant with big ears, a long curling trunk and curved tusks."
+   }
   }
  ]
 }

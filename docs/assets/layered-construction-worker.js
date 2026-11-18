@@ -1,10 +1,10 @@
-import { buildLayeredFootprintBlock } from "./construction-engine.js?v=f8118f9b6f32";
+import { buildLayeredFootprintBlock } from "./construction-engine.js?v=8b12d09c0019";
 
 self.addEventListener("message", async (event) => {
   const { layerFootprints, config } = event.data || {};
   try {
     self.postMessage({ type: "progress", message: "Loading the construction profiles…" });
-    const response = await fetch(new URL("../data/connection-profiles/basic-bricks.json?v=f8118f9b6f32", import.meta.url));
+    const response = await fetch(new URL("../data/connection-profiles/basic-bricks.json?v=8b12d09c0019", import.meta.url));
     if (!response.ok) throw new Error("Could not load the browser connection profile catalogue.");
     const catalogue = await response.json();
     self.postMessage({ type: "progress", message: "Searching connected course arrangements…" });

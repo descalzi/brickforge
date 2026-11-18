@@ -20,6 +20,7 @@ const transpose = m => [m[0], m[3], m[6], m[1], m[4], m[7], m[2], m[5], m[8]];
 
 /** A point-membership test in model millimetres for one scaled component. */
 export function componentShape(component, scale) {
+  if (component.shape === 'tube') return tubeShape(component, scale);
   const centre = component.center_mm.map(v => v * scale), size = component.size_mm.map(v => v * scale), h = size.map(v => v / 2);
   const rotation = component.rotate_deg ? rotationMatrix(component.rotate_deg) : null, inverse = rotation && transpose(rotation);
   const local = p => { const d = p.map((v, i) => v - centre[i]); return inverse ? apply(inverse, d) : d; };
@@ -68,6 +69,41 @@ export function componentShape(component, scale) {
   return {inside: p => inside(local(p)), insideLocal: inside, local, h, min, max, size, volume, worldAxis};
 }
 
+/**
+ * A tube follows a path of [x, y, z, radius] points: the union of round, tapered
+ * segments. Its core (cells whose centre lies within 0.8 cell of the path, in
+ * cell units) is always kept so thin curved limbs stay face-connected.
+ */
+function tubeShape(component, scale) {
+  const pts = component.points_mm.map(p => p.map(v => v * scale));
+  const min = [0, 1, 2].map(a => Math.min(...pts.map(p => p[a] - p[3]))), max = [0, 1, 2].map(a => Math.max(...pts.map(p => p[a] + p[3])));
+  const segments = pts.slice(1).map((b, i) => {
+    const a = pts[i], d = [b[0] - a[0], b[1] - a[1], b[2] - a[2]], len2 = d[0] ** 2 + d[1] ** 2 + d[2] ** 2;
+    return {a, b, d, len2};
+  });
+  // Squared distance from p to the path, with each axis scaled by metric.
+  const pathDistance = (p, metric) => {
+    let best = Infinity;
+    for (const {a, d, len2} of segments) {
+      const t = len2 ? Math.max(0, Math.min(1, ((p[0] - a[0]) * d[0] + (p[1] - a[1]) * d[1] + (p[2] - a[2]) * d[2]) / len2)) : 0;
+      best = Math.min(best, ((p[0] - a[0] - d[0] * t) * metric[0]) ** 2 + ((p[1] - a[1] - d[1] * t) * metric[1]) ** 2 + ((p[2] - a[2] - d[2] * t) * metric[2]) ** 2);
+    }
+    return best;
+  };
+  const inside = p => {
+    for (const {a, b, d, len2} of segments) {
+      const t = len2 ? Math.max(0, Math.min(1, ((p[0] - a[0]) * d[0] + (p[1] - a[1]) * d[1] + (p[2] - a[2]) * d[2]) / len2)) : 0;
+      const r = a[3] + (b[3] - a[3]) * t, dx = p[0] - a[0] - d[0] * t, dy = p[1] - a[1] - d[1] * t, dz = p[2] - a[2] - d[2] * t;
+      if (dx * dx + dy * dy + dz * dz <= r * r) return true;
+    }
+    return false;
+  };
+  const core = p => pathDistance(p, [1 / CELL[0], 1 / CELL[1], 1 / CELL[2]]) <= 0.8 ** 2;
+  const volume = segments.reduce((v, {a, b, len2}) => v + Math.PI * Math.sqrt(len2) * (a[3] * a[3] + a[3] * b[3] + b[3] * b[3]) / 3, 0);
+  const size = max.map((v, i) => v - min[i]), centre = max.map((v, i) => (v + min[i]) / 2);
+  return {inside, insideLocal: q => inside(q.map((v, i) => v + centre[i])), local: p => p.map((v, i) => v - centre[i]), h: size.map(v => v / 2), min, max, size, volume, worldAxis: [0, 1, 2], tube: true, core};
+}
+
 /** Ideal bounds of the solid material at real scale (scale 1). */
 export function intentBounds(intent, include = c => c.mode === 'solid') {
   const shapes = intent.components.filter(include).map(c => componentShape(c, 1));
@@ -112,7 +148,7 @@ export function rasteriseIntent(intent, scale, options = {}) {
     const shape = shapes.get(component.id), r = cellRange(shape), fractions = new Map(), masks = new Map(), overlapWeight = new Map();
     // Local axes thinner than 1.5 cells of the world axis they mostly follow: such
     // components keep one cell across, found by testing against their mid-plane.
-    const thinLocal = [0, 1, 2].filter(a => shape.size[a] < 1.5 * CELL[shape.worldAxis[a]]);
+    const thinLocal = shape.tube ? [] : [0, 1, 2].filter(a => shape.size[a] < 1.5 * CELL[shape.worldAxis[a]]);
     const thin = [...new Set(thinLocal.map(a => shape.worldAxis[a]))];
     const extentCells = shape.max.map((v, a) => (v - shape.min[a]) / CELL[a]);
     for (let j = r[1][0]; j <= r[1][1]; j++) for (let k = r[2][0]; k <= r[2][1]; k++) for (let i = r[0][0]; i <= r[0][1]; i++) {
@@ -141,6 +177,19 @@ export function rasteriseIntent(intent, scale, options = {}) {
     }
     const chosen = new Set(thin.length ? [] : [...fractions].filter(([, f]) => f >= 0.5).map(([c]) => c));
     let thickened = false;
+    if (shape.tube) for (let j = r[1][0]; j <= r[1][1]; j++) for (let k = r[2][0]; k <= r[2][1]; k++) for (let i = r[0][0]; i <= r[0][1]; i++) {
+      const c = index(i, j, k);
+      if (chosen.has(c)) continue;
+      if (shape.core([origin[0] + (i + 0.5) * CELL[0], origin[1] + (j + 0.5) * CELL[1], origin[2] + (k + 0.5) * CELL[2]])) { chosen.add(c); thickened = true; if (!fractions.has(c)) fractions.set(c, 0.01); }
+    }
+    // Every tube cell gets a vertical partner so runs are at least two plates thick
+    // and their plates interlock instead of lying side by side.
+    if (shape.tube) for (const c of [...chosen]) {
+      const up = c + nx * nz, down = c - nx * nz;
+      if ((up < total && chosen.has(up)) || (down >= 0 && chosen.has(down))) continue;
+      const pick = (fractions.get(up) || 0) >= (fractions.get(down) || 0) && up < total ? up : down >= 0 ? down : up;
+      chosen.add(pick); thickened = true;
+    }
     if (thin.length) {
       const groups = new Map();
       for (const [cell, f] of fractions) {

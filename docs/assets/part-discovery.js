@@ -1,5 +1,5 @@
-import { matchRequiredInterfaces } from "./interface-matcher.js?v=f8118f9b6f32";
-import { scoreGeometrySuitability } from "./ldraw-geometry.js?v=f8118f9b6f32";
+import { matchRequiredInterfaces } from "./interface-matcher.js?v=8b12d09c0019";
+import { scoreGeometrySuitability } from "./ldraw-geometry.js?v=8b12d09c0019";
 
 const ROLE_TERMS = Object.freeze({
   wheel: ["wheel", "tyre", "tire", "rim"],
