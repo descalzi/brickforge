@@ -45,8 +45,9 @@ try {
   const bytes = Buffer.concat(await (await pdf.createReadStream()).toArray());
   assert.equal(bytes.subarray(0, 5).toString(), '%PDF-');
   // The copy-prompt route needs no provider.
+  await page.context().grantPermissions(['clipboard-read', 'clipboard-write']).catch(() => {});
   await page.locator('#interpret').click();
-  assert.match(await page.locator('#provider-status').innerText(), /Prompt copied|Clipboard unavailable/);
+  await page.waitForFunction(() => /Prompt copied|Clipboard unavailable/.test(document.querySelector('#provider-status').textContent), null, {timeout: 15000});
   assert.deepEqual(errors.filter(e => !/clipboard/i.test(e)), []);
   console.log('Studio e2e passed:', message);
 } finally {

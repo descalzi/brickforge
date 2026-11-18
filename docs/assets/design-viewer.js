@@ -1,7 +1,7 @@
-import { createSvgDesignViewer } from "./design-svg-viewer.js?v=fab991c95518";
+import { createSvgDesignViewer } from "./design-svg-viewer.js?v=10525c583bbb";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { colourHex, isTransparent } from "./brick-colours.js?v=fab991c95518";
+import { colourHex, isTransparent } from "./brick-colours.js?v=10525c583bbb";
 export const colours = colourHex;
 
 export function createDesignViewer(viewport) {

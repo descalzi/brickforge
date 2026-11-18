@@ -5,14 +5,14 @@
 // and wedges with real slopes and road wheels with real wheel assemblies.
 // The engine always returns its best model and reports how far it deviates from
 // the intent; it blocks only on an invalid intent or an empty result.
-import {normaliseIntent} from './object-intent.js?v=fab991c95518';
-import {rasteriseIntent, exteriorAir, hollowInterior, scaleForTarget, STUD_MM, PLATE_MM} from './intent-voxels.js?v=fab991c95518';
-import {elementTypes, tileGrid} from './brick-tiler.js?v=fab991c95518';
-import {planSlopes} from './slope-detailing.js?v=fab991c95518';
-import {planWheels} from './wheel-detailing.js?v=fab991c95518';
-import {connectionEdges} from './design-engine.js?v=fab991c95518';
-import {analyzeAssembly, partBodyBounds} from './assembly-analysis.js?v=fab991c95518';
-import {createAssemblyInstructions} from './assembly-instructions.js?v=fab991c95518';
+import {normaliseIntent} from './object-intent.js?v=10525c583bbb';
+import {rasteriseIntent, exteriorAir, hollowInterior, scaleForTarget, STUD_MM, PLATE_MM} from './intent-voxels.js?v=10525c583bbb';
+import {elementTypes, tileGrid} from './brick-tiler.js?v=10525c583bbb';
+import {planSlopes} from './slope-detailing.js?v=10525c583bbb';
+import {planWheels} from './wheel-detailing.js?v=10525c583bbb';
+import {connectionEdges} from './design-engine.js?v=10525c583bbb';
+import {analyzeAssembly, partBodyBounds} from './assembly-analysis.js?v=10525c583bbb';
+import {createAssemblyInstructions} from './assembly-instructions.js?v=10525c583bbb';
 
 const LDU = 0.4;
 const IDENTITY = [1, 0, 0, 0, 1, 0, 0, 0, 1];

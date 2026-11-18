@@ -1,5 +1,5 @@
 // Software projection keeps the studio usable on browsers without WebGL.
-import { colourHex as palette } from "./brick-colours.js?v=fab991c95518";
+import { colourHex as palette } from "./brick-colours.js?v=10525c583bbb";
 const ns="http://www.w3.org/2000/svg";
 export function createSvgDesignViewer(viewport){
  const svg=document.createElementNS(ns,"svg");svg.setAttribute("viewBox","0 0 760 410");svg.setAttribute("role","img");svg.setAttribute("aria-label","Three-dimensional nominal brick assembly; drag to orbit");svg.style.cssText="width:100%;height:100%;touch-action:none";viewport.append(svg);

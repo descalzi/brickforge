@@ -1,12 +1,12 @@
 // Describe & build: description → object intent (any language model) → brick model.
-import {ASSET_VERSION} from './release-version.js?v=fab991c95518';
-import {INTENT_INSTRUCTIONS, buildIntentRequest, normaliseIntent} from './object-intent.js?v=fab991c95518';
-import {intentCatalogue} from './intent-engine.js?v=fab991c95518';
-import {deviceModelState, deviceProvider} from './device-interpretation.js?v=fab991c95518';
-import {endpointProvider} from './text-design.js?v=fab991c95518';
-import {buildInventory, inventoryCsv} from './build-inventory.js?v=fab991c95518';
-import {createDesignViewer, colours} from './design-viewer.js?v=fab991c95518';
-import {colourByCode} from './brick-colours.js?v=fab991c95518';
+import {ASSET_VERSION} from './release-version.js?v=10525c583bbb';
+import {INTENT_INSTRUCTIONS, buildIntentRequest, normaliseIntent} from './object-intent.js?v=10525c583bbb';
+import {intentCatalogue} from './intent-engine.js?v=10525c583bbb';
+import {deviceModelState, deviceProvider} from './device-interpretation.js?v=10525c583bbb';
+import {endpointProvider} from './text-design.js?v=10525c583bbb';
+import {buildInventory, inventoryCsv} from './build-inventory.js?v=10525c583bbb';
+import {createDesignViewer, colours} from './design-viewer.js?v=10525c583bbb';
+import {colourByCode} from './brick-colours.js?v=10525c583bbb';
 
 const $ = id => document.getElementById(id);
 const status = $('engine-status'), intentInput = $('intent-input'), description = $('description-input');
@@ -91,7 +91,7 @@ function build() {
   $('build').disabled = true; $('cancel-build').hidden = false;
   setStatus('Rasterising the shapes and fitting real elements…', 'planning');
   const started = performance.now();
-  worker = new Worker(new URL('./studio-worker.js?v=fab991c95518', import.meta.url), {type: 'module'});
+  worker = new Worker(new URL('./studio-worker.js?v=10525c583bbb', import.meta.url), {type: 'module'});
   worker.onmessage = ({data}) => {
     finishWorker();
     if (data.error) { setStatus('Engine error: ' + data.error, 'blocked'); $('engine-report').textContent = data.error; return; }
@@ -162,7 +162,11 @@ async function interpret() {
   const provider = $('interpretation-provider').value, text = description.value;
   if (!text.trim()) { $('provider-status').textContent = 'Describe the object first.'; return; }
   if (provider === 'copy') {
-    try { await navigator.clipboard.writeText(promptText(text)); $('provider-status').textContent = 'Prompt copied. Paste it into an assistant, then paste its JSON reply into the object intent box and build.'; }
+    try {
+      // Some browsers never settle a clipboard request without permission; fall back after 3 s.
+      await Promise.race([navigator.clipboard.writeText(promptText(text)), new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 3000))]);
+      $('provider-status').textContent = 'Prompt copied. Paste it into an assistant, then paste its JSON reply into the object intent box and build.';
+    }
     catch { download('brickforge-prompt.txt', promptText(text), 'text/plain'); $('provider-status').textContent = 'Clipboard unavailable: the prompt was downloaded instead.'; }
     intentInput.value = ''; intentInput.focus();
     return;
@@ -267,7 +271,7 @@ $('download-pdf').addEventListener('click', () => {
   const plan = result;
   $('download-pdf').disabled = true; $('cancel-pdf').hidden = false;
   setStatus('Preparing the illustrated instruction booklet…', 'exporting');
-  const job = new Worker(new URL('./instruction-pdf-worker.js?v=fab991c95518', import.meta.url), {type: 'module'});
+  const job = new Worker(new URL('./instruction-pdf-worker.js?v=10525c583bbb', import.meta.url), {type: 'module'});
   pdfWorker = job;
   job.onmessage = ({data}) => {
     if (job !== pdfWorker) return;
