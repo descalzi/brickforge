@@ -1,13 +1,13 @@
-import {interpretPlate} from './plate-description.js?v=c008cadea6e8';
-import {deviceModelState,deviceProvider} from './device-interpretation.js?v=c008cadea6e8';
-import { instructionJointNote } from "./assembly-instructions.js?v=c008cadea6e8";
-import {reorientExtrudedComponent} from './part-orientation.js?v=c008cadea6e8';
-import { ASSET_VERSION } from "./release-version.js?v=c008cadea6e8";
-import { buildInterpretationRequest, interpretDescription, endpointProvider } from "./text-design.js?v=c008cadea6e8";
-import { buildInventory, inventoryCsv } from "./build-inventory.js?v=c008cadea6e8";
-import { partBodyBounds } from "./assembly-analysis.js?v=c008cadea6e8";
-import { validateDesignSpec } from "./design-spec.js?v=c008cadea6e8";
-import { createDesignViewer, colours } from "./design-viewer.js?v=c008cadea6e8";
+import {interpretPlate} from './plate-description.js?v=f8118f9b6f32';
+import {deviceModelState,deviceProvider} from './device-interpretation.js?v=f8118f9b6f32';
+import { instructionJointNote } from "./assembly-instructions.js?v=f8118f9b6f32";
+import {reorientExtrudedComponent} from './part-orientation.js?v=f8118f9b6f32';
+import { ASSET_VERSION } from "./release-version.js?v=f8118f9b6f32";
+import { buildInterpretationRequest, interpretDescription, endpointProvider } from "./text-design.js?v=f8118f9b6f32";
+import { buildInventory, inventoryCsv } from "./build-inventory.js?v=f8118f9b6f32";
+import { partBodyBounds } from "./assembly-analysis.js?v=f8118f9b6f32";
+import { validateDesignSpec } from "./design-spec.js?v=f8118f9b6f32";
+import { createDesignViewer, colours } from "./design-viewer.js?v=f8118f9b6f32";
 const $=id=>document.getElementById(id);
 const editor=$("design-spec"),status=$("engine-status"),runButton=$("run-design"),selector=$("fixture-select");
 const downloads=[$("download-ldraw"),$("download-bom"),$("download-report"),$("download-instructions"),$("download-pdf")];
@@ -82,7 +82,7 @@ function run(){
   invalidate("Validating design specification…");
   let spec;try{spec=JSON.parse(editor.value);const validation=validateDesignSpec(spec);if(!validation.valid)throw new Error(validation.errors.join(" "));}catch(error){setStatus(error.message,"blocked");$("engine-report").textContent=error.message;return;}
   components(spec);activeSpec=spec;runButton.disabled=true;$("cancel-design").hidden=false;setStatus("Searching catalogue parts and connected layouts…","planning");
-  const started=performance.now();worker=new Worker(new URL("./design-worker.js?v=c008cadea6e8",import.meta.url),{type:"module"});
+  const started=performance.now();worker=new Worker(new URL("./design-worker.js?v=f8118f9b6f32",import.meta.url),{type:"module"});
   worker.onmessage=({data})=>{
     finishWorker();if(data.error){setStatus(data.error,"blocked");$("engine-report").textContent=data.error;return;}
     result=data.result;showEvidence(result);components(spec,result);
@@ -164,7 +164,7 @@ $("download-pdf").addEventListener("click", () => {
   $("cancel-pdf").hidden = false;
   setStatus("Preparing illustrated instruction booklet…", "exporting");
   try {
-    const job = new Worker(new URL("./instruction-pdf-worker.js?v=c008cadea6e8", import.meta.url), {type:"module"});
+    const job = new Worker(new URL("./instruction-pdf-worker.js?v=f8118f9b6f32", import.meta.url), {type:"module"});
     pdfWorker = job;
     job.onmessage = ({data}) => {
       if (job !== pdfWorker) return;
@@ -278,7 +278,7 @@ showRevisions();
 const revisionFieldNames = {position_tolerance_mm: 'position allowance per axis', fit_tolerance_mm: 'dimension allowance', shape_tolerance_mm: 'radial shape allowance'};
 $("find-revision").addEventListener("click", () => {
   if (result?.status !== "blocked" || worker) return;
-  const search = new Worker(new URL("./design-worker.js?v=c008cadea6e8", import.meta.url), {type: "module"});
+  const search = new Worker(new URL("./design-worker.js?v=f8118f9b6f32", import.meta.url), {type: "module"});
   worker = search;
   const preview = $("revision-preview");
   $("find-revision").disabled = true;

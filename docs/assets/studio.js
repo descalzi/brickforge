@@ -1,12 +1,12 @@
 // Describe & build: description → object intent (any language model) → brick model.
-import {ASSET_VERSION} from './release-version.js?v=c008cadea6e8';
-import {INTENT_INSTRUCTIONS, buildIntentRequest, normaliseIntent} from './object-intent.js?v=c008cadea6e8';
-import {intentCatalogue} from './intent-engine.js?v=c008cadea6e8';
-import {deviceModelState, deviceProvider} from './device-interpretation.js?v=c008cadea6e8';
-import {endpointProvider} from './text-design.js?v=c008cadea6e8';
-import {buildInventory, inventoryCsv} from './build-inventory.js?v=c008cadea6e8';
-import {createDesignViewer, colours} from './design-viewer.js?v=c008cadea6e8';
-import {colourByCode} from './brick-colours.js?v=c008cadea6e8';
+import {ASSET_VERSION} from './release-version.js?v=f8118f9b6f32';
+import {INTENT_INSTRUCTIONS, buildIntentRequest, normaliseIntent} from './object-intent.js?v=f8118f9b6f32';
+import {intentCatalogue} from './intent-engine.js?v=f8118f9b6f32';
+import {deviceModelState, deviceProvider} from './device-interpretation.js?v=f8118f9b6f32';
+import {endpointProvider} from './text-design.js?v=f8118f9b6f32';
+import {buildInventory, inventoryCsv} from './build-inventory.js?v=f8118f9b6f32';
+import {createDesignViewer, colours} from './design-viewer.js?v=f8118f9b6f32';
+import {colourByCode} from './brick-colours.js?v=f8118f9b6f32';
 
 const $ = id => document.getElementById(id);
 const status = $('engine-status'), intentInput = $('intent-input'), description = $('description-input');
@@ -92,7 +92,7 @@ function build() {
   const big = ['xlarge', 'huge'].includes(intent.build?.size) || (intent.build?.target_longest_studs || 0) > 40;
   setStatus(`Rasterising the shapes and fitting real elements…${big ? ' Large models can take a minute.' : ''}`, 'planning');
   const started = performance.now();
-  worker = new Worker(new URL('./studio-worker.js?v=c008cadea6e8', import.meta.url), {type: 'module'});
+  worker = new Worker(new URL('./studio-worker.js?v=f8118f9b6f32', import.meta.url), {type: 'module'});
   worker.onmessage = ({data}) => {
     finishWorker();
     if (data.error) { setStatus('Engine error: ' + data.error, 'blocked'); $('engine-report').textContent = data.error; return; }
@@ -276,7 +276,7 @@ $('download-pdf').addEventListener('click', () => {
   const plan = result;
   $('download-pdf').disabled = true; $('cancel-pdf').hidden = false;
   setStatus('Preparing the illustrated instruction booklet…', 'exporting');
-  const job = new Worker(new URL('./instruction-pdf-worker.js?v=c008cadea6e8', import.meta.url), {type: 'module'});
+  const job = new Worker(new URL('./instruction-pdf-worker.js?v=f8118f9b6f32', import.meta.url), {type: 'module'});
   pdfWorker = job;
   job.onmessage = ({data}) => {
     if (job !== pdfWorker) return;

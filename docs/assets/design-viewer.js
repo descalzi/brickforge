@@ -1,7 +1,7 @@
-import { createSvgDesignViewer } from "./design-svg-viewer.js?v=c008cadea6e8";
+import { createSvgDesignViewer } from "./design-svg-viewer.js?v=f8118f9b6f32";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { colourHex, isTransparent } from "./brick-colours.js?v=c008cadea6e8";
+import { colourHex, isTransparent } from "./brick-colours.js?v=f8118f9b6f32";
 export const colours = colourHex;
 
 const geometryCache=new Map(),materialCache=new Map(),edgeCache=new Map();
