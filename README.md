@@ -13,8 +13,10 @@ parts list and step-by-step instructions.
 
 1. **Interpret.** A language model writes an *object intent*
    ([schema](docs/data/object-intent-schema-v2.json)): what the object looks like at
-   real size, as overlapping boxes, cylinders, cones, spheres, domes, wedges and
-   roofs, with colours, openings (`void`) and surface colour (`paint`). It never
+   real size, as overlapping boxes, cylinders, cones, spheres, domes, wedges,
+   roofs and tubes (curved, tapering paths for limbs, trunks, tails and horns),
+   with colours, openings (`void`) and surface colour (`paint`). A `smooth`
+   finish tiles upward-facing surfaces for sculptures and animals. It never
    names parts or studs. Use any chat assistant (the studio copies the prompt), an
    on-device browser model, or your own gateway.
 2. **Massing.** The engine picks the scale from the build size, rasterises the

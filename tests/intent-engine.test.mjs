@@ -12,6 +12,7 @@ const read = path => JSON.parse(readFileSync(new URL('../docs/data/' + path, imp
 const basic = read('connection-profiles/basic-bricks.json'), standard = read('connection-profiles/standard-elements-v1.json'), specialist = read('specialist-profiles-v1.json');
 const catalogue = intentCatalogue(basic, standard, specialist);
 const cases = read('intent-eval-v1.json').cases;
+const profilesById = new Map(catalogue.profiles.map(p => [p.part_id, p]));
 const intent = (components, extra = {}) => ({schema: INTENT_SCHEMA_ID, name: 'Test', units: 'mm', components, ...extra});
 const box = (id, center, size, more = {}) => ({id, role: 'body', shape: 'box', center, size, colour: 'red', ...more});
 
@@ -37,10 +38,12 @@ test('units convert to millimetres and colours resolve names and synonyms', () =
   assert.equal(r.intent.components[0].colour, 72);
   assert.equal(resolveColour('transparent light blue'), 43);
   assert.equal(resolveColour('glass'), 47);
-  assert.equal(resolveColour('chartreuse'), null);
-  const unknown = normaliseIntent(intent([box('a', [0, 0, 0], [1, 1, 1], {colour: 'chartreuse'})]));
-  assert.ok(unknown.valid);
-  assert.match(unknown.warnings.join(), /not in the palette/);
+  assert.equal(resolveColour('dusty pink'), null);
+  const near = normaliseIntent(intent([box('a', [0, 0, 0], [1, 1, 1], {colour: 'dusty pink'}), box('b', [0, 0, 0], [1, 1, 1], {colour: 'ivory'}), box('c', [0, 0, 0], [1, 1, 1], {colour: 'frosted glass'}), box('d', [0, 0, 0], [1, 1, 1], {colour: 'zzz'})]));
+  assert.ok(near.valid);
+  assert.deepEqual(near.intent.components.map(c => c.colour), [29, 19, 47, 71]);
+  assert.match(near.warnings.join(), /the nearest, pink, is used/);
+  assert.match(near.warnings.join(), /"zzz" is not in the palette; light grey is used/);
 });
 
 test('the interpretation request carries instructions and schema without parts', () => {
@@ -186,4 +189,22 @@ test('extra-large and huge builds are accepted and scale the model', () => {
   const plan = planIntent({...base, build: {size: 'xlarge'}}, catalogue);
   assert.ok(plan.intent_report.connectivity.connected);
   assert.ok(Math.max(plan.dimensions_mm.width, plan.dimensions_mm.depth, plan.dimensions_mm.height) > 60 * 8, 'longest side is about 64 studs');
+});
+
+test('tubes follow a curved, tapering path and stay connected', () => {
+  // A trunk curling forward from a block, 3 mm thin at the tip.
+  const r = normaliseIntent(intent([
+    box('head', [0, 60, 0], [40, 40, 40], {colour: 'dark grey'}),
+    {id: 'trunk', role: 'trunk', shape: 'tube', colour: 'dark grey', attach_to: 'head', points: [[0, 50, -18, 8], [0, 30, -26, 6], [0, 12, -24, 4], [0, 4, -34, 3], [0, 8, -44, 1.5]]}]));
+  assert.ok(r.valid, r.errors.join(' '));
+  assert.deepEqual(r.intent.components[1].size_mm.map(v => Math.round(v)), [16, 57, 36]);
+  const plan = planIntent(intent([
+    box('head', [0, 60, 0], [40, 40, 40], {colour: 'dark grey'}),
+    {id: 'trunk', role: 'trunk', shape: 'tube', colour: 'dark grey', attach_to: 'head', points: [[0, 50, -18, 8], [0, 30, -26, 6], [0, 12, -24, 4], [0, 4, -34, 3], [0, 8, -44, 1.5]]}],
+    {build: {target_longest_studs: 12, finish: 'smooth'}}), catalogue);
+  assert.ok(plan.intent_report.connectivity.connected);
+  assert.equal(plan.intent_report.connectivity.fragments_removed, 0);
+  assert.ok(plan.parts.some(p => profilesById.get(p.part_id)?.element_kind === 'tile'), 'smooth finish uses tiles');
+  assert.ok(plan.parts.filter(p => p.component_id === 'trunk').length > 3);
+  assert.match(normaliseIntent(intent([{id: 't', role: 'tail', shape: 'tube', points: [[0, 0, 0, 1]]}])).errors.join(), /2 to 64 entries/);
 });

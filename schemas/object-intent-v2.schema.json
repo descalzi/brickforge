@@ -54,6 +54,12 @@
             "auto",
             "solid"
           ]
+        },
+        "finish": {
+          "enum": [
+            "studs",
+            "smooth"
+          ]
         }
       }
     },
@@ -66,9 +72,7 @@
         "required": [
           "id",
           "role",
-          "shape",
-          "center",
-          "size"
+          "shape"
         ],
         "additionalProperties": false,
         "properties": {
@@ -93,7 +97,8 @@
               "sphere",
               "dome",
               "wedge",
-              "roof"
+              "roof",
+              "tube"
             ]
           },
           "center": {
@@ -185,8 +190,44 @@
                 }
               }
             ]
+          },
+          "points": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 64,
+            "description": "Tube path: [x, y, z, radius] per point.",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 4,
+              "maxItems": 4
+            }
           }
-        }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "shape": {
+                  "const": "tube"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "points"
+              ]
+            },
+            "else": {
+              "required": [
+                "center",
+                "size"
+              ]
+            }
+          }
+        ]
       }
     },
     "assumptions": {

@@ -53,7 +53,16 @@ const SYNONYMS = new Map([
   ['dark pink', 26], ['violet', 85], ['skin', 78], ['flesh', 78],
   ['glass', 47], ['clear', 47], ['transparent', 47], ['trans-clear', 47], ['trans clear blue', 43],
   ['metal', 179], ['metallic silver', 179], ['steel', 179], ['olive', 378],
+  ['ivory', 19], ['bone', 19], ['off white', 15], ['eggshell', 19], ['khaki', 28], ['stone', 71], ['concrete', 71], ['slate', 72], ['charcoal', 72],
+  ['maroon', 320], ['burgundy', 320], ['crimson', 4], ['scarlet', 4], ['brick', 320], ['rust', 484], ['copper', 484], ['bronze', 297], ['brass', 297],
+  ['salmon', 29], ['coral', 25], ['peach', 78], ['rose', 29], ['lavender', 85], ['lilac', 85], ['mauve', 26], ['plum', 85],
+  ['turquoise', 322], ['cyan', 322], ['aqua', 322], ['azure', 321], ['royal blue', 1], ['cobalt', 1], ['midnight blue', 272],
+  ['forest green', 288], ['emerald', 2], ['mint', 378], ['sage', 378], ['moss', 378], ['chartreuse', 27], ['lime green', 27],
+  ['mustard', 191], ['amber', 191], ['gold yellow', 191], ['lemon', 226], ['chocolate', 70], ['wood', 70], ['wooden', 70], ['caramel', 84],
+  ['sand', 19], ['straw', 19], ['honey', 191], ['tawny', 84], ['ginger', 25], ['ash', 71], ['smoke', 72], ['silver grey', 71],
 ]);
+const KEYWORDS = [['pink', 29], ['purple', 85], ['violet', 85], ['blue', 1], ['green', 2], ['red', 4], ['orange', 25], ['yellow', 14], ['brown', 70],
+  ['grey', 71], ['gray', 71], ['white', 15], ['black', 0], ['tan', 19], ['beige', 19], ['cream', 19], ['ivory', 19], ['gold', 297], ['silver', 179]];
 
 export const colourByCode = new Map(BRICK_COLOURS.map(c => [c.code, c]));
 export const colourHex = new Map(BRICK_COLOURS.map(c => [c.code, c.hex]));
@@ -68,6 +77,19 @@ export function resolveColour(value) {
   if (SYNONYMS.has(key)) return SYNONYMS.get(key);
   const trans = key.startsWith('transparent ') ? 'trans ' + key.slice(12) : null;
   if (trans) return BRICK_COLOURS.find(c => c.name === trans)?.code ?? null;
+  return null;
+}
+
+/** Nearest palette colour for a name outside the palette ("dusty pink" → pink). */
+export function closestColour(value) {
+  const exact = resolveColour(value);
+  if (exact !== null || typeof value !== 'string') return exact;
+  const key = value.trim().toLowerCase().replace(/[_-]+/g, ' ').replace(/\s+/g, ' ');
+  const glass = /\b(trans|transparent|glass|clear|translucent)\b/.test(key);
+  if (glass) return /blue/.test(key) ? 43 : /red/.test(key) ? 36 : /yellow|amber/.test(key) ? 46 : /green/.test(key) ? 34 : /orange/.test(key) ? 57 : 47;
+  const words = key.split(' ');
+  for (let n = words.length - 1; n >= 0; n--) { const tail = words.slice(n).join(' '); const hit = resolveColour(tail); if (hit !== null) return /\b(dark|deep)\b/.test(key) && hit === 71 ? 72 : hit; }
+  for (const [word, code] of KEYWORDS) if (key.includes(word)) return /\b(dark|deep)\b/.test(key) && code === 71 ? 72 : code;
   return null;
 }
 

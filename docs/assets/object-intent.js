@@ -3,10 +3,10 @@
 // The interpreter describes what the object looks like at its real-world size,
 // using a few overlapping primitives. It never chooses scale, parts, studs or
 // placements; the engine owns quantisation and construction.
-import {resolveColour} from './brick-colours.js?v=f8118f9b6f32';
+import {BRICK_COLOURS, closestColour, resolveColour} from './brick-colours.js?v=8b12d09c0019';
 
 export const INTENT_SCHEMA_ID = 'brickforge.object-intent/2';
-export const SHAPES = Object.freeze(['box', 'cylinder', 'cone', 'sphere', 'dome', 'wedge', 'roof']);
+export const SHAPES = Object.freeze(['box', 'cylinder', 'cone', 'sphere', 'dome', 'wedge', 'roof', 'tube']);
 export const MODES = Object.freeze(['solid', 'void', 'paint']);
 export const BUILD_SIZES = Object.freeze({small: 12, medium: 20, large: 32, xlarge: 64, huge: 128});
 const UNIT_MM = {m: 1000, cm: 10, mm: 1};
@@ -32,7 +32,10 @@ Shapes:
 - dome: the upper half of an ellipsoid; center is the middle of its flat base, size [width, height, depth].
 - wedge: a box whose top slopes down; "slope": {"down_toward": "+x" | "-x" | "+z" | "-z", "low_fraction": height at the low edge as a fraction of the full height (0..1)}.
 - roof: a gable roof prism; "ridge_axis" ("x" or "z") is the direction the ridge runs; "eave_fraction" is the height at the eaves as a fraction of total height (usually 0).
-Optional: "rotate_deg" [rx, ry, rz] rotates a component about its own centre (applied x, then y, then z). Prefer axis-aligned shapes.
+- tube: a smooth curved, tapering limb along a path. Instead of center and size it has "points": [[x, y, z, radius], ...] (2 to 64 points); the radius may change along the path. Use tubes for anything organic or curved: legs with knees and ankles, trunks, tails, necks, arms, horns, tusks, branches, handles, pipes and cables. Give enough points to follow the curve (typically 4 to 10).
+Optional: "rotate_deg" [rx, ry, rz] rotates a component (not a tube) about its own centre (applied x, then y, then z). Prefer axis-aligned shapes.
+
+Organic forms (animals, people, plants, sculptures): build bodies from several overlapping spheres (chest, belly, hips, shoulders) rather than one, taper limbs with tubes rather than cylinders, and add the features that make the object recognisable (brow, cheeks, knees, feet, ear shape) as their own overlapping shapes. Overlap generously so the surface flows.
 
 Modes:
 - "solid" (default) adds material. Later solids win where colours overlap.
@@ -46,7 +49,8 @@ Rules that make the result buildable:
 - Mark small decorative items "importance": "detail"; they may disappear at small build sizes. Everything else is "essential".
 - "attach_to" (id or list of ids) states that a component must be structurally joined to another.
 - "finish": "smooth" asks for a smooth top (tiles) instead of exposed studs.
-- Colours are names such as "red", "dark grey", "light grey", "white", "black", "tan", "reddish brown", "dark green", "trans clear" or "trans light blue". Use a "trans" colour for glass.
+- Colours must be one of: ${BRICK_COLOURS.map(c => c.name).join(', ')}. Use a "trans" colour for glass. Pick the nearest one (ivory → white or tan, dusty pink → pink).
+- "build": {"finish": "smooth"} covers every upward-facing surface with smooth tiles instead of studs. Use it for animals, people, sculptures and other organic objects; leave it out for buildings, vehicles and toys.
 - "build": {"size": "small" | "medium" | "large" | "xlarge" | "huge"} sets the length of the longest side: 12, 20, 32, 64 or 128 studs. Small objects with few features suit small or medium; houses and vehicles with doors, windows and trim need large or xlarge; castles, streets and detailed scenes need huge. Detail smaller than about 1/40 of the longest side (xlarge) or 1/120 (huge) disappears.
 - Record every choice the description did not state in "assumptions". List anything you could not express in "unsupported" rather than inventing it.
 Return JSON only.`;
@@ -70,6 +74,8 @@ export function normaliseIntent(input) {
     errors.push('build.target_longest_studs must be an integer from 6 to 128.');
     target = 20;
   }
+  const finish = build.finish ?? 'studs';
+  if (!['studs', 'smooth'].includes(finish)) errors.push('build.finish must be "studs" or "smooth".');
   const hollow = build.hollow ?? 'auto';
   if (!['auto', 'solid'].includes(hollow)) errors.push('build.hollow must be "auto" or "solid".');
   if (!Array.isArray(input.components) || !input.components.length) errors.push('components must be a non-empty array.');
@@ -86,30 +92,43 @@ export function normaliseIntent(input) {
     else ids.add(id);
     const where = id ? `Component "${id}"` : at;
     if (!SHAPES.includes(c.shape)) errors.push(`${where}: shape must be one of ${SHAPES.join(', ')}.`);
-    if (!vec3(c.center)) errors.push(`${where}: center must be [x, y, z].`);
-    if (!vec3(c.size) || !c.size.every(v => v > 0)) errors.push(`${where}: size must be three positive extents.`);
+    let points = null;
+    if (c.shape === 'tube') {
+      const ok = Array.isArray(c.points) && c.points.length >= 2 && c.points.length <= 64 && c.points.every(p => Array.isArray(p) && p.length === 4 && p.every(finite) && p[3] > 0);
+      if (!ok) errors.push(`${where}: a tube needs "points": 2 to 64 entries of [x, y, z, radius] with positive radius.`);
+      else points = c.points;
+    } else {
+      if (!vec3(c.center)) errors.push(`${where}: center must be [x, y, z].`);
+      if (!vec3(c.size) || !c.size.every(v => v > 0)) errors.push(`${where}: size must be three positive extents.`);
+    }
     const mode = c.mode ?? 'solid';
     if (!MODES.includes(mode)) errors.push(`${where}: mode must be solid, void or paint.`);
     let colour = null;
     if (mode !== 'void') {
       colour = c.colour === undefined ? null : resolveColour(c.colour);
       if (c.colour === undefined) warnings.push(`${where} has no colour; light grey is used.`);
-      else if (colour === null) warnings.push(`${where} colour "${c.colour}" is not in the palette; light grey is used.`);
+      else if (colour === null) {
+        colour = closestColour(c.colour);
+        const name = BRICK_COLOURS.find(x => x.code === colour)?.name;
+        warnings.push(colour === null ? `${where} colour "${c.colour}" is not in the palette; light grey is used.` : `${where} colour "${c.colour}" is not in the palette; the nearest, ${name}, is used.`);
+      }
       colour ??= 71;
     }
     const out = {
       id: id || at, label: typeof c.label === 'string' ? c.label : (id || at),
       role: typeof c.role === 'string' && c.role.trim() ? c.role.trim().toLowerCase() : 'body',
       shape: c.shape, mode, colour,
-      center_mm: vec3(c.center) ? c.center.map(v => v * k) : [0, 0, 0],
-      size_mm: vec3(c.size) ? c.size.map(v => v * k) : [1, 1, 1],
+      center_mm: points ? [0, 1, 2].map(a => (Math.min(...points.map(p => p[a] - p[3])) + Math.max(...points.map(p => p[a] + p[3]))) / 2 * k) : vec3(c.center) ? c.center.map(v => v * k) : [0, 0, 0],
+      size_mm: points ? [0, 1, 2].map(a => (Math.max(...points.map(p => p[a] + p[3])) - Math.min(...points.map(p => p[a] - p[3]))) * k) : vec3(c.size) ? c.size.map(v => v * k) : [1, 1, 1],
       importance: c.importance ?? 'essential',
       finish: c.finish ?? 'studs',
       attach_to: c.attach_to === undefined ? [] : [].concat(c.attach_to),
     };
     if (!['essential', 'detail'].includes(out.importance)) errors.push(`${where}: importance must be essential or detail.`);
     if (!['studs', 'smooth'].includes(out.finish)) errors.push(`${where}: finish must be studs or smooth.`);
-    if (c.rotate_deg !== undefined) {
+    if (points) out.points_mm = points.map(p => p.map(v => v * k));
+    if (c.rotate_deg !== undefined && points) warnings.push(`${where}: rotate_deg is ignored for tubes; their points set the path.`);
+    else if (c.rotate_deg !== undefined) {
       if (!vec3(c.rotate_deg)) errors.push(`${where}: rotate_deg must be [rx, ry, rz].`);
       else if (c.rotate_deg.some(v => v % 360 !== 0)) out.rotate_deg = c.rotate_deg.slice();
     }
@@ -147,7 +166,7 @@ export function normaliseIntent(input) {
     schema: INTENT_SCHEMA_ID,
     name: typeof input.name === 'string' && input.name.trim() ? input.name.trim() : 'Untitled object',
     description: typeof input.description === 'string' ? input.description : '',
-    units, build: {size, target_longest_studs: target, hollow},
+    units, build: {size, target_longest_studs: target, hollow, finish},
     components,
     assumptions: Array.isArray(input.assumptions) ? input.assumptions.slice() : [],
     unsupported: Array.isArray(input.unsupported) ? input.unsupported.slice() : [],
