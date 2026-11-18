@@ -5,12 +5,15 @@ real plastic-brick elements, with a parts inventory and building instructions.
 
 ## Product pipeline
 
-1. Interpret descriptive text into a catalogue-independent object specification.
-2. Decompose the object into components, geometry, dimensions, relationships,
-   required features, functions and explicit empty spaces.
-3. Discover and fit source-backed elements and compatible small assemblies.
-4. Validate the realised geometry and nominal connection graph.
-5. Inspect, revise and export the canonical model, inventory and instructions.
+1. Interpret descriptive text into an object intent: overlapping primitives at
+   real-world size with roles, colours, openings and surface colour (no parts).
+2. Choose the scale and rasterise the intent onto the stud grid (massing).
+3. Tile with real elements, then detail with slopes and wheel assemblies.
+4. Validate the nominal connection graph and report deviations from the intent.
+5. Inspect and export the model, inventory and instructions.
+
+The exact-specification engine (v1 briefs) remains available as the Brief
+workbench; see ADR 0003.
 
 The deterministic construction engine is browser JavaScript, served as static
 files from `docs/` through GitHub Pages. Python supports offline source ingestion,
@@ -20,8 +23,9 @@ independent fixtures and geometry audits; it is not a parallel product engine.
 
 | Surface | Purpose |
 | --- | --- |
-| `index.html` | Explain the object-first workflow, link working proofs and state limits |
-| `designer.html` | Main workbench: briefs, component edits, planning, evidence, sequence, revisions and exports |
+| `index.html` | Explain the workflow, link models built from descriptions and state limits |
+| `studio.html` | Main entry: describe, interpret with any model, build, inspect deviations and export |
+| `designer.html` | Brief workbench: exact v1 briefs, component edits, planning, evidence, revisions and exports |
 | `tools.html` | Supporting catalogue, mesh and construction-research tools |
 | `parts.html` | Search metadata and inspect source parts; discovery is not placement certification |
 | `inspector.html` | Optional STL/OBJ reference and geometry diagnostics |
@@ -51,11 +55,10 @@ and structural stability. PDF instructions expose this boundary too.
 
 ## Product decisions
 
-- Test the construction engine with ideal authored specifications before relying
-  on an LLM. Those specifications contain no part IDs or construction recipes.
-- Preserve intent, features, proportions and voids; reject unsupported essentials.
-- Exact dimensions remain exact unless a component explicitly permits a bounded
-  dimension tolerance.
+- Evaluate on unseen plain descriptions with a frozen interpreter output; failures
+  are findings, not fixtures to edit.
+- Prefer a recognisable, connected model with a stated deviation over a refusal;
+  block only invalid intents. (The v1 workbench keeps exact matching.)
 - Select specialised elements by function and geometry rather than replacing
   every object feature with a rectangular block.
 - Preserve useful view direction across rebuilds; provide explicit front/top/fit
