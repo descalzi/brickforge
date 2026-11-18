@@ -1,15 +1,22 @@
 // Describe & build: description → object intent (any language model) → brick model.
-import {ASSET_VERSION} from './release-version.js?v=8b12d09c0019';
-import {INTENT_INSTRUCTIONS, buildIntentRequest, normaliseIntent} from './object-intent.js?v=8b12d09c0019';
-import {intentCatalogue} from './intent-engine.js?v=8b12d09c0019';
-import {deviceModelState, deviceProvider} from './device-interpretation.js?v=8b12d09c0019';
-import {endpointProvider} from './text-design.js?v=8b12d09c0019';
-import {buildInventory, inventoryCsv} from './build-inventory.js?v=8b12d09c0019';
-import {createDesignViewer, colours} from './design-viewer.js?v=8b12d09c0019';
-import {colourByCode} from './brick-colours.js?v=8b12d09c0019';
+import {ASSET_VERSION} from './release-version.js?v=6ea6e943cea0';
+import {INTENT_INSTRUCTIONS, buildIntentRequest, normaliseIntent} from './object-intent.js?v=6ea6e943cea0';
+import {intentCatalogue} from './intent-engine.js?v=6ea6e943cea0';
+import {deviceModelState, deviceProvider} from './device-interpretation.js?v=6ea6e943cea0';
+import {endpointProvider} from './text-design.js?v=6ea6e943cea0';
+import {buildInventory, inventoryCsv} from './build-inventory.js?v=6ea6e943cea0';
+import {createDesignViewer, colours} from './design-viewer.js?v=6ea6e943cea0';
+import {colourByCode} from './brick-colours.js?v=6ea6e943cea0';
 
 const $ = id => document.getElementById(id);
 const status = $('engine-status'), intentInput = $('intent-input'), description = $('description-input');
+let loadData = null;
+// Fetch the meshes of vocabulary parts a plan uses, once each.
+async function loadPreviews(plan) {
+  const used = new Set((plan.parts || []).map(p => p.part_id));
+  const missing = displayCatalogue.profiles.filter(p => used.has(p.part_id) && !p.preview_triangles_mm && p.mesh_file);
+  await Promise.all(missing.map(async p => { p.preview_triangles_mm = (await loadData(p.mesh_file)).triangle_positions_mm; }));
+}
 let catalogue = null, displayCatalogue = null, schema = null, examples = [], result = null, activeIntent = null;
 let worker = null, timer = null, pdfWorker = null, interpretation = null;
 let viewer = null;
@@ -92,12 +99,13 @@ function build() {
   const big = ['xlarge', 'huge'].includes(intent.build?.size) || (intent.build?.target_longest_studs || 0) > 40;
   setStatus(`Rasterising the shapes and fitting real elements…${big ? ' Large models can take a minute.' : ''}`, 'planning');
   const started = performance.now();
-  worker = new Worker(new URL('./studio-worker.js?v=8b12d09c0019', import.meta.url), {type: 'module'});
+  worker = new Worker(new URL('./studio-worker.js?v=6ea6e943cea0', import.meta.url), {type: 'module'});
   worker.onmessage = ({data}) => {
     finishWorker();
     if (data.error) { setStatus('Engine error: ' + data.error, 'blocked'); $('engine-report').textContent = data.error; return; }
     result = data.result;
-    show(result, (performance.now() - started) / 1000);
+    const seconds = (performance.now() - started) / 1000;
+    loadPreviews(result).catch(() => {}).then(() => show(result, seconds));
   };
   worker.onerror = event => { finishWorker(); setStatus('Engine error: ' + event.message, 'blocked'); };
   timer = setTimeout(() => { finishWorker(); setStatus('Stopped after 4 minutes. Try a smaller model size.', 'blocked'); }, 240000);
@@ -218,13 +226,16 @@ function loadExample(id) {
 async function initialise() {
   try {
     const load = async path => { const r = await fetch('./data/' + path + '?v=' + ASSET_VERSION); if (!r.ok) throw new Error(`Could not load ${path} (${r.status}). Reload to retry.`); return r.json(); };
-    const [basic, standard, specialist, evaluation, extra, intentSchema] = await Promise.all([
+    const [basic, standard, specialist, vocabulary, evaluation, extra, intentSchema] = await Promise.all([
       load('connection-profiles/basic-bricks.json'), load('connection-profiles/standard-elements-v1.json'), load('specialist-profiles-v1.json'),
-      load('intent-eval-v1.json'), load('intent-examples-v1.json'), load('object-intent-schema-v2.json')]);
+      load('connection-profiles/part-vocabulary-profiles-v1.json'), load('intent-eval-v1.json'), load('intent-examples-v1.json'), load('object-intent-schema-v2.json')]);
     schema = intentSchema;
-    catalogue = intentCatalogue(basic, standard, specialist);
+    catalogue = intentCatalogue(basic, standard, specialist, vocabulary);
+    loadData = load;
     const previews = await Promise.all(specialist.profiles.map(async p => ({...p, preview_triangles_mm: (await load(p.mesh_file)).triangle_positions_mm})));
-    displayCatalogue = {profiles: [...basic.profiles, ...standard.profiles, ...previews]};
+    // Vocabulary parts (slopes, curves, cones, windows, brackets) load their meshes when a build uses them.
+    const shown = new Set(previews.map(p => p.part_id));
+    displayCatalogue = {profiles: [...basic.profiles, ...standard.profiles, ...previews, ...vocabulary.profiles.filter(p => !shown.has(p.part_id)).map(p => ({...p}))]};
     examples = [...evaluation.cases, ...extra.cases.map(e => ({...e, category: 'bigger builds'}))];
     const select = $('example-select');
     select.replaceChildren(el('option', {value: '', textContent: 'Choose an example…'}));
@@ -276,7 +287,7 @@ $('download-pdf').addEventListener('click', () => {
   const plan = result;
   $('download-pdf').disabled = true; $('cancel-pdf').hidden = false;
   setStatus('Preparing the illustrated instruction booklet…', 'exporting');
-  const job = new Worker(new URL('./instruction-pdf-worker.js?v=8b12d09c0019', import.meta.url), {type: 'module'});
+  const job = new Worker(new URL('./instruction-pdf-worker.js?v=6ea6e943cea0', import.meta.url), {type: 'module'});
   pdfWorker = job;
   job.onmessage = ({data}) => {
     if (job !== pdfWorker) return;

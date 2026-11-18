@@ -1,5 +1,5 @@
-import { createInstructionPdf } from "./instruction-pdf.js?v=8b12d09c0019";
-import { ASSET_VERSION } from "./release-version.js?v=8b12d09c0019";
+import { createInstructionPdf } from "./instruction-pdf.js?v=6ea6e943cea0";
+import { ASSET_VERSION } from "./release-version.js?v=6ea6e943cea0";
 
 self.onmessage = async ({data: {plan, profiles, spec}}) => {
   try {
