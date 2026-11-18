@@ -4,7 +4,7 @@
 // The bracket's plate takes one surface cell; its upright flange stands just outside
 // the surface in open air, and the tile clips onto the flange's sideways stud.
 const STUD = 8, PLATE = 3.2;
-const ROLE = /\b(eye|eyes|pupil|nostril|button|headlight|headlamp|lamp|light)\b/;
+const ROLE = /\b(eye|eyes|pupil|iris|nose|button|headlight|headlamp|lamp|light)\b/;
 // Tile on the bracket's side stud, in bracket axes: tile top faces the bracket's -z,
 // its underside against the flange face (z = -14), centred on the stud (y = -2).
 const TILE_MATRIX = [1, 0, 0, 0, 0, -1, 0, 1, 0], TILE_OFFSET = [0, -2, -22];
@@ -17,8 +17,19 @@ export function planBrackets(grid, profileMap, options = {}) {
   const bracket = profileMap.get('36840'), tile = profileMap.get('98138');
   if (!bracket || !tile || !air) return {reserved, warnings, summary};
   const maxSize = options.maxEyeMm ?? 2.5 * STUD;
+  // One tile per feature: an eye and its pupil (or iris) given as separate paint
+  // components become a single tile in the colour of the larger one.
+  const features = components.filter(c => c.mode === 'paint' && ROLE.test(c.role) && shapes.get(c.id));
+  const centreOf = c => { const s = shapes.get(c.id); return [0, 1, 2].map(a => (s.min[a] + s.max[a]) / 2); };
+  const volume = c => { const s = shapes.get(c.id); return [0, 1, 2].reduce((v, a) => v * (s.max[a] - s.min[a]), 1); };
+  const merged = new Set(), partners = new Map();
+  for (const a of features) for (const b of features) {
+    if (a === b || merged.has(a.id) || merged.has(b.id)) continue;
+    const d = Math.hypot(...centreOf(a).map((v, i) => v - centreOf(b)[i]));
+    if (d < 1.5 * STUD && volume(b) < volume(a)) { merged.add(b.id); if (!partners.has(a.id)) partners.set(a.id, []); partners.get(a.id).push(b); }
+  }
   components.forEach(component => {
-    if (component.mode !== 'paint' || !ROLE.test(component.role)) return;
+    if (component.mode !== 'paint' || !ROLE.test(component.role) || merged.has(component.id)) return;
     const shape = shapes.get(component.id);
     if (!shape) return;
     const size = [0, 1, 2].map(a => shape.max[a] - shape.min[a]), mid = [0, 1, 2].map(a => (shape.min[a] + shape.max[a]) / 2);
@@ -29,12 +40,12 @@ export function planBrackets(grid, profileMap, options = {}) {
     const before = summary.eyes;
     for (const centre of points) placeEye(component, centre);
     // The tile is the eye now: the painted patch goes back to the body colour.
-    if (summary.eyes > before) {
-      const lo = [0, 1, 2].map(a => Math.max(0, Math.floor((shape.min[a] - origin[a]) / (a === 1 ? PLATE : STUD)) - 1));
+    if (summary.eyes > before) for (const painted of [component, ...(partners.get(component.id) || [])]) {
+      const shape = shapes.get(painted.id), lo = [0, 1, 2].map(a => Math.max(0, Math.floor((shape.min[a] - origin[a]) / (a === 1 ? PLATE : STUD)) - 1));
       const hi = [0, 1, 2].map(a => Math.min((a === 0 ? nx : a === 1 ? ny : nz) - 1, Math.floor((shape.max[a] - origin[a]) / (a === 1 ? PLATE : STUD)) + 1));
       for (let j = lo[1]; j <= hi[1]; j++) for (let k = lo[2]; k <= hi[2]; k++) for (let i = lo[0]; i <= hi[0]; i++) {
         const c = index(i, j, k), body = components[owner[c]];
-        if (owner[c] >= 0 && colour[c] === component.colour && body && body.colour !== component.colour) colour[c] = body.colour;
+        if (owner[c] >= 0 && colour[c] === painted.colour && body && body.colour !== painted.colour) colour[c] = body.colour;
       }
     }
   });

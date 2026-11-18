@@ -3,7 +3,7 @@
 // The interpreter describes what the object looks like at its real-world size,
 // using a few overlapping primitives. It never chooses scale, parts, studs or
 // placements; the engine owns quantisation and construction.
-import {BRICK_COLOURS, closestColour, resolveColour} from './brick-colours.js?v=9b8d8e12b3f3';
+import {BRICK_COLOURS, closestColour, resolveColour} from './brick-colours.js?v=db3639e20a8c';
 
 export const INTENT_SCHEMA_ID = 'brickforge.object-intent/2';
 export const SHAPES = Object.freeze(['box', 'cylinder', 'cone', 'sphere', 'dome', 'wedge', 'roof', 'tube']);

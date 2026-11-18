@@ -87,8 +87,9 @@ export function tileGrid(grid, types, reserved = [], {seed = 1, trials = 6} = {}
     for (let c = j * layerSize; c < (j + 1) * layerSize; c++) if (filled(c) && owner[c] < 0) region.push(c);
     if (region.length) tileLayer(j, region);
     // Reserved parts resting on this layer join the parts they sit on.
-    for (const [rid, r] of parts.entries()) if (r.reserved && r.bottom_layer === j + 1)
-      for (const c of r.receivers) { const q = owner[c - layerSize]; if (q >= 0 && studTop[c - layerSize]) union(rid, q); }
+    // (Receivers may sit on several layers: a studs-out panel has one per anchor.)
+    for (const [rid, r] of parts.entries()) if (r.reserved)
+      for (const c of r.receivers) if (Math.floor(c / layerSize) === j + 1) { const q = owner[c - layerSize]; if (q >= 0 && studTop[c - layerSize]) union(rid, q); }
   }
   function tileLayer(j, region) {
     const brickable = new Uint8Array(layerSize);

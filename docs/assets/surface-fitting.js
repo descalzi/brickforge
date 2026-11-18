@@ -12,14 +12,16 @@ const ROTATIONS = [[1, 0, 0, 0, 1, 0, 0, 0, 1], [0, 0, 1, 0, 1, 0, -1, 0, 0], [-
 const rot = (m, v) => [m[0] * v[0] + m[1] * v[1] + m[2] * v[2], m[3] * v[0] + m[4] * v[1] + m[5] * v[2], m[6] * v[0] + m[7] * v[1] + m[8] * v[2]];
 const rotT = (m, v) => [m[0] * v[0] + m[3] * v[1] + m[6] * v[2], m[1] * v[0] + m[4] * v[1] + m[7] * v[2], m[2] * v[0] + m[5] * v[1] + m[8] * v[2]];
 const FAMILY_SHAPES = {cone: ['cone'], round: ['cylinder', 'tube', 'cone']};
-export const SURFACE_FAMILIES = ['slope45', 'slope33', 'slope65', 'slope75', 'slope_low', 'curved', 'inverted', 'inverted_curved', 'cone', 'round'];
+export const SURFACE_FAMILIES = ['slope45', 'slope33', 'slope65', 'slope75', 'slope_low', 'curved', 'inverted', 'inverted_curved', 'cone', 'round', 'wedge_plate', 'round_corner'];
 
 /** Cell patterns for every distinct upright orientation of every surface part. */
 export function surfacePatterns(profiles, families = SURFACE_FAMILIES) {
   const patterns = [];
   for (const profile of profiles) {
     if (!families.includes(profile.family) || !profile.body_planes_mm) continue;
-    const b = profile.body_bounds_mm, height = b.max[1] - b.min[1], h = Math.round(height / PLATE);
+    // The cell block comes from the collision box (snapped to the stud grid); the
+    // occupancy from the true body.
+    const b = profile.collision_boxes_mm?.length === 1 ? profile.collision_boxes_mm[0] : profile.body_bounds_mm, height = b.max[1] - b.min[1], h = Math.round(height / PLATE);
     if (h < 1 || Math.abs(h * PLATE - height) > 0.6) continue;
     const seen = new Set();
     for (const m of ROTATIONS) {
@@ -38,7 +40,7 @@ export function surfacePatterns(profiles, families = SURFACE_FAMILIES) {
         const axis = world(f.axis), p = world(f.position_ldu.map(v => v * 0.4));
         if (Math.abs(axis[1]) < 0.99) continue;
         const u = (p[0] - blockMin[0]) / STUD, w = (p[2] - blockMin[2]) / STUD, l = Math.round((p[1] - blockMin[1]) / PLATE);
-        if (Math.abs(u % 1 - 0.5) > 0.15 || Math.abs(w % 1 - 0.5) > 0.15) continue;
+        if (Math.abs(u % 1 - 0.5) > 0.02 || Math.abs(w % 1 - 0.5) > 0.02) continue;
         const i = Math.floor(u), k = Math.floor(w);
         if (i < 0 || k < 0 || i >= fx || k >= fz) continue;
         if (f.kind === 'stud' && axis[1] > 0 && l === h) studs.push(i + k * fx);
@@ -98,15 +100,19 @@ export function fitSurfaces(grid, patterns, blocked, options = {}) {
     let gain = 0, partColour = -2, component = -1;
     for (let l = 0; l < p.h; l++) for (let k = 0; k < p.fz; k++) for (let i = 0; i < p.fx; i++) {
       const o = p.occupancy[(l * p.fz + k) * p.fx + i], c = index(i0 + i, j0 + l, k0 + k);
-      if (blocked(c) || claimed[c] || anchors[c]) { if (o > 0.02 || filled(c)) return no('taken'); continue; }
+      // The part owns its whole block (its collision body), empty corners included.
+      if (blocked(c) || claimed[c] || anchors[c]) return no('taken');
       const f = filled(c);
       if (f) {
         if (partColour === -2) { partColour = colour[c]; component = owner[c]; } else if (colour[c] !== partColour) return no('colour');
       }
       // Every stud joint the stepped material had stays a stud joint: nothing may rest
       // on the part except on its studs, and it may sit on material only at receivers.
-      if (l === p.h - 1 && j0 + p.h < ny && filled(c + layer) && !(p.studs.includes(i + k * p.fx) && o > 0.5)) return no('covered');
-      if (l === 0 && j0 > 0 && o > 0.02 && filled(c - layer) && !p.receivers.includes(i + k * p.fx)) return no('no_receiver');
+      // A full cell keeps its joints; a partly filled one (a wedge or rounded corner)
+      // may rest on material or carry it where it is at least half filled. The
+      // connectivity check below undoes any part that splits the model.
+      if (l === p.h - 1 && j0 + p.h < ny && filled(c + layer) && !(p.studs.includes(i + k * p.fx) && o > 0.5) && !(o >= 0.5 && o < 0.95)) return no('covered');
+      if (l === 0 && j0 > 0 && o >= 0.95 && filled(c - layer) && !p.receivers.includes(i + k * p.fx)) return no('no_receiver');
       gain += Math.abs((f ? 1 : 0) - idealFraction[c]) - Math.abs(o - idealFraction[c]);
     }
     if (partColour === -2) return no('empty');
@@ -216,7 +222,7 @@ export function fitSurfaces(grid, patterns, blocked, options = {}) {
       placements: [{part_id: p.profile.part_id, colour_code: now.colour, matrix: [...p.matrix], translation_ldu: [o[0] / 0.4, -o[1] / 0.4, -o[2] / 0.4]}]});
     summary[p.profile.family] = (summary[p.profile.family] || 0) + 1;
   }
-  return {reserved, summary, candidates: candidates.length, error_cells: errorCells.length, undone, iou_before: before, iou_after: fidelity()};
+  return {reserved, summary, candidates: candidates.length, error_cells: errorCells.length, undone, iou_before: before, iou_after: fidelity(), fraction};
 }
 
 // Connected pieces of material. Without fitted parts: filled cells joined face to face.

@@ -1,13 +1,13 @@
 // Describe & build: description → object intent (any language model) → brick model.
-import {ASSET_VERSION} from './release-version.js?v=9b8d8e12b3f3';
-import {INTENT_INSTRUCTIONS, buildIntentRequest, normaliseIntent} from './object-intent.js?v=9b8d8e12b3f3';
-import {intentCatalogue} from './intent-engine.js?v=9b8d8e12b3f3';
-import {deviceModelState, deviceProvider, endpointProvider} from './device-interpretation.js?v=9b8d8e12b3f3';
-import {buildInventory, inventoryCsv} from './build-inventory.js?v=9b8d8e12b3f3';
+import {ASSET_VERSION} from './release-version.js?v=db3639e20a8c';
+import {INTENT_INSTRUCTIONS, buildIntentRequest, normaliseIntent} from './object-intent.js?v=db3639e20a8c';
+import {intentCatalogue} from './intent-engine.js?v=db3639e20a8c';
+import {deviceModelState, deviceProvider, endpointProvider} from './device-interpretation.js?v=db3639e20a8c';
+import {buildInventory, inventoryCsv} from './build-inventory.js?v=db3639e20a8c';
 // Kept in step with instruction-pdf.js (not imported: the booklet loads in its worker).
 const MAX_BOOKLET_PARTS = 8000;
-import {createDesignViewer, colours} from './design-viewer.js?v=9b8d8e12b3f3';
-import {colourByCode} from './brick-colours.js?v=9b8d8e12b3f3';
+import {createDesignViewer, colours} from './design-viewer.js?v=db3639e20a8c';
+import {colourByCode} from './brick-colours.js?v=db3639e20a8c';
 
 const $ = id => document.getElementById(id);
 const status = $('engine-status'), intentInput = $('intent-input'), description = $('description-input');
@@ -100,7 +100,7 @@ function build() {
   const big = ['xlarge', 'huge'].includes(intent.build?.size) || (intent.build?.target_longest_studs || 0) > 40;
   setStatus(`Rasterising the shapes and fitting real elements…${big ? ' Large models can take a minute.' : ''}`, 'planning');
   const started = performance.now();
-  worker = new Worker(new URL('./studio-worker.js?v=9b8d8e12b3f3', import.meta.url), {type: 'module'});
+  worker = new Worker(new URL('./studio-worker.js?v=db3639e20a8c', import.meta.url), {type: 'module'});
   worker.onmessage = ({data}) => {
     finishWorker();
     if (data.error) { setStatus('Engine error: ' + data.error, 'blocked'); $('engine-report').textContent = data.error; return; }
@@ -288,7 +288,7 @@ $('download-pdf').addEventListener('click', () => {
   const plan = result;
   $('download-pdf').disabled = true; $('cancel-pdf').hidden = false;
   setStatus('Preparing the illustrated instruction booklet…', 'exporting');
-  const job = new Worker(new URL('./instruction-pdf-worker.js?v=9b8d8e12b3f3', import.meta.url), {type: 'module'});
+  const job = new Worker(new URL('./instruction-pdf-worker.js?v=db3639e20a8c', import.meta.url), {type: 'module'});
   pdfWorker = job;
   job.onmessage = ({data}) => {
     if (job !== pdfWorker) return;

@@ -94,13 +94,23 @@ async function shadowSnaps(text, origin) {
       }
       continue;
     }
+    // Clips: a radius-4 grip around a bar, recorded with its centre and axis.
+    if (/SNAP_CLP/.test(line)) {
+      const length = Number(p.length || 8), centre = p.center === 'true';
+      for (const offset of gridOffsets(p.grid)) {
+        const tf = {r: ori, t: applyR(ori, offset).map((v, i) => v + pos[i])};
+        if (!centre) tf.t = tf.t.map((v, i) => v + applyR(ori, [0, -length / 2, 0])[i]);
+        snaps.push({gender: 'C', shape: 'CLP', radius: Number(p.radius || 4), length, sections: [], tf, origin, center: true, id: (p.id || p.group || '').toLowerCase() || null});
+      }
+      continue;
+    }
     if (!/SNAP_CYL/.test(line)) continue;
     const secs = (p.secs || '').trim().split(/\s+/);
     for (const offset of gridOffsets(p.grid)) {
       const tf = {r: ori, t: applyR(ori, offset).map((v, i) => v + pos[i])};
       const sections = [];
       for (let i = 0; i + 2 < secs.length; i += 3) sections.push({shape: secs[i], radius: Number(secs[i + 1]), length: Number(secs[i + 2])});
-      snaps.push({gender: (p.gender || '').toUpperCase(), shape: secs[0], radius: Number(secs[1]), length: Number(secs[2]), sections, tf, origin, id: (p.id || p.group || '').toLowerCase() || null});
+      snaps.push({gender: (p.gender || '').toUpperCase(), shape: secs[0], radius: Number(secs[1]), length: sections.reduce((t, c) => t + c.length, 0), sections, tf, origin, center: p.center === 'true', id: (p.id || p.group || '').toLowerCase() || null});
     }
   }
   return {snaps, clear};
@@ -184,7 +194,17 @@ function collisionBox(lo, hi, features) {
   const top = features.filter(f => f.kind === 'stud' && f.axis[1] < -0.99).map(f => f.position_ldu[1]);
   const bottom = features.filter(f => f.kind === 'stud_receiver' && f.axis[1] > 0.99).map(f => f.position_ldu[1]);
   const y0 = top.length ? Math.max(lo[1], Math.min(...top)) : lo[1], y1 = bottom.length ? Math.min(hi[1], Math.max(...bottom)) : hi[1];
-  return {min: [lo[0], y0 < y1 ? y0 : lo[1], lo[2]].map(v => +(v * 0.4).toFixed(3)), max: [hi[0], y0 < y1 ? y1 : hi[1], hi[2]].map(v => +(v * 0.4).toFixed(3))};
+  // Snap x and z to the stud grid the vertical studs and anti-studs sit on (within
+  // 3 LDU), so the box is the part's cell block even where a chamfer narrows the body.
+  const vertical = features.filter(f => Math.abs(f.axis[1]) > 0.99);
+  const snap = (v, a) => {
+    if (!vertical.length) return v;
+    const phases = vertical.map(f => ((f.position_ldu[a] - 10) % 20 + 30) % 20 - 10).sort((x, y) => x - y), o = phases[Math.floor(phases.length / 2)];
+    const g = o + 20 * Math.round((v - o) / 20);
+    return Math.abs(g - v) <= 3 ? g : v;
+  };
+  const x0 = snap(lo[0], 0), x1 = snap(hi[0], 0), z0 = snap(lo[2], 2), z1 = snap(hi[2], 2);
+  return {min: [x0, y0 < y1 ? y0 : lo[1], z0].map(v => +(v * 0.4).toFixed(3)), max: [x1, y0 < y1 ? y1 : hi[1], z1].map(v => +(v * 0.4).toFixed(3))};
 }
 const profiles = [], report = [];
 for (const entry of vocabulary.parts) {
@@ -232,9 +252,12 @@ for (const entry of vocabulary.parts) {
   }
   // Other snaps (bar holders, hinge pins, clips) with their datums, for recipes that join them.
   const other = [];
-  for (const s of out.snaps) if (!r6(s) && ['M', 'F'].includes(s.gender)) {
-    const type = `${s.gender}-${s.shape}${s.radius}`, position = s.tf.t.map(v => +v.toFixed(3)), axis = applyR(s.tf.r, [0, -1, 0]).map(v => Math.round(v * 1e6) / 1e6 || 0);
-    if (!other.some(o => o.type === type && Math.hypot(...o.position_ldu.map((v, i) => v - position[i])) < 0.5)) other.push({type, position_ldu: position, axis});
+  for (const s of out.snaps) if (!r6(s) && ['M', 'F', 'C'].includes(s.gender)) {
+    // Datum: the cylinder's centre (bars and clips slide and turn about their axis).
+    const axis = applyR(s.tf.r, [0, -1, 0]).map(v => Math.round(v * 1e6) / 1e6 || 0);
+    const centre = s.center ? s.tf.t : s.tf.t.map((v, i) => v + axis[i] * s.length / 2);
+    const type = `${s.gender}-${s.shape}${s.radius}`, position = centre.map(v => +v.toFixed(3));
+    if (!other.some(o => o.type === type && Math.hypot(...o.position_ldu.map((v, i) => v - position[i])) < 0.5)) other.push({type, position_ldu: position, axis, length_ldu: s.length});
   }
   const description = root.split(/\r?\n/)[0].slice(2).replace(/\s+/g, ' ').trim();
   const meshFile = `part-meshes/${id}.json`;
@@ -276,7 +299,7 @@ await writeFile(new URL('../docs/data/connection-profiles/part-vocabulary-profil
   schema_version: 1, coordinate_system: 'LDraw', length_unit: 'LDU',
   sources: {geometry: {repository: 'https://github.com/kulits/ldraw-parts', commit: LDRAW_COMMIT, licence: 'Per-file LDraw notices (CC BY 4.0 and earlier CCAL 2.0)'},
     connections: {repository: SHADOW_REPOSITORY, commit: shadowCommit, licence: 'CC BY-SA 4.0', note: 'Stud and anti-stud datums derived from LDCad Shadow Library snap metadata. This file is distributed under CC BY-SA 4.0.'}},
-  limitations: ['Only radius-6 stud and anti-stud connections join parts in the engine; bars, clips, pins and hinges are listed as other connectors with their datums and used only by fixed recipes (window glass, doors).',
+  limitations: ['Only radius-6 stud and anti-stud connections join parts in the engine; bars, clips, pins and hinges are listed as other connectors (centre datum, axis, length) and used only by fixed recipes (window glass, doors, clip-hinged modules).',
     'Bodies are convex hulls of each part without its studs; concave details are filled. Collision checks use the bounding box.', 'Nominal datums do not prove clutch force or stability.'],
   profiles,
 }, null, 1) + '\n');
