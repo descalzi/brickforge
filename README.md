@@ -1,32 +1,42 @@
 # BrickForge
 
-An object-first, browser-based brick construction engine.
+Describe an object; get a buildable model made of real brick elements, with a
+parts list and step-by-step instructions.
 
-**Description → structured object specification → source-backed elements → assembly → instructions.**
+**Description → object intent (any language model) → massing + detailing → instructions.**
 
-[Open the Design Studio](https://descalzi.github.io/brickforge/designer.html?fixture=small-road-car&run=1)
+[Open Describe & build](https://descalzi.github.io/brickforge/studio.html?example=cottage&run=1) ·
+[Evaluation: 24 descriptions](docs/intent-evaluation.md) ·
+[ADR 0003](docs/decisions/0003-intent-v2-massing-and-detailing.md)
 
-## What works
+## How it works
 
-- Versioned millimetre briefs with semantic components, shape requirements,
-  relationships, explicit empty spaces and optional bounded dimension tolerance.
-- Structural tiling and profiled specialised-part placement, including slopes,
-  open frames, mirrored wings, round elements, wheel mounts and tyre/rim assembly.
-- Exact multi-part upright profile composition using source slopes and structural
-  infill, preserving concavities and declared keepouts.
-- Bounded global search with direct-attachment pruning and nominal mating edges.
-- Placed-body checks with analytic box/slope-prism narrow phase, final/stage
-  support projection proxies and nominal straight approaches,
-  with physical clutch, stability, insertion and strength kept unverified.
-- Interactive inspection, editable components, browser-local brief revisions,
-  LDraw STEP export, BOM/report JSON and compressed illustrated PDF booklets.
-- A local description parser for dimensioned plates, square through-openings and
-  side walls. An optional browser language-model adapter and HTTPS gateway use
-  the same validated object contract. On-device availability depends on the browser.
+1. **Interpret.** A language model writes an *object intent*
+   ([schema](docs/data/object-intent-schema-v2.json)): what the object looks like at
+   real size, as overlapping boxes, cylinders, cones, spheres, domes, wedges and
+   roofs, with colours, openings (`void`) and surface colour (`paint`). It never
+   names parts or studs. Use any chat assistant (the studio copies the prompt), an
+   on-device browser model, or your own gateway.
+2. **Massing.** The engine picks the scale from the build size, rasterises the
+   shapes onto the stud grid, hollows hidden material and tiles every layer with
+   real bricks, plates and tiles, staggering seams and joining every piece.
+3. **Detailing.** Roofs and wedges become measured 45° or 33° slopes; road wheels
+   close to the real assembly size become wheel-pin plates with rims and tyres in
+   wheel wells.
+4. **Report and export.** The engine always returns its best model, with a
+   deviation report (shape match, lost or thickened components, colour joints),
+   LDraw with steps, a parts list and an illustrated PDF booklet.
 
-The catalogue and geometry solver are curated and bounded. These proofs are not
-an arbitrary-object generator or a physical buildability certification. See the
-[current roadmap](docs/roadmap.md) and [engine architecture](docs/architecture/design-spec-engine.md).
+On the [evaluation set](docs/intent-evaluation.md) all 24 descriptions produce a
+single stud-connected model (median shape match 0.83). The intents were written
+by a language model acting under the published instructions before the engine
+existed; a different model will write different intents. Connections are
+nominal: clutch, strength, stability and colour availability are not verified,
+and no physical build trial has been run.
+
+The earlier exact-brief engine is kept as the
+[Brief workbench](https://descalzi.github.io/brickforge/designer.html?fixture=small-road-car&run=1)
+with its own [benchmark](docs/benchmarks.md).
 
 ## Run and verify
 
@@ -35,8 +45,13 @@ Serve `docs/` with any static HTTP server, for example:
 ```sh
 python -m http.server 8000 --directory docs
 node --test tests/*.test.mjs
+node scripts/evaluate_intents.mjs --check
 python scripts/stamp_browser_modules.py --check
 ```
+
+`node scripts/evaluate_intents.mjs --write --images` refreshes the evaluation
+report and previews after reviewing an engine change. Regular-element profiles are
+measured from LDraw by `node scripts/build_standard_profiles.mjs`.
 
 After source or data changes, run `python scripts/stamp_browser_modules.py` before
 committing. It versions native module URLs and the studio's data release without

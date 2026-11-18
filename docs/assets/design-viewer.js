@@ -1,7 +1,8 @@
-import { createSvgDesignViewer } from "./design-svg-viewer.js?v=76b0ed28438a";
+import { createSvgDesignViewer } from "./design-svg-viewer.js?v=10525c583bbb";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-export const colours = new Map([[0,"#1b2a34"],[1,"#1e5aa8"],[2,"#00852b"],[4,"#b40000"],[7,"#8a928d"],[14,"#f2cd37"],[15,"#f4f4f4"],[19,"#e4cd9e"],[25,"#d66b24"]]);
+import { colourHex, isTransparent } from "./brick-colours.js?v=10525c583bbb";
+export const colours = colourHex;
 
 export function createDesignViewer(viewport) {
   if(!document.createElement("canvas").getContext("webgl2")) return createSvgDesignViewer(viewport);
@@ -37,7 +38,7 @@ export function createDesignViewer(viewport) {
       const w=profile.footprint_studs_x*8,d=profile.footprint_studs_z*8,h=profile.body_height_ldu*.4;
       const group=new THREE.Group();group.userData={instanceId:part.instance_id,componentId:part.component_id,course:part.display_course_index??part.course_index??0};
       const colour=colours.get(part.colour_code??part.colour)||"#a9b8c2";
-      const material=()=>new THREE.MeshStandardMaterial({color:colour,roughness:.35,metalness:.01});
+      const glass=isTransparent(part.colour_code??part.colour),material=()=>new THREE.MeshStandardMaterial({color:colour,roughness:.35,metalness:.01,transparent:glass,opacity:glass?.55:1});
       if(profile.preview_triangles_mm){
         const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(profile.preview_triangles_mm,3));geometry.computeVertexNormals();
         const sourceMaterial=material();sourceMaterial.side=THREE.DoubleSide;
@@ -45,7 +46,7 @@ export function createDesignViewer(viewport) {
       }else{
       const body=new THREE.Mesh(new THREE.BoxGeometry(w-.15,h-.1,d-.15),material());body.position.y=h/2;group.add(body);
       const edges=new THREE.LineSegments(new THREE.EdgesGeometry(body.geometry),new THREE.LineBasicMaterial({color:0x30404a,transparent:true,opacity:.24}));edges.position.copy(body.position);group.add(edges);
-      for(let x=0;x<profile.footprint_studs_x;x++)for(let z=0;z<profile.footprint_studs_z;z++){
+      if(profile.features.some(f=>f.kind==="stud"))for(let x=0;x<profile.footprint_studs_x;x++)for(let z=0;z<profile.footprint_studs_z;z++){
         const stud=new THREE.Mesh(new THREE.CylinderGeometry(2.4,2.4,1.6,16),material());stud.position.set((x+.5)*8-w/2,-.8,(z+.5)*8-d/2);group.add(stud);
       }
       }

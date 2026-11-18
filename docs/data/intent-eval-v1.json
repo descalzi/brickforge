@@ -1,0 +1,486 @@
+{
+  "schema_version": 1,
+  "evaluation": "unseen_description_to_intent_v2",
+  "protocol": "Descriptions and intents were written before the v2 engine existed. The intents are a stand-in for a language model: they were authored from the description and the published interpretation instructions only, and are frozen. Engine changes must not edit them; a failing case is a finding, not a fixture to repair.",
+  "interpreter": "Claude (acting as the interpretation model in a development session, 2026-11-18)",
+  "cases": [
+    {
+      "id": "hatchback-car",
+      "category": "vehicle",
+      "description": "A small red family hatchback car with four black wheels, a windscreen and side windows.",
+      "intent": {
+        "schema": "brickforge.object-intent/2", "name": "Red hatchback", "units": "m",
+        "components": [
+          {"id": "lower-body", "role": "body", "shape": "box", "center": [0, 0.55, 0], "size": [1.75, 0.7, 4.0], "colour": "red"},
+          {"id": "cabin", "role": "body", "shape": "box", "center": [0, 1.15, 0.4], "size": [1.6, 0.6, 2.4], "colour": "red", "attach_to": "lower-body"},
+          {"id": "windscreen", "role": "window", "shape": "wedge", "center": [0, 1.15, -1.1], "size": [1.6, 0.6, 0.6], "slope": {"down_toward": "-z", "low_fraction": 0}, "colour": "trans light blue", "attach_to": "cabin"},
+          {"id": "side-windows", "role": "window", "shape": "box", "mode": "paint", "center": [0, 1.2, 0.4], "size": [1.7, 0.35, 2.0], "colour": "trans light blue"},
+          {"id": "front-left-wheel", "role": "wheel", "shape": "cylinder", "axis": "x", "center": [-0.78, 0.31, -1.25], "size": [0.22, 0.62, 0.62], "colour": "black", "attach_to": "lower-body"},
+          {"id": "front-right-wheel", "role": "wheel", "shape": "cylinder", "axis": "x", "center": [0.78, 0.31, -1.25], "size": [0.22, 0.62, 0.62], "colour": "black", "attach_to": "lower-body"},
+          {"id": "rear-left-wheel", "role": "wheel", "shape": "cylinder", "axis": "x", "center": [-0.78, 0.31, 1.25], "size": [0.22, 0.62, 0.62], "colour": "black", "attach_to": "lower-body"},
+          {"id": "rear-right-wheel", "role": "wheel", "shape": "cylinder", "axis": "x", "center": [0.78, 0.31, 1.25], "size": [0.22, 0.62, 0.62], "colour": "black", "attach_to": "lower-body"},
+          {"id": "headlights", "role": "light", "shape": "box", "mode": "paint", "center": [0, 0.7, -2.0], "size": [1.5, 0.15, 0.1], "colour": "trans clear", "importance": "detail"}
+        ],
+        "assumptions": ["Typical hatchback proportions of about 4.0 m long, 1.75 m wide and 1.45 m tall.", "The windscreen is shown as a sloped glass section at the front of the cabin."],
+        "unsupported": []
+      }
+    },
+    {
+      "id": "cottage",
+      "category": "architecture",
+      "description": "A cottage with white walls, a red pitched roof, a front door, two windows and a chimney.",
+      "intent": {
+        "schema": "brickforge.object-intent/2", "name": "Cottage", "units": "m",
+        "components": [
+          {"id": "walls", "role": "wall", "shape": "box", "center": [0, 1.4, 0], "size": [8, 2.8, 6], "colour": "white"},
+          {"id": "roof", "role": "roof", "shape": "roof", "ridge_axis": "x", "center": [0, 4.05, 0], "size": [8.6, 2.5, 6.6], "colour": "red", "attach_to": "walls"},
+          {"id": "door", "role": "door", "shape": "box", "mode": "paint", "center": [0, 1.05, -3.0], "size": [1.0, 2.1, 0.2], "colour": "reddish brown"},
+          {"id": "left-window", "role": "window", "shape": "box", "mode": "paint", "center": [-2.5, 1.6, -3.0], "size": [1.2, 1.0, 0.2], "colour": "trans light blue"},
+          {"id": "right-window", "role": "window", "shape": "box", "mode": "paint", "center": [2.5, 1.6, -3.0], "size": [1.2, 1.0, 0.2], "colour": "trans light blue"},
+          {"id": "chimney", "role": "chimney", "shape": "box", "center": [2.5, 5.0, 1.0], "size": [0.6, 1.6, 0.6], "colour": "dark red", "attach_to": "roof"}
+        ],
+        "assumptions": ["Footprint about 8 m by 6 m with 2.8 m walls.", "Door and windows are on the front wall.", "Brick chimney shown in dark red."],
+        "unsupported": []
+      }
+    },
+    {
+      "id": "high-wing-aeroplane",
+      "category": "vehicle",
+      "description": "A light propeller aeroplane, white with a blue stripe, high wings, a tail fin and fixed landing wheels.",
+      "intent": {
+        "schema": "brickforge.object-intent/2", "name": "High-wing light aeroplane", "units": "m",
+        "components": [
+          {"id": "fuselage", "role": "fuselage", "shape": "cylinder", "axis": "z", "center": [0, 1.5, 0], "size": [1.2, 1.4, 6.5], "colour": "white"},
+          {"id": "nose", "role": "nose", "shape": "cone", "axis": "z", "top_scale": 2.5, "center": [0, 1.5, -3.6], "size": [1.2, 1.2, 0.8], "colour": "white", "attach_to": "fuselage"},
+          {"id": "propeller", "role": "propeller", "shape": "box", "center": [0, 1.5, -4.05], "size": [1.8, 0.15, 0.1], "colour": "dark grey", "importance": "detail", "attach_to": "nose"},
+          {"id": "wing", "role": "wing", "shape": "box", "center": [0, 2.28, -0.6], "size": [11, 0.18, 1.6], "colour": "white", "attach_to": "fuselage"},
+          {"id": "tail-fin", "role": "tail", "shape": "box", "center": [0, 2.5, 3.0], "size": [0.15, 1.4, 1.0], "colour": "white", "attach_to": "fuselage"},
+          {"id": "tailplane", "role": "tail", "shape": "box", "center": [0, 1.9, 3.1], "size": [3.4, 0.12, 0.8], "colour": "white", "attach_to": "fuselage"},
+          {"id": "stripe", "role": "stripe", "shape": "box", "mode": "paint", "center": [0, 1.5, 0], "size": [1.3, 0.25, 6.6], "colour": "blue"},
+          {"id": "cockpit-windows", "role": "window", "shape": "box", "mode": "paint", "center": [0, 1.95, -1.4], "size": [1.3, 0.4, 1.2], "colour": "trans light blue"},
+          {"id": "left-main-wheel", "role": "wheel", "shape": "cylinder", "axis": "x", "center": [-1.1, 0.225, 0.2], "size": [0.15, 0.45, 0.45], "colour": "black", "attach_to": "fuselage"},
+          {"id": "right-main-wheel", "role": "wheel", "shape": "cylinder", "axis": "x", "center": [1.1, 0.225, 0.2], "size": [0.15, 0.45, 0.45], "colour": "black", "attach_to": "fuselage"},
+          {"id": "nose-wheel", "role": "wheel", "shape": "cylinder", "axis": "x", "center": [0, 0.225, -2.8], "size": [0.15, 0.45, 0.45], "colour": "black", "attach_to": "fuselage"},
+          {"id": "main-gear-leg", "role": "landing gear", "shape": "box", "center": [0, 0.55, 0.2], "size": [2.1, 0.12, 0.12], "colour": "light grey"},
+          {"id": "nose-gear-leg", "role": "landing gear", "shape": "box", "center": [0, 0.55, -2.8], "size": [0.12, 0.6, 0.12], "colour": "light grey"}
+        ],
+        "assumptions": ["Proportions of a typical four-seat high-wing trainer: 8.3 m long, 11 m span.", "Tricycle landing gear with a nose wheel."],
+        "unsupported": ["Wing struts are omitted."]
+      }
+    },
+    {
+      "id": "apple",
+      "category": "organic",
+      "description": "A red apple with a short brown stalk and a green leaf.",
+      "intent": {
+        "schema": "brickforge.object-intent/2", "name": "Apple", "units": "cm", "build": {"size": "small"},
+        "components": [
+          {"id": "fruit", "role": "body", "shape": "sphere", "center": [0, 4, 0], "size": [8, 7.5, 8], "colour": "red"},
+          {"id": "stalk", "role": "stalk", "shape": "cylinder", "axis": "y", "center": [0, 8.3, 0], "size": [0.6, 2, 0.6], "colour": "reddish brown", "attach_to": "fruit"},
+          {"id": "leaf", "role": "leaf", "shape": "box", "center": [1.4, 8.6, 0], "size": [2.4, 0.3, 1.2], "rotate_deg": [0, 0, 25], "colour": "green", "attach_to": "stalk"}
+        ],
+        "assumptions": ["An average apple about 8 cm across."],
+        "unsupported": []
+      }
+    },
+    {
+      "id": "kitchen-table",
+      "category": "furniture",
+      "description": "A wooden kitchen table with four legs.",
+      "intent": {
+        "schema": "brickforge.object-intent/2", "name": "Kitchen table", "units": "m",
+        "components": [
+          {"id": "top", "role": "table top", "shape": "box", "center": [0, 0.735, 0], "size": [1.6, 0.05, 0.9], "colour": "medium nougat"},
+          {"id": "leg-front-left", "role": "leg", "shape": "box", "center": [-0.72, 0.355, -0.37], "size": [0.07, 0.71, 0.07], "colour": "medium nougat", "attach_to": "top"},
+          {"id": "leg-front-right", "role": "leg", "shape": "box", "center": [0.72, 0.355, -0.37], "size": [0.07, 0.71, 0.07], "colour": "medium nougat", "attach_to": "top"},
+          {"id": "leg-back-left", "role": "leg", "shape": "box", "center": [-0.72, 0.355, 0.37], "size": [0.07, 0.71, 0.07], "colour": "medium nougat", "attach_to": "top"},
+          {"id": "leg-back-right", "role": "leg", "shape": "box", "center": [0.72, 0.355, 0.37], "size": [0.07, 0.71, 0.07], "colour": "medium nougat", "attach_to": "top"}
+        ],
+        "assumptions": ["A table for four, 1.6 m by 0.9 m and 0.76 m tall.", "Light wood shown as medium nougat."],
+        "unsupported": []
+      }
+    },
+    {
+      "id": "double-decker-bus",
+      "category": "vehicle",
+      "description": "A classic red double-decker London bus.",
+      "intent": {
+        "schema": "brickforge.object-intent/2", "name": "Double-decker bus", "units": "m",
+        "components": [
+          {"id": "body", "role": "body", "shape": "box", "center": [0, 2.3, 0], "size": [2.55, 4.0, 11.2], "colour": "red"},
+          {"id": "lower-windows", "role": "window", "shape": "box", "mode": "paint", "center": [0, 1.9, 0.3], "size": [2.6, 0.8, 9.5], "colour": "trans black"},
+          {"id": "upper-windows", "role": "window", "shape": "box", "mode": "paint", "center": [0, 3.5, 0], "size": [2.6, 0.8, 10.4], "colour": "trans black"},
+          {"id": "windscreen", "role": "window", "shape": "box", "mode": "paint", "center": [0, 1.9, -5.6], "size": [2.2, 0.9, 0.1], "colour": "trans black"},
+          {"id": "upper-front-window", "role": "window", "shape": "box", "mode": "paint", "center": [0, 3.5, -5.6], "size": [2.2, 0.7, 0.1], "colour": "trans black"},
+          {"id": "between-decks-band", "role": "stripe", "shape": "box", "mode": "paint", "center": [0, 2.65, 0], "size": [2.6, 0.15, 11.3], "colour": "tan", "importance": "detail"},
+          {"id": "front-left-wheel", "role": "wheel", "shape": "cylinder", "axis": "x", "center": [-1.1, 0.5, -3.6], "size": [0.3, 1.0, 1.0], "colour": "black", "attach_to": "body"},
+          {"id": "front-right-wheel", "role": "wheel", "shape": "cylinder", "axis": "x", "center": [1.1, 0.5, -3.6], "size": [0.3, 1.0, 1.0], "colour": "black", "attach_to": "body"},
+          {"id": "rear-left-wheel", "role": "wheel", "shape": "cylinder", "axis": "x", "center": [-1.1, 0.5, 3.4], "size": [0.3, 1.0, 1.0], "colour": "black", "attach_to": "body"},
+          {"id": "rear-right-wheel", "role": "wheel", "shape": "cylinder", "axis": "x", "center": [1.1, 0.5, 3.4], "size": [0.3, 1.0, 1.0], "colour": "black", "attach_to": "body"}
+        ],
+        "assumptions": ["Modern double-decker proportions: 11.2 m long, 2.55 m wide, 4.4 m tall.", "Dark tinted windows on both decks and a cream band between decks."],
+        "unsupported": []
+      }
+    },
+    {
+      "id": "lighthouse",
+      "category": "architecture",
+      "description": "A lighthouse: a tall white tower with red stripes, a black lantern room with glass at the top, standing on a rocky grey base.",
+      "intent": {
+        "schema": "brickforge.object-intent/2", "name": "Lighthouse", "units": "m",
+        "components": [
+          {"id": "rock-base", "role": "base", "shape": "cylinder", "axis": "y", "center": [0, 1, 0], "size": [8, 2, 8], "colour": "dark grey"},
+          {"id": "tower", "role": "tower", "shape": "cone", "axis": "y", "top_scale": 0.7, "center": [0, 9.5, 0], "size": [4, 15, 4], "colour": "white", "attach_to": "rock-base"},
+          {"id": "stripe-low", "role": "stripe", "shape": "cylinder", "axis": "y", "mode": "paint", "center": [0, 6, 0], "size": [4.6, 2.5, 4.6], "colour": "red"},
+          {"id": "stripe-mid", "role": "stripe", "shape": "cylinder", "axis": "y", "mode": "paint", "center": [0, 11, 0], "size": [4.6, 2.5, 4.6], "colour": "red"},
+          {"id": "stripe-high", "role": "stripe", "shape": "cylinder", "axis": "y", "mode": "paint", "center": [0, 15.5, 0], "size": [4.6, 2.0, 4.6], "colour": "red"},
+          {"id": "gallery", "role": "gallery", "shape": "cylinder", "axis": "y", "center": [0, 17.25, 0], "size": [3.6, 0.5, 3.6], "colour": "black", "attach_to": "tower"},
+          {"id": "lantern", "role": "window", "shape": "cylinder", "axis": "y", "center": [0, 18.5, 0], "size": [2.4, 2.0, 2.4], "colour": "trans clear", "attach_to": "gallery"},
+          {"id": "lantern-roof", "role": "roof", "shape": "dome", "center": [0, 19.5, 0], "size": [2.6, 1.2, 2.6], "colour": "black", "attach_to": "lantern"},
+          {"id": "door", "role": "door", "shape": "box", "mode": "paint", "center": [0, 3.0, -1.95], "size": [0.9, 1.8, 0.4], "colour": "black", "importance": "detail"}
+        ],
+        "assumptions": ["A 20 m coastal lighthouse on an 8 m rocky base.", "Three red bands on the tower."],
+        "unsupported": ["The rocky base is shown as a smooth cylinder."]
+      }
+    },
+    {
+      "id": "pine-tree",
+      "category": "organic",
+      "description": "A green pine tree on a small grey base.",
+      "intent": {
+        "schema": "brickforge.object-intent/2", "name": "Pine tree", "units": "m",
+        "components": [
+          {"id": "base", "role": "base", "shape": "box", "center": [0, 0.2, 0], "size": [6, 0.4, 6], "colour": "light grey"},
+          {"id": "trunk", "role": "trunk", "shape": "cylinder", "axis": "y", "center": [0, 1.8, 0], "size": [0.6, 2.8, 0.6], "colour": "reddish brown", "attach_to": "base"},
+          {"id": "foliage-low", "role": "foliage", "shape": "cone", "axis": "y", "top_scale": 0.3, "center": [0, 4.6, 0], "size": [5, 4, 5], "colour": "dark green", "attach_to": "trunk"},
+          {"id": "foliage-mid", "role": "foliage", "shape": "cone", "axis": "y", "top_scale": 0.25, "center": [0, 7.2, 0], "size": [3.8, 3.5, 3.8], "colour": "dark green", "attach_to": "foliage-low"},
+          {"id": "foliage-top", "role": "foliage", "shape": "cone", "axis": "y", "top_scale": 0, "center": [0, 9.5, 0], "size": [2.4, 3, 2.4], "colour": "dark green", "attach_to": "foliage-mid"}
+        ],
+        "assumptions": ["An 11 m pine shown as three stacked cones."],
+        "unsupported": []
+      }
+    },
+    {
+      "id": "rubber-duck",
+      "category": "organic",
+      "description": "A yellow rubber duck.",
+      "intent": {
+        "schema": "brickforge.object-intent/2", "name": "Rubber duck", "units": "cm", "build": {"size": "small"},
+        "components": [
+          {"id": "body", "role": "body", "shape": "sphere", "center": [0, 3, 0.5], "size": [8, 6, 10], "colour": "yellow"},
+          {"id": "head", "role": "head", "shape": "sphere", "center": [0, 7.5, -2], "size": [5, 5, 5], "colour": "yellow", "attach_to": "body"},
+          {"id": "beak", "role": "beak", "shape": "wedge", "center": [0, 7, -4.8], "size": [2.2, 1, 1.6], "slope": {"down_toward": "-z", "low_fraction": 0.2}, "colour": "orange", "attach_to": "head"},
+          {"id": "left-eye", "role": "eye", "shape": "box", "mode": "paint", "center": [-1.3, 8.2, -3.8], "size": [0.8, 0.8, 1.2], "colour": "black", "importance": "detail"},
+          {"id": "right-eye", "role": "eye", "shape": "box", "mode": "paint", "center": [1.3, 8.2, -3.8], "size": [0.8, 0.8, 1.2], "colour": "black", "importance": "detail"}
+        ],
+        "assumptions": ["A bath duck about 10 cm long."],
+        "unsupported": ["The upturned tail is omitted."]
+      }
+    },
+    {
+      "id": "steam-locomotive",
+      "category": "vehicle",
+      "description": "A black steam locomotive with red wheels, a tall chimney and a driver's cab at the back.",
+      "intent": {
+        "schema": "brickforge.object-intent/2", "name": "Steam locomotive", "units": "m",
+        "components": [
+          {"id": "footplate", "role": "chassis", "shape": "box", "center": [0, 1.3, 0], "size": [2.6, 0.3, 12], "colour": "black"},
+          {"id": "boiler", "role": "boiler", "shape": "cylinder", "axis": "z", "center": [0, 2.3, -1.2], "size": [1.8, 1.8, 7], "colour": "black", "attach_to": "footplate"},
+          {"id": "smokebox", "role": "boiler", "shape": "cylinder", "axis": "z", "center": [0, 2.3, -5.0], "size": [1.9, 1.9, 0.8], "colour": "dark grey", "attach_to": "boiler"},
+          {"id": "chimney", "role": "chimney", "shape": "cylinder", "axis": "y", "center": [0, 3.6, -4.6], "size": [0.6, 1.0, 0.6], "colour": "black", "attach_to": "smokebox"},
+          {"id": "steam-dome", "role": "detail", "shape": "dome", "center": [0, 3.15, -1.2], "size": [0.8, 0.5, 0.8], "colour": "gold", "importance": "detail"},
+          {"id": "cab", "role": "cab", "shape": "box", "center": [0, 2.6, 3.6], "size": [2.6, 2.4, 2.4], "colour": "black", "attach_to": "footplate"},
+          {"id": "cab-roof", "role": "roof", "shape": "box", "center": [0, 3.9, 3.6], "size": [2.8, 0.2, 2.8], "colour": "black", "attach_to": "cab"},
+          {"id": "cab-windows", "role": "window", "shape": "box", "mode": "paint", "center": [0, 3.1, 3.6], "size": [2.7, 0.6, 1.2], "colour": "trans clear"},
+          {"id": "buffer-beam", "role": "detail", "shape": "box", "center": [0, 1.3, -6.05], "size": [2.8, 0.4, 0.2], "colour": "red", "importance": "detail"},
+          {"id": "driver-1-left", "role": "wheel", "shape": "cylinder", "axis": "x", "center": [-1.15, 0.8, -1.5], "size": [0.2, 1.6, 1.6], "colour": "red", "attach_to": "footplate"},
+          {"id": "driver-1-right", "role": "wheel", "shape": "cylinder", "axis": "x", "center": [1.15, 0.8, -1.5], "size": [0.2, 1.6, 1.6], "colour": "red", "attach_to": "footplate"},
+          {"id": "driver-2-left", "role": "wheel", "shape": "cylinder", "axis": "x", "center": [-1.15, 0.8, 0.3], "size": [0.2, 1.6, 1.6], "colour": "red", "attach_to": "footplate"},
+          {"id": "driver-2-right", "role": "wheel", "shape": "cylinder", "axis": "x", "center": [1.15, 0.8, 0.3], "size": [0.2, 1.6, 1.6], "colour": "red", "attach_to": "footplate"},
+          {"id": "driver-3-left", "role": "wheel", "shape": "cylinder", "axis": "x", "center": [-1.15, 0.8, 2.1], "size": [0.2, 1.6, 1.6], "colour": "red", "attach_to": "footplate"},
+          {"id": "driver-3-right", "role": "wheel", "shape": "cylinder", "axis": "x", "center": [1.15, 0.8, 2.1], "size": [0.2, 1.6, 1.6], "colour": "red", "attach_to": "footplate"},
+          {"id": "leading-left", "role": "wheel", "shape": "cylinder", "axis": "x", "center": [-1.15, 0.45, -4.2], "size": [0.2, 0.9, 0.9], "colour": "red", "attach_to": "footplate"},
+          {"id": "leading-right", "role": "wheel", "shape": "cylinder", "axis": "x", "center": [1.15, 0.45, -4.2], "size": [0.2, 0.9, 0.9], "colour": "red", "attach_to": "footplate"}
+        ],
+        "assumptions": ["A 4-6-0 tender-less locomotive about 12 m long.", "Gold steam dome and red buffer beam as details."],
+        "unsupported": ["No tender, coupling rods or valve gear."]
+      }
+    },
+    {
+      "id": "sailing-dinghy",
+      "category": "vehicle",
+      "description": "A sailing boat with a white hull, a tall mast and a white sail.",
+      "intent": {
+        "schema": "brickforge.object-intent/2", "name": "Sailing dinghy", "units": "m",
+        "components": [
+          {"id": "hull", "role": "hull", "shape": "box", "center": [0, 0.4, 0.3], "size": [1.8, 0.8, 4.4], "colour": "white"},
+          {"id": "bow", "role": "hull", "shape": "box", "center": [0, 0.4, -1.9], "size": [1.27, 0.8, 1.27], "rotate_deg": [0, 45, 0], "colour": "white", "attach_to": "hull"},
+          {"id": "mast", "role": "mast", "shape": "cylinder", "axis": "y", "center": [0, 4.3, -0.6], "size": [0.12, 7, 0.12], "colour": "light grey", "attach_to": "hull"},
+          {"id": "sail", "role": "sail", "shape": "wedge", "center": [0, 4.4, 0.55], "size": [0.05, 6, 2.3], "slope": {"down_toward": "+z", "low_fraction": 0}, "colour": "white", "attach_to": "mast"},
+          {"id": "hull-stripe", "role": "stripe", "shape": "box", "mode": "paint", "center": [0, 0.6, -0.2], "size": [2.0, 0.15, 6.0], "colour": "dark blue", "importance": "detail"}
+        ],
+        "assumptions": ["A 5 m dinghy with a 7 m mast.", "A thin blue stripe along the hull as decoration."],
+        "unsupported": ["The water is not modelled; the hull rests on the ground."]
+      }
+    },
+    {
+      "id": "spotted-mushroom",
+      "category": "organic",
+      "description": "A toadstool with a red cap covered in white spots and a thick white stem.",
+      "intent": {
+        "schema": "brickforge.object-intent/2", "name": "Toadstool", "units": "cm", "build": {"size": "small"},
+        "components": [
+          {"id": "stem", "role": "stem", "shape": "cylinder", "axis": "y", "center": [0, 3, 0], "size": [3, 6, 3], "colour": "white"},
+          {"id": "cap", "role": "cap", "shape": "dome", "center": [0, 5.5, 0], "size": [9, 4, 9], "colour": "red", "attach_to": "stem"},
+          {"id": "spot-1", "role": "spot", "shape": "sphere", "mode": "paint", "center": [2, 9.0, 0], "size": [1.6, 1.6, 1.6], "colour": "white", "importance": "detail"},
+          {"id": "spot-2", "role": "spot", "shape": "sphere", "mode": "paint", "center": [-2.2, 8.7, 1.5], "size": [1.6, 1.6, 1.6], "colour": "white", "importance": "detail"},
+          {"id": "spot-3", "role": "spot", "shape": "sphere", "mode": "paint", "center": [0, 9.25, -1.5], "size": [1.6, 1.6, 1.6], "colour": "white", "importance": "detail"},
+          {"id": "spot-4", "role": "spot", "shape": "sphere", "mode": "paint", "center": [3.2, 8.3, 0], "size": [1.6, 1.6, 1.6], "colour": "white", "importance": "detail"}
+        ],
+        "assumptions": ["A fly agaric about 9 cm across and 9.5 cm tall."],
+        "unsupported": []
+      }
+    },
+    {
+      "id": "park-bench",
+      "category": "furniture",
+      "description": "A park bench made of brown wooden slats with black metal legs and armrests.",
+      "intent": {
+        "schema": "brickforge.object-intent/2", "name": "Park bench", "units": "m",
+        "components": [
+          {"id": "seat", "role": "seat", "shape": "box", "center": [0, 0.45, 0], "size": [1.8, 0.05, 0.5], "colour": "reddish brown"},
+          {"id": "backrest", "role": "backrest", "shape": "box", "center": [0, 0.75, 0.27], "size": [1.8, 0.45, 0.05], "rotate_deg": [-10, 0, 0], "colour": "reddish brown", "attach_to": "back-leg-left"},
+          {"id": "front-leg-left", "role": "leg", "shape": "box", "center": [-0.8, 0.21, -0.2], "size": [0.06, 0.42, 0.06], "colour": "black", "attach_to": "seat"},
+          {"id": "front-leg-right", "role": "leg", "shape": "box", "center": [0.8, 0.21, -0.2], "size": [0.06, 0.42, 0.06], "colour": "black", "attach_to": "seat"},
+          {"id": "back-leg-left", "role": "leg", "shape": "box", "center": [-0.8, 0.4, 0.25], "size": [0.06, 0.8, 0.06], "colour": "black", "attach_to": "seat"},
+          {"id": "back-leg-right", "role": "leg", "shape": "box", "center": [0.8, 0.4, 0.25], "size": [0.06, 0.8, 0.06], "colour": "black", "attach_to": "seat"},
+          {"id": "armrest-left", "role": "armrest", "shape": "box", "center": [-0.85, 0.62, 0], "size": [0.06, 0.05, 0.55], "colour": "black", "attach_to": "back-leg-left"},
+          {"id": "armrest-right", "role": "armrest", "shape": "box", "center": [0.85, 0.62, 0], "size": [0.06, 0.05, 0.55], "colour": "black", "attach_to": "back-leg-right"}
+        ],
+        "assumptions": ["A 1.8 m bench; the individual slats are merged into a seat and backrest panel."],
+        "unsupported": ["Gaps between slats."]
+      }
+    },
+    {
+      "id": "rocket-on-pad",
+      "category": "vehicle",
+      "description": "A white rocket ship with red fins and a red nose cone, standing on a launch pad.",
+      "intent": {
+        "schema": "brickforge.object-intent/2", "name": "Rocket on launch pad", "units": "m",
+        "components": [
+          {"id": "pad", "role": "base", "shape": "box", "center": [0, 2, 0], "size": [16, 4, 16], "colour": "dark grey"},
+          {"id": "body", "role": "body", "shape": "cylinder", "axis": "y", "center": [0, 22, 0], "size": [6, 36, 6], "colour": "white", "attach_to": "pad"},
+          {"id": "nose-cone", "role": "nose", "shape": "cone", "axis": "y", "top_scale": 0, "center": [0, 45, 0], "size": [6, 10, 6], "colour": "red", "attach_to": "body"},
+          {"id": "fin-east", "role": "fin", "shape": "wedge", "center": [4, 8, 0], "size": [2.5, 8, 0.5], "slope": {"down_toward": "+x", "low_fraction": 0.2}, "colour": "red", "attach_to": "body"},
+          {"id": "fin-west", "role": "fin", "shape": "wedge", "center": [-4, 8, 0], "size": [2.5, 8, 0.5], "slope": {"down_toward": "-x", "low_fraction": 0.2}, "colour": "red", "attach_to": "body"},
+          {"id": "fin-north", "role": "fin", "shape": "wedge", "center": [0, 8, 4], "size": [0.5, 8, 2.5], "slope": {"down_toward": "+z", "low_fraction": 0.2}, "colour": "red", "attach_to": "body"},
+          {"id": "fin-south", "role": "fin", "shape": "wedge", "center": [0, 8, -4], "size": [0.5, 8, 2.5], "slope": {"down_toward": "-z", "low_fraction": 0.2}, "colour": "red", "attach_to": "body"},
+          {"id": "porthole", "role": "window", "shape": "box", "mode": "paint", "center": [0, 34, -3], "size": [1.5, 1.5, 0.6], "colour": "trans light blue", "importance": "detail"}
+        ],
+        "assumptions": ["A 46 m rocket on a 16 m square pad.", "Four fins at the base of the rocket."],
+        "unsupported": ["No launch tower."]
+      }
+    },
+    {
+      "id": "snowman",
+      "category": "organic",
+      "description": "A snowman made of three snowballs, with a black top hat, a carrot nose and coal eyes.",
+      "intent": {
+        "schema": "brickforge.object-intent/2", "name": "Snowman", "units": "m",
+        "components": [
+          {"id": "bottom", "role": "body", "shape": "sphere", "center": [0, 0.4, 0], "size": [0.8, 0.8, 0.8], "colour": "white"},
+          {"id": "middle", "role": "body", "shape": "sphere", "center": [0, 1.0, 0], "size": [0.6, 0.6, 0.6], "colour": "white", "attach_to": "bottom"},
+          {"id": "head", "role": "head", "shape": "sphere", "center": [0, 1.45, 0], "size": [0.4, 0.4, 0.4], "colour": "white", "attach_to": "middle"},
+          {"id": "hat-brim", "role": "hat", "shape": "cylinder", "axis": "y", "center": [0, 1.65, 0], "size": [0.45, 0.03, 0.45], "colour": "black", "attach_to": "head"},
+          {"id": "hat-crown", "role": "hat", "shape": "cylinder", "axis": "y", "center": [0, 1.78, 0], "size": [0.28, 0.25, 0.28], "colour": "black", "attach_to": "hat-brim"},
+          {"id": "nose", "role": "nose", "shape": "cone", "axis": "z", "top_scale": 4, "center": [0, 1.45, -0.25], "size": [0.06, 0.06, 0.15], "colour": "orange", "importance": "detail", "attach_to": "head"},
+          {"id": "left-eye", "role": "eye", "shape": "box", "mode": "paint", "center": [-0.07, 1.52, -0.19], "size": [0.04, 0.04, 0.06], "colour": "black", "importance": "detail"},
+          {"id": "right-eye", "role": "eye", "shape": "box", "mode": "paint", "center": [0.07, 1.52, -0.19], "size": [0.04, 0.04, 0.06], "colour": "black", "importance": "detail"},
+          {"id": "buttons", "role": "detail", "shape": "box", "mode": "paint", "center": [0, 1.05, -0.29], "size": [0.06, 0.25, 0.06], "colour": "black", "importance": "detail"}
+        ],
+        "assumptions": ["A 1.9 m snowman including the hat.", "Coal buttons down the front."],
+        "unsupported": []
+      }
+    },
+    {
+      "id": "castle-tower",
+      "category": "architecture",
+      "description": "A square medieval castle tower in grey stone with battlements on top and an arched doorway.",
+      "intent": {
+        "schema": "brickforge.object-intent/2", "name": "Castle tower", "units": "m",
+        "components": [
+          {"id": "tower", "role": "tower", "shape": "box", "center": [0, 6, 0], "size": [6, 12, 6], "colour": "light grey"},
+          {"id": "parapet", "role": "battlement", "shape": "box", "center": [0, 12.6, 0], "size": [6.4, 1.2, 6.4], "colour": "light grey", "attach_to": "tower"},
+          {"id": "walkway", "role": "opening", "shape": "box", "mode": "void", "center": [0, 12.9, 0], "size": [5.2, 0.6, 5.2]},
+          {"id": "crenel-front", "role": "opening", "shape": "box", "mode": "void", "center": [0, 12.9, -3.0], "size": [1.2, 0.6, 1.0]},
+          {"id": "crenel-back", "role": "opening", "shape": "box", "mode": "void", "center": [0, 12.9, 3.0], "size": [1.2, 0.6, 1.0]},
+          {"id": "crenel-left", "role": "opening", "shape": "box", "mode": "void", "center": [-3.0, 12.9, 0], "size": [1.0, 0.6, 1.2]},
+          {"id": "crenel-right", "role": "opening", "shape": "box", "mode": "void", "center": [3.0, 12.9, 0], "size": [1.0, 0.6, 1.2]},
+          {"id": "doorway", "role": "opening", "shape": "box", "mode": "void", "center": [0, 1.25, -3.0], "size": [1.6, 2.5, 1.2]},
+          {"id": "door-arch", "role": "opening", "shape": "cylinder", "axis": "z", "mode": "void", "center": [0, 2.5, -3.0], "size": [1.6, 1.6, 1.2]},
+          {"id": "arrow-slit", "role": "opening", "shape": "box", "mode": "void", "center": [0, 7.5, -3.0], "size": [0.4, 1.4, 1.2], "importance": "detail"}
+        ],
+        "assumptions": ["A 13 m tower, 6 m square, with a walkway behind the battlements."],
+        "unsupported": []
+      }
+    },
+    {
+      "id": "desk-lamp",
+      "category": "household",
+      "description": "An adjustable desk lamp with a round black base, an angled arm and a cone-shaped shade.",
+      "intent": {
+        "schema": "brickforge.object-intent/2", "name": "Desk lamp", "units": "cm",
+        "components": [
+          {"id": "base", "role": "base", "shape": "cylinder", "axis": "y", "center": [0, 1.5, 0], "size": [16, 3, 16], "colour": "black"},
+          {"id": "lower-arm", "role": "arm", "shape": "box", "center": [0, 15, -3.2], "size": [2, 25, 2], "rotate_deg": [-15, 0, 0], "colour": "dark grey", "attach_to": "base"},
+          {"id": "elbow", "role": "joint", "shape": "sphere", "center": [0, 27.1, -6.5], "size": [3, 3, 3], "colour": "dark grey", "attach_to": "lower-arm"},
+          {"id": "upper-arm", "role": "arm", "shape": "box", "center": [0, 32.1, -15.2], "size": [1.6, 20, 1.6], "rotate_deg": [-60, 0, 0], "colour": "dark grey", "attach_to": "elbow"},
+          {"id": "shade", "role": "shade", "shape": "cone", "axis": "y", "top_scale": 0.35, "center": [0, 33, -26], "size": [12, 9, 12], "colour": "black", "attach_to": "upper-arm"},
+          {"id": "bulb", "role": "light", "shape": "sphere", "center": [0, 29, -26], "size": [5, 5, 5], "colour": "trans yellow", "importance": "detail", "attach_to": "shade"}
+        ],
+        "assumptions": ["A 38 cm desk lamp with the shade reaching forward over the desk."],
+        "unsupported": ["The spring mechanism and hinges are not modelled."]
+      }
+    },
+    {
+      "id": "farm-tractor",
+      "category": "vehicle",
+      "description": "A green farm tractor with big rear wheels, small front wheels and an enclosed cab.",
+      "intent": {
+        "schema": "brickforge.object-intent/2", "name": "Farm tractor", "units": "m",
+        "components": [
+          {"id": "bonnet", "role": "engine", "shape": "box", "center": [0, 1.3, -0.8], "size": [1.0, 0.9, 2.2], "colour": "green"},
+          {"id": "under-cab", "role": "chassis", "shape": "box", "center": [0, 1.0, 1.0], "size": [1.0, 0.6, 1.4], "colour": "green", "attach_to": "bonnet"},
+          {"id": "cab", "role": "cab", "shape": "box", "center": [0, 2.0, 1.0], "size": [1.4, 1.6, 1.4], "colour": "green", "attach_to": "under-cab"},
+          {"id": "cab-glass", "role": "window", "shape": "box", "mode": "paint", "center": [0, 2.3, 1.0], "size": [1.5, 0.9, 1.5], "colour": "trans clear"},
+          {"id": "cab-roof", "role": "roof", "shape": "box", "center": [0, 2.875, 1.0], "size": [1.5, 0.15, 1.5], "colour": "green", "attach_to": "cab"},
+          {"id": "exhaust", "role": "detail", "shape": "cylinder", "axis": "y", "center": [0.3, 2.1, -1.5], "size": [0.1, 0.8, 0.1], "colour": "dark grey", "importance": "detail", "attach_to": "bonnet"},
+          {"id": "rear-axle", "role": "axle", "shape": "cylinder", "axis": "x", "center": [0, 0.8, 1.0], "size": [2.0, 0.15, 0.15], "colour": "dark grey", "attach_to": "under-cab"},
+          {"id": "front-axle-mount", "role": "axle", "shape": "box", "center": [0, 0.65, -1.4], "size": [0.3, 0.4, 0.3], "colour": "dark grey", "attach_to": "bonnet"},
+          {"id": "front-axle", "role": "axle", "shape": "cylinder", "axis": "x", "center": [0, 0.45, -1.4], "size": [1.4, 0.12, 0.12], "colour": "dark grey", "attach_to": "front-axle-mount"},
+          {"id": "rear-left-wheel", "role": "wheel", "shape": "cylinder", "axis": "x", "center": [-0.85, 0.8, 1.0], "size": [0.45, 1.6, 1.6], "colour": "black", "attach_to": "rear-axle"},
+          {"id": "rear-right-wheel", "role": "wheel", "shape": "cylinder", "axis": "x", "center": [0.85, 0.8, 1.0], "size": [0.45, 1.6, 1.6], "colour": "black", "attach_to": "rear-axle"},
+          {"id": "front-left-wheel", "role": "wheel", "shape": "cylinder", "axis": "x", "center": [-0.65, 0.45, -1.4], "size": [0.3, 0.9, 0.9], "colour": "black", "attach_to": "front-axle"},
+          {"id": "front-right-wheel", "role": "wheel", "shape": "cylinder", "axis": "x", "center": [0.65, 0.45, -1.4], "size": [0.3, 0.9, 0.9], "colour": "black", "attach_to": "front-axle"}
+        ],
+        "assumptions": ["A mid-size tractor about 4 m long and 2.9 m tall.", "Rear wheels 1.6 m and front wheels 0.9 m in diameter."],
+        "unsupported": []
+      }
+    },
+    {
+      "id": "sitting-cat",
+      "category": "organic",
+      "description": "A grey cat sitting upright with its tail curled around its feet.",
+      "intent": {
+        "schema": "brickforge.object-intent/2", "name": "Sitting cat", "units": "cm",
+        "components": [
+          {"id": "body", "role": "body", "shape": "sphere", "center": [0, 12, 2], "size": [16, 22, 20], "colour": "grey"},
+          {"id": "head", "role": "head", "shape": "sphere", "center": [0, 27, -4], "size": [12, 11, 11], "colour": "grey", "attach_to": "body"},
+          {"id": "left-ear", "role": "ear", "shape": "cone", "axis": "y", "top_scale": 0, "center": [-3.5, 33, -4], "size": [3, 4, 2], "colour": "grey", "attach_to": "head"},
+          {"id": "right-ear", "role": "ear", "shape": "cone", "axis": "y", "top_scale": 0, "center": [3.5, 33, -4], "size": [3, 4, 2], "colour": "grey", "attach_to": "head"},
+          {"id": "left-foreleg", "role": "leg", "shape": "cylinder", "axis": "y", "center": [-3, 5, -6.5], "size": [3, 10, 3], "colour": "grey", "attach_to": "body"},
+          {"id": "right-foreleg", "role": "leg", "shape": "cylinder", "axis": "y", "center": [3, 5, -6.5], "size": [3, 10, 3], "colour": "grey", "attach_to": "body"},
+          {"id": "tail", "role": "tail", "shape": "box", "center": [6, 1.5, 3], "size": [3, 3, 14], "rotate_deg": [0, 30, 0], "colour": "grey", "importance": "detail", "attach_to": "body"},
+          {"id": "left-eye", "role": "eye", "shape": "box", "mode": "paint", "center": [-2.3, 28, -9.2], "size": [1.5, 1.5, 1.2], "colour": "lime", "importance": "detail"},
+          {"id": "right-eye", "role": "eye", "shape": "box", "mode": "paint", "center": [2.3, 28, -9.2], "size": [1.5, 1.5, 1.2], "colour": "lime", "importance": "detail"},
+          {"id": "nose", "role": "nose", "shape": "box", "mode": "paint", "center": [0, 26, -9.4], "size": [1, 0.8, 1], "colour": "pink", "importance": "detail"}
+        ],
+        "assumptions": ["A domestic cat about 35 cm tall when sitting.", "Green eyes and a pink nose."],
+        "unsupported": []
+      }
+    },
+    {
+      "id": "garden-shed",
+      "category": "architecture",
+      "description": "A garden shed with a green door and a single-pitch roof that slopes towards the back.",
+      "intent": {
+        "schema": "brickforge.object-intent/2", "name": "Garden shed", "units": "m",
+        "components": [
+          {"id": "walls", "role": "wall", "shape": "box", "center": [0, 1.0, 0], "size": [2.5, 2.0, 2.0], "colour": "reddish brown"},
+          {"id": "roof", "role": "roof", "shape": "wedge", "center": [0, 2.25, 0], "size": [2.7, 0.5, 2.3], "slope": {"down_toward": "+z", "low_fraction": 0.2}, "colour": "dark grey", "attach_to": "walls"},
+          {"id": "door", "role": "door", "shape": "box", "mode": "paint", "center": [0, 0.95, -1.0], "size": [0.9, 1.9, 0.2], "colour": "green"},
+          {"id": "side-window", "role": "window", "shape": "box", "mode": "paint", "center": [1.25, 1.3, 0], "size": [0.2, 0.6, 0.8], "colour": "trans clear"}
+        ],
+        "assumptions": ["Timber walls shown in reddish brown.", "A 2.5 m by 2 m shed with a felt roof in dark grey."],
+        "unsupported": []
+      }
+    },
+    {
+      "id": "two-seat-sofa",
+      "category": "furniture",
+      "description": "A two-seater sofa in blue fabric with armrests and seat cushions.",
+      "intent": {
+        "schema": "brickforge.object-intent/2", "name": "Two-seat sofa", "units": "m",
+        "components": [
+          {"id": "base", "role": "base", "shape": "box", "center": [0, 0.25, 0], "size": [1.5, 0.3, 0.85], "colour": "blue"},
+          {"id": "backrest", "role": "backrest", "shape": "box", "center": [0, 0.6, 0.33], "size": [1.5, 0.5, 0.2], "colour": "blue", "attach_to": "base"},
+          {"id": "left-arm", "role": "armrest", "shape": "box", "center": [-0.685, 0.48, 0], "size": [0.13, 0.36, 0.85], "colour": "blue", "attach_to": "base"},
+          {"id": "right-arm", "role": "armrest", "shape": "box", "center": [0.685, 0.48, 0], "size": [0.13, 0.36, 0.85], "colour": "blue", "attach_to": "base"},
+          {"id": "left-cushion", "role": "cushion", "shape": "box", "center": [-0.31, 0.5, -0.07], "size": [0.6, 0.2, 0.66], "colour": "medium blue", "attach_to": "base"},
+          {"id": "right-cushion", "role": "cushion", "shape": "box", "center": [0.31, 0.5, -0.07], "size": [0.6, 0.2, 0.66], "colour": "medium blue", "attach_to": "base"},
+          {"id": "legs", "role": "leg", "shape": "box", "center": [0, 0.05, 0], "size": [1.3, 0.1, 0.7], "colour": "reddish brown", "importance": "detail"}
+        ],
+        "assumptions": ["Seat cushions in a lighter blue so they stand out.", "Short wooden legs shown as a recessed plinth."],
+        "unsupported": []
+      }
+    },
+    {
+      "id": "coffee-mug",
+      "category": "household",
+      "description": "A coffee mug with a handle.",
+      "intent": {
+        "schema": "brickforge.object-intent/2", "name": "Coffee mug", "units": "cm", "build": {"size": "small"},
+        "components": [
+          {"id": "cup", "role": "body", "shape": "cylinder", "axis": "y", "center": [0, 4.75, 0], "size": [8, 9.5, 8], "colour": "white"},
+          {"id": "inside", "role": "opening", "shape": "cylinder", "axis": "y", "mode": "void", "center": [0, 5.6, 0], "size": [6.6, 8.6, 6.6]},
+          {"id": "handle-top", "role": "handle", "shape": "box", "center": [4.6, 7.5, 0], "size": [2, 1, 1.2], "colour": "white", "attach_to": "cup"},
+          {"id": "handle-side", "role": "handle", "shape": "box", "center": [5.6, 4.75, 0], "size": [1, 6.5, 1.2], "colour": "white", "attach_to": "handle-top"},
+          {"id": "handle-bottom", "role": "handle", "shape": "box", "center": [4.6, 2, 0], "size": [2, 1, 1.2], "colour": "white", "attach_to": "cup"}
+        ],
+        "assumptions": ["A plain white 8 cm mug.", "The handle is drawn as three straight bars."],
+        "unsupported": []
+      }
+    },
+    {
+      "id": "windmill",
+      "category": "architecture",
+      "description": "A traditional windmill with a tapered tower and four large sails.",
+      "intent": {
+        "schema": "brickforge.object-intent/2", "name": "Windmill", "units": "m",
+        "components": [
+          {"id": "tower", "role": "tower", "shape": "cone", "axis": "y", "top_scale": 0.6, "center": [0, 6, 0], "size": [7, 12, 7], "colour": "white"},
+          {"id": "cap", "role": "roof", "shape": "dome", "center": [0, 12, 0], "size": [4.5, 2.5, 4.5], "colour": "dark grey", "attach_to": "tower"},
+          {"id": "hub", "role": "hub", "shape": "cylinder", "axis": "z", "center": [0, 12.5, -2.6], "size": [1, 1, 1.2], "colour": "dark grey", "attach_to": "cap"},
+          {"id": "sail-a", "role": "sail", "shape": "box", "center": [0, 12.5, -3.3], "size": [1.4, 16, 0.25], "rotate_deg": [0, 0, 45], "colour": "reddish brown", "attach_to": "hub"},
+          {"id": "sail-b", "role": "sail", "shape": "box", "center": [0, 12.5, -3.3], "size": [1.4, 16, 0.25], "rotate_deg": [0, 0, -45], "colour": "reddish brown", "attach_to": "hub"},
+          {"id": "door", "role": "door", "shape": "box", "mode": "paint", "center": [0, 1.2, -3.4], "size": [1.2, 2.2, 0.8], "colour": "reddish brown", "importance": "detail"}
+        ],
+        "assumptions": ["A 14.5 m tower mill with 16 m sails set in an X.", "White tower with a dark cap."],
+        "unsupported": ["Sail lattice is shown as solid boards."]
+      }
+    },
+    {
+      "id": "elephant",
+      "category": "organic",
+      "description": "An elephant standing on four legs, with big ears, a long trunk and tusks.",
+      "intent": {
+        "schema": "brickforge.object-intent/2", "name": "Elephant", "units": "m",
+        "components": [
+          {"id": "body", "role": "body", "shape": "sphere", "center": [0, 2.0, 0.3], "size": [2.4, 2.2, 4.2], "colour": "grey"},
+          {"id": "front-left-leg", "role": "leg", "shape": "cylinder", "axis": "y", "center": [-0.65, 0.65, -1.1], "size": [0.7, 1.3, 0.7], "colour": "grey", "attach_to": "body"},
+          {"id": "front-right-leg", "role": "leg", "shape": "cylinder", "axis": "y", "center": [0.65, 0.65, -1.1], "size": [0.7, 1.3, 0.7], "colour": "grey", "attach_to": "body"},
+          {"id": "back-left-leg", "role": "leg", "shape": "cylinder", "axis": "y", "center": [-0.65, 0.65, 1.5], "size": [0.7, 1.3, 0.7], "colour": "grey", "attach_to": "body"},
+          {"id": "back-right-leg", "role": "leg", "shape": "cylinder", "axis": "y", "center": [0.65, 0.65, 1.5], "size": [0.7, 1.3, 0.7], "colour": "grey", "attach_to": "body"},
+          {"id": "head", "role": "head", "shape": "sphere", "center": [0, 2.6, -2.1], "size": [1.6, 1.6, 1.4], "colour": "grey", "attach_to": "body"},
+          {"id": "left-ear", "role": "ear", "shape": "box", "center": [-0.95, 2.5, -1.7], "size": [0.15, 1.3, 1.1], "colour": "grey", "attach_to": "head"},
+          {"id": "right-ear", "role": "ear", "shape": "box", "center": [0.95, 2.5, -1.7], "size": [0.15, 1.3, 1.1], "colour": "grey", "attach_to": "head"},
+          {"id": "trunk", "role": "trunk", "shape": "cylinder", "axis": "y", "center": [0, 1.5, -2.75], "size": [0.4, 1.8, 0.4], "colour": "grey", "attach_to": "head"},
+          {"id": "left-tusk", "role": "tusk", "shape": "cone", "axis": "z", "top_scale": 4, "center": [-0.3, 1.9, -2.9], "size": [0.12, 0.12, 0.6], "colour": "white", "importance": "detail", "attach_to": "head"},
+          {"id": "right-tusk", "role": "tusk", "shape": "cone", "axis": "z", "top_scale": 4, "center": [0.3, 1.9, -2.9], "size": [0.12, 0.12, 0.6], "colour": "white", "importance": "detail", "attach_to": "head"}
+        ],
+        "assumptions": ["An African elephant about 3.4 m tall at the head and 5.5 m long.", "The tail is omitted."],
+        "unsupported": ["Tail."]
+      }
+    }
+  ]
+}

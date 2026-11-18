@@ -232,7 +232,8 @@ try{
  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),"mobile layout overflows horizontally");
  await page.screenshot({path:'/tmp/brickforge-mobile.png',fullPage:true});
  await page.setViewportSize({width:1280,height:900});await page.goto('http://127.0.0.1:4174/index.html',{waitUntil:'domcontentloaded'});await page.screenshot({path:'/tmp/brickforge-home.png',fullPage:true});
- await page.getByRole('link',{name:/Open the design studio/}).click();await page.waitForFunction(()=>document.querySelector('#engine-status')?.dataset.state==='planned');assert.equal(await page.locator('#engine-parts').innerText(),'17');
+ assert.match(await page.getByRole('link',{name:/Describe and build/}).getAttribute('href'),/^\.\/studio\.html\?example=hatchback-car&run=1/);
+ await page.getByRole('link',{name:'Brief workbench',exact:true}).click();await page.goto(new URL('designer.html?fixture=small-road-car&run=1',page.url()).href);await page.waitForFunction(()=>document.querySelector('#engine-status')?.dataset.state==='planned');assert.equal(await page.locator('#engine-parts').innerText(),'17');
  await page.getByRole('link',{name:'Engineering tools',exact:true}).click();assert.match(await page.locator('h1').innerText(),/workbench/);
  assert.equal(errors.length,0,errors.join(" | "));
  console.log(JSON.stringify({browser:"Chromium headless",fixture:"interlocked-structural-body",parts:4,connections:4,matingPairs:16,consoleErrors:errors.length}));
