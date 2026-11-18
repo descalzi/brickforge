@@ -8,7 +8,7 @@ import {planIntent, intentCatalogue} from '../docs/assets/intent-engine.js';
 
 const docs = new URL('../docs/', import.meta.url);
 const read = path => JSON.parse(readFileSync(new URL('data/' + path, docs)));
-const catalogue = intentCatalogue(read('connection-profiles/basic-bricks.json'), read('connection-profiles/standard-elements-v1.json'), read('specialist-profiles-v1.json'));
+const catalogue = intentCatalogue(read('connection-profiles/basic-bricks.json'), read('connection-profiles/standard-elements-v1.json'), read('specialist-profiles-v1.json'), read('connection-profiles/part-vocabulary-profiles-v1.json'));
 const evaluation = read('intent-eval-v1.json');
 const args = new Set(process.argv.slice(2));
 
@@ -26,6 +26,7 @@ for (const c of evaluation.cases) {
     footprint_studs: [Math.round(plan.dimensions_mm.width / 8), Math.round(plan.dimensions_mm.depth / 8)], height_plates: Math.round(plan.dimensions_mm.height / 3.2),
     real_wheels: r.wheels.filter(w => w.construction === 'real_wheel_assembly').length,
     slope_pieces: r.slopes.reduce((s, x) => s + (x.pieces || 0), 0),
+    surface_parts: r.surface_fitting.parts, surface_iou: [r.surface_fitting.surface_iou_before, r.surface_fitting.surface_iou_after],
     lost_components: count('lost'),
     lost_essential: r.components.filter(x => x.status === 'lost' && x.importance === 'essential').map(x => x.component_id),
     fragments_removed: r.connectivity.fragments_removed, gap_cells_filled: r.connectivity.gap_cells_filled,
@@ -41,6 +42,8 @@ const summary = {
   median_shape_iou: [...results.map(r => r.shape_iou)].sort((a, b) => a - b)[Math.floor(results.length / 2)],
   cases_losing_essential_components: results.filter(r => r.lost_essential.length).length,
   total_parts: results.reduce((s, r) => s + r.parts, 0),
+  surface_fit_parts: results.reduce((s, r) => s + r.surface_parts, 0),
+  median_surface_iou: [0, 1].map(k => { const v = results.map(r => r.surface_iou[k]).filter(x => x !== null).sort((a, b) => a - b); return v.length ? v[Math.floor(v.length / 2)] : null; }),
 };
 const output = {schema_version: 1, evaluation: evaluation.evaluation, protocol: evaluation.protocol, interpreter: evaluation.interpreter, summary,
   limitations: ['The interpreter was a single model acting under the published instructions; other models will write different intents.',
@@ -56,17 +59,17 @@ if (args.has('--check')) {
 }
 if (args.has('--write')) {
   writeFileSync(new URL('data/intent-eval-results-v1.json', docs), JSON.stringify(output, null, 1) + '\n');
-  const rows = results.map(r => `| [${r.id}](eval/${r.id}.png) | ${r.category} | ${r.parts} | ${r.steps} | ${r.connected ? 'yes' : '**no**'} | ${r.shape_iou.toFixed(2)} | ${r.real_wheels || '—'} | ${r.slope_pieces || '—'} | ${r.lost_essential.join(', ') || '—'} | ${r.visible_colour_bridges || '—'} |`);
+  const rows = results.map(r => `| [${r.id}](eval/${r.id}.png) | ${r.category} | ${r.parts} | ${r.steps} | ${r.connected ? 'yes' : '**no**'} | ${r.shape_iou.toFixed(2)} | ${r.real_wheels || '—'} | ${r.slope_pieces || '—'} | ${r.surface_parts || '—'} | ${r.lost_essential.join(', ') || '—'} | ${r.visible_colour_bridges || '—'} |`);
   const md = `# Description → model evaluation
 
-${summary.built} of ${summary.cases} descriptions produced a model; ${summary.connected} are a single stud-connected assembly. Median shape match (soft IoU against the intent) ${summary.median_shape_iou.toFixed(2)}. ${summary.cases_losing_essential_components} cases lose at least one essential component at their build size.
+${summary.built} of ${summary.cases} descriptions produced a model; ${summary.connected} are a single stud-connected assembly. Median shape match (soft IoU against the intent) ${summary.median_shape_iou.toFixed(2)}. ${summary.cases_losing_essential_components} cases lose at least one essential component at their build size. Surface fitting placed ${summary.surface_fit_parts} slope, curve and cone elements; the median fractional surface match rose from ${summary.median_surface_iou[0]?.toFixed(3)} (cells) to ${summary.median_surface_iou[1]?.toFixed(3)} (cells and fitted elements).
 
 **Protocol.** ${evaluation.protocol} Interpreter: ${evaluation.interpreter}. The descriptions, intents and results are in [the case file](data/intent-eval-v1.json) and [the results file](data/intent-eval-results-v1.json).
 
 **What this does not show.** ${output.limitations.join(' ')}
 
-| Case | Category | Parts | Steps | Connected | Shape IoU | Real wheels | Slope elements | Essential parts lost | Visible colour joints |
-| --- | --- | ---: | ---: | --- | ---: | ---: | ---: | --- | ---: |
+| Case | Category | Parts | Steps | Connected | Shape IoU | Real wheels | Roof slopes | Surface elements | Essential parts lost | Visible colour joints |
+| --- | --- | ---: | ---: | --- | ---: | ---: | ---: | ---: | --- | ---: |
 ${rows.join('\n')}
 
 ${results.map(r => `### ${r.id}\n\n> ${r.description}\n\n![${r.id}](eval/${r.id}.png)\n`).join('\n')}

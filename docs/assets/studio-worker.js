@@ -1,4 +1,4 @@
-import {planIntent} from './intent-engine.js?v=8b12d09c0019';
+import {planIntent} from './intent-engine.js?v=6ea6e943cea0';
 self.onmessage = ({data}) => {
   try {
     self.postMessage({result: planIntent(data.intent, data.catalogue, data.options)});

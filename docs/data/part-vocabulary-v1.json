@@ -1,0 +1,309 @@
+{
+ "schema_version": 1,
+ "purpose": "Curated specialised parts used by detailing: surface smoothing, round parts, role recipes and side details.",
+ "parts": [
+  {
+   "part_id": "3040b",
+   "family": "slope45"
+  },
+  {
+   "part_id": "3039",
+   "family": "slope45"
+  },
+  {
+   "part_id": "3038",
+   "family": "slope45"
+  },
+  {
+   "part_id": "3037",
+   "family": "slope45"
+  },
+  {
+   "part_id": "23949",
+   "family": "slope45"
+  },
+  {
+   "part_id": "4445",
+   "family": "slope45"
+  },
+  {
+   "part_id": "4286",
+   "family": "slope33"
+  },
+  {
+   "part_id": "3298",
+   "family": "slope33"
+  },
+  {
+   "part_id": "4161",
+   "family": "slope33"
+  },
+  {
+   "part_id": "3297",
+   "family": "slope33"
+  },
+  {
+   "part_id": "3939",
+   "family": "slope33"
+  },
+  {
+   "part_id": "60481b",
+   "family": "slope65"
+  },
+  {
+   "part_id": "3678b",
+   "family": "slope65"
+  },
+  {
+   "part_id": "4460b",
+   "family": "slope75"
+  },
+  {
+   "part_id": "3684c",
+   "family": "slope75"
+  },
+  {
+   "part_id": "54200",
+   "family": "slope_low"
+  },
+  {
+   "part_id": "85984",
+   "family": "slope_low"
+  },
+  {
+   "part_id": "7825",
+   "family": "slope_low"
+  },
+  {
+   "part_id": "7835",
+   "family": "slope_low"
+  },
+  {
+   "part_id": "5404",
+   "family": "slope_low"
+  },
+  {
+   "part_id": "60477",
+   "family": "slope_low"
+  },
+  {
+   "part_id": "30363",
+   "family": "slope_low"
+  },
+  {
+   "part_id": "11477",
+   "family": "curved"
+  },
+  {
+   "part_id": "15068",
+   "family": "curved"
+  },
+  {
+   "part_id": "50950",
+   "family": "curved"
+  },
+  {
+   "part_id": "24309",
+   "family": "curved"
+  },
+  {
+   "part_id": "61678",
+   "family": "curved"
+  },
+  {
+   "part_id": "93606",
+   "family": "curved"
+  },
+  {
+   "part_id": "42022",
+   "family": "curved"
+  },
+  {
+   "part_id": "44126",
+   "family": "curved"
+  },
+  {
+   "part_id": "3665b",
+   "family": "inverted"
+  },
+  {
+   "part_id": "3660b",
+   "family": "inverted"
+  },
+  {
+   "part_id": "4287c",
+   "family": "inverted"
+  },
+  {
+   "part_id": "3747b",
+   "family": "inverted"
+  },
+  {
+   "part_id": "2449",
+   "family": "inverted"
+  },
+  {
+   "part_id": "24201",
+   "family": "inverted_curved"
+  },
+  {
+   "part_id": "32803",
+   "family": "inverted_curved"
+  },
+  {
+   "part_id": "13547",
+   "family": "inverted_curved"
+  },
+  {
+   "part_id": "42023",
+   "family": "inverted_curved"
+  },
+  {
+   "part_id": "6141",
+   "family": "round"
+  },
+  {
+   "part_id": "3062b",
+   "family": "round"
+  },
+  {
+   "part_id": "98138",
+   "family": "round",
+   "roles": [
+    "eye",
+    "round_tile"
+   ]
+  },
+  {
+   "part_id": "4032b",
+   "family": "round"
+  },
+  {
+   "part_id": "14769",
+   "family": "round"
+  },
+  {
+   "part_id": "6143",
+   "family": "round"
+  },
+  {
+   "part_id": "2654b",
+   "family": "round"
+  },
+  {
+   "part_id": "4589",
+   "family": "cone"
+  },
+  {
+   "part_id": "3942c",
+   "family": "cone"
+  },
+  {
+   "part_id": "98100",
+   "family": "cone"
+  },
+  {
+   "part_id": "3943b",
+   "family": "cone"
+  },
+  {
+   "part_id": "49309",
+   "family": "cone"
+  },
+  {
+   "part_id": "4740",
+   "family": "dish"
+  },
+  {
+   "part_id": "43898",
+   "family": "dish"
+  },
+  {
+   "part_id": "3960",
+   "family": "dish"
+  },
+  {
+   "part_id": "60592",
+   "family": "window",
+   "roles": [
+    "window_frame"
+   ],
+   "insert": {
+    "part_id": "60601",
+    "offset_ldu": [
+     0,
+     0,
+     0
+    ],
+    "source": "LDraw shortcut 60592c01"
+   }
+  },
+  {
+   "part_id": "60601",
+   "family": "window",
+   "roles": [
+    "window_glass"
+   ]
+  },
+  {
+   "part_id": "60593",
+   "family": "window",
+   "roles": [
+    "window_frame"
+   ],
+   "insert": {
+    "part_id": "60602",
+    "offset_ldu": [
+     0,
+     0,
+     0
+    ],
+    "source": "LDraw shortcut 60593c01"
+   }
+  },
+  {
+   "part_id": "60602",
+   "family": "window",
+   "roles": [
+    "window_glass"
+   ]
+  },
+  {
+   "part_id": "60596",
+   "family": "door",
+   "roles": [
+    "door_frame"
+   ],
+   "insert": {
+    "part_id": "60616b",
+    "offset_ldu": [
+     -32,
+     0,
+     5
+    ],
+    "source": "Bricksmith related-parts list (Door Left)"
+   }
+  },
+  {
+   "part_id": "60616b",
+   "family": "door",
+   "roles": [
+    "door"
+   ]
+  },
+  {
+   "part_id": "36840",
+   "family": "bracket",
+   "roles": [
+    "bracket_up"
+   ]
+  },
+  {
+   "part_id": "36841",
+   "family": "bracket",
+   "roles": [
+    "bracket_down"
+   ]
+  }
+ ]
+}

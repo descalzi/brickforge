@@ -208,3 +208,65 @@ test('tubes follow a curved, tapering path and stay connected', () => {
   assert.ok(plan.parts.filter(p => p.component_id === 'trunk').length > 3);
   assert.match(normaliseIntent(intent([{id: 't', role: 'tail', shape: 'tube', points: [[0, 0, 0, 1]]}])).errors.join(), /2 to 64 entries/);
 });
+
+// Part vocabulary: imported LDCad connections, surface fitting, frames and brackets.
+const vocabulary = read('connection-profiles/part-vocabulary-profiles-v1.json');
+const full = intentCatalogue(basic, standard, specialist, vocabulary);
+const fullById = new Map(full.profiles.map(p => [p.part_id, p]));
+const families = new Map(vocabulary.profiles.map(p => [p.part_id, p.family]));
+const kindAt = (profile, kind) => profile.features.filter(f => f.kind === kind).map(f => f.position_ldu.map(Math.round).join(',')).sort();
+
+test('imported vocabulary connections agree with the hand-checked specialist profiles', () => {
+  for (const p of specialist.profiles) {
+    const v = vocabulary.profiles.find(x => x.part_id === p.part_id);
+    if (!v || p.part_id === '15068' || p.part_id === '3062b') continue; // these two also list recessed anti-studs
+    for (const kind of ['stud', 'stud_receiver']) assert.deepEqual(kindAt(v, kind), kindAt(p, kind), `${p.part_id} ${kind}`);
+  }
+  // Round 1x1 plate: its stud is the radius-6 section after a rim; inverted slope: one receiver.
+  assert.deepEqual(kindAt(vocabulary.profiles.find(p => p.part_id === '6141'), 'stud'), ['0,0,0']);
+  assert.equal(kindAt(vocabulary.profiles.find(p => p.part_id === '3665b'), 'stud_receiver').length, 1);
+  assert.equal(vocabulary.sources.connections.licence, 'CC BY-SA 4.0');
+});
+
+test('surface fitting smooths a sphere with real slopes and keeps it connected', () => {
+  const plan = planIntent(intent([{id: 'ball', role: 'body', shape: 'sphere', center: [0, 60, 0], size: [120, 120, 120], colour: 'yellow'}], {build: {target_longest_studs: 16}}), full);
+  const fit = plan.intent_report.surface_fitting;
+  assert.ok(fit.parts >= 4, 'some slopes placed');
+  assert.ok(fit.surface_iou_after > fit.surface_iou_before);
+  assert.ok(plan.parts.filter(p => families.has(p.part_id)).length >= fit.parts);
+  assert.ok(plan.intent_report.connectivity.connected);
+  assert.equal(plan.analysis.body_envelope_collisions.length, 0);
+  const off = planIntent(intent([{id: 'ball', role: 'body', shape: 'sphere', center: [0, 60, 0], size: [120, 120, 120], colour: 'yellow'}], {build: {target_longest_studs: 16}}), full, {surfaceFit: false});
+  assert.equal(off.intent_report.surface_fitting.parts, 0);
+});
+
+test('windows and doors become frames with glass and a door set into the wall', () => {
+  const house = intent([
+    box('walls', [0, 100, 0], [240, 200, 160], {colour: 'tan'}),
+    box('window', [-60, 120, -80], [16, 50, 4], {role: 'window', mode: 'paint', colour: 'light blue'}),
+    box('door', [40, 70, -80], [64, 120, 4], {role: 'door', mode: 'paint', colour: 'dark red'})], {build: {target_longest_studs: 32}});
+  const plan = planIntent(house, full);
+  assert.deepEqual(plan.intent_report.openings, {windows: 1, doors: 1});
+  const ids = plan.parts.map(p => p.part_id);
+  assert.ok(ids.includes('60596') && ids.includes('60616b'), 'door frame and door');
+  assert.ok(ids.some(id => ['60601', '60602'].includes(id)), 'window glass');
+  const door = plan.parts.find(p => p.part_id === '60616b');
+  assert.equal(door.colour_code, plan.parts.find(p => p.component_id === 'door' || p.part_id === '60616b').colour_code);
+  assert.ok(plan.connections.some(e => e.kind === 'mounted' && e.instance_b === door.instance_id));
+  assert.ok(plan.intent_report.connectivity.connected);
+  assert.equal(plan.analysis.body_envelope_collisions.length, 0);
+});
+
+test('eyes become round tiles on brackets facing out of the head', () => {
+  const plan = planIntent(intent([
+    {id: 'head', role: 'head', shape: 'sphere', center: [0, 40, 0], size: [80, 80, 80], colour: 'yellow'},
+    box('eyes', [0, 50, 0], [84, 6, 6], {role: 'eye', mode: 'paint', colour: 'black'})], {build: {target_longest_studs: 12}}), full);
+  assert.equal(plan.intent_report.brackets.eyes, 2);
+  const tiles = plan.parts.filter(p => p.part_id === '98138');
+  assert.equal(tiles.length, 2);
+  assert.ok(tiles.every(t => t.colour_code === 0));
+  // Each tile faces sideways: its local up axis lies in the horizontal plane.
+  for (const t of tiles) assert.equal(Math.abs(t.matrix[4]), 0);
+  assert.ok(plan.intent_report.connectivity.connected);
+  assert.equal(plan.analysis.body_envelope_collisions.length, 0);
+});

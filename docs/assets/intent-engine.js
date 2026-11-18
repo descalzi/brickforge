@@ -5,23 +5,39 @@
 // and wedges with real slopes and road wheels with real wheel assemblies.
 // The engine always returns its best model and reports how far it deviates from
 // the intent; it blocks only on an invalid intent or an empty result.
-import {normaliseIntent} from './object-intent.js?v=8b12d09c0019';
-import {rasteriseIntent, exteriorAir, hollowInterior, scaleForTarget, STUD_MM, PLATE_MM} from './intent-voxels.js?v=8b12d09c0019';
-import {elementTypes, tileGrid} from './brick-tiler.js?v=8b12d09c0019';
-import {planSlopes} from './slope-detailing.js?v=8b12d09c0019';
-import {planWheels} from './wheel-detailing.js?v=8b12d09c0019';
-import {connectionEdges} from './design-engine.js?v=8b12d09c0019';
-import {partBodyBounds} from './assembly-analysis.js?v=8b12d09c0019';
-import {analyzeLargeAssembly, createLargeAssemblyInstructions} from './large-assembly.js?v=8b12d09c0019';
+import {normaliseIntent} from './object-intent.js?v=6ea6e943cea0';
+import {rasteriseIntent, exteriorAir, hollowInterior, scaleForTarget, STUD_MM, PLATE_MM} from './intent-voxels.js?v=6ea6e943cea0';
+import {elementTypes, tileGrid} from './brick-tiler.js?v=6ea6e943cea0';
+import {planSlopes} from './slope-detailing.js?v=6ea6e943cea0';
+import {planWheels} from './wheel-detailing.js?v=6ea6e943cea0';
+import {surfacePatterns, fitSurfaces} from './surface-fitting.js?v=6ea6e943cea0';
+import {planOpenings} from './opening-detailing.js?v=6ea6e943cea0';
+import {planBrackets} from './bracket-detailing.js?v=6ea6e943cea0';
+import {connectionEdges} from './design-engine.js?v=6ea6e943cea0';
+import {partBodyBounds} from './assembly-analysis.js?v=6ea6e943cea0';
+import {analyzeLargeAssembly, createLargeAssemblyInstructions} from './large-assembly.js?v=6ea6e943cea0';
 
 const LDU = 0.4;
 const IDENTITY = [1, 0, 0, 0, 1, 0, 0, 0, 1];
 const ROTATE_Y_90 = [0, 0, 1, 0, 1, 0, -1, 0, 0];
 
 /** Merge the catalogues the massing engine uses. */
-export function intentCatalogue(basic, standard, specialist) {
-  const profiles = [...basic.profiles, ...standard.profiles, ...(specialist?.profiles || [])];
-  return {profiles, specialist, regular: [...basic.profiles, ...standard.profiles]};
+export function intentCatalogue(basic, standard, specialist, vocabulary) {
+  // Hand-checked specialist profiles win over imported vocabulary profiles of the same
+  // part, except frames: the vocabulary knows what they hold and leaves room for it.
+  const framed = new Set((vocabulary?.profiles || []).filter(p => p.insert).map(p => p.part_id));
+  const special = new Set((specialist?.profiles || []).map(p => p.part_id).filter(id => !framed.has(id)));
+  const imported = (vocabulary?.profiles || []).filter(p => !special.has(p.part_id));
+  const profiles = [...basic.profiles, ...standard.profiles, ...(specialist?.profiles || []).filter(p => !framed.has(p.part_id)), ...imported];
+  return {profiles, specialist, vocabulary: vocabulary?.profiles || [], regular: [...basic.profiles, ...standard.profiles]};
+}
+
+// Surface patterns depend only on the vocabulary; build them once per worker.
+let patternCache = null;
+function patternsFor(catalogue) {
+  const key = catalogue.vocabulary?.length || 0;
+  if (!patternCache || patternCache.key !== key) patternCache = {key, patterns: surfacePatterns(catalogue.vocabulary || [])};
+  return patternCache.patterns;
 }
 
 function softIoU(grid, realised) {
@@ -78,16 +94,46 @@ export function planIntent(input, catalogue, options = {}) {
   for (const w of wheelLayout.warnings) warnings.push(w);
   const slopes = planSlopes(intent, grid, profileMap, catalogue.specialist);
   for (const w of slopes.warnings) warnings.push(w);
+  lap('detail');
+  // Surface fitting: real slopes, curves and cones where the stepped grid strays from
+  // the intended surface. Wheel and roof detailing, and what they clutch, stay as they are.
+  const claimedByDetail = new Uint8Array(total);
+  const claimDetail = list => { for (const r of list) {
+    for (const c of [...r.cells, ...(r.clearance || [])]) claimedByDetail[c] = 1;
+    for (const c of r.studTop) if (c + layerSize < total) claimedByDetail[c + layerSize] = 1;
+    for (const c of r.receivers) if (c - layerSize >= 0) claimedByDetail[c - layerSize] = 1;
+  } };
+  claimDetail([...wheelLayout.reserved, ...slopes.reserved]);
+  // Wheels reach past their cells (tyres in their wells): keep later detail out of their bodies.
+  for (const r of wheelLayout.reserved) for (const placement of r.placements) {
+    const b = partBodyBounds(placement, profileMap.get(placement.part_id));
+    const lo = [0, 1, 2].map(a => Math.max(0, Math.floor((b.min[a] - grid.origin[a]) / (a === 1 ? PLATE_MM : STUD_MM) + 1e-6)));
+    const hi = [grid.nx, grid.ny, grid.nz].map((n, a) => Math.min(n - 1, Math.ceil((b.max[a] - grid.origin[a]) / (a === 1 ? PLATE_MM : STUD_MM) - 1e-6) - 1));
+    for (let j = lo[1]; j <= hi[1]; j++) for (let k = lo[2]; k <= hi[2]; k++) for (let i = lo[0]; i <= hi[0]; i++) claimedByDetail[grid.index(i, j, k)] = 1;
+  }
+  // Window and door frames set into wall faces.
+  const openings = options.openings === false ? {reserved: [], warnings: [], summary: {windows: 0, doors: 0}}
+    : planOpenings(intent, grid, profileMap, {claimed: claimedByDetail.slice(), exteriorAir: exteriorAir(grid)});
+  for (const w of openings.warnings) warnings.push(w);
+  claimDetail(openings.reserved);
+  // Eyes and lamps: round tiles on sideways brackets.
+  const brackets = options.brackets === false ? {reserved: [], warnings: [], summary: {eyes: 0}}
+    : planBrackets(grid, profileMap, {claimed: claimedByDetail.slice(), exteriorAir: exteriorAir(grid)});
+  for (const w of brackets.warnings) warnings.push(w);
+  claimDetail(brackets.reserved);
+  const surface = options.surfaceFit === false || !catalogue.vocabulary?.length ? {reserved: [], summary: {}, candidates: 0, error_cells: 0}
+    : fitSurfaces(grid, patternsFor(catalogue), c => claimedByDetail[c] === 1, {minGain: options.surfaceMinGain, debug: options.surfaceDebug});
+  lap('surface_fit');
   // Keep the material that detailing parts clutch to, above their studs and below their receivers.
   const keep = new Uint8Array(total);
-  for (const r of [...wheelLayout.reserved, ...slopes.reserved]) {
+  for (const r of [...wheelLayout.reserved, ...slopes.reserved, ...openings.reserved, ...brackets.reserved, ...surface.reserved]) {
     for (const c of r.cells) keep[c] = 1;
     for (const c of r.studTop) if (c + layerSize < total) keep[c + layerSize] = 1;
     for (const c of r.receivers) if (c - layerSize >= 0) keep[c - layerSize] = 1;
   }
   let hollow = {removed: 0};
   if (intent.build.hollow === 'auto') hollow = hollowInterior(grid, keep);
-  lap('detail_and_hollow');
+  lap('hollow');
   const visible = visibility(grid);
   const tileTop = new Uint8Array(total);
   for (let c = 0; c < total; c++) {
@@ -99,7 +145,7 @@ export function planIntent(input, catalogue, options = {}) {
     const thick = c - 2 * layerSize >= 0 && grid.owner[c - layerSize] >= 0 && grid.owner[c - 2 * layerSize] >= 0;
     if ((component?.finish === 'smooth' || intent.build.finish === 'smooth') && (above >= total || grid.owner[above] < 0) && thick) tileTop[c] = 1;
   }
-  const reserved = [...wheelLayout.reserved, ...slopes.reserved];
+  const reserved = [...wheelLayout.reserved, ...slopes.reserved, ...openings.reserved, ...brackets.reserved, ...surface.reserved];
   for (const r of reserved) for (const c of r.cells) { grid.owner[c] = grid.owner[c] >= 0 ? grid.owner[c] : r.component_index ?? -1; }
   const noBrick = new Uint8Array(total);
   const tileInput = {nx, ny, nz, index: grid.index, colour: grid.colour, visible, tileTop, noBrick};
@@ -308,6 +354,11 @@ export function planIntent(input, catalogue, options = {}) {
   for (const p of parts) p.translation_ldu[1] = +(p.translation_ldu[1] + lowest / LDU).toFixed(6);
   lap('placements');
   const connections = connectionEdges(parts, profileMap);
+  // Glass and doors are held by their frame (clips and hinges, not studs).
+  for (let i = 0; i < parts.length; i++) if (parts[i].mounted_in) {
+    const frame = parts[i - 1]?.part_id === parts[i].mounted_in ? parts[i - 1] : null;
+    if (frame) connections.push({instance_a: frame.instance_id, instance_b: parts[i].instance_id, mating_pairs: [], kind: 'mounted'});
+  }
   lap('connections');
   const adjacency = new Map(parts.map(p => [p.instance_id, new Set()]));
   for (const e of connections) { adjacency.get(e.instance_a).add(e.instance_b); adjacency.get(e.instance_b).add(e.instance_a); }
@@ -360,6 +411,9 @@ export function planIntent(input, catalogue, options = {}) {
     attachments,
     wheels: [...wheels.details.values()],
     slopes: slopes.summary,
+    openings: openings.summary, brackets: brackets.summary,
+    surface_fitting: {parts: surface.reserved.length, by_family: surface.summary, error_cells: surface.error_cells, candidates: surface.candidates,
+      surface_iou_before: surface.iou_before === undefined ? null : +surface.iou_before.toFixed(3), surface_iou_after: surface.iou_after === undefined ? null : +surface.iou_after.toFixed(3)},
     assumptions: intent.assumptions,
     unsupported: intent.unsupported,
     elapsed_ms: Date.now() - started,

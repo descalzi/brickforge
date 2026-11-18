@@ -24,7 +24,14 @@ parts list and step-by-step instructions.
    real bricks, plates and tiles, staggering seams and joining every piece.
 3. **Detailing.** Roofs and wedges become measured 45° or 33° slopes; road wheels
    close to the real assembly size become wheel-pin plates with rims and tyres in
-   wheel wells.
+   wheel wells. Window and door components become real frames with glass or a
+   door set into the wall; small eyes and lamps become round tiles facing out on
+   1×1 brackets. Elsewhere, *surface fitting* swaps stepped edges for straight,
+   curved and inverted slopes, cones and round parts wherever they follow the
+   intended surface more closely, without loosening any stud joint.
+   The part vocabulary for this ([list](docs/data/part-vocabulary-v1.json)) is
+   imported from LDraw geometry and LDCad connection data by
+   `node scripts/build_part_vocabulary.mjs`.
 4. **Report and export.** The engine always returns its best model, with a
    deviation report (shape match, lost or thickened components, colour joints),
    LDraw with steps, a parts list and an illustrated PDF booklet (up to 800
@@ -75,6 +82,14 @@ LDraw geometry is pinned to a source revision. Curated display surfaces retain
 recursive attribution under `docs/data/part-meshes/`; the broader library remains
 lazy-loaded rather than bundled into the repository. Three.js and the embedded
 PDF font retain their licences under `docs/assets/vendor/`.
+
+Stud and anti-stud positions in
+`docs/data/connection-profiles/part-vocabulary-profiles-v1.json` are derived from the
+[LDCad Shadow Library](https://github.com/RolandMelkert/LDCadShadowLibrary) by
+Roland Melkert and contributors, licensed
+[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/); that file is
+shared under the same licence. Part geometry comes from the LDraw parts library
+under each file's own notice (CC BY 4.0 or earlier CCAL 2.0).
 
 The previous mesh-first programme is archived in
 [the research roadmap](docs/roadmap-mesh-archive.md). Mesh input does not supply
