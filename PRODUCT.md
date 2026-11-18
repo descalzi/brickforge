@@ -8,16 +8,13 @@ real plastic-brick elements, with a parts inventory and building instructions.
 1. Interpret descriptive text into an object intent: overlapping primitives at
    real-world size with roles, colours, openings and surface colour (no parts).
 2. Choose the scale and rasterise the intent onto the stud grid (massing).
-3. Tile with real elements, then detail with slopes and wheel assemblies.
+3. Tile with real elements, then detail: slopes and curves on surfaces, wheels,
+   window and door frames, bracket-mounted eyes.
 4. Validate the nominal connection graph and report deviations from the intent.
 5. Inspect and export the model, inventory and instructions.
 
-The exact-specification engine (v1 briefs) remains available as the Brief
-workbench; see ADR 0003.
-
-The deterministic construction engine is browser JavaScript, served as static
-files from `docs/` through GitHub Pages. Python supports offline source ingestion,
-independent fixtures and geometry audits; it is not a parallel product engine.
+The construction engine is browser JavaScript, served as static files from
+`docs/` through GitHub Pages. Part data is prepared offline by Node scripts.
 
 ## Current surfaces
 
@@ -25,12 +22,6 @@ independent fixtures and geometry audits; it is not a parallel product engine.
 | --- | --- |
 | `index.html` | Explain the workflow, link models built from descriptions and state limits |
 | `studio.html` | Main entry: describe, interpret with any model, build, inspect deviations and export |
-| `designer.html` | Brief workbench: exact v1 briefs, component edits, planning, evidence, revisions and exports |
-| `tools.html` | Supporting catalogue, mesh and construction-research tools |
-| `parts.html` | Search metadata and inspect source parts; discovery is not placement certification |
-| `inspector.html` | Optional STL/OBJ reference and geometry diagnostics |
-| `builder.html` | Legacy footprint/course-tiling research |
-| `fixtures.html` | Reference mesh validator gallery |
 
 ## Language and privacy boundary
 
@@ -39,8 +30,7 @@ interpretation request or POST it to a gateway the visitor explicitly configures
 The request includes their description, interpretation instructions and the
 response schema. Browser credentials are omitted; API keys belong behind the
 gateway. Its authentication, cost policy and real-model evaluation remain open.
-Construction itself runs locally. Saved revisions are brief snapshots stored on
-the visitor's browser, not cloud projects or automatic backups.
+Construction itself runs locally.
 
 ## Evidence boundary
 
@@ -58,7 +48,7 @@ and structural stability. PDF instructions expose this boundary too.
 - Evaluate on unseen plain descriptions with a frozen interpreter output; failures
   are findings, not fixtures to edit.
 - Prefer a recognisable, connected model with a stated deviation over a refusal;
-  block only invalid intents. (The v1 workbench keeps exact matching.)
+  block only invalid intents.
 - Select specialised elements by function and geometry rather than replacing
   every object feature with a rectangular block.
 - Preserve useful view direction across rebuilds; provide explicit front/top/fit

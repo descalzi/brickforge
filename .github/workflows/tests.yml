@@ -1,4 +1,4 @@
-name: Browser engine and reference audits
+name: Describe & build engine
 
 on:
   push:
@@ -15,107 +15,39 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
-      - name: Set up Python
+      - name: Set up Python (release stamping)
         uses: actions/setup-python@v7
         with:
           python-version: "3.11"
-          cache: pip
-      - name: Install package and test dependencies
-        run: python -m pip install -e ".[dev]"
-      - name: Set up Node.js for browser code checks
+      - name: Set up Node.js
         uses: actions/setup-node@v7
         with:
           node-version: "24"
-      - name: Generate authored LEGO solid-reference STL for browser round-trip
-        run: python tests/generate_golden_browser_fixture.py
       - name: Install Chromium end-to-end test browser
         run: |
           npm install --no-save playwright@1.55.0
           npx playwright install --with-deps chromium
-      - name: Check mesh inspector JavaScript syntax
-        run: node --check docs/assets/inspector.js && node --check docs/assets/feature-matcher.js && node --check docs/assets/construction-preview.js && node --check docs/assets/target-grid.js && node --check docs/assets/mesh-voxelizer.js && node --check docs/assets/mesh-voxelizer-worker.js && node --check docs/assets/layered-construction-worker.js
-      - name: Check LDraw part explorer JavaScript syntax
-        run: node --check docs/assets/parts.js && node --check docs/assets/part-feature-worker.js && node --check docs/assets/catalogue-utils.js
-      - name: Check browser construction engine syntax
-        run: node --check docs/assets/construction-engine.js && node --check docs/assets/design-intent.js && node --check docs/assets/design-spec.js && node --check docs/assets/text-design.js && node --check docs/assets/instruction-rasterizer.js && node --check docs/assets/part-orientation.js && node --check docs/assets/instruction-pdf.js && node --check docs/assets/assembly-analysis.js && node --check docs/assets/specialist-placement.js && node --check docs/assets/assembly-instructions.js && node --check docs/assets/layout-fitting.js && node --check docs/assets/design-relations.js && node --check docs/assets/dimension-variants.js && node --check docs/assets/rounded-shape.js && node --check docs/assets/course-beam-search.js && node --check docs/assets/profile-composition.js && node --check docs/assets/prism-face-pruning.js && node --check docs/assets/polygon-geometry.js && node --check docs/assets/nominal-collision.js && node --check docs/assets/design-engine.js && node --check docs/assets/designer.js && node --check docs/assets/design-worker.js && node --check docs/assets/design-viewer.js && node --check docs/assets/design-svg-viewer.js && node --check docs/assets/connector-matcher.js && node --check docs/assets/part-catalogue.js && node --check docs/assets/design-translation.js && node --check docs/assets/part-geometry-lab.js && node --check docs/assets/technic-planner.js && node --check docs/assets/interface-matcher.js && node --check docs/assets/ldraw-geometry.js && node --check docs/assets/part-discovery.js && node --check docs/assets/builder.js && node --check docs/assets/footprint-worker.js && node --check docs/assets/camera-utils.js
-      - name: Verify native module release and published contract
-        run: python scripts/stamp_browser_modules.py --check && cmp schemas/design-spec-v1.schema.json docs/data/design-spec-schema-v1.json && cmp schemas/object-intent-v2.schema.json docs/data/object-intent-schema-v2.json
-      - name: Test Inspector end-to-end in Chromium
-        run: node tests/browser-inspector.e2e.mjs
-      - name: Test browser construction, irregular footprints and camera helpers
+      - name: Check browser module syntax
+        run: for f in docs/assets/*.js scripts/*.mjs scripts/lib/*.js scripts/lib/*.mjs; do node --check "$f" || exit 1; done
+      - name: Verify native module release and published intent schema
+        run: python scripts/stamp_browser_modules.py --check && cmp schemas/object-intent-v2.schema.json docs/data/object-intent-schema-v2.json
+      - name: Validate JSON data
+        run: for f in $(find docs/data schemas data -name '*.json'); do python -m json.tool "$f" > /dev/null || { echo "$f"; exit 1; }; done
+      - name: Unit tests
         run: node --test tests/*.test.mjs
-      - name: Verify structured-brief benchmark and known gaps
-        run: node scripts/benchmark_design_engine.mjs --check
-      - name: Test design specification engine in headless Chromium
-        run: node tests/browser-design-engine.e2e.mjs
-      - name: Check intent engine syntax
-        run: for f in object-intent brick-colours intent-voxels large-assembly brick-tiler slope-detailing wheel-detailing surface-fitting opening-detailing bracket-detailing intent-engine studio studio-worker; do node --check docs/assets/$f.js || exit 1; done
       - name: Verify description-to-model evaluation
         run: node scripts/evaluate_intents.mjs --check
-      - name: Test Describe and build studio in headless Chromium
+      - name: Test Describe & build studio in headless Chromium
         run: node tests/browser-studio.e2e.mjs
-      - name: Retain design studio browser screenshots
+      - name: Retain studio screenshots and booklet
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: design-studio-browser-previews
+          name: studio-browser-previews
           path: |
-            /tmp/brickforge-side-mounted-panel*
-            /tmp/brickforge-shallow-canopy*
-            /tmp/brickforge-curved-canopy*
-            /tmp/brickforge-composed-curved-plinth*
-            /tmp/brickforge-description-plate.png
-            /tmp/brickforge-inset-window-house.png
-            /tmp/brickforge-studio.png
-            /tmp/brickforge-pavilion.png
-            /tmp/brickforge-car.png
-            /tmp/brickforge-composed-roof.png
-            /tmp/brickforge-mushroom.png
-            /tmp/brickforge-rounded-body.png
-            /tmp/brickforge-joint-height.png
-            /tmp/brickforge-aligned-table.png
+            /tmp/brickforge-studio*.png
             /tmp/brickforge-home.png
             /tmp/brickforge-mobile.png
-            /tmp/brickforge-car.instructions.pdf
-            /tmp/brickforge-mushroom.instructions.pdf
-            /tmp/brickforge-rounded-body.instructions.pdf
+            /tmp/brickforge-*.instructions.pdf
           if-no-files-found: ignore
           retention-days: 7
-      - name: Measure real LDraw parts in headless Chromium
-        run: node tests/browser-part-geometry.e2e.mjs
-      - name: Lint geometry, connection and assembly implementation and tests
-        run: ruff check scripts/build_ldraw_catalogue.py scripts/validate_ldraw_library.py tests/test_ldraw_catalogue.py tests/test_ldraw_resolver.py tests/test_ldraw_mesh_export.py tests/compare_golden_reconstruction.py tests/generate_golden_browser_fixture.py tests/test_geometry_grid.py tests/test_mesh_voxelization.py src/brickforge/geometry/grid.py src/brickforge/geometry/voxelize.py src/brickforge/geometry/solid_reference.py src/brickforge/parts/ldraw_geometry.py src/brickforge/parts/ldraw_resolver.py src/brickforge/parts/ldraw_mesh.py src/brickforge/parts/connections.py src/brickforge/assembly src/brickforge/construction tests/test_connections.py tests/test_assembly.py
-      - name: Type-check geometry, connection and assembly implementation
-        run: mypy scripts/validate_ldraw_library.py src/brickforge/geometry/grid.py src/brickforge/geometry/voxelize.py src/brickforge/geometry/solid_reference.py src/brickforge/parts/ldraw_geometry.py src/brickforge/parts/ldraw_resolver.py src/brickforge/parts/connections.py src/brickforge/assembly src/brickforge/construction
-      - name: Verify published connection catalogue matches canonical data
-        run: cmp data/connection-profiles/basic-bricks.json docs/data/connection-profiles/basic-bricks.json
-      - name: Validate JSON data, schemas and example exports
-        run: >-
-          python -m json.tool data/connection-profiles/basic-bricks.json > /dev/null &&
-          python -m json.tool docs/data/connection-profiles/basic-bricks.json > /dev/null &&
-          python -m json.tool schemas/design-intent-v1.schema.json > /dev/null &&
-          python -m json.tool schemas/design-spec-v1.schema.json > /dev/null &&
-          python -m json.tool schemas/connector-compatibility-v1.schema.json > /dev/null &&
-          python -m json.tool schemas/part-capabilities-v1.schema.json > /dev/null &&
-          python -m json.tool docs/data/design-translation-v1.json > /dev/null &&
-          python -m json.tool schemas/design-translation-v1.schema.json > /dev/null &&
-          python -m json.tool docs/data/design-intent-contracts.json > /dev/null &&
-          python -m json.tool docs/data/design-spec-fixtures.json > /dev/null &&
-          python -m json.tool docs/data/connector-compatibility-v1.json > /dev/null &&
-          python -m json.tool docs/data/part-capabilities-v1.json > /dev/null &&
-          python -m json.tool schemas/connection-profiles-v1.schema.json > /dev/null &&
-          python -m json.tool schemas/assembly-graph-v1.schema.json > /dev/null &&
-          python -m json.tool schemas/bom-v1.schema.json > /dev/null &&
-          python -m json.tool schemas/part-feature-profile-v1.schema.json > /dev/null &&
-          python -m json.tool schemas/part-feature-profile-v2.schema.json > /dev/null &&
-          python -m json.tool schemas/part-feature-profile-v3.schema.json > /dev/null &&
-          python -m json.tool schemas/part-feature-catalogue-v1.schema.json > /dev/null &&
-          python -m json.tool schemas/part-feature-catalogue-v2.schema.json > /dev/null &&
-          python -m json.tool examples/stacked-3001.assembly.json > /dev/null &&
-          python -m json.tool examples/stacked-3001.bom.json > /dev/null &&
-          python -m json.tool examples/block-4x4x2.assembly.json > /dev/null &&
-          python -m json.tool examples/block-4x4x2.bom.json > /dev/null
-      - name: Run test suite
-        run: python -m pytest
-      - name: Compare reconstructed LEGO geometry with authored golden model
-        run: python tests/compare_golden_reconstruction.py

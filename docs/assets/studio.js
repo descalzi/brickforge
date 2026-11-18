@@ -1,12 +1,13 @@
 // Describe & build: description → object intent (any language model) → brick model.
-import {ASSET_VERSION} from './release-version.js?v=6ea6e943cea0';
-import {INTENT_INSTRUCTIONS, buildIntentRequest, normaliseIntent} from './object-intent.js?v=6ea6e943cea0';
-import {intentCatalogue} from './intent-engine.js?v=6ea6e943cea0';
-import {deviceModelState, deviceProvider} from './device-interpretation.js?v=6ea6e943cea0';
-import {endpointProvider} from './text-design.js?v=6ea6e943cea0';
-import {buildInventory, inventoryCsv} from './build-inventory.js?v=6ea6e943cea0';
-import {createDesignViewer, colours} from './design-viewer.js?v=6ea6e943cea0';
-import {colourByCode} from './brick-colours.js?v=6ea6e943cea0';
+import {ASSET_VERSION} from './release-version.js?v=9b8d8e12b3f3';
+import {INTENT_INSTRUCTIONS, buildIntentRequest, normaliseIntent} from './object-intent.js?v=9b8d8e12b3f3';
+import {intentCatalogue} from './intent-engine.js?v=9b8d8e12b3f3';
+import {deviceModelState, deviceProvider, endpointProvider} from './device-interpretation.js?v=9b8d8e12b3f3';
+import {buildInventory, inventoryCsv} from './build-inventory.js?v=9b8d8e12b3f3';
+// Kept in step with instruction-pdf.js (not imported: the booklet loads in its worker).
+const MAX_BOOKLET_PARTS = 8000;
+import {createDesignViewer, colours} from './design-viewer.js?v=9b8d8e12b3f3';
+import {colourByCode} from './brick-colours.js?v=9b8d8e12b3f3';
 
 const $ = id => document.getElementById(id);
 const status = $('engine-status'), intentInput = $('intent-input'), description = $('description-input');
@@ -99,7 +100,7 @@ function build() {
   const big = ['xlarge', 'huge'].includes(intent.build?.size) || (intent.build?.target_longest_studs || 0) > 40;
   setStatus(`Rasterising the shapes and fitting real elements…${big ? ' Large models can take a minute.' : ''}`, 'planning');
   const started = performance.now();
-  worker = new Worker(new URL('./studio-worker.js?v=6ea6e943cea0', import.meta.url), {type: 'module'});
+  worker = new Worker(new URL('./studio-worker.js?v=9b8d8e12b3f3', import.meta.url), {type: 'module'});
   worker.onmessage = ({data}) => {
     finishWorker();
     if (data.error) { setStatus('Engine error: ' + data.error, 'blocked'); $('engine-report').textContent = data.error; return; }
@@ -132,9 +133,9 @@ function show(plan, seconds) {
   $('stat-size').textContent = `${Math.round(d.width / 8)} × ${Math.round(d.depth / 8)} × ${Math.round(d.height / 3.2)}`;
   $('stat-fidelity').textContent = Math.round(report.shape_fidelity.soft_iou * 100) + '%';
   for (const id of ['download-ldraw', 'download-csv', 'download-report']) $(id).disabled = false;
-  const pdfOk = plan.parts.length <= 800 && steps.length <= 200;
+  const pdfOk = plan.parts.length <= MAX_BOOKLET_PARTS;
   $('download-pdf').disabled = !pdfOk;
-  $('download-pdf').title = pdfOk ? '' : 'The in-browser booklet supports up to 800 parts. Open the LDraw file in BrickLink Studio or LeoCAD for instructions of large models.';
+  $('download-pdf').title = pdfOk ? '' : `The in-browser booklet supports up to ${MAX_BOOKLET_PARTS} parts. Open the LDraw file in BrickLink Studio or LeoCAD for larger models.`;
   showComponents(activeIntent);
   showReport(plan);
   const joined = report.connectivity.connected ? 'one connected model' : 'some pieces need joining by hand';
@@ -168,7 +169,7 @@ function showReport(plan) {
   $('validation-list').replaceChildren(...plan.validation.checks.map(c => { const row = el('div', {className: 'check'}, el('strong', {textContent: c.id.replaceAll('_', ' ')}), el('small', {textContent: c.detail})); row.dataset.state = c.status; return row; }));
 }
 
-function stopPdf() { pdfWorker?.terminate(); pdfWorker = null; $('cancel-pdf').hidden = true; $('download-pdf').disabled = !result || result.status !== 'planned' || result.parts.length > 800 || result.instructions.steps.length > 200; }
+function stopPdf() { pdfWorker?.terminate(); pdfWorker = null; $('cancel-pdf').hidden = true; $('download-pdf').disabled = !result || result.status !== 'planned' || result.parts.length > MAX_BOOKLET_PARTS; }
 
 async function interpret() {
   const provider = $('interpretation-provider').value, text = description.value;
@@ -287,7 +288,7 @@ $('download-pdf').addEventListener('click', () => {
   const plan = result;
   $('download-pdf').disabled = true; $('cancel-pdf').hidden = false;
   setStatus('Preparing the illustrated instruction booklet…', 'exporting');
-  const job = new Worker(new URL('./instruction-pdf-worker.js?v=6ea6e943cea0', import.meta.url), {type: 'module'});
+  const job = new Worker(new URL('./instruction-pdf-worker.js?v=9b8d8e12b3f3', import.meta.url), {type: 'module'});
   pdfWorker = job;
   job.onmessage = ({data}) => {
     if (job !== pdfWorker) return;

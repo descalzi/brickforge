@@ -34,8 +34,9 @@ parts list and step-by-step instructions.
    `node scripts/build_part_vocabulary.mjs`.
 4. **Report and export.** The engine always returns its best model, with a
    deviation report (shape match, lost or thickened components, colour joints),
-   LDraw with steps, a parts list and an illustrated PDF booklet (up to 800
-   parts; open the LDraw file in BrickLink Studio or LeoCAD for larger models).
+   LDraw with steps, a parts list and an illustrated PDF booklet in the style of a
+   printed one: several parts per step, four or six steps per page, part callouts
+   (up to 8,000 parts).
 
 Build sizes set the longest side: small 12, medium 20, large 32, xlarge 64 and
 huge 128 studs. Detail below about one stud disappears, so houses and vehicles
@@ -48,10 +49,6 @@ by a language model acting under the published instructions before the engine
 existed; a different model will write different intents. Connections are
 nominal: clutch, strength, stability and colour availability are not verified,
 and no physical build trial has been run.
-
-The earlier exact-brief engine is kept as the
-[Brief workbench](https://descalzi.github.io/brickforge/designer.html?fixture=small-road-car&run=1)
-with its own [benchmark](docs/benchmarks.md).
 
 ## Run and verify
 
@@ -70,15 +67,14 @@ measured from LDraw by `node scripts/build_standard_profiles.mjs`.
 
 After source or data changes, run `python scripts/stamp_browser_modules.py` before
 committing. It versions native module URLs and the studio's data release without
-a JavaScript bundler. Chromium CI exercises real pages, workers, downloads and
-mobile layout. The Python package and Inspector regressions are supporting
-source/geometry audits, not the production construction runtime.
+a JavaScript bundler. Chromium CI exercises the real page, workers and downloads.
 
-## Source data and engineering tools
+## Source data
 
-The [tools hub](https://descalzi.github.io/brickforge/tools.html) retains the part
-explorer, optional mesh inspector, footprint builder and reference gallery.
-LDraw geometry is pinned to a source revision. Curated display surfaces retain
+Part data is built offline by Node scripts in `scripts/`: regular elements
+(`build_standard_profiles.mjs`), wheels and specialist parts
+(`build_specialist_profiles.mjs`, inputs in `data/specialist/`) and the part
+vocabulary (`build_part_vocabulary.mjs`). LDraw geometry is pinned to a source revision. Curated display surfaces retain
 recursive attribution under `docs/data/part-meshes/`; the broader library remains
 lazy-loaded rather than bundled into the repository. Three.js and the embedded
 PDF font retain their licences under `docs/assets/vendor/`.
@@ -91,6 +87,6 @@ Roland Melkert and contributors, licensed
 shared under the same licence. Part geometry comes from the LDraw parts library
 under each file's own notice (CC BY 4.0 or earlier CCAL 2.0).
 
-The previous mesh-first programme is archived in
-[the research roadmap](docs/roadmap-mesh-archive.md). Mesh input does not supply
-object intent and is not the main product pipeline.
+Earlier engines (the exact-brief workbench, the mesh-first inspector, the part
+explorer and the Python reference package) were retired in
+[ADR 0005](docs/decisions/0005-one-product-surface.md); they remain in the Git history.

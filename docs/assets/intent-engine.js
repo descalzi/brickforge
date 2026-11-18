@@ -5,17 +5,17 @@
 // and wedges with real slopes and road wheels with real wheel assemblies.
 // The engine always returns its best model and reports how far it deviates from
 // the intent; it blocks only on an invalid intent or an empty result.
-import {normaliseIntent} from './object-intent.js?v=6ea6e943cea0';
-import {rasteriseIntent, exteriorAir, hollowInterior, scaleForTarget, STUD_MM, PLATE_MM} from './intent-voxels.js?v=6ea6e943cea0';
-import {elementTypes, tileGrid} from './brick-tiler.js?v=6ea6e943cea0';
-import {planSlopes} from './slope-detailing.js?v=6ea6e943cea0';
-import {planWheels} from './wheel-detailing.js?v=6ea6e943cea0';
-import {surfacePatterns, fitSurfaces} from './surface-fitting.js?v=6ea6e943cea0';
-import {planOpenings} from './opening-detailing.js?v=6ea6e943cea0';
-import {planBrackets} from './bracket-detailing.js?v=6ea6e943cea0';
-import {connectionEdges} from './design-engine.js?v=6ea6e943cea0';
-import {partBodyBounds} from './assembly-analysis.js?v=6ea6e943cea0';
-import {analyzeLargeAssembly, createLargeAssemblyInstructions} from './large-assembly.js?v=6ea6e943cea0';
+import {normaliseIntent} from './object-intent.js?v=9b8d8e12b3f3';
+import {rasteriseIntent, exteriorAir, hollowInterior, scaleForTarget, STUD_MM, PLATE_MM} from './intent-voxels.js?v=9b8d8e12b3f3';
+import {elementTypes, tileGrid} from './brick-tiler.js?v=9b8d8e12b3f3';
+import {planSlopes} from './slope-detailing.js?v=9b8d8e12b3f3';
+import {planWheels} from './wheel-detailing.js?v=9b8d8e12b3f3';
+import {surfacePatterns, fitSurfaces} from './surface-fitting.js?v=9b8d8e12b3f3';
+import {planOpenings} from './opening-detailing.js?v=9b8d8e12b3f3';
+import {planBrackets} from './bracket-detailing.js?v=9b8d8e12b3f3';
+import {connectionEdges} from './connection-graph.js?v=9b8d8e12b3f3';
+import {partBodyBounds} from './assembly-analysis.js?v=9b8d8e12b3f3';
+import {analyzeLargeAssembly, createLargeAssemblyInstructions} from './large-assembly.js?v=9b8d8e12b3f3';
 
 const LDU = 0.4;
 const IDENTITY = [1, 0, 0, 0, 1, 0, 0, 0, 1];

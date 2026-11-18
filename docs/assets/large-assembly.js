@@ -3,9 +3,9 @@
 // Produces the same records as analyzeAssembly and createAssemblyInstructions,
 // but tests each part only against nearby parts, so models of thousands of parts
 // stay interactive. Sweeps and support guidance use the same nominal evidence.
-import {partBodyBounds, createSupportTracker, clearApproach} from './assembly-analysis.js?v=6ea6e943cea0';
-import {nominalBodiesIntersect} from './nominal-collision.js?v=6ea6e943cea0';
-import {transformVector} from './specialist-placement.js?v=6ea6e943cea0';
+import {partBodyBounds, createSupportTracker, clearApproach} from './assembly-analysis.js?v=9b8d8e12b3f3';
+import {nominalBodiesIntersect} from './nominal-collision.js?v=9b8d8e12b3f3';
+import {transformVector} from './connection-graph.js?v=9b8d8e12b3f3';
 
 const BUCKET = 16;
 
